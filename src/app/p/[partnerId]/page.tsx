@@ -305,29 +305,29 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
 
                     <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
                         <div className="flex flex-col items-center justify-center mb-12 animate-fade-in">
-                            {/* Logo Container: Horizontal Glass Container */}
-                            <div className="bg-white/95 backdrop-blur-md rounded-[40px] px-8 py-4 sm:px-12 sm:py-6 flex items-center justify-center gap-4 sm:gap-10 shadow-2xl shadow-black/30 border border-white/20">
+                            {/* Logo Container: Horizontal Glass Container - Reduced size (70%) */}
+                            <div className="bg-white/95 backdrop-blur-md rounded-[32px] px-6 py-3 sm:px-9 sm:py-4.5 flex items-center justify-center gap-3 sm:gap-7 shadow-2xl shadow-black/30 border border-white/20">
                                 {/* Partner Logo/Text */}
                                 <div className="flex items-center justify-center">
                                     {partner.logoUrl ? (
-                                        <img src={partner.logoUrl} alt={partner.name} className="h-8 sm:h-12 w-auto object-contain max-w-[150px]" />
+                                        <img src={partner.logoUrl} alt={partner.name} className="h-6 sm:h-8 w-auto object-contain max-w-[120px]" />
                                     ) : (
-                                        <span className="text-sono-primary font-black text-xl sm:text-2xl tracking-tighter">{partner.logoText || partner.name}</span>
+                                        <span className="text-sono-primary font-bold text-lg sm:text-xl tracking-tighter">{partner.logoText || partner.name}</span>
                                     )}
                                 </div>
-                                <span className="text-2xl sm:text-3xl text-[#adb5bd] font-light">×</span>
+                                <span className="text-xl sm:text-2xl text-[#adb5bd] font-light">×</span>
                                 {/* Sono Logo */}
                                 <div className="flex items-center justify-center">
                                     <img
                                         src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94%20BI_3.png?raw=true"
-                                        alt="Sono I'm Ready"
-                                        className="h-8 sm:h-12 w-auto object-contain max-w-[150px]"
+                                        alt="Sono I'M READY"
+                                        className="h-6 sm:h-8 w-auto object-contain max-w-[120px]"
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <h1 className="text-4xl md:text-6xl font-black text-white mb-8 tracking-tighter leading-[1.1] filter drop-shadow-2xl animate-fade-in">
+                        <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-8 tracking-tighter leading-[1.1] filter drop-shadow-2xl animate-fade-in">
                             {partner.landingTitle || `${partner.name} 회원`}님을 위한<br />특별한 라이프 케어 솔루션
                         </h1>
                         <p className="text-xl md:text-2xl text-white/90 font-bold mb-12 leading-relaxed break-keep max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
