@@ -14,6 +14,8 @@ export default function PartnerDashboard() {
     const [partner, setPartner] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<Tab>("overview");
+    const [copySuccess, setCopySuccess] = useState(false);
+    const [baseUrl, setBaseUrl] = useState("");
     const [dashboardData, setDashboardData] = useState({
         isAdmin: false,
         partners: [],
@@ -47,9 +49,19 @@ export default function PartnerDashboard() {
         }
         const partnerInfo = JSON.parse(session);
         setPartner(partnerInfo);
+        setBaseUrl(window.location.origin);
         fetchData(partnerInfo.partnerId);
         setIsLoading(false);
     }, [router, fetchData]);
+
+    const handleCopyUrl = () => {
+        if (!partner?.customUrl || partner.customUrl === "admin") return;
+        const url = `${baseUrl}/p/${partner.customUrl}`;
+        navigator.clipboard.writeText(url).then(() => {
+            setCopySuccess(true);
+            setTimeout(() => setCopySuccess(false), 2000);
+        });
+    };
 
     if (isLoading || !partner) {
         return <div className="p-20 text-center font-bold">데이터를 불러오는 중...</div>;
@@ -122,7 +134,24 @@ export default function PartnerDashboard() {
                             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                             <span className="text-xs font-bold text-green-700">정상 작동 중</span>
                         </div>
-                        <div className="w-px h-8 bg-gray-100 mx-2"></div>
+                        {partner.customUrl && partner.customUrl !== "admin" && (
+                            <div className="flex items-center gap-2 bg-[#f9fafb] px-3 py-1.5 rounded-xl border border-gray-100 group">
+                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">랜딩 URL</span>
+                                <span className="text-xs font-mono text-gray-500 truncate max-w-[120px] lg:max-w-[200px]">
+                                    {baseUrl.replace(/^https?:\/\//, "")}/p/{partner.customUrl}
+                                </span>
+                                <button
+                                    onClick={handleCopyUrl}
+                                    className={`text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all ${copySuccess
+                                        ? "bg-green-500 text-white animate-bounce-short"
+                                        : "bg-gray-200 text-gray-600 hover:bg-sono-primary hover:text-white"
+                                        }`}
+                                >
+                                    {copySuccess ? "복사완료!" : "주소복사"}
+                                </button>
+                            </div>
+                        )}
+                        <div className="w-px h-8 bg-gray-100 mx-1"></div>
                         <div className="text-right mr-2">
                             <div className="text-sm font-bold text-sono-dark">{partner.name}</div>
                             <div className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">{isAdmin ? "System Admin" : "Partner"}</div>
