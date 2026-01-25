@@ -94,13 +94,24 @@ export default function PartnerDashboard() {
                                 <span className="font-bold text-lg tracking-tight text-sono-dark">PARTNER</span>
                             </a>
 
-                            {/* Mobile Logout Button (Visible only on mobile) */}
-                            <button
-                                onClick={() => { localStorage.removeItem("partnerSession"); router.push("/partner-center"); }}
-                                className="md:hidden bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap"
-                            >
-                                로그아웃
-                            </button>
+                            {/* Mobile Actions (Refresh & Logout) */}
+                            <div className="flex items-center gap-2 md:hidden">
+                                <button
+                                    onClick={() => fetchData(partner.partnerId)}
+                                    className="p-1.5 bg-sono-primary/10 text-sono-primary rounded-lg border border-sono-primary/20"
+                                    title="새로고침"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                </button>
+                                <button
+                                    onClick={() => { localStorage.removeItem("partnerSession"); router.push("/partner-center"); }}
+                                    className="bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap"
+                                >
+                                    로그아웃
+                                </button>
+                            </div>
                         </div>
 
                         <nav className="flex gap-1 bg-gray-50 p-1 rounded-xl w-full md:w-auto justify-center overflow-x-auto">
@@ -112,7 +123,10 @@ export default function PartnerDashboard() {
                             ].map((tab) => (
                                 <button
                                     key={tab.id}
-                                    onClick={() => setActiveTab(tab.id as Tab)}
+                                    onClick={() => {
+                                        setActiveTab(tab.id as Tab);
+                                        fetchData(partner.partnerId);
+                                    }}
                                     className={`px-3 md:px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === tab.id
                                         ? "bg-white text-sono-primary shadow-sm"
                                         : "text-gray-400 hover:text-gray-600"
@@ -130,37 +144,19 @@ export default function PartnerDashboard() {
                     </div>
 
                     <div className="hidden md:flex items-center gap-4">
+                        <button
+                            onClick={() => fetchData(partner.partnerId)}
+                            className="flex items-center gap-2 px-3 py-1.5 bg-sono-primary/10 text-sono-primary rounded-xl border border-sono-primary/20 hover:bg-sono-primary hover:text-white transition-all text-xs font-bold"
+                        >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            새로고침
+                        </button>
                         <div className="flex items-center gap-2 px-3 py-1 bg-green-50 rounded-full border border-green-100">
                             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                             <span className="text-xs font-bold text-green-700">정상 작동 중</span>
                         </div>
-                        {partner.customUrl && partner.customUrl !== "admin" && (
-                            <div className="flex items-center gap-2 bg-[#f9fafb] px-3 py-1.5 rounded-xl border border-gray-100 group">
-                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">랜딩 URL</span>
-                                <span className="text-xs font-mono text-gray-500 truncate max-w-[120px] lg:max-w-[200px]">
-                                    {baseUrl.replace(/^https?:\/\//, "")}/p/{partner.customUrl}
-                                </span>
-                                <div className="flex gap-1">
-                                    <button
-                                        onClick={handleCopyUrl}
-                                        className={`text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all ${copySuccess
-                                            ? "bg-green-500 text-white animate-bounce-short"
-                                            : "bg-gray-200 text-gray-600 hover:bg-sono-primary hover:text-white"
-                                            }`}
-                                    >
-                                        {copySuccess ? "복사완료!" : "주소복사"}
-                                    </button>
-                                    <a
-                                        href={`/p/${partner.customUrl}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-gray-200 text-gray-600 hover:bg-sono-primary hover:text-white transition-all"
-                                    >
-                                        바로가기
-                                    </a>
-                                </div>
-                            </div>
-                        )}
                         <div className="w-px h-8 bg-gray-100 mx-1"></div>
                         <div className="text-right mr-2">
                             <div className="text-sm font-bold text-sono-dark">{partner.name}</div>
@@ -177,32 +173,38 @@ export default function PartnerDashboard() {
             </header>
 
             <main className="max-w-7xl mx-auto p-4 md:p-8">
-                {/* Mobile URL Display (Visible only on mobile) */}
+                {/* URL Display (Visible on both PC and Mobile) */}
                 {partner.customUrl && partner.customUrl !== "admin" && (
-                    <div className="md:hidden mb-6 flex items-center justify-between gap-2 bg-white p-4 rounded-[24px] shadow-sm border border-gray-100">
-                        <div className="flex-1 flex flex-col gap-1 overflow-hidden">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">내 파트너 페이지 URL</span>
-                            <span className="text-xs font-mono text-sono-primary truncate">
+                    <div className="mb-6 flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 md:p-6 rounded-[24px] md:rounded-[32px] shadow-sm border border-gray-100">
+                        <div className="flex-1 flex flex-col gap-1 w-full overflow-hidden">
+                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">내 파트너 페이지 랜딩 URL</span>
+                            <span className="text-sm md:text-lg font-mono text-sono-primary truncate">
                                 {baseUrl.replace(/^https?:\/\//, "")}/p/{partner.customUrl}
                             </span>
                         </div>
-                        <div className="flex gap-1.5 flex-shrink-0">
+                        <div className="flex gap-2 w-full md:w-auto">
                             <button
                                 onClick={handleCopyUrl}
-                                className={`text-[11px] font-bold px-4 py-2.5 rounded-xl transition-all ${copySuccess
+                                className={`flex-1 md:flex-none flex items-center justify-center gap-2 text-sm font-bold px-6 py-3.5 rounded-2xl transition-all ${copySuccess
                                     ? "bg-green-500 text-white animate-bounce-short"
                                     : "bg-sono-primary/10 text-sono-primary hover:bg-sono-primary hover:text-white"
                                     }`}
                             >
-                                {copySuccess ? "복사됨" : "복사"}
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                </svg>
+                                {copySuccess ? "주소 복사됨" : "랜딩 URL 복사"}
                             </button>
                             <a
                                 href={`/p/${partner.customUrl}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-[11px] font-bold px-4 py-2.5 rounded-xl bg-gray-100 text-gray-500 hover:bg-sono-primary hover:text-white transition-all"
+                                className="flex-1 md:flex-none flex items-center justify-center gap-2 text-sm font-bold px-6 py-3.5 rounded-2xl bg-gray-100 text-gray-500 hover:bg-sono-dark hover:text-white transition-all shadow-sm"
                             >
-                                이동
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                페이지 이동
                             </a>
                         </div>
                     </div>
