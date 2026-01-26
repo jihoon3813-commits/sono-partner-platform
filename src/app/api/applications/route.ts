@@ -39,7 +39,18 @@ export async function POST(request: Request) {
         }
 
         // 파트너 확인
-        const partner = await getPartnerById(partnerId);
+        let partner = await getPartnerById(partnerId);
+
+        // 데모 계정 예외 처리 (DB에 없을 경우)
+        if (!partner && partnerId.startsWith('P-DEMO')) {
+            partner = {
+                partnerId: partnerId,
+                companyName: partnerName || '데모 파트너',
+                status: 'active',
+                customUrl: 'demo'
+            } as any;
+        }
+
         if (!partner || partner.status !== 'active') {
             return NextResponse.json(
                 { success: false, message: '유효하지 않은 파트너입니다.' },
