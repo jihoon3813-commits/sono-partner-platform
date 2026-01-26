@@ -78,6 +78,21 @@ export default function PartnerDashboard() {
 
     const statusList = ['접수', '상담중', '부재', '거부', '접수취소', '계약완료', '1회출금완료', '배송완료', '정산완료'];
 
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case '접수': return 'text-blue-500';
+            case '상담중': return 'text-amber-500';
+            case '부재': return 'text-gray-400';
+            case '거부': return 'text-red-500';
+            case '접수취소': return 'text-rose-500';
+            case '계약완료': return 'text-emerald-500';
+            case '1회출금완료': return 'text-teal-500';
+            case '배송완료': return 'text-indigo-500';
+            case '정산완료': return 'text-purple-500';
+            default: return 'text-gray-400';
+        }
+    };
+
     return (
         <div className="min-h-screen bg-[#f2f4f6]">
             {/* Header */}
@@ -223,7 +238,7 @@ export default function PartnerDashboard() {
                                         }`}
                                 >
                                     <span className="text-xs font-bold whitespace-nowrap">{status}</span>
-                                    <span className={`text-xl font-black ${selectedOverviewStatus === status ? "text-sono-primary" : "text-sono-dark"}`}>
+                                    <span className={`text-xl font-black ${selectedOverviewStatus === status ? "text-sono-primary" : getStatusColor(status)}`}>
                                         {statusCounts[status] || 0}
                                     </span>
                                 </button>

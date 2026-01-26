@@ -12,6 +12,31 @@ interface CustomerDetailModalProps {
 }
 
 export default function CustomerDetailModal({ application, onClose, onUpdate, isAdmin = false, partnerLoginId }: CustomerDetailModalProps) {
+    const getStatusStyles = (status: string) => {
+        switch (status) {
+            case '접수':
+                return 'bg-blue-50 text-blue-600 border border-blue-100';
+            case '상담중':
+                return 'bg-amber-50 text-amber-600 border border-amber-100';
+            case '부재':
+                return 'bg-gray-50 text-gray-500 border border-gray-100';
+            case '거부':
+                return 'bg-red-50 text-red-600 border border-red-100';
+            case '접수취소':
+                return 'bg-rose-50 text-rose-600 border border-rose-100';
+            case '계약완료':
+                return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
+            case '1회출금완료':
+                return 'bg-teal-50 text-teal-600 border border-teal-100';
+            case '배송완료':
+                return 'bg-indigo-50 text-indigo-600 border border-indigo-100';
+            case '정산완료':
+                return 'bg-purple-50 text-purple-600 border border-purple-100';
+            default:
+                return 'bg-gray-50 text-gray-400 border border-gray-200';
+        }
+    };
+
     const [status, setStatus] = useState<ApplicationStatus>(application.status);
     const [memo, setMemo] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -89,9 +114,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             </div>
                         ) : (
                             <div className="flex items-center">
-                                <span className={`px-3 py-1.5 rounded-lg text-sm font-bold ${application.status === '계약완료' ? 'bg-green-100 text-green-700' :
-                                    application.status === '접수' ? 'bg-blue-100 text-blue-700' : 'bg-white border border-gray-200 text-gray-600'
-                                    }`}>
+                                <span className={`px-3 py-1.5 rounded-lg text-sm font-bold ${getStatusStyles(application.status)}`}>
                                     {application.status}
                                 </span>
                             </div>
