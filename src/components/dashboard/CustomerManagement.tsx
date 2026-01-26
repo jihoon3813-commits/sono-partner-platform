@@ -32,6 +32,10 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                 return 'bg-indigo-50 text-indigo-600 border border-indigo-100';
             case '정산완료':
                 return 'bg-purple-50 text-purple-600 border border-purple-100';
+            case '청약철회':
+                return 'bg-pink-50 text-pink-600 border border-pink-100';
+            case '해약완료':
+                return 'bg-stone-50 text-stone-600 border border-stone-100';
             default:
                 return 'bg-gray-50 text-gray-400 border border-gray-200';
         }
@@ -52,7 +56,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         }
     }, [initialStatusFilter]);
 
-    const statusOptions = ['전체', '접수', '상담중', '부재', '거부', '접수취소', '계약완료', '1회출금완료', '배송완료', '정산완료'];
+    const statusOptions = ['전체', '접수', '상담중', '부재', '거부', '접수취소', '계약완료', '1회출금완료', '배송완료', '정산완료', '청약철회', '해약완료'];
     const dateOptions = [
         { label: '전체', value: 'all' },
         { label: '당월', value: 'month' },

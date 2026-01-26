@@ -74,7 +74,9 @@ export type ApplicationStatus =
     | '계약완료'
     | '1회출금완료'
     | '배송완료'
-    | '정산완료';
+    | '정산완료'
+    | '청약철회'
+    | '해약완료';
 
 // 상태 변경 이력
 export interface StatusHistory {

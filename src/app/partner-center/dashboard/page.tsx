@@ -76,7 +76,7 @@ export default function PartnerDashboard() {
         return acc;
     }, {});
 
-    const statusList = ['접수', '상담중', '부재', '거부', '접수취소', '계약완료', '1회출금완료', '배송완료', '정산완료'];
+    const statusList = ['접수', '상담중', '부재', '거부', '접수취소', '계약완료', '1회출금완료', '배송완료', '정산완료', '청약철회', '해약완료'];
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -89,6 +89,8 @@ export default function PartnerDashboard() {
             case '1회출금완료': return 'text-teal-500';
             case '배송완료': return 'text-indigo-500';
             case '정산완료': return 'text-purple-500';
+            case '청약철회': return 'text-pink-500';
+            case '해약완료': return 'text-stone-500';
             default: return 'text-gray-400';
         }
     };
