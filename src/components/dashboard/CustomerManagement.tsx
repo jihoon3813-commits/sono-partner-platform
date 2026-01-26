@@ -126,9 +126,68 @@ export default function CustomerManagement({ applications, onRefresh, partners =
             ) : (
                 <div className="bg-white p-6 rounded-2xl shadow-sm space-y-6">
                     <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-                        <div>
-                            <h2 className="text-xl font-bold text-sono-dark">고객 상담 내역</h2>
-                            <p className="text-sm text-gray-500 mt-1 whitespace-nowrap">총 {filteredApplications.length}건의 신청 내역이 있습니다.</p>
+                        <div className="flex items-center gap-4">
+                            <div>
+                                <h2 className="text-xl font-bold text-sono-dark">고객 상담 내역</h2>
+                                <p className="text-sm text-gray-500 mt-1 whitespace-nowrap">총 {filteredApplications.length}건의 신청 내역이 있습니다.</p>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    if (filteredApplications.length === 0) {
+                                        alert("다운로드할 데이터가 없습니다.");
+                                        return;
+                                    }
+
+                                    const headers = [
+                                        "No.", "신청번호", "신청일시", "파트너사", "파트너ID", "고객명", "연락처",
+                                        "상품명", "결합제품(가전)", "신청구좌", "주소", "우편번호", "생년월일",
+                                        "성별", "이메일", "회원번호", "선호시간", "문의사항", "상태"
+                                    ];
+
+                                    const rows = filteredApplications.map((app, index) => [
+                                        filteredApplications.length - index,
+                                        app.applicationNo,
+                                        new Date(app.createdAt).toLocaleString(),
+                                        app.partnerName,
+                                        getPartnerLoginId(app.partnerId),
+                                        app.customerName,
+                                        app.customerPhone,
+                                        app.productType,
+                                        app.products || "-",
+                                        app.planType,
+                                        app.customerAddress,
+                                        app.customerZipcode,
+                                        app.customerBirth || "-",
+                                        app.customerGender || "-",
+                                        app.customerEmail || "-",
+                                        app.partnerMemberId || "-",
+                                        app.preferredContactTime || "-",
+                                        app.inquiry?.replace(/\n/g, " ") || "-",
+                                        app.status
+                                    ]);
+
+                                    const csvContent = [
+                                        headers.join(","),
+                                        ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+                                    ].join("\n");
+
+                                    const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
+                                    const link = document.createElement("a");
+                                    const url = URL.createObjectURL(blob);
+                                    link.setAttribute("href", url);
+                                    link.setAttribute("download", `고객상담내역_${new Date().toISOString().slice(0, 10)}.csv`);
+                                    link.style.visibility = "hidden";
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                }}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-sono-primary text-white rounded-xl text-xs font-bold hover:bg-sono-dark transition-all shadow-sm"
+                            >
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                엑셀 다운로드
+                            </button>
                         </div>
                         <div className="relative w-full md:w-64">
                             <input
