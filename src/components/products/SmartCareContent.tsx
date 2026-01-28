@@ -219,10 +219,10 @@ export default function SmartCareContent({
 
                         <div className="grid md:grid-cols-4 gap-6">
                             {[
-                                { unit: "2", price: "36,000", target: "1인 가구 / 소형 가전" },
-                                { unit: "3", price: "54,000", target: "신혼 부부 / 중형 가전" },
-                                { unit: "4", price: "72,000", target: "일반 가정 / 대형 가전", best: true },
-                                { unit: "6", price: "108,000", target: "대가족 / 프리미엄 풀세트" },
+                                { unit: "2", price: "33,000", target: "1인 가구 / 소형 가전" },
+                                { unit: "3", price: "49,500", target: "신혼 부부 / 중형 가전" },
+                                { unit: "4", price: "66,000", target: "일반 가정 / 대형 가전", best: true },
+                                { unit: "6", price: "99,000", target: "대가족 / 프리미엄 풀세트" },
                             ].map((plan, i) => (
                                 <div key={i} className={`p-5 md:p-10 rounded-[32px] border transition-all ${plan.best ? "bg-sono-primary border-sono-primary shadow-2xl md:scale-105" : "bg-white/5 border-white/10 hover:bg-white/10"}`}>
                                     {plan.best && <span className="bg-white text-sono-primary text-[10px] font-black px-3 py-1 rounded-full mb-3 md:mb-6 inline-block">BEST CHOICE</span>}
