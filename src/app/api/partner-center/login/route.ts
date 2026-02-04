@@ -14,7 +14,9 @@ export async function POST(request: Request) {
         }
 
         // 1. 파트너 계정 확인
+        console.log(`[Partner Login Attempt] LoginID: ${loginId}`);
         const partner = await validatePartnerCredentials(loginId, password);
+        console.log(`[Partner Login Result] Found: ${!!partner}`);
 
         if (partner) {
             const partnerSession = {

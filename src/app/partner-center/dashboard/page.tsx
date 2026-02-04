@@ -6,53 +6,62 @@ import Link from "next/link";
 import PartnerManagement from "@/components/dashboard/PartnerManagement";
 import CustomerManagement from "@/components/dashboard/CustomerManagement";
 import PartnerRequests from "@/components/dashboard/PartnerRequests";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 
 type Tab = "overview" | "partners" | "customers" | "requests";
 
 export default function PartnerDashboard() {
     const router = useRouter();
     const [partner, setPartner] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<Tab>("overview");
     const [copySuccess, setCopySuccess] = useState(false);
     const [baseUrl, setBaseUrl] = useState("");
-    const [dashboardData, setDashboardData] = useState({
-        isAdmin: false,
-        partners: [],
-        customers: [],
-        pendingRequests: []
-    });
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
 
-    const fetchData = useCallback(async (partnerId: string) => {
-        try {
-            const response = await fetch(`/api/partner-center/dashboard-data?partnerId=${partnerId}`);
-            const data = await response.json();
-            if (data.success) {
-                setDashboardData({
-                    isAdmin: data.isAdmin,
-                    partners: data.partners || [],
-                    customers: data.customers || [],
-                    pendingRequests: data.pendingRequests || []
-                });
-            }
-        } catch (error) {
-            console.error("Failed to fetch dashboard data:", error);
-        }
-    }, []);
-
+    // 세션 로드 (컴포넌트 마운트 시 한 번만 실행)
     useEffect(() => {
         const session = localStorage.getItem("partnerSession");
         if (!session) {
             router.push("/partner-center");
             return;
         }
-        const partnerInfo = JSON.parse(session);
-        setPartner(partnerInfo);
-        setBaseUrl(window.location.origin);
-        fetchData(partnerInfo.partnerId);
-        setIsLoading(false);
-    }, [router, fetchData]);
+        try {
+            if (session === "undefined" || session === "null") {
+                localStorage.removeItem("partnerSession");
+                router.push("/partner-center");
+                return;
+            }
+            const partnerInfo = JSON.parse(session);
+            setPartner(partnerInfo);
+            setBaseUrl(window.location.origin);
+        } catch (e) {
+            console.error("Session parse error:", e);
+            localStorage.removeItem("partnerSession");
+            router.push("/partner-center");
+        }
+    }, [router]);
+
+    // Convex 실시간 데이터 쿼리 연결
+    const realTimeData = useQuery(api.dashboard.getDashboardData,
+        partner ? { partnerId: partner.partnerId } : "skip" as any
+    );
+
+    // 구버전 코드와 호환성을 위한 데이터 매핑 및 방어 코드
+    const dashboardData = {
+        isAdmin: realTimeData?.isAdmin || false,
+        partners: realTimeData?.partners || [],
+        customers: realTimeData?.customers || [],
+        pendingRequests: realTimeData?.pendingRequests || []
+    };
+
+    const isLoading = !realTimeData || !partner;
+
+    const fetchData = useCallback(() => {
+        // useQuery를 사용하므로 더 이상 수동 fetch는 필요 없으나, 
+        // 기존 버튼 이벤트를 위해 빈 함수로 둡니다.
+        console.log("Data is automatically synced in real-time by Convex.");
+    }, []);
 
     const handleCopyUrl = () => {
         if (!partner?.customUrl || partner.customUrl === "admin") return;
@@ -69,8 +78,8 @@ export default function PartnerDashboard() {
 
     const isAdmin = dashboardData.isAdmin;
 
-    // Calculate Status Counts
-    const statusCounts = dashboardData.customers.reduce((acc: Record<string, number>, curr: any) => {
+    // Calculate Status Counts (dashboardData.customers가 항상 배열임을 보장)
+    const statusCounts = (dashboardData.customers || []).reduce((acc: Record<string, number>, curr: any) => {
         const status = curr.status || "접수";
         acc[status] = (acc[status] || 0) + 1;
         return acc;
@@ -114,7 +123,7 @@ export default function PartnerDashboard() {
                             {/* Mobile Actions (Refresh & Logout) */}
                             <div className="flex items-center gap-2 md:hidden">
                                 <button
-                                    onClick={() => fetchData(partner.partnerId)}
+                                    onClick={() => fetchData()}
                                     className="p-1.5 bg-sono-primary/10 text-sono-primary rounded-lg border border-sono-primary/20"
                                     title="새로고침"
                                 >
@@ -142,7 +151,7 @@ export default function PartnerDashboard() {
                                     key={tab.id}
                                     onClick={() => {
                                         setActiveTab(tab.id as Tab);
-                                        fetchData(partner.partnerId);
+                                        fetchData();
                                     }}
                                     className={`px-3 md:px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === tab.id
                                         ? "bg-white text-sono-primary shadow-sm"
@@ -162,7 +171,7 @@ export default function PartnerDashboard() {
 
                     <div className="hidden md:flex items-center gap-4">
                         <button
-                            onClick={() => fetchData(partner.partnerId)}
+                            onClick={() => fetchData()}
                             className="flex items-center gap-2 px-3 py-1.5 bg-sono-primary/10 text-sono-primary rounded-xl border border-sono-primary/20 hover:bg-sono-primary hover:text-white transition-all text-xs font-bold"
                         >
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -250,9 +259,9 @@ export default function PartnerDashboard() {
                         {/* Filtered Customer List */}
                         <div className="bg-white p-6 md:p-8 rounded-[32px] shadow-sm border border-gray-100">
                             <CustomerManagement
-                                applications={dashboardData.customers}
-                                onRefresh={() => fetchData(partner.partnerId)}
-                                partners={dashboardData.partners}
+                                applications={dashboardData.customers as any}
+                                onRefresh={() => fetchData()}
+                                partners={dashboardData.partners as any}
                                 isAdmin={isAdmin}
                                 initialStatusFilter={selectedOverviewStatus}
                                 isWidget={true}
@@ -262,20 +271,20 @@ export default function PartnerDashboard() {
                 )}
 
                 {activeTab === "partners" && (
-                    <PartnerManagement partners={dashboardData.partners} isAdmin={isAdmin} onRefresh={() => fetchData(partner.partnerId)} />
+                    <PartnerManagement partners={dashboardData.partners as any} isAdmin={isAdmin} onRefresh={() => fetchData()} />
                 )}
 
                 {activeTab === "customers" && (
                     <CustomerManagement
-                        applications={dashboardData.customers}
-                        onRefresh={() => fetchData(partner.partnerId)}
-                        partners={dashboardData.partners}
+                        applications={dashboardData.customers as any}
+                        onRefresh={() => fetchData()}
+                        partners={dashboardData.partners as any}
                         isAdmin={isAdmin}
                     />
                 )}
 
                 {activeTab === "requests" && isAdmin && (
-                    <PartnerRequests requests={dashboardData.pendingRequests} onRefresh={() => fetchData(partner.partnerId)} />
+                    <PartnerRequests requests={dashboardData.pendingRequests as any} onRefresh={() => fetchData()} />
                 )}
 
                 <div className="mt-12 text-center pb-12">

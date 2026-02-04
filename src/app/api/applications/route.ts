@@ -3,7 +3,9 @@ import {
     createApplication,
     getAllApplications,
     getApplicationsByPartnerId,
-    getPartnerById
+    getPartnerById,
+    getPartnerByLoginId,
+    getPartnerByCustomUrl
 } from '@/lib/db';
 
 // 고객 신청 생성
@@ -38,8 +40,15 @@ export async function POST(request: Request) {
             );
         }
 
-        // 파트너 확인
+        // 파트너 확인 (ID 또는 커스텀 URL로 검색)
         let partner = await getPartnerById(partnerId);
+        if (!partner) {
+            // partnerId라는 이름으로 넘어왔지만 사실상 customUrl(예: lifenjoy)인 경우 대비
+            partner = await getPartnerByLoginId(partnerId);
+            if (!partner) {
+                partner = await getPartnerByCustomUrl(partnerId);
+            }
+        }
 
         // 데모 계정 예외 처리 (DB에 없을 경우)
         if (!partner && partnerId.startsWith('P-DEMO')) {
@@ -52,17 +61,18 @@ export async function POST(request: Request) {
         }
 
         if (!partner || partner.status !== 'active') {
+            console.error('[API] Partner not found or inactive for ID:', partnerId);
             return NextResponse.json(
                 { success: false, message: '유효하지 않은 파트너입니다.' },
                 { status: 400 }
             );
         }
 
-        // DB 저장을 위한 파트너 ID (로그인 아이디 우선 사용)
-        const dbPartnerId = partner.loginId || partnerId;
+        // DB 저장을 위한 실제 파트너 ID 사용
+        const dbPartnerId = partner.partnerId;
 
         // 신청 데이터 생성
-        const application = await createApplication({
+        const appData = {
             partnerId: dbPartnerId,
             partnerName: partnerName || partner.companyName || '-',
             productType,
@@ -80,7 +90,10 @@ export async function POST(request: Request) {
             inquiry: inquiry || '',
             status: '접수',
             assignedTo: '',
-        });
+        };
+        console.log('[API] Creating application with data:', JSON.stringify(appData, null, 2));
+
+        const application = await createApplication(appData as any);
 
         // TODO: SMS 발송, 이메일 발송
 

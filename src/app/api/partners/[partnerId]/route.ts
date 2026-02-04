@@ -8,8 +8,10 @@ export async function GET(
 ) {
     try {
         const { partnerId } = await params;
+        console.log(`[API] Fetching public partner data for: ${partnerId}`);
 
         const partner = await getPartnerByCustomUrl(partnerId);
+        console.log(`[API] Partner search result: ${partner ? 'Found' : 'Not Found'}`);
 
         if (!partner || partner.status !== 'active') {
             return NextResponse.json(

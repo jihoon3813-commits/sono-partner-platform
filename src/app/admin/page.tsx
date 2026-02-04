@@ -21,8 +21,8 @@ export default function AdminLoginPage() {
         setIsLoading(true);
 
         try {
-            // 로컬 로그인 API 호출 (어드민/파트너 통합)
-            const response = await fetch("/api/partner-center/login", {
+            // 관리자 로그인 API 호출
+            const response = await fetch("/api/admin/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),

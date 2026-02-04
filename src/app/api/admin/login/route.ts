@@ -4,16 +4,21 @@ import { validateAdminCredentials } from '@/lib/db';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { email, password } = body;
+        // 프론트엔드는 loginId로 보내지만, 기존 로직은 email을 기대함
+        // 두 필드 모두 지원하도록 변경
+        const loginId = body.loginId || body.email;
+        const password = body.password;
 
-        if (!email || !password) {
+        if (!loginId || !password) {
             return NextResponse.json(
-                { success: false, message: '이메일과 비밀번호를 입력해주세요.' },
+                { success: false, message: '아이디(또는 이메일)와 비밀번호를 입력해주세요.' },
                 { status: 400 }
             );
         }
 
-        const result = await validateAdminCredentials(email, password);
+        console.log(`[Admin Login Attempt] LoginID: ${loginId}`);
+        const result = await validateAdminCredentials(loginId, password);
+        console.log(`[Admin Login Result] Valid: ${result.valid}, Role: ${result.role}`);
 
         if (!result.valid) {
             return NextResponse.json(
@@ -22,16 +27,20 @@ export async function POST(request: Request) {
             );
         }
 
-        // 세션에 저장할 관리자 정보
+        // 세션에 저장할 관리자 정보 (대시보드와 호환되도록 partner 키 사용 및 관련 필드 구성)
         const adminSession = {
-            email,
+            partnerId: result.adminId || "admin",
+            name: result.adminName || "관리자",
+            email: result.adminId || loginId,
             role: result.role,
+            level: 'admin',
+            customUrl: 'admin',
             loginAt: new Date().toISOString(),
         };
 
         return NextResponse.json({
             success: true,
-            admin: adminSession,
+            partner: adminSession,
         });
     } catch (error) {
         console.error('Admin login error:', error);

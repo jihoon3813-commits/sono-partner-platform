@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 
 export const metadata: Metadata = {
     title: "소노아임레디 제휴 파트너 플랫폼",
@@ -23,6 +24,8 @@ export const metadata: Metadata = {
     },
 };
 
+
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -31,7 +34,9 @@ export default function RootLayout({
     return (
         <html lang="ko">
             <body className="antialiased min-h-screen bg-sono-light">
-                {children}
+                <ConvexClientProvider>
+                    {children}
+                </ConvexClientProvider>
             </body>
         </html>
     );
