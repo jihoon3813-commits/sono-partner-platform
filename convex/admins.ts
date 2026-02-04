@@ -1,5 +1,15 @@
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+
+export const getAdminByEmail = query({
+    args: { email: v.string() },
+    handler: async (ctx, args) => {
+        return await ctx.db
+            .query("admins")
+            .withIndex("by_email", (q) => q.eq("email", args.email))
+            .first();
+    },
+});
 
 export const validateAdminCredentials = mutation({
     args: {
@@ -51,7 +61,11 @@ export const createAdmin = mutation({
         if (existing) return;
 
         await ctx.db.insert("admins", {
-            ...args,
+            adminId: args.adminId,
+            email: args.email,
+            password: args.password,
+            adminName: args.adminName,
+            role: args.role,
         });
     }
 });

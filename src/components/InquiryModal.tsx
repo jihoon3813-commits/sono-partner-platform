@@ -1,6 +1,6 @@
-"use client";
-
 import { useState, useEffect, useRef } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 declare global {
     interface Window {
@@ -43,12 +43,11 @@ export default function InquiryModal({
     initialAppliance = "",
     initialUnit = "4"
 }: InquiryModalProps) {
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwQkuIm7ERScHFZMUrn4bqw81hhr3oE2Zw9MNGXmkldCTGh16Ho5-WdzVXwZHJC8b_b/exec";
+    // Convex 실시간 제품 정보 쿼리
+    const productsData = useQuery(api.products.getAllProducts);
 
-    const [allAppliances, setAllAppliances] = useState<any[]>([]);
     const [selectedUnit, setSelectedUnit] = useState<string>(initialUnit);
     const [selectedAppliance, setSelectedAppliance] = useState<string>(initialAppliance || "상담 시 결정");
-    const [isLoadingAppliances, setIsLoadingAppliances] = useState(false);
 
     const productListRef = useRef<HTMLDivElement>(null);
 
@@ -59,21 +58,8 @@ export default function InquiryModal({
         }
     }, [isOpen, initialUnit, initialAppliance]);
 
-    useEffect(() => {
-        async function fetchProducts() {
-            try {
-                setIsLoadingAppliances(true);
-                const response = await fetch(`${GAS_URL}?action=getProducts`);
-                const data = await response.json();
-                setAllAppliances(data);
-            } catch (error) {
-                console.error("Failed to fetch products:", error);
-            } finally {
-                setIsLoadingAppliances(false);
-            }
-        }
-        if (isOpen) fetchProducts();
-    }, [isOpen]);
+    const allAppliances = productsData || [];
+    const isLoadingAppliances = productsData === undefined;
 
     const [formData, setFormData] = useState({
         name: "",

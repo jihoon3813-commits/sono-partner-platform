@@ -30,6 +30,7 @@ export const getApplicationByNo = query({
 
 export const createApplication = mutation({
     args: {
+        applicationNo: v.optional(v.string()), // 명시적으로 번호를 줄 경우 사용
         partnerId: v.string(),
         partnerName: v.string(),
         productType: v.string(),
@@ -52,7 +53,8 @@ export const createApplication = mutation({
         console.log(`[Convex] createApplication called with: ${JSON.stringify(args)}`);
         const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
         const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-        const applicationNo = `SA-${dateStr}-${random}`;
+        const generatedNo = `SA-${dateStr}-${random}`;
+        const applicationNo = args.applicationNo || generatedNo;
         const now = new Date().toISOString();
 
         // Extract status and assignedTo from args or use defaults

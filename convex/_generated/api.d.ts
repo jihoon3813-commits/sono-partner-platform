@@ -12,6 +12,7 @@ import type * as admins from "../admins.js";
 import type * as applications from "../applications.js";
 import type * as dashboard from "../dashboard.js";
 import type * as partners from "../partners.js";
+import type * as products from "../products.js";
 import type * as requests from "../requests.js";
 
 import type {
@@ -25,6 +26,7 @@ declare const fullApi: ApiFromModules<{
   applications: typeof applications;
   dashboard: typeof dashboard;
   partners: typeof partners;
+  products: typeof products;
   requests: typeof requests;
 }>;
 

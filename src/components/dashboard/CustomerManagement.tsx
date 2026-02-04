@@ -46,6 +46,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
 
     // Filters
     const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter);
+    const [productFilter, setProductFilter] = useState<string>("all");
     const [dateFilter, setDateFilter] = useState<string>("all");
     const [customStartDate, setCustomStartDate] = useState("");
     const [customEndDate, setCustomEndDate] = useState("");
@@ -57,6 +58,10 @@ export default function CustomerManagement({ applications, onRefresh, partners =
     }, [initialStatusFilter]);
 
     const statusOptions = ['전체', '접수', '상담중', '부재', '거부', '접수취소', '계약완료', '1회출금완료', '배송완료', '정산완료', '청약철회', '해약완료'];
+
+    // 상품 종류 추출 (전체 고객 데이터 기반)
+    const productOptions = ['전체', ...Array.from(new Set(applications.map(app => app.productType).filter(Boolean)))];
+
     const dateOptions = [
         { label: '전체', value: 'all' },
         { label: '당월', value: 'month' },
@@ -91,6 +96,9 @@ export default function CustomerManagement({ applications, onRefresh, partners =
 
         // Status Filter
         if (statusFilter !== 'all' && statusFilter !== '전체' && app.status !== statusFilter) return false;
+
+        // Product Filter
+        if (productFilter !== 'all' && productFilter !== '전체' && app.productType !== productFilter) return false;
 
         // Date Filter
         if (dateFilter !== 'all') {
@@ -226,6 +234,22 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                 ))}
                             </div>
 
+                            <div className="flex flex-wrap gap-2 items-center border-b border-gray-100 pb-4">
+                                <span className="text-xs font-bold text-gray-400 mr-2">상품</span>
+                                {productOptions.map((opt) => (
+                                    <button
+                                        key={opt}
+                                        onClick={() => setProductFilter(opt === '전체' ? 'all' : opt)}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${((productFilter === 'all' && opt === '전체') || productFilter === opt)
+                                            ? "bg-indigo-600 text-white"
+                                            : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                                            }`}
+                                    >
+                                        {opt}
+                                    </button>
+                                ))}
+                            </div>
+
                             <div className="flex flex-wrap gap-2 items-center overflow-x-auto pb-2">
                                 <span className="text-xs font-bold text-gray-400 mr-2 flex-shrink-0">상태</span>
                                 {statusOptions.map((opt) => (
@@ -244,16 +268,28 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                         </div>
 
                         {/* Mobile Filters */}
-                        <div className="md:hidden grid grid-cols-2 gap-3 pb-4 border-b border-gray-100">
+                        <div className="md:hidden grid grid-cols-3 gap-2 pb-4 border-b border-gray-100">
                             <div>
                                 <label className="text-[10px] font-bold text-gray-400 mb-1 block">기간</label>
                                 <select
                                     value={dateFilter}
                                     onChange={(e) => setDateFilter(e.target.value)}
-                                    className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-xl px-3 py-2 outline-none font-bold"
+                                    className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-[11px] rounded-xl px-2 py-2 outline-none font-bold"
                                 >
                                     {dateOptions.map((opt) => (
                                         <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold text-gray-400 mb-1 block">상품</label>
+                                <select
+                                    value={productFilter === 'all' ? '전체' : productFilter}
+                                    onChange={(e) => setProductFilter(e.target.value === '전체' ? 'all' : e.target.value)}
+                                    className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-[11px] rounded-xl px-2 py-2 outline-none font-bold"
+                                >
+                                    {productOptions.map((opt) => (
+                                        <option key={opt} value={opt}>{opt}</option>
                                     ))}
                                 </select>
                             </div>
@@ -262,7 +298,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                 <select
                                     value={statusFilter === 'all' ? '전체' : statusFilter}
                                     onChange={(e) => setStatusFilter(e.target.value === '전체' ? 'all' : e.target.value)}
-                                    className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-xl px-3 py-2 outline-none font-bold"
+                                    className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-[11px] rounded-xl px-2 py-2 outline-none font-bold"
                                 >
                                     {statusOptions.map((opt) => (
                                         <option key={opt} value={opt}>{opt}</option>

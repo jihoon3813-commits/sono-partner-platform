@@ -120,7 +120,7 @@ export default function PartnerDashboard() {
                                 <span className="font-bold text-lg tracking-tight text-sono-dark">PARTNER</span>
                             </a>
 
-                            {/* Mobile Actions (Refresh & Logout) */}
+                            {/* Mobile Actions (Refresh & Home & Logout) */}
                             <div className="flex items-center gap-2 md:hidden">
                                 <button
                                     onClick={() => fetchData()}
@@ -131,6 +131,16 @@ export default function PartnerDashboard() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                     </svg>
                                 </button>
+                                <Link
+                                    href="/"
+                                    target="_blank"
+                                    className="p-1.5 bg-gray-100 text-gray-500 rounded-lg border border-gray-200"
+                                    title="홈페이지 바로가기"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    </svg>
+                                </Link>
                                 <button
                                     onClick={() => { localStorage.removeItem("partnerSession"); router.push("/partner-center"); }}
                                     className="bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap"
@@ -170,27 +180,36 @@ export default function PartnerDashboard() {
                     </div>
 
                     <div className="hidden md:flex items-center gap-4">
+                        <Link
+                            href="/"
+                            target="_blank"
+                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-all shadow-sm"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            홈페이지
+                        </Link>
                         <button
                             onClick={() => fetchData()}
-                            className="flex items-center gap-2 px-3 py-1.5 bg-sono-primary/10 text-sono-primary rounded-xl border border-sono-primary/20 hover:bg-sono-primary hover:text-white transition-all text-xs font-bold"
+                            className="p-2.5 bg-sono-primary/10 text-sono-primary rounded-xl border border-sono-primary/20 hover:bg-sono-primary/20 transition-all"
+                            title="새로고침"
                         >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
-                            새로고침
                         </button>
-                        <div className="flex items-center gap-2 px-3 py-1 bg-green-50 rounded-full border border-green-100">
-                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                            <span className="text-xs font-bold text-green-700">정상 작동 중</span>
-                        </div>
-                        <div className="w-px h-8 bg-gray-100 mx-1"></div>
-                        <div className="text-right mr-2">
-                            <div className="text-sm font-bold text-sono-dark">{partner.name}</div>
-                            <div className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">{isAdmin ? "System Admin" : "Partner"}</div>
+                        <div className="h-8 w-px bg-gray-200 mx-2"></div>
+                        <div className="text-right">
+                            <p className="text-xs font-bold text-gray-400">안녕하세요</p>
+                            <p className="text-sm font-black text-sono-dark">{partner.name} 님</p>
                         </div>
                         <button
-                            onClick={() => { localStorage.removeItem("partnerSession"); router.push("/partner-center"); }}
-                            className="bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-sono-dark px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap"
+                            onClick={() => {
+                                localStorage.removeItem("partnerSession");
+                                router.push("/partner-center");
+                            }}
+                            className="bg-gray-100 text-gray-500 px-4 py-2 rounded-xl text-sm font-black hover:bg-gray-200 transition-all"
                         >
                             로그아웃
                         </button>

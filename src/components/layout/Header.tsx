@@ -79,7 +79,7 @@ export default function Header({
                             </button>
                         ) : (
                             <>
-                                <Link href="/partner-center" className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold text-sm px-4 cursor-pointer`}>
+                                <Link href="/partner-center" target="_blank" className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold text-sm px-4 cursor-pointer`}>
                                     파트너센터
                                 </Link>
                                 <Link
@@ -130,6 +130,7 @@ export default function Header({
                                     <div className="grid grid-cols-2 gap-4 mt-6">
                                         <Link
                                             href="/partner-center"
+                                            target="_blank"
                                             className="btn-outline text-center py-4"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
