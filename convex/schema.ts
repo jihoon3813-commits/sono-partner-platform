@@ -127,6 +127,11 @@ export default defineSchema({
         managerDepartment: v.optional(v.string()),
         managerPhone: v.string(),
         managerEmail: v.string(),
+        // Mall Info (Requested)
+        loginId: v.optional(v.string()),
+        loginPassword: v.optional(v.string()),
+        customUrl: v.optional(v.string()), // Subdomain
+
         shopType: v.string(),
         shopUrl: v.optional(v.string()),
         monthlyVisitors: v.optional(v.string()),

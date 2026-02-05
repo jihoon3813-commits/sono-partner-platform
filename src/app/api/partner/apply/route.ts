@@ -16,6 +16,11 @@ export async function POST(request: Request) {
             managerDepartment,
             managerPhone,
             managerEmail,
+            // New Fields
+            loginId,
+            loginPassword,
+            customUrl,
+
             shopType,
             shopUrl,
             monthlyVisitors,
@@ -26,8 +31,9 @@ export async function POST(request: Request) {
             additionalRequest,
         } = body;
 
-        // 필수 필드 검증
-        if (!companyName || !businessNumber || !ceoName || !managerName || !managerPhone || !managerEmail || !shopType) {
+        // 필수 필드 검증 (Removed strict check for new fields to keep them optional if user wants, 
+        // but UI will enforce them. Let's enforce them here too if they are "required" in UI.)
+        if (!companyName || !businessNumber || !ceoName || !managerName || !managerPhone || !managerEmail || !shopType || !loginId || !loginPassword || !customUrl) {
             return NextResponse.json(
                 { success: false, message: '필수 정보가 누락되었습니다.' },
                 { status: 400 }
@@ -45,6 +51,11 @@ export async function POST(request: Request) {
             managerDepartment: managerDepartment || '',
             managerPhone,
             managerEmail,
+            // New Fields
+            loginId,
+            loginPassword,
+            customUrl,
+
             shopType,
             shopUrl: shopUrl || '',
             monthlyVisitors: monthlyVisitors || '',
