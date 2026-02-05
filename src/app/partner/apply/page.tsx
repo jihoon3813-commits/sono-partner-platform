@@ -554,7 +554,61 @@ export default function PartnerApplyPage() {
                                     <span className="w-10 h-10 rounded-[14px] bg-sono-primary/10 text-sono-primary flex items-center justify-center text-lg">4</span>
                                     쇼핑몰 정보
                                 </h2>
-                                {/* ... content ... */}
+                                <div className="grid md:grid-cols-2 gap-x-8 gap-y-8">
+                                    <div className="md:col-span-2">
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">
+                                            쇼핑몰 유형 <span className="text-sono-primary">*</span>
+                                        </label>
+                                        <select
+                                            name="shopType"
+                                            value={formData.shopType}
+                                            onChange={handleChange}
+                                            className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4"
+                                            required
+                                        >
+                                            <option value="">선택해주세요</option>
+                                            <option value="폐쇄형회원제">폐쇄형 회원제 쇼핑몰</option>
+                                            <option value="기업복지몰">기업 복지몰</option>
+                                            <option value="임직원몰">임직원 전용몰</option>
+                                            <option value="기타">기타</option>
+                                        </select>
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">쇼핑몰 URL</label>
+                                        <input
+                                            type="url"
+                                            name="shopUrl"
+                                            value={formData.shopUrl}
+                                            onChange={handleChange}
+                                            className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4"
+                                            placeholder="https://www.example.com"
+                                        />
+                                    </div>
+                                    <div className="md:col-span-1">
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">월 평균 방문자 수</label>
+                                        <input
+                                            type="text"
+                                            name="monthlyVisitors"
+                                            value={formData.monthlyVisitors}
+                                            onChange={handleChange}
+                                            inputMode="numeric"
+                                            className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4"
+                                            placeholder="약 10,000명"
+                                        />
+                                    </div>
+                                    <div className="md:col-span-1">
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">회원 수</label>
+                                        <input
+                                            type="text"
+                                            name="memberCount"
+                                            value={formData.memberCount}
+                                            onChange={handleChange}
+                                            inputMode="numeric"
+                                            className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4"
+                                            placeholder="약 50,000명"
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
                             {/* 제휴 계획 */}
@@ -563,7 +617,41 @@ export default function PartnerApplyPage() {
                                     <span className="w-10 h-10 rounded-[14px] bg-sono-primary/10 text-sono-primary flex items-center justify-center text-lg">5</span>
                                     제휴 계획
                                 </h2>
-                                {/* ... content ... */}
+                                <div className="grid md:grid-cols-2 gap-x-8 gap-y-8">
+                                    <div className="md:col-span-1">
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">예상 월 판매 건수</label>
+                                        <input
+                                            type="text"
+                                            name="expectedMonthlySales"
+                                            value={formData.expectedMonthlySales}
+                                            onChange={handleChange}
+                                            inputMode="numeric"
+                                            className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4"
+                                            placeholder="약 10건"
+                                        />
+                                    </div>
+                                    <div className="md:col-span-1">
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">제공 가능한 포인트 비율</label>
+                                        <input
+                                            type="text"
+                                            name="pointRate"
+                                            value={formData.pointRate}
+                                            onChange={handleChange}
+                                            className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4"
+                                            placeholder="계약금의 5% 등"
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">추가 요청사항</label>
+                                        <textarea
+                                            name="additionalRequest"
+                                            value={formData.additionalRequest}
+                                            onChange={handleChange}
+                                            className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 min-h-[160px]"
+                                            placeholder="제휴에 관한 추가 요청사항이나 문의사항을 적어주세요."
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
                             {/* 동의 및 제출 */}
