@@ -726,7 +726,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                     </button>
 
                                     {allAppliances
-                                        .filter(item => item.tag.includes(`${smartCareUnit}구좌`))
+                                        .filter(item => item.tag && item.tag.includes(`${smartCareUnit}구좌`))
                                         .map((item, idx) => (
                                             <button
                                                 key={idx}
