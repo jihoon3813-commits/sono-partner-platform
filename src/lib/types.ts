@@ -168,6 +168,11 @@ export interface PartnerApplyFormData {
     managerDepartment: string;
     managerPhone: string;
     managerEmail: string;
+    // Mall Info
+    loginId?: string;
+    loginPassword?: string;
+    customUrl?: string;
+
     shopType: string;
     shopUrl: string;
     monthlyVisitors: string;

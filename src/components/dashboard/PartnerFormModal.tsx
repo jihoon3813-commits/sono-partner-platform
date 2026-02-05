@@ -107,6 +107,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
         }));
         setSearchTerm("");
         setSearchResults([]);
+        setIsSearching(false); // Ensure search state is reset
     };
 
     const clearParent = () => {
