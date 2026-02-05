@@ -5,9 +5,10 @@ import { PartnerRequest } from "@/lib/types";
 interface PartnerRequestsProps {
     requests: PartnerRequest[];
     onRefresh: () => void;
+    onSelectRequest?: (req: PartnerRequest) => void;
 }
 
-export default function PartnerRequests({ requests, onRefresh }: PartnerRequestsProps) {
+export default function PartnerRequests({ requests, onRefresh, onSelectRequest }: PartnerRequestsProps) {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm">
@@ -56,7 +57,10 @@ export default function PartnerRequests({ requests, onRefresh }: PartnerRequests
                                             <div className="text-sm text-gray-500">{req.shopType}</div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <button className="bg-sono-dark text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-black transition-all">
+                                            <button
+                                                onClick={() => onSelectRequest?.(req)}
+                                                className="bg-sono-dark text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-black transition-all"
+                                            >
                                                 검토/승인
                                             </button>
                                         </td>

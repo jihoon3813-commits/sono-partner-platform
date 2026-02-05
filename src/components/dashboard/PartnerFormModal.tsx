@@ -5,12 +5,14 @@ import { Partner } from "@/lib/types";
 
 interface PartnerFormModalProps {
     partner?: Partner | null;
+    initialData?: Partial<Partner>;
+    requestId?: string;
     onClose: () => void;
     onSuccess: () => void;
     isAdmin?: boolean;
 }
 
-export default function PartnerFormModal({ partner, onClose, onSuccess, isAdmin = false }: PartnerFormModalProps) {
+export default function PartnerFormModal({ partner, initialData, requestId, onClose, onSuccess, isAdmin = false }: PartnerFormModalProps) {
     const isEdit = !!partner;
     const [isLoading, setIsLoading] = useState(false);
 
@@ -64,8 +66,14 @@ export default function PartnerFormModal({ partner, onClose, onSuccess, isAdmin 
                 parentPartnerId: partner.parentPartnerId || "",
                 parentPartnerName: partner.parentPartnerName || ""
             });
+        } else if (initialData) {
+            setFormData(prev => ({
+                ...prev,
+                ...initialData,
+                status: "active"
+            }));
         }
-    }, [partner]);
+    }, [partner, initialData]);
 
     const handleSearch = async (val: string) => {
         setSearchTerm(val);
@@ -79,7 +87,6 @@ export default function PartnerFormModal({ partner, onClose, onSuccess, isAdmin 
             const res = await fetch(`/api/partners/search?q=${encodeURIComponent(val)}`);
             const data = await res.json();
             if (data.success) {
-                // Filter out self if editing
                 const results = isEdit
                     ? data.results.filter((p: any) => p.partnerId !== partner.partnerId)
                     : data.results;
@@ -145,9 +152,22 @@ export default function PartnerFormModal({ partner, onClose, onSuccess, isAdmin 
 
         try {
             const method = isEdit ? "PUT" : "POST";
-            const body = isEdit
-                ? { partnerId: partner.partnerId, ...formData }
-                : { action: "register", partnerData: formData };
+            let body;
+
+            if (isEdit) {
+                body = { partnerId: partner.partnerId, ...formData };
+            } else if (requestId) {
+                // Approval Mode
+                body = {
+                    action: "approve",
+                    requestId: requestId,
+                    approvedBy: "admin", // In a real app, get from session
+                    partnerData: formData
+                };
+            } else {
+                // Register Mode
+                body = { action: "register", partnerData: formData };
+            }
 
             const response = await fetch("/api/admin/partners", {
                 method,
@@ -157,7 +177,7 @@ export default function PartnerFormModal({ partner, onClose, onSuccess, isAdmin 
 
             const data = await response.json();
             if (data.success) {
-                alert(isEdit ? "수정되었습니다." : "등록되었습니다.");
+                alert(isEdit ? "수정되었습니다." : requestId ? "승인 처리되었습니다." : "등록되었습니다.");
                 onSuccess();
             } else {
                 alert(data.message || "오류가 발생했습니다.");

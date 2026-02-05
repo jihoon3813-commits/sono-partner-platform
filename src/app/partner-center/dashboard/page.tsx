@@ -6,8 +6,10 @@ import Link from "next/link";
 import PartnerManagement from "@/components/dashboard/PartnerManagement";
 import CustomerManagement from "@/components/dashboard/CustomerManagement";
 import PartnerRequests from "@/components/dashboard/PartnerRequests";
+import PartnerFormModal from "@/components/dashboard/PartnerFormModal";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
+import { PartnerRequest } from "@/lib/types";
 
 type Tab = "overview" | "partners" | "customers" | "requests";
 
@@ -18,6 +20,7 @@ export default function PartnerDashboard() {
     const [copySuccess, setCopySuccess] = useState(false);
     const [baseUrl, setBaseUrl] = useState("");
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
+    const [selectedRequest, setSelectedRequest] = useState<PartnerRequest | null>(null);
 
     // 세션 로드 (컴포넌트 마운트 시 한 번만 실행)
     useEffect(() => {
@@ -70,6 +73,10 @@ export default function PartnerDashboard() {
             setCopySuccess(true);
             setTimeout(() => setCopySuccess(false), 2000);
         });
+    };
+
+    const handleSelectRequest = (req: PartnerRequest) => {
+        setSelectedRequest(req);
     };
 
     if (isLoading || !partner) {
@@ -303,7 +310,37 @@ export default function PartnerDashboard() {
                 )}
 
                 {activeTab === "requests" && isAdmin && (
-                    <PartnerRequests requests={dashboardData.pendingRequests as any} onRefresh={() => fetchData()} />
+                    <PartnerRequests
+                        requests={dashboardData.pendingRequests as any}
+                        onRefresh={() => fetchData()}
+                        onSelectRequest={handleSelectRequest}
+                    />
+                )}
+
+                {selectedRequest && (
+                    <PartnerFormModal
+                        partner={null}
+                        initialData={{
+                            companyName: selectedRequest.companyName,
+                            businessNumber: selectedRequest.businessNumber,
+                            ceoName: selectedRequest.ceoName,
+                            managerName: selectedRequest.managerName,
+                            managerPhone: selectedRequest.managerPhone,
+                            managerEmail: selectedRequest.managerEmail,
+                            shopType: selectedRequest.shopType,
+                            shopUrl: selectedRequest.shopUrl,
+                            memberCount: selectedRequest.memberCount,
+                            parentPartnerId: selectedRequest.parentPartnerId,
+                            parentPartnerName: selectedRequest.parentPartnerName,
+                        }}
+                        requestId={selectedRequest.requestId}
+                        onClose={() => setSelectedRequest(null)}
+                        onSuccess={() => {
+                            setSelectedRequest(null);
+                            fetchData();
+                        }}
+                        isAdmin={true}
+                    />
                 )}
 
                 <div className="mt-12 text-center pb-12">
