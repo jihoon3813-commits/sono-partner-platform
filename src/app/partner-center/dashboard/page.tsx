@@ -372,6 +372,13 @@ export default function PartnerDashboard() {
                             memberCount: selectedRequest.memberCount,
                             parentPartnerId: selectedRequest.parentPartnerId,
                             parentPartnerName: selectedRequest.parentPartnerName,
+                            // Mall Info (Added)
+                            loginId: selectedRequest.loginId,
+                            loginPassword: selectedRequest.loginPassword,
+                            customUrl: selectedRequest.customUrl,
+                            // Plan Info
+                            pointInfo: selectedRequest.pointRate, // Map pointRate to pointInfo (if needed, based on typical usage)
+
                         }}
                         requestId={selectedRequest.requestId}
                         onClose={() => setSelectedRequest(null)}
