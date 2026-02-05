@@ -29,6 +29,8 @@ export async function POST(request: Request) {
             expectedMonthlySales,
             pointRate,
             additionalRequest,
+            parentPartnerId,
+            parentPartnerName,
         } = body;
 
         // 필수 필드 검증 (Removed strict check for new fields to keep them optional if user wants, 
@@ -64,6 +66,8 @@ export async function POST(request: Request) {
             expectedMonthlySales: expectedMonthlySales || '',
             pointRate: pointRate || '',
             additionalRequest: additionalRequest || '',
+            parentPartnerId: parentPartnerId || '',
+            parentPartnerName: parentPartnerName || '',
         });
 
         // TODO: 관리자 알림 이메일 발송, 신청자 확인 이메일 발송

@@ -494,7 +494,7 @@ export default function PartnerApplyPage() {
                                             서브도메인 <span className="text-sono-primary">*</span>
                                         </label>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-gray-500 font-medium">sono24.com/p/</span>
+                                            <span className="text-gray-500 font-medium">/p/</span>
                                             <input
                                                 type="text"
                                                 name="subdomain"

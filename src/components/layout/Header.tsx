@@ -9,13 +9,15 @@ interface HeaderProps {
     partnerUrl?: string;
     partnerName?: string;
     partnerId?: string;
+    partnerLogo?: string;
 }
 
 export default function Header({
     partnerMode = false,
     partnerUrl = "",
     partnerName = "",
-    partnerId = ""
+    partnerId = "",
+    partnerLogo = ""
 }: HeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,11 +47,19 @@ export default function Header({
                 <div className="max-w-[1200px] mx-auto px-6 flex items-center justify-between">
                     {/* 로고 */}
                     <Link href={logoHref} className="flex items-center group">
-                        <img
-                            src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94%20BI_3.png?raw=true"
-                            alt="SONO I'M READY"
-                            className={`h-7 md:h-[34px] w-auto object-contain transition-all duration-300 group-hover:scale-105 ${!scrolled ? "brightness-0 invert" : ""}`}
-                        />
+                        {partnerMode && partnerLogo ? (
+                            <img
+                                src={partnerLogo}
+                                alt={partnerName || "Partner Logo"}
+                                className="h-8 md:h-[34px] w-auto object-contain transition-all duration-300 group-hover:scale-105"
+                            />
+                        ) : (
+                            <img
+                                src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94%20BI_3.png?raw=true"
+                                alt="SONO I'M READY"
+                                className={`h-7 md:h-[34px] w-auto object-contain transition-all duration-300 group-hover:scale-105 ${!scrolled ? "brightness-0 invert" : ""}`}
+                            />
+                        )}
                     </Link>
 
                     {/* 데스크탑 메뉴 */}

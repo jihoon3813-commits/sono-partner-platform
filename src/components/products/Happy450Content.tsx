@@ -26,7 +26,7 @@ export default function Happy450Content({
 
     return (
         <>
-            <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} />
+            {!isModalOpen && <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} />}
             <main>
                 {/* 히어로 섹션 */}
                 <section
@@ -646,7 +646,7 @@ export default function Happy450Content({
                     </div>
                 </section>
             </main>
-            <Footer />
+            {!isModalOpen && <Footer />}
 
             <InquiryModal
                 isOpen={isModalOpen}

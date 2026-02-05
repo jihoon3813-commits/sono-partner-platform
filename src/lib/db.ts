@@ -45,19 +45,11 @@ export async function updatePartner(
     partnerId: string,
     updates: Partial<Partner>
 ): Promise<boolean> {
-    // Convex partners.ts updatePartner not implemented properly yet in convex/partners.ts?
-    // Wait, earlier summary said "placeholder console.warn".
-    // We haven't implemented updatePartner in convex/partners.ts yet.
-    // For now, let's keep it as is or better: Implement it in Convex later.
-    // But since this file is THE interface, we must return valid promise.
-    console.warn("updatePartner not fully implemented in Convex yet");
-    return true;
+    return await client.mutation("partners:updatePartner" as any, { partnerId, updates });
 }
 
 export async function deletePartner(partnerId: string): Promise<boolean> {
-    // Similar to updatePartner
-    console.warn("deletePartner not fully implemented in Convex yet");
-    return true;
+    return await client.mutation("partners:deletePartner" as any, { partnerId });
 }
 
 // ============================================

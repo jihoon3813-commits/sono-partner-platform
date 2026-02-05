@@ -296,7 +296,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
 
     return (
         <>
-            <Header partnerMode={true} partnerUrl={partner.customUrl} partnerName={partner.name} partnerId={partner.partnerId} />
+            {!isInquiryModalOpen && <Header partnerMode={true} partnerUrl={partner?.customUrl} partnerName={partner?.name} partnerId={partner?.partnerId} />}
             <main className="min-h-screen bg-[#f2f4f6]">
                 {/* 히어로 */}
                 <section
@@ -906,13 +906,13 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                     </section>
                 )}
             </main>
-            <Footer />
+            {!isInquiryModalOpen && <Footer />}
 
             <InquiryModal
                 isOpen={isInquiryModalOpen}
                 onClose={() => setIsInquiryModalOpen(false)}
-                partnerName={partner.name}
-                partnerId={partner.partnerId}
+                partnerName={partner?.name}
+                partnerId={partner?.partnerId}
                 productType={modalProduct}
                 showProductSelect={!modalProduct}
             />

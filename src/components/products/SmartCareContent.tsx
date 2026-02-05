@@ -82,7 +82,7 @@ export default function SmartCareContent({
 
     return (
         <>
-            <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} />
+            {!isModalOpen && <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} />}
             <main className="pb-32"> {/* Add padding for fixed bottom bar */}
                 {/* 히어로 섹션 */}
                 <section
@@ -921,7 +921,7 @@ export default function SmartCareContent({
                     </div>
                 </section>
             </main>
-            <Footer />
+            {!isModalOpen && <Footer />}
 
             <InquiryModal
                 isOpen={isModalOpen}
