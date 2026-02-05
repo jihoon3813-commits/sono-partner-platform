@@ -44,7 +44,7 @@ export default function InquiryModal({
     initialUnit = "4"
 }: InquiryModalProps) {
     // Convex 실시간 제품 정보 쿼리
-    const productsData = useQuery(api.products.getAllProducts);
+    const productsData = useQuery(api.products.get);
 
     const [selectedUnit, setSelectedUnit] = useState<string>(initialUnit);
     const [selectedAppliance, setSelectedAppliance] = useState<string>(initialAppliance || "상담 시 결정");
