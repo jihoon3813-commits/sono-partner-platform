@@ -83,7 +83,7 @@ export default function PartnerApplyPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwQkuIm7ERScHFZMUrn4bqw81hhr3oE2Zw9MNGXmkldCTGh16Ho5-WdzVXwZHJC8b_b/exec";
+
 
     const formatPhone = (val: string) => {
         const nums = val.replace(/[^0-9]/g, "");
@@ -121,27 +121,28 @@ export default function PartnerApplyPage() {
         setIsSubmitting(true);
 
         try {
-            // GAS로 데이터 전송
-            await fetch(GAS_URL, {
+            // 1. Convex (Main Database) 전송
+            const apiRes = await fetch("/api/partner/apply", {
                 method: "POST",
-                mode: "no-cors", // CORS 문제 회피
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    action: "applyPartner",
-                    ...formData,
-                    submittedAt: new Date().toLocaleString()
-                }),
+                body: JSON.stringify(formData),
             });
 
-            // no-cors 모드에서는 응답을 확인할 수 없으므로 성공으로 간주
+            if (!apiRes.ok) {
+                const errData = await apiRes.json();
+                throw new Error(errData.message || "신청 접수 중 오류가 발생했습니다.");
+            }
+
+
+
             setIsSubmitted(true);
             window.scrollTo(0, 0);
 
         } catch (error) {
             console.error("Submission error:", error);
-            alert("신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            alert(error instanceof Error ? error.message : "신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
         } finally {
             setIsSubmitting(false);
         }

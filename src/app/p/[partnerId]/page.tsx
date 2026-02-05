@@ -4,6 +4,8 @@ import { Header, Footer } from "@/components/layout";
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import InquiryModal from "@/components/InquiryModal";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 
 interface PartnerData {
     partnerId: string;
@@ -113,11 +115,16 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
         inquiry: "",
         privacyAgreed: false,
     });
-    const [allAppliances, setAllAppliances] = useState<any[]>([]);
     const [smartCareUnit, setSmartCareUnit] = useState<string>("4");
     const [selectedAppliance, setSelectedAppliance] = useState<string>("상담 시 결정");
-    const [isLoadingAppliances, setIsLoadingAppliances] = useState(false);
 
+    // Convex Products Query
+    const productsData = useQuery(api.products.get);
+    const allAppliances = productsData || [];
+    const isLoadingAppliances = productsData === undefined;
+
+    // Remove GAS Effect
+    /*
     useEffect(() => {
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwQkuIm7ERScHFZMUrn4bqw81hhr3oE2Zw9MNGXmkldCTGh16Ho5-WdzVXwZHJC8b_b/exec";
         async function fetchProducts() {
@@ -134,6 +141,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
         }
         fetchProducts();
     }, []);
+    */
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);

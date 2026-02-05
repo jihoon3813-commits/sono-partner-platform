@@ -1,8 +1,10 @@
 "use client";
 
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { Header, Footer } from "@/components/layout";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import InquiryModal from "@/components/InquiryModal";
 
 interface Appliance {
@@ -27,29 +29,17 @@ export default function SmartCareContent({
     partnerId = ""
 }: SmartCareContentProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [allAppliances, setAllAppliances] = useState<Appliance[]>([]);
     const [pickedAppliance, setPickedAppliance] = useState<Appliance | null>(null);
 
     const [selectedUnit, setSelectedUnit] = useState<string>("4");
     const [showAllOverlay, setShowAllOverlay] = useState(false);
-    const [isLoadingAppliances, setIsLoadingAppliances] = useState(true);
 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwQkuIm7ERScHFZMUrn4bqw81hhr3oE2Zw9MNGXmkldCTGh16Ho5-WdzVXwZHJC8b_b/exec";
+    // Convex Query
+    const productsData = useQuery(api.products.get);
+    const allAppliances = (productsData || []) as Appliance[];
+    const isLoadingAppliances = productsData === undefined;
 
-    useEffect(() => {
-        async function fetchProducts() {
-            try {
-                const response = await fetch(`${GAS_URL}?action=getProducts`);
-                const data = await response.json();
-                setAllAppliances(data);
-            } catch (error) {
-                console.error("Failed to fetch products:", error);
-            } finally {
-                setIsLoadingAppliances(false);
-            }
-        }
-        fetchProducts();
-    }, []);
+
 
     // 페이지 내 버튼 문구 처리
     const ctaText = partnerMode ? "가입 신청하기" : "제휴 파트너 신청하기";

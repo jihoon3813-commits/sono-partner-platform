@@ -1,34 +1,37 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
-export const getAllProducts = query({
+// 모든 상품 조회
+export const get = query({
+    args: {},
     handler: async (ctx) => {
         return await ctx.db.query("products").collect();
     },
 });
 
-export const addProduct = mutation({
+// 상품 데이터 초기화 (Seed)
+export const seed = mutation({
     args: {
-        brand: v.optional(v.string()),
-        model: v.optional(v.string()),
-        name: v.optional(v.string()),
-        tag: v.optional(v.string()),
-        image: v.optional(v.string()),
+        products: v.array(
+            v.object({
+                brand: v.string(),
+                model: v.string(),
+                name: v.string(),
+                tag: v.string(),
+                image: v.string(),
+            })
+        ),
     },
     handler: async (ctx, args) => {
-        return await ctx.db.insert("products", {
-            brand: args.brand,
-            model: args.model,
-            name: args.name,
-            tag: args.tag,
-            image: args.image,
-        });
-    },
-});
+        // 기존 데이터 삭제 (선택 사항, 중복 방지 위해)
+        const existing = await ctx.db.query("products").collect();
+        for (const p of existing) {
+            await ctx.db.delete(p._id);
+        }
 
-export const deleteProduct = mutation({
-    args: { id: v.id("products") },
-    handler: async (ctx, args) => {
-        await ctx.db.delete(args.id);
+        // 새 데이터 추가
+        for (const p of args.products) {
+            await ctx.db.insert("products", p);
+        }
     },
 });

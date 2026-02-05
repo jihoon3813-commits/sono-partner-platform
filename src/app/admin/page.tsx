@@ -13,7 +13,7 @@ export default function AdminLoginPage() {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwQkuIm7ERScHFZMUrn4bqw81hhr3oE2Zw9MNGXmkldCTGh16Ho5-WdzVXwZHJC8b_b/exec";
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
