@@ -227,37 +227,77 @@ export default function PartnerDashboard() {
             <main className="max-w-7xl mx-auto p-4 md:p-8">
                 {/* URL Display (Visible on both PC and Mobile) */}
                 {partner.customUrl && partner.customUrl !== "admin" && (
-                    <div className="mb-6 flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 md:p-6 rounded-[24px] md:rounded-[32px] shadow-sm border border-gray-100">
-                        <div className="flex-1 flex flex-col gap-1 w-full overflow-hidden">
-                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">내 파트너 페이지 랜딩 URL</span>
-                            <span className="text-sm md:text-lg font-mono text-sono-primary truncate">
-                                {baseUrl.replace(/^https?:\/\//, "")}/p/{partner.customUrl}
-                            </span>
+                    <div className="flex flex-col gap-4 mb-6">
+                        {/* Landing URL */}
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 md:p-6 rounded-[24px] md:rounded-[32px] shadow-sm border border-gray-100">
+                            <div className="flex-1 flex flex-col gap-1 w-full overflow-hidden">
+                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">내 파트너 페이지 랜딩 URL</span>
+                                <span className="text-sm md:text-lg font-mono text-sono-primary truncate">
+                                    {baseUrl.replace(/^https?:\/\//, "")}/p/{partner.customUrl}
+                                </span>
+                            </div>
+                            <div className="flex gap-2 w-full md:w-auto">
+                                <button
+                                    onClick={handleCopyUrl}
+                                    className={`flex-1 md:flex-none flex items-center justify-center gap-2 text-sm font-bold px-6 py-3.5 rounded-2xl transition-all ${copySuccess
+                                        ? "bg-green-500 text-white animate-bounce-short"
+                                        : "bg-sono-primary/10 text-sono-primary hover:bg-sono-primary hover:text-white"
+                                        }`}
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                    </svg>
+                                    {copySuccess ? "주소 복사됨" : "랜딩 URL 복사"}
+                                </button>
+                                <a
+                                    href={`/p/${partner.customUrl}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 md:flex-none flex items-center justify-center gap-2 text-sm font-bold px-6 py-3.5 rounded-2xl bg-gray-100 text-gray-500 hover:bg-sono-dark hover:text-white transition-all shadow-sm"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    페이지 이동
+                                </a>
+                            </div>
                         </div>
-                        <div className="flex gap-2 w-full md:w-auto">
-                            <button
-                                onClick={handleCopyUrl}
-                                className={`flex-1 md:flex-none flex items-center justify-center gap-2 text-sm font-bold px-6 py-3.5 rounded-2xl transition-all ${copySuccess
-                                    ? "bg-green-500 text-white animate-bounce-short"
-                                    : "bg-sono-primary/10 text-sono-primary hover:bg-sono-primary hover:text-white"
-                                    }`}
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                </svg>
-                                {copySuccess ? "주소 복사됨" : "랜딩 URL 복사"}
-                            </button>
-                            <a
-                                href={`/p/${partner.customUrl}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex-1 md:flex-none flex items-center justify-center gap-2 text-sm font-bold px-6 py-3.5 rounded-2xl bg-gray-100 text-gray-500 hover:bg-sono-dark hover:text-white transition-all shadow-sm"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                                페이지 이동
-                            </a>
+
+                        {/* Inquiry URL */}
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 md:p-6 rounded-[24px] md:rounded-[32px] shadow-sm border border-gray-100">
+                            <div className="flex-1 flex flex-col gap-1 w-full overflow-hidden">
+                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">상담신청 전용 URL</span>
+                                <span className="text-sm md:text-lg font-mono text-purple-600 truncate">
+                                    {baseUrl.replace(/^https?:\/\//, "")}/p/{partner.customUrl}/inquiry
+                                </span>
+                            </div>
+                            <div className="flex gap-2 w-full md:w-auto">
+                                <button
+                                    onClick={() => {
+                                        const url = `${baseUrl}/p/${partner.customUrl}/inquiry`;
+                                        navigator.clipboard.writeText(url).then(() => {
+                                            alert("상담신청 URL이 복사되었습니다.");
+                                        });
+                                    }}
+                                    className="flex-1 md:flex-none flex items-center justify-center gap-2 text-sm font-bold px-6 py-3.5 rounded-2xl bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                    </svg>
+                                    URL 복사
+                                </button>
+                                <a
+                                    href={`/p/${partner.customUrl}/inquiry`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 md:flex-none flex items-center justify-center gap-2 text-sm font-bold px-6 py-3.5 rounded-2xl bg-gray-100 text-gray-500 hover:bg-sono-dark hover:text-white transition-all shadow-sm"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    페이지 이동
+                                </a>
+                            </div>
                         </div>
                     </div>
                 )}
