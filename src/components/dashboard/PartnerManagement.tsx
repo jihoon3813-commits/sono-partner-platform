@@ -60,6 +60,7 @@ function PartnerRow({
                                 {level === 0 && <span className="text-[10px] bg-sono-primary/10 text-sono-primary px-1.5 py-0.5 rounded">Master</span>}
                             </div>
                             <div className="text-xs text-gray-400 mt-1">/p/{partner.customUrl}</div>
+                            <div className="text-[10px] text-sono-primary/60 font-mono mt-0.5">{partner.partnerId}</div>
                         </div>
                     </div>
                 </td>

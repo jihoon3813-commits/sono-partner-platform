@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getPartnerByCustomUrl } from '@/lib/db';
+import { getPartnerByCustomUrl, getPartnerById } from '@/lib/db';
 
 // 파트너 정보 조회 (공개용 - 전용 페이지용)
 export async function GET(
@@ -10,7 +10,10 @@ export async function GET(
         const { partnerId } = await params;
         console.log(`[API] Fetching public partner data for: ${partnerId}`);
 
-        const partner = await getPartnerByCustomUrl(partnerId);
+        let partner = await getPartnerById(partnerId);
+        if (!partner) {
+            partner = await getPartnerByCustomUrl(partnerId);
+        }
         console.log(`[API] Partner search result: ${partner ? 'Found' : 'Not Found'}`);
 
         if (!partner || partner.status !== 'active') {

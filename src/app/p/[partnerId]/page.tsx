@@ -73,20 +73,46 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                     if (data.success && data.data) {
                         setPartner(data.data);
                     } else {
-                        throw new Error("Partner not found in API");
+                        // Fallback to local data if API fails or partner not in DB
+                        const fb = fallbackPartners[resolvedParams.partnerId as keyof typeof fallbackPartners];
+                        setPartner({
+                            partnerId: fb?.partnerId || `P-TEMP-${resolvedParams.partnerId}`,
+                            name: fb?.name || "소노 파트너",
+                            customUrl: resolvedParams.partnerId,
+                            logoUrl: fb?.logoUrl,
+                            logoText: fb?.logoText,
+                            landingTitle: fb?.landingTitle,
+                            pointInfo: fb?.pointInfo || "소노아임레디 특별 혜택",
+                            brandColor: fb?.brandColor || "#1e3a5f"
+                        });
                     }
                 } else {
-                    throw new Error(`API error: ${response.status}`);
+                    // API call failed (e.g., 404, 500)
+                    console.error(`API error: ${response.status}`);
+                    const fb = fallbackPartners[resolvedParams.partnerId as keyof typeof fallbackPartners];
+                    setPartner({
+                        partnerId: fb?.partnerId || `P-TEMP-${resolvedParams.partnerId}`,
+                        name: fb?.name || "소노 파트너",
+                        customUrl: resolvedParams.partnerId,
+                        logoUrl: fb?.logoUrl,
+                        logoText: fb?.logoText,
+                        landingTitle: fb?.landingTitle,
+                        pointInfo: fb?.pointInfo || "소노아임레디 특별 혜택",
+                        brandColor: fb?.brandColor || "#1e3a5f"
+                    });
                 }
-            } catch (err) {
-                console.error("Partner fetch failed or timed out:", err);
-                // Last resort fallback
+            } catch (error) {
+                console.error("Partner fetch error:", error);
+                const fb = fallbackPartners[resolvedParams.partnerId as keyof typeof fallbackPartners];
                 setPartner({
-                    partnerId: resolvedParams.partnerId || "unknown",
-                    name: "파트너 쇼핑몰",
-                    pointInfo: "혜택 정보 준비 중",
-                    brandColor: "#1e3a5f",
-                    customUrl: resolvedParams.partnerId || "home",
+                    partnerId: fb?.partnerId || `P-TEMP-${resolvedParams.partnerId}`,
+                    name: fb?.name || "소노 파트너",
+                    customUrl: resolvedParams.partnerId,
+                    logoUrl: fb?.logoUrl,
+                    logoText: fb?.logoText,
+                    landingTitle: fb?.landingTitle,
+                    pointInfo: fb?.pointInfo || "소노아임레디 특별 혜택",
+                    brandColor: fb?.brandColor || "#1e3a5f"
                 });
             } finally {
                 setIsLoading(false);

@@ -23,10 +23,10 @@ export default function HomePage() {
                         <div className="grid md:grid-cols-2 gap-16 items-center">
                             <div className="animate-fade-in">
                                 <div className="inline-block bg-sono-primary text-white border border-white/20 mb-6 px-4 py-2 rounded-lg text-sm font-bold shadow-xl">
-                                    대한민국 상조업계 2위
+                                    상조를 넘어 라이프케어로
                                 </div>
                                 <h1 className="leading-[1.2] mb-8 tracking-tighter filter drop-shadow-2xl">
-                                    <span className="block text-3xl md:text-4xl lg:text-5xl mb-4 text-white/90 font-extrabold">대명소노 그룹과 함께</span>
+                                    <span className="block text-3xl md:text-4xl lg:text-5xl mb-4 text-white/90 font-extrabold">소노아임레디와 함께</span>
                                     <span className="text-4xl md:text-5xl lg:text-[4.5rem] font-black text-white drop-shadow-md block">
                                         파트너사의<br />
                                         새로운 수익 모델을<br />

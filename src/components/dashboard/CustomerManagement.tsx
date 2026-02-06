@@ -151,7 +151,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                     }
 
                                     const headers = [
-                                        "No.", "신청번호", "신청일시", "파트너사", "파트너ID", "고객명", "연락처",
+                                        "No.", "신청번호", "신청일시", "파트너사", "시스템ID", "로그인ID", "고객명", "연락처",
                                         "상품명", "결합제품(가전)", "신청구좌", "주소", "우편번호", "생년월일",
                                         "성별", "이메일", "회원번호", "선호시간", "문의사항", "상태"
                                     ];
@@ -161,6 +161,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                         app.applicationNo,
                                         new Date(app.createdAt).toLocaleString(),
                                         app.partnerName,
+                                        app.partnerId,
                                         getPartnerLoginId(app.partnerId),
                                         app.customerName,
                                         app.customerPhone,
@@ -363,8 +364,10 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                         </td>
                                         <td className="px-2 py-4 text-center whitespace-nowrap">
                                             <div className="text-sm font-bold text-sono-dark">{app.partnerName}</div>
-                                            {/* Show Login ID if available for admins */}
-                                            {isWidget && partners.length > 0 && <div className="text-[10px] text-gray-400">{getPartnerLoginId(app.partnerId)}</div>}
+                                            <div className="flex flex-col items-center">
+                                                <div className="text-[10px] text-sono-primary/60 font-mono">{app.partnerId}</div>
+                                                {partners.length > 0 && <div className="text-[10px] text-gray-400 font-bold">{getPartnerLoginId(app.partnerId)}</div>}
+                                            </div>
                                         </td>
                                         <td className="px-2 py-4 text-center whitespace-nowrap min-w-[60px]">
                                             <div className="text-sm font-medium text-sono-dark">{app.customerName}</div>

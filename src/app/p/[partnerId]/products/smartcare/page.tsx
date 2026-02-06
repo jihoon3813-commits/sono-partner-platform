@@ -26,15 +26,16 @@ export default function PartnerSmartCarePage({ params }: { params: Promise<{ par
                 } else {
                     setPartner({
                         customUrl: resolvedParams.partnerId,
-                        name: "",
-                        partnerId: resolvedParams.partnerId
+                        name: "소노 파트너",
+                        partnerId: `P-TEMP-${resolvedParams.partnerId}`
                     });
                 }
-            } catch {
+            } catch (error) {
+                console.error("Partner fetch error:", error);
                 setPartner({
                     customUrl: resolvedParams.partnerId,
-                    name: "",
-                    partnerId: resolvedParams.partnerId
+                    name: "소노 파트너",
+                    partnerId: `P-TEMP-${resolvedParams.partnerId}`
                 });
             } finally {
                 setIsLoading(false);

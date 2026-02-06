@@ -1,15 +1,7 @@
 // 타입 정의
 
-// Google Sheets 설정
-export interface GoogleSheetsConfig {
-    spreadsheetId: string;
-    credentials: {
-        client_email: string;
-        private_key: string;
-    };
-}
-
 // 파트너 정보
+
 export interface Partner {
     partnerId: string;
     companyName: string;

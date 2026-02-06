@@ -14,7 +14,7 @@ export async function POST(request: Request) {
         const body = await request.json();
 
         const {
-            partnerId,
+            partnerId, // This might be the system ID or customUrl
             partnerName,
             productType,
             planType,
@@ -26,7 +26,6 @@ export async function POST(request: Request) {
             zipcode,
             address,
             addressDetail,
-            partnerId: partnerMemberId,
             preferredTime,
             inquiry,
             products,
@@ -34,6 +33,7 @@ export async function POST(request: Request) {
 
         // 필수 필드 검증
         if (!partnerId || !productType || !name || !phone) {
+            console.error('[API] Missing required fields:', { partnerId, productType, name, phone });
             return NextResponse.json(
                 { success: false, message: '필수 정보가 누락되었습니다.' },
                 { status: 400 }
@@ -41,9 +41,10 @@ export async function POST(request: Request) {
         }
 
         // 파트너 확인 (ID 또는 커스텀 URL로 검색)
+        console.log('[API] Resolving partner for ID/Url:', partnerId);
         let partner = await getPartnerById(partnerId);
         if (!partner) {
-            // partnerId라는 이름으로 넘어왔지만 사실상 customUrl(예: lifenjoy)인 경우 대비
+            // partnerId라는 이름으로 넘어왔지만 사실상 customUrl(예: lifenjoy) 또는 loginId인 경우 대비
             partner = await getPartnerByLoginId(partnerId);
             if (!partner) {
                 partner = await getPartnerByCustomUrl(partnerId);
@@ -51,9 +52,10 @@ export async function POST(request: Request) {
         }
 
         // 데모 계정 예외 처리 (DB에 없을 경우)
-        if (!partner && partnerId.startsWith('P-DEMO')) {
+        if (!partner && (partnerId === 'demo' || partnerId.startsWith('P-DEMO'))) {
+            console.log('[API] Using demo partner fallback for:', partnerId);
             partner = {
-                partnerId: partnerId,
+                partnerId: partnerId.startsWith('P-DEMO') ? partnerId : 'P-DEMO-001',
                 companyName: partnerName || '데모 파트너',
                 status: 'active',
                 customUrl: 'demo'
@@ -70,6 +72,7 @@ export async function POST(request: Request) {
 
         // DB 저장을 위한 실제 파트너 ID 사용
         const dbPartnerId = partner.partnerId;
+        console.log('[API] Resolved Partner ID:', dbPartnerId);
 
         // 신청 데이터 생성
         const appData = {
@@ -85,13 +88,13 @@ export async function POST(request: Request) {
             customerEmail: email || '',
             customerAddress: `${address || ''} ${addressDetail || ''}`.trim(),
             customerZipcode: zipcode || '',
-            partnerMemberId: partnerId || '',
+            partnerMemberId: partnerId !== dbPartnerId ? partnerId : '', // 원본 ID(demo 등)가 다를 경우에만 저장
             preferredContactTime: preferredTime || '',
             inquiry: inquiry || '',
             status: '접수',
             assignedTo: '',
         };
-        console.log('[API] Creating application with data:', JSON.stringify(appData, null, 2));
+        console.log('[API] Creating application in Convex...');
 
         const application = await createApplication(appData as any);
 
