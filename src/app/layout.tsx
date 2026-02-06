@@ -34,8 +34,13 @@ export default function RootLayout({
     return (
         <html lang="ko">
             <body className="antialiased min-h-screen bg-sono-light">
+                <div style={{ background: 'red', color: 'white', padding: '5px', textAlign: 'center', fontWeight: 'bold', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 99999 }}>
+                    [DEBUG] LAYOUT IS RENDERING
+                </div>
                 <ConvexClientProvider>
-                    {children}
+                    <div className="pt-8">
+                        {children}
+                    </div>
                 </ConvexClientProvider>
             </body>
         </html>

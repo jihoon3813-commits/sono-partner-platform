@@ -5,38 +5,40 @@ import { ReactNode, useMemo, useState, useEffect } from "react";
 
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
     const [mounted, setMounted] = useState(false);
-    const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+    const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL || "";
 
     useEffect(() => {
+        console.log("ConvexClientProvider mounting...");
         setMounted(true);
     }, []);
 
     const convex = useMemo(() => {
         if (!convexUrl) return null;
-        return new ConvexReactClient(convexUrl);
+        try {
+            return new ConvexReactClient(convexUrl);
+        } catch (e) {
+            console.error("Convex initialization failed:", e);
+            return null;
+        }
     }, [convexUrl]);
 
-    // 서버 사이드 렌더링 시에는 자식만 렌더링 (또는 빈 상태)
-    // 클라이언트 사이드에서 환경 변수 누락 시 에러 표시
-    // Prevent useQuery errors by not rendering children until provider is ready
     if (!mounted) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin w-10 h-10 border-4 border-sono-primary border-t-transparent rounded-full"></div>
+            <div style={{ background: 'white', color: 'blue', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                로딩 중 (Mounting)...
             </div>
         );
     }
 
     if (!convexUrl || !convex) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-red-50 text-red-600 p-10 flex-col gap-4">
-                <h1 className="text-2xl font-bold">Configuration Error</h1>
-                <p>
-                    Missing <code>NEXT_PUBLIC_CONVEX_URL</code> environment variable.
-                </p>
-                <p className="text-sm text-gray-600">
-                    If you are the developer, please check your .env.local file or deployment settings.
-                </p>
+            <div style={{ position: 'fixed', inset: 0, backgroundColor: 'white', color: 'red', padding: '40px', zIndex: 99999, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <h1 style={{ fontSize: '32px', fontWeight: 'bold' }}>환경 변수(ENV) 오류</h1>
+                <p style={{ fontSize: '20px' }}>NEXT_PUBLIC_CONVEX_URL을 찾을 수 없습니다.</p>
+                <div style={{ background: '#eee', padding: '15px', borderRadius: '10px', color: 'black' }}>
+                    <strong>현재 설정된 값:</strong> <pre>{JSON.stringify(convexUrl)}</pre>
+                </div>
+                <p>로컬 개발 시 <code>.env.local</code> 파일을 확인해 주세요.</p>
             </div>
         );
     }
