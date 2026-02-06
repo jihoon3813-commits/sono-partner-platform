@@ -1,15 +1,26 @@
 "use client";
 
 import { ConvexProvider, ConvexReactClient } from "convex/react";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo, useState, useEffect } from "react";
 
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
+    const [mounted, setMounted] = useState(false);
     const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const convex = useMemo(() => {
         if (!convexUrl) return null;
         return new ConvexReactClient(convexUrl);
     }, [convexUrl]);
+
+    // 서버 사이드 렌더링 시에는 자식만 렌더링 (또는 빈 상태)
+    // 클라이언트 사이드에서 환경 변수 누락 시 에러 표시
+    if (!mounted) {
+        return <>{children}</>;
+    }
 
     if (!convexUrl || !convex) {
         return (
