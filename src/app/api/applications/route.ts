@@ -71,12 +71,14 @@ export async function POST(request: Request) {
         }
 
         // DB 저장을 위한 실제 파트너 ID 사용
+        // 사용자 요청에 따라 P-번호 대신 사람이 읽을 수 있는 ID(loginId 또는 customUrl)를 우선 사용합니다.
+        const readablePartnerId = partner.loginId || partner.customUrl || partner.partnerId;
         const dbPartnerId = partner.partnerId;
-        console.log('[API] Resolved Partner ID:', dbPartnerId);
+        console.log('[API] Resolved Readable Partner ID:', readablePartnerId);
 
         // 신청 데이터 생성
         const appData = {
-            partnerId: dbPartnerId,
+            partnerId: readablePartnerId,
             partnerName: partnerName || partner.companyName || '-',
             productType,
             planType: planType || '-',
@@ -88,7 +90,7 @@ export async function POST(request: Request) {
             customerEmail: email || '',
             customerAddress: `${address || ''} ${addressDetail || ''}`.trim(),
             customerZipcode: zipcode || '',
-            partnerMemberId: partnerId !== dbPartnerId ? partnerId : '', // 원본 ID(demo 등)가 다를 경우에만 저장
+            partnerMemberId: partnerId !== readablePartnerId ? partnerId : '',
             preferredContactTime: preferredTime || '',
             inquiry: inquiry || '',
             status: '접수',

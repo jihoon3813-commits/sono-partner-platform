@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAllPartners, getAllApplications, getPendingPartnerRequests, getPartnerById } from '@/lib/db';
+import { getAllPartners, getAllApplications, getPendingPartnerRequests, getPartnerById, getPartnerByLoginId, getPartnerByCustomUrl } from '@/lib/db';
 
 export async function GET(request: Request) {
     try {
@@ -28,7 +28,14 @@ export async function GET(request: Request) {
             });
         }
         // 일반 파트너인 경우
-        const partner = await getPartnerById(partnerId);
+        // partnerId 또는 loginId/customUrl로 파트너 검색
+        let partner = await getPartnerById(partnerId);
+        if (!partner) {
+            partner = await getPartnerByLoginId(partnerId);
+            if (!partner) {
+                partner = await getPartnerByCustomUrl(partnerId);
+            }
+        }
 
         if (!partner) {
             return NextResponse.json({ success: false, message: 'Partner not found' }, { status: 404 });
