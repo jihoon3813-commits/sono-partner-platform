@@ -18,8 +18,13 @@ export function ConvexClientProvider({ children }: { children: ReactNode }) {
 
     // 서버 사이드 렌더링 시에는 자식만 렌더링 (또는 빈 상태)
     // 클라이언트 사이드에서 환경 변수 누락 시 에러 표시
+    // Prevent useQuery errors by not rendering children until provider is ready
     if (!mounted) {
-        return <>{children}</>;
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="animate-spin w-10 h-10 border-4 border-sono-primary border-t-transparent rounded-full"></div>
+            </div>
+        );
     }
 
     if (!convexUrl || !convex) {
