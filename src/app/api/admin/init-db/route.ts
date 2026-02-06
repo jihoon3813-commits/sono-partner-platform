@@ -1,12 +1,20 @@
 import { NextResponse } from 'next/server';
 import { ConvexHttpClient } from "convex/browser";
 
-const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+const client = convexUrl ? new ConvexHttpClient(convexUrl) : null;
 
 // 초기 데이터 설정 API (더 이상 구글 시트 마이그레이션은 하지 않음)
 export async function POST() {
     try {
         console.log('[Init] Starting Convex data initialization...');
+
+        if (!client) {
+            return NextResponse.json(
+                { success: false, message: 'NEXT_PUBLIC_CONVEX_URL 환경변수가 설정되지 않았습니다.' },
+                { status: 500 }
+            );
+        }
 
         // --- 1. 데모용 고객 데이터 10명 생성 (다양한 상태와 상품) ---
         const demoApplications = [
