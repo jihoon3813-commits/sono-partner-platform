@@ -4,7 +4,15 @@ import { ConvexHttpClient } from "convex/browser";
 // 'admins' module functions: validateAdminCredentials
 // 'partners' module functions: getAllPartners, getPartnerById, getPartnerByLoginId...
 
-const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+const client = convexUrl ? new ConvexHttpClient(convexUrl) : null;
+
+function getClient() {
+    if (!client) {
+        throw new Error("환경변수 NEXT_PUBLIC_CONVEX_URL이 설정되지 않았습니다. Vercel 환경변수를 확인해주세요.");
+    }
+    return client;
+}
 
 import { Partner, Application, PartnerRequest, ApplicationStatus } from './types';
 
@@ -13,23 +21,23 @@ import { Partner, Application, PartnerRequest, ApplicationStatus } from './types
 // ============================================
 
 export async function getAllPartners(): Promise<Partner[]> {
-    return await client.query("partners:getAllPartners" as any);
+    return await getClient().query("partners:getAllPartners" as any);
 }
 
 export async function getPartnerById(partnerId: string): Promise<Partner | null> {
-    return await client.query("partners:getPartnerById" as any, { partnerId });
+    return await getClient().query("partners:getPartnerById" as any, { partnerId });
 }
 
 export async function getPartnerByLoginId(loginId: string): Promise<Partner | null> {
-    return await client.query("partners:getPartnerByLoginId" as any, { loginId });
+    return await getClient().query("partners:getPartnerByLoginId" as any, { loginId });
 }
 
 export async function getPartnerByCustomUrl(customUrl: string): Promise<Partner | null> {
-    return await client.query("partners:getPartnerByCustomUrl" as any, { customUrl });
+    return await getClient().query("partners:getPartnerByCustomUrl" as any, { customUrl });
 }
 
 export async function createPartner(partner: Omit<Partner, 'partnerId' | 'createdAt'>): Promise<Partner> {
-    return await client.mutation("partners:createPartner" as any, mapPartnerArgs(partner));
+    return await getClient().mutation("partners:createPartner" as any, mapPartnerArgs(partner));
 }
 
 // 헬퍼: createPartner args 매핑 (스키마에 맞게)
@@ -45,11 +53,11 @@ export async function updatePartner(
     partnerId: string,
     updates: Partial<Partner>
 ): Promise<boolean> {
-    return await client.mutation("partners:updatePartner" as any, { partnerId, updates });
+    return await getClient().mutation("partners:updatePartner" as any, { partnerId, updates });
 }
 
 export async function deletePartner(partnerId: string): Promise<boolean> {
-    return await client.mutation("partners:deletePartner" as any, { partnerId });
+    return await getClient().mutation("partners:deletePartner" as any, { partnerId });
 }
 
 // ============================================
@@ -57,15 +65,15 @@ export async function deletePartner(partnerId: string): Promise<boolean> {
 // ============================================
 
 export async function getAllApplications(): Promise<Application[]> {
-    return await client.query("applications:getAllApplications" as any);
+    return await getClient().query("applications:getAllApplications" as any);
 }
 
 export async function getApplicationsByPartnerId(partnerId: string): Promise<Application[]> {
-    return await client.query("applications:getApplicationsByPartnerId" as any, { partnerId });
+    return await getClient().query("applications:getApplicationsByPartnerId" as any, { partnerId });
 }
 
 export async function getApplicationByNo(applicationNo: string): Promise<Application | null> {
-    return await client.query("applications:getApplicationByNo" as any, { applicationNo });
+    return await getClient().query("applications:getApplicationByNo" as any, { applicationNo });
 }
 
 export async function createApplication(
@@ -75,7 +83,7 @@ export async function createApplication(
     // Usually backend does ID. But let's check `applications.ts`.
     // Step 89 summary says "createAnApplication".
     // I will call "applications:createApplication"
-    return await client.mutation("applications:createApplication" as any, application as any);
+    return await getClient().mutation("applications:createApplication" as any, application as any);
 }
 
 
@@ -85,7 +93,7 @@ export async function updateApplicationStatus(
     changedBy: string,
     memo?: string
 ): Promise<boolean> {
-    await client.mutation("applications:updateApplicationStatus" as any, {
+    await getClient().mutation("applications:updateApplicationStatus" as any, {
         applicationNo,
         newStatus,
         changedBy,
@@ -98,7 +106,7 @@ export async function updateApplicationAssignee(
     applicationNo: string,
     assignedTo: string
 ): Promise<boolean> {
-    await client.mutation("applications:updateApplicationAssignee" as any, {
+    await getClient().mutation("applications:updateApplicationAssignee" as any, {
         applicationNo,
         assignedTo
     });
@@ -128,14 +136,14 @@ export async function getAllPartnerRequests(): Promise<PartnerRequest[]> {
     // I'll try "requests:getAllPartnerRequests" assuming I should add it or it fails.
     // To be safe, I'll return empty array if catch error.
     try {
-        return await client.query("requests:getPendingPartnerRequests" as any); // Temporary fallback
+        return await getClient().query("requests:getPendingPartnerRequests" as any); // Temporary fallback
     } catch (e) {
         return [];
     }
 }
 
 export async function getPendingPartnerRequests(): Promise<PartnerRequest[]> {
-    return await client.query("requests:getPendingPartnerRequests" as any);
+    return await getClient().query("requests:getPendingPartnerRequests" as any);
 }
 
 
@@ -143,7 +151,7 @@ export async function createPartnerRequest(
     request: Omit<PartnerRequest, 'requestId' | 'status' | 'createdAt'>
 ): Promise<PartnerRequest> {
     // args mapping needed?
-    return await client.mutation("requests:createPartnerRequest" as any, request as any);
+    return await getClient().mutation("requests:createPartnerRequest" as any, request as any);
 }
 
 export async function approvePartnerRequest(
@@ -156,7 +164,7 @@ export async function approvePartnerRequest(
         pointInfo: string;
     }
 ): Promise<Partner | null> {
-    const res = await client.mutation("requests:approvePartnerRequest" as any, {
+    const res = await getClient().mutation("requests:approvePartnerRequest" as any, {
         requestId,
         approvedBy,
         ...partnerData
@@ -178,7 +186,7 @@ export async function rejectPartnerRequest(
     requestId: string,
     rejectedBy: string
 ): Promise<boolean> {
-    await client.mutation("requests:rejectPartnerRequest" as any, {
+    await getClient().mutation("requests:rejectPartnerRequest" as any, {
         requestId,
         rejectedBy
     });
@@ -194,7 +202,7 @@ export async function validateAdminCredentials(
     loginId: string,
     password: string
 ): Promise<{ valid: boolean; role?: string; adminId?: string; adminName?: string }> {
-    const result = await client.mutation("admins:validateAdminCredentials" as any, {
+    const result = await getClient().mutation("admins:validateAdminCredentials" as any, {
         loginId,
         password
     });
@@ -206,7 +214,7 @@ export async function validatePartnerCredentials(
     password: string
 ): Promise<Partner | null> {
     // partners:validatePartnerCredentials returns { valid, partner }
-    const result = await client.mutation("partners:validatePartnerCredentials" as any, {
+    const result = await getClient().mutation("partners:validatePartnerCredentials" as any, {
         loginId,
         password
     });
@@ -222,7 +230,7 @@ export async function validatePartnerCredentials(
 // ============================================
 
 export async function searchPartners(query: string): Promise<Partner[]> {
-    return await client.query("partners:searchPartners" as any, { query });
+    return await getClient().query("partners:searchPartners" as any, { query });
     // Assuming searchPartners exists in partners.ts. Summary for Step 89 says:
     // "search partners" is in partners.ts.
 }
