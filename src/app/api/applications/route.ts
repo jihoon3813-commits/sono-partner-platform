@@ -110,7 +110,7 @@ export async function POST(request: Request) {
     } catch (error) {
         console.error('Application creation error:', error);
 
-        // Google Sheets 연결 에러인 경우
+        // Convex 연결 에러인 경우
         if (error instanceof Error && error.message.includes('환경변수')) {
             return NextResponse.json(
                 { success: false, message: error.message },
