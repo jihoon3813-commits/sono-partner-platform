@@ -41,6 +41,18 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
         }
     };
 
+    // 상품 유형 한글 표시
+    const getProductTypeLabel = (productType: string) => {
+        const type = productType?.toLowerCase() || "";
+        if (type === "happy450" || type.includes("해피") || type.includes("happy")) {
+            return "더 해피 450 ONE";
+        }
+        if (type === "smartcare" || type.includes("스마트") || type.includes("smart")) {
+            return "스마트케어";
+        }
+        return productType || "-";
+    };
+
     const [status, setStatus] = useState<ApplicationStatus>(application.status);
     const [memo, setMemo] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -140,9 +152,9 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                     <div className="border-t border-gray-100 pt-4">
                         <h3 className="text-sm font-bold text-sono-primary mb-3">신청 상품 정보</h3>
                         <div className="space-y-3">
-                            <InfoRow label="상품 유형" value={application.productType} />
+                            <InfoRow label="상품 유형" value={getProductTypeLabel(application.productType)} />
                             <InfoRow label="가전제품" value={application.products || '-'} />
-                            <InfoRow label="플랜" value={application.planType} />
+                            <InfoRow label="플랜" value={application.planType ? (application.planType.includes("구좌") ? application.planType : `${application.planType}구좌`) : '-'} />
                             <InfoRow label="문의사항" value={application.inquiry || '-'} />
                             <InfoRow label="선호 시간" value={application.preferredContactTime || '-'} />
                         </div>

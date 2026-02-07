@@ -6,12 +6,13 @@ import Link from "next/link";
 import PartnerManagement from "@/components/dashboard/PartnerManagement";
 import CustomerManagement from "@/components/dashboard/CustomerManagement";
 import PartnerRequests from "@/components/dashboard/PartnerRequests";
+import ResourceCenter from "@/components/dashboard/ResourceCenter";
 import PartnerFormModal from "@/components/dashboard/PartnerFormModal";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { PartnerRequest } from "@/lib/types";
 
-type Tab = "overview" | "partners" | "customers" | "requests";
+type Tab = "overview" | "partners" | "customers" | "requests" | "library";
 
 export default function PartnerDashboard() {
     const router = useRouter();
@@ -139,7 +140,7 @@ export default function PartnerDashboard() {
                                     </svg>
                                 </button>
                                 <Link
-                                    href="/"
+                                    href={partner?.customUrl && partner.customUrl !== "admin" ? `/p/${partner.customUrl}` : "/"}
                                     target="_blank"
                                     className="p-1.5 bg-gray-100 text-gray-500 rounded-lg border border-gray-200"
                                     title="홈페이지 바로가기"
@@ -162,6 +163,7 @@ export default function PartnerDashboard() {
                                 { id: "overview", label: "대시보드" },
                                 { id: "partners", label: "파트너 관리" },
                                 { id: "customers", label: "고객 관리" },
+                                { id: "library", label: "자료실" },
                                 ...(isAdmin ? [{ id: "requests", label: "입점 신청", count: dashboardData.pendingRequests.length }] : [])
                             ].map((tab) => (
                                 <button
@@ -188,7 +190,7 @@ export default function PartnerDashboard() {
 
                     <div className="hidden md:flex items-center gap-4">
                         <Link
-                            href="/"
+                            href={partner?.customUrl && partner.customUrl !== "admin" ? `/p/${partner.customUrl}` : "/"}
                             target="_blank"
                             className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-all shadow-sm"
                         >
@@ -225,8 +227,8 @@ export default function PartnerDashboard() {
             </header>
 
             <main className="max-w-7xl mx-auto p-4 md:p-8">
-                {/* URL Display (Visible on both PC and Mobile) */}
-                {partner.customUrl && partner.customUrl !== "admin" && (
+                {/* URL Display - Only visible on Dashboard (overview) tab */}
+                {activeTab === "overview" && partner.customUrl && partner.customUrl !== "admin" && (
                     <div className="flex flex-col gap-4 mb-6">
                         {/* Landing URL */}
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 md:p-6 rounded-[24px] md:rounded-[32px] shadow-sm border border-gray-100">
@@ -303,26 +305,35 @@ export default function PartnerDashboard() {
                 )}
                 {activeTab === "overview" && (
                     <div className="space-y-6">
-                        {/* Status Summary Cards */}
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-3">
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 animate-slide-up">
+                            {/* Status Stats */}
                             {statusList.map((status) => (
-                                <button
+                                <div
                                     key={status}
                                     onClick={() => setSelectedOverviewStatus(status)}
-                                    className={`p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all ${selectedOverviewStatus === status
-                                        ? "bg-sono-dark text-white ring-2 ring-sono-primary ring-offset-2 shadow-lg scale-105"
-                                        : "bg-white hover:bg-gray-50 border border-gray-100 text-gray-400 hover:text-sono-dark hover:border-gray-200"
-                                        }`}
+                                    className={`bg-white p-4 rounded-2xl shadow-sm border border-gray-100 transition-all cursor-pointer hover:shadow-md hover:-translate-y-1 ${selectedOverviewStatus === status ? "ring-2 ring-sono-primary ring-offset-2" : ""}`}
                                 >
-                                    <span className="text-xs font-bold whitespace-nowrap">{status}</span>
-                                    <span className={`text-xl font-black ${selectedOverviewStatus === status ? "text-sono-primary" : getStatusColor(status)}`}>
-                                        {statusCounts[status] || 0}
-                                    </span>
-                                </button>
+                                    <div className="flex justify-between items-start mb-2">
+                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-50 ${getStatusColor(status).replace('text-', 'bg-').replace('-500', '-50')} ${getStatusColor(status)}`}>
+                                            {status}
+                                        </span>
+                                        <div className="p-1.5 bg-gray-50 rounded-lg">
+                                            <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-2xl font-black text-sono-dark tracking-tighter">
+                                            {statusCounts[status] || 0}
+                                        </span>
+                                        <span className="text-gray-400 font-bold text-[10px]">건</span>
+                                    </div>
+                                </div>
                             ))}
                         </div>
 
-                        {/* Filtered Customer List */}
+                        {/* Filtered Customer List Widget */}
                         <div className="bg-white p-6 md:p-8 rounded-[32px] shadow-sm border border-gray-100">
                             <CustomerManagement
                                 applications={dashboardData.customers as any}
@@ -331,9 +342,14 @@ export default function PartnerDashboard() {
                                 isAdmin={isAdmin}
                                 initialStatusFilter={selectedOverviewStatus}
                                 isWidget={true}
+                                currentUser={partner}
                             />
                         </div>
                     </div>
+                )}
+
+                {activeTab === "library" && (
+                    <ResourceCenter isAdmin={isAdmin} />
                 )}
 
                 {activeTab === "partners" && (
@@ -346,6 +362,7 @@ export default function PartnerDashboard() {
                         onRefresh={() => fetchData()}
                         partners={dashboardData.partners as any}
                         isAdmin={isAdmin}
+                        currentUser={partner}
                     />
                 )}
 

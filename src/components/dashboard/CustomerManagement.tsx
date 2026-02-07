@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Application, Partner, ApplicationStatus } from "@/lib/types";
 import CustomerDetailModal from "./CustomerDetailModal";
+import CustomerRegistrationModal from "./CustomerRegistrationModal";
 
 interface CustomerManagementProps {
     applications: Application[];
@@ -9,9 +10,10 @@ interface CustomerManagementProps {
     isWidget?: boolean;
     isAdmin?: boolean;
     initialStatusFilter?: string;
+    currentUser?: Partner | null; // Added
 }
 
-export default function CustomerManagement({ applications, onRefresh, partners = [], isWidget = false, isAdmin = false, initialStatusFilter = "all" }: CustomerManagementProps) {
+export default function CustomerManagement({ applications, onRefresh, partners = [], isWidget = false, isAdmin = false, initialStatusFilter = "all", currentUser = null }: CustomerManagementProps) {
     const getStatusStyles = (status: string) => {
         switch (status) {
             case '접수':
@@ -41,8 +43,21 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         }
     };
 
+    // 상품 유형 한글 표시
+    const getProductTypeLabel = (productType: string) => {
+        const type = productType?.toLowerCase() || "";
+        if (type === "happy450" || type.includes("해피") || type.includes("happy")) {
+            return "더 해피 450 ONE";
+        }
+        if (type === "smartcare" || type.includes("스마트") || type.includes("smart")) {
+            return "스마트케어";
+        }
+        return productType || "-";
+    };
+
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+    const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
 
     // Filters
     const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter);
@@ -143,64 +158,75 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                 <h2 className="text-xl font-bold text-sono-dark">고객 상담 내역</h2>
                                 <p className="text-sm text-gray-500 mt-1 whitespace-nowrap">총 {filteredApplications.length}건의 신청 내역이 있습니다.</p>
                             </div>
-                            <button
-                                onClick={() => {
-                                    if (filteredApplications.length === 0) {
-                                        alert("다운로드할 데이터가 없습니다.");
-                                        return;
-                                    }
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setIsRegistrationModalOpen(true)}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-all shadow-sm"
+                                >
+                                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    고객 직접 등록
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        if (filteredApplications.length === 0) {
+                                            alert("다운로드할 데이터가 없습니다.");
+                                            return;
+                                        }
 
-                                    const headers = [
-                                        "No.", "신청번호", "신청일시", "파트너사", "시스템ID", "로그인ID", "고객명", "연락처",
-                                        "상품명", "결합제품(가전)", "신청구좌", "주소", "우편번호", "생년월일",
-                                        "성별", "이메일", "회원번호", "선호시간", "문의사항", "상태"
-                                    ];
+                                        const headers = [
+                                            "No.", "신청번호", "신청일시", "파트너사", "시스템ID", "로그인ID", "고객명", "연락처",
+                                            "상품명", "결합제품(가전)", "신청구좌", "주소", "우편번호", "생년월일",
+                                            "성별", "이메일", "회원번호", "선호시간", "문의사항", "상태"
+                                        ];
 
-                                    const rows = filteredApplications.map((app, index) => [
-                                        filteredApplications.length - index,
-                                        app.applicationNo,
-                                        new Date(app.createdAt).toLocaleString(),
-                                        app.partnerName,
-                                        app.partnerId,
-                                        getPartnerLoginId(app.partnerId),
-                                        app.customerName,
-                                        app.customerPhone,
-                                        app.productType,
-                                        app.products || "-",
-                                        app.planType,
-                                        app.customerAddress,
-                                        app.customerZipcode,
-                                        app.customerBirth || "-",
-                                        app.customerGender || "-",
-                                        app.customerEmail || "-",
-                                        app.partnerMemberId || "-",
-                                        app.preferredContactTime || "-",
-                                        app.inquiry?.replace(/\n/g, " ") || "-",
-                                        app.status
-                                    ]);
+                                        const rows = filteredApplications.map((app, index) => [
+                                            filteredApplications.length - index,
+                                            app.applicationNo,
+                                            new Date(app.createdAt).toLocaleString(),
+                                            app.partnerName,
+                                            app.partnerId,
+                                            getPartnerLoginId(app.partnerId),
+                                            app.customerName,
+                                            app.customerPhone,
+                                            app.productType,
+                                            app.products || "-",
+                                            app.planType,
+                                            app.customerAddress,
+                                            app.customerZipcode,
+                                            app.customerBirth || "-",
+                                            app.customerGender || "-",
+                                            app.customerEmail || "-",
+                                            app.partnerMemberId || "-",
+                                            app.preferredContactTime || "-",
+                                            app.inquiry?.replace(/\n/g, " ") || "-",
+                                            app.status
+                                        ]);
 
-                                    const csvContent = [
-                                        headers.join(","),
-                                        ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
-                                    ].join("\n");
+                                        const csvContent = [
+                                            headers.join(","),
+                                            ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+                                        ].join("\n");
 
-                                    const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
-                                    const link = document.createElement("a");
-                                    const url = URL.createObjectURL(blob);
-                                    link.setAttribute("href", url);
-                                    link.setAttribute("download", `고객상담내역_${new Date().toISOString().slice(0, 10)}.csv`);
-                                    link.style.visibility = "hidden";
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    document.body.removeChild(link);
-                                }}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-sono-primary text-white rounded-xl text-xs font-bold hover:bg-sono-dark transition-all shadow-sm"
-                            >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                엑셀 다운로드
-                            </button>
+                                        const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
+                                        const link = document.createElement("a");
+                                        const url = URL.createObjectURL(blob);
+                                        link.setAttribute("href", url);
+                                        link.setAttribute("download", `고객상담내역_${new Date().toISOString().slice(0, 10)}.csv`);
+                                        link.style.visibility = "hidden";
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                    }}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-sono-primary text-white rounded-xl text-xs font-bold hover:bg-sono-dark transition-all shadow-sm"
+                                >
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    엑셀 다운로드
+                                </button>
+                            </div>
                         </div>
                         <div className="relative w-full md:w-64">
                             <input
@@ -336,13 +362,13 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                         <thead>
                             <tr className="bg-[#f9fafb] border-b border-gray-100">
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">No.</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider">일시</th>
+                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[120px]">일시</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">파트너사</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center min-w-[60px]">고객명</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">연락처</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">주소</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">상품명</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">결합제품명</th>
+                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">구좌</th>
+                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">결합제품</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">상태</th>
                             </tr>
                         </thead>
@@ -355,19 +381,14 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                         className="hover:bg-gray-50 transition-colors cursor-pointer"
                                     >
                                         <td className="px-2 py-4 text-center text-xs text-gray-400 font-bold">
-                                            {/* In widget (recent list), this numbering logic might need consistency. 
-                                               If users want standard reversed index: */}
                                             {filteredApplications.length - index}
                                         </td>
-                                        <td className="px-2 py-4 text-xs text-gray-500 whitespace-nowrap">
-                                            {new Date(app.createdAt).toLocaleString('ko-KR', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                        <td className="px-2 py-4 text-xs text-gray-500 text-center whitespace-nowrap">
+                                            {new Date(app.createdAt).toLocaleString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
                                         </td>
                                         <td className="px-2 py-4 text-center whitespace-nowrap">
                                             <div className="text-sm font-bold text-sono-dark">{app.partnerName}</div>
-                                            <div className="flex flex-col items-center">
-                                                <div className="text-[10px] text-sono-primary/60 font-mono">{app.partnerId}</div>
-                                                {partners.length > 0 && <div className="text-[10px] text-gray-400 font-bold">{getPartnerLoginId(app.partnerId)}</div>}
-                                            </div>
+                                            {partners.length > 0 && <div className="text-[10px] text-gray-400 font-bold">{getPartnerLoginId(app.partnerId)}</div>}
                                         </td>
                                         <td className="px-2 py-4 text-center whitespace-nowrap min-w-[60px]">
                                             <div className="text-sm font-medium text-sono-dark">{app.customerName}</div>
@@ -375,14 +396,14 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                         <td className="px-2 py-4 text-xs text-center text-gray-500 whitespace-nowrap">
                                             {app.customerPhone}
                                         </td>
-                                        <td className="px-2 py-4 text-xs text-center text-gray-500 max-w-[100px] truncate" title={`${app.customerAddress} ${app.customerZipcode}`}>
-                                            {app.customerAddress}
-                                        </td>
                                         <td className="px-2 py-4 text-xs font-bold text-center text-sono-primary whitespace-nowrap">
-                                            {app.productType}
+                                            {getProductTypeLabel(app.productType)}
                                         </td>
-                                        <td className="px-2 py-4 text-xs text-center text-gray-500 max-w-[200px] truncate" title={app.planType}>
-                                            {app.planType}
+                                        <td className="px-2 py-4 text-xs text-center text-gray-600 font-bold whitespace-nowrap">
+                                            {app.planType ? (app.planType.includes("구좌") ? app.planType : `${app.planType}구좌`) : "-"}
+                                        </td>
+                                        <td className="px-2 py-4 text-xs text-center text-gray-500 max-w-[200px] truncate" title={app.products}>
+                                            {(app.productType.toLowerCase().includes("smart") || app.productType.includes("스마트")) ? (app.products || "-") : "-"}
                                         </td>
                                         <td className="px-2 py-4 text-center whitespace-nowrap">
                                             <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyles(app.status)}`}>
@@ -410,6 +431,19 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                     onUpdate={onRefresh}
                     isAdmin={isAdmin}
                     partnerLoginId={getPartnerLoginId(selectedApp.partnerId)}
+                />
+            )}
+
+            {isRegistrationModalOpen && (
+                <CustomerRegistrationModal
+                    onClose={() => setIsRegistrationModalOpen(false)}
+                    onSuccess={() => {
+                        setIsRegistrationModalOpen(false);
+                        onRefresh();
+                    }}
+                    partner={currentUser || null}
+                    partners={partners}
+                    isAdmin={isAdmin}
                 />
             )}
         </div>

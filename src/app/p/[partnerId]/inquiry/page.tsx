@@ -4,16 +4,6 @@ import { useState, useEffect, use, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 
-declare global {
-    interface Window {
-        daum: {
-            Postcode: new (options: {
-                oncomplete: (data: DaumPostcodeData) => void;
-            }) => { open: () => void };
-        };
-    }
-}
-
 interface DaumPostcodeData {
     address: string;
     addressType: string;
@@ -44,6 +34,8 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
     const [formData, setFormData] = useState({
         name: "",
         phone: "",
+        birthdate: "",
+        gender: "남",
         zonecode: "",
         address: "",
         addressDetail: "",
@@ -101,6 +93,18 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
         setFormData(prev => ({ ...prev, phone: formatted }));
     };
 
+    const handleBirthdateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value.replace(/[^0-9]/g, "");
+        let formatted = value;
+        if (value.length > 4) {
+            formatted = `${value.slice(0, 4)}-${value.slice(4)}`;
+        }
+        if (value.length > 6) {
+            formatted = `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}`;
+        }
+        setFormData(prev => ({ ...prev, birthdate: formatted }));
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         setFormData(prev => ({
@@ -131,6 +135,13 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
             alert("상담받으실 상품을 선택해주세요.");
             return;
         }
+
+        // Validation for Birthdate
+        if (formData.birthdate.length !== 10) {
+            alert("생년월일은 YYYY-MM-DD 형식으로 입력해주세요 (예: 1980-01-01)");
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
@@ -162,8 +173,8 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                     products: productsInfo,
                     name: formData.name,
                     phone: formData.phone,
-                    birthdate: "",
-                    gender: "",
+                    birthdate: formData.birthdate,
+                    gender: formData.gender,
                     email: "",
                     zipcode: formData.zonecode,
                     address: formData.address,
@@ -356,6 +367,25 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                                     <div>
                                         <label className="input-label !text-[#4e5968] !font-bold mb-2 block ml-1">연락처 <span className="text-sono-primary">*</span></label>
                                         <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="010-1234-5678" required />
+                                    </div>
+                                    <div>
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block ml-1">생년월일 <span className="text-sono-primary">*</span></label>
+                                        <input type="tel" name="birthdate" value={formData.birthdate} onChange={handleBirthdateChange} inputMode="numeric" maxLength={10} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="1980-01-01" required />
+                                    </div>
+                                    <div>
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block ml-1">성별 <span className="text-sono-primary">*</span></label>
+                                        <div className="flex bg-[#f9fafb] p-1 rounded-2xl h-[56px]">
+                                            {["남", "여"].map((g) => (
+                                                <button
+                                                    key={g}
+                                                    type="button"
+                                                    onClick={() => setFormData(prev => ({ ...prev, gender: g }))}
+                                                    className={`flex-1 rounded-xl text-sm font-bold transition-all ${formData.gender === g ? "bg-white text-sono-primary shadow-sm" : "text-gray-400"}`}
+                                                >
+                                                    {g}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
 

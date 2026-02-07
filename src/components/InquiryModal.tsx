@@ -1,16 +1,8 @@
+"use client";
+
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-
-declare global {
-    interface Window {
-        daum: {
-            Postcode: new (options: {
-                oncomplete: (data: DaumPostcodeData) => void;
-            }) => { open: () => void };
-        };
-    }
-}
 
 interface DaumPostcodeData {
     address: string;
@@ -64,6 +56,8 @@ export default function InquiryModal({
     const [formData, setFormData] = useState({
         name: "",
         phone: "",
+        birthdate: "",
+        gender: "남",
         zonecode: "",
         address: "",
         addressDetail: "",
@@ -104,6 +98,11 @@ export default function InquiryModal({
         setFormData(prev => ({ ...prev, phone: formatted }));
     };
 
+    const handleBirthdateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value.replace(/[^0-9]/g, "").slice(0, 8);
+        setFormData(prev => ({ ...prev, birthdate: value }));
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         setFormData(prev => ({
@@ -113,8 +112,9 @@ export default function InquiryModal({
     };
 
     const openAddressSearch = () => {
-        if (window.daum && window.daum.Postcode) {
-            new window.daum.Postcode({
+        const daum = (window as any).daum;
+        if (daum && daum.Postcode) {
+            new daum.Postcode({
                 oncomplete: (data: DaumPostcodeData) => {
                     setFormData(prev => ({
                         ...prev,
@@ -130,6 +130,13 @@ export default function InquiryModal({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validation for Birthdate
+        if (formData.birthdate.length !== 8) {
+            alert("생년월일은 8자리 숫자로 입력해주세요 (예: 19800101)");
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
@@ -161,8 +168,8 @@ export default function InquiryModal({
                     products: productsInfo,
                     name: formData.name,
                     phone: formData.phone,
-                    birthdate: "",
-                    gender: "",
+                    birthdate: formData.birthdate,
+                    gender: formData.gender,
                     email: "",
                     zipcode: formData.zonecode,
                     address: formData.address,
@@ -191,6 +198,8 @@ export default function InquiryModal({
         setFormData({
             name: "",
             phone: "",
+            birthdate: "",
+            gender: "남",
             zonecode: "",
             address: "",
             addressDetail: "",
@@ -304,12 +313,31 @@ export default function InquiryModal({
 
                         <div className="grid md:grid-cols-2 gap-6">
                             <div>
-                                <label className="input-label !text-[#4e5968] !font-bold mb-2 block">성함</label>
+                                <label className="input-label !text-[#4e5968] !font-bold mb-2 block">성함 <span className="text-sono-primary">*</span></label>
                                 <input type="text" name="name" value={formData.name} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="홍길동" required />
                             </div>
                             <div>
-                                <label className="input-label !text-[#4e5968] !font-bold mb-2 block">연락처</label>
+                                <label className="input-label !text-[#4e5968] !font-bold mb-2 block">연락처 <span className="text-sono-primary">*</span></label>
                                 <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="010-1234-5678" required />
+                            </div>
+                            <div>
+                                <label className="input-label !text-[#4e5968] !font-bold mb-2 block">생년월일 (8자리) <span className="text-sono-primary">*</span></label>
+                                <input type="tel" name="birthdate" value={formData.birthdate} onChange={handleBirthdateChange} inputMode="numeric" maxLength={8} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="19800101" required />
+                            </div>
+                            <div>
+                                <label className="input-label !text-[#4e5968] !font-bold mb-2 block">성별 <span className="text-sono-primary">*</span></label>
+                                <div className="flex bg-[#f9fafb] p-1 rounded-2xl h-[56px]">
+                                    {["남", "여"].map((g) => (
+                                        <button
+                                            key={g}
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, gender: g }))}
+                                            className={`flex-1 rounded-xl text-sm font-bold transition-all ${formData.gender === g ? "bg-white text-sono-primary shadow-sm" : "text-gray-400"}`}
+                                        >
+                                            {g}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 

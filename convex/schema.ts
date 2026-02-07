@@ -173,4 +173,25 @@ export default defineSchema({
         memo: v.optional(v.string()),
     })
         .index("by_applicationNo", ["applicationNo"]),
+
+    // 시스템 설정 테이블 (양식 다운로드 링크 등)
+    settings: defineTable({
+        key: v.string(), // 'standard_template_url', 'admin_template_url'
+        value: v.string(),
+        updatedAt: v.string(),
+    }).index("by_key", ["key"]),
+
+    // 자료실 테이블
+    resources: defineTable({
+        title: v.string(),
+        description: v.optional(v.string()),
+        type: v.string(), // 'image', 'video', 'file'
+        fileUrl: v.string(), // Storage ID (as string) or external URL
+        storageId: v.optional(v.id("_storage")),
+        thumbnailUrl: v.optional(v.string()),
+        thumbnailStorageId: v.optional(v.id("_storage")),
+        isExternalUrl: v.boolean(), // true if fileUrl is an external link
+        createdAt: v.string(),
+        updatedBy: v.optional(v.string()),
+    }).index("by_type", ["type"]),
 });

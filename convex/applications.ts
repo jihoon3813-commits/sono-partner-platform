@@ -121,6 +121,7 @@ export const updateApplicationStatus = mutation({
     },
 });
 
+
 export const updateApplicationAssignee = mutation({
     args: {
         applicationNo: v.string(),
@@ -140,5 +141,58 @@ export const updateApplicationAssignee = mutation({
         });
 
         return true;
+    },
+});
+
+export const createApplications = mutation({
+    args: {
+        applications: v.array(v.object({
+            partnerId: v.string(),
+            partnerName: v.string(),
+            productType: v.string(),
+            planType: v.optional(v.string()),
+            products: v.optional(v.string()),
+            customerName: v.optional(v.string()),
+            customerBirth: v.optional(v.string()),
+            customerGender: v.optional(v.string()),
+            customerPhone: v.optional(v.string()),
+            customerEmail: v.optional(v.string()),
+            customerAddress: v.optional(v.string()),
+            customerZipcode: v.optional(v.string()),
+            partnerMemberId: v.optional(v.string()),
+            preferredContactTime: v.optional(v.string()),
+            inquiry: v.optional(v.string()),
+            status: v.optional(v.string()),
+            assignedTo: v.optional(v.string()),
+        })),
+    },
+    handler: async (ctx, args) => {
+        const now = new Date().toISOString();
+        const dateStr = now.slice(0, 10).replace(/-/g, '');
+        let count = 0;
+
+        for (const appData of args.applications) {
+            const random = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+            const applicationNo = `SA-${dateStr}-${random}`;
+
+            const { status, assignedTo, ...rest } = appData;
+
+            await ctx.db.insert("applications", {
+                ...rest,
+                customerName: rest.customerName || "",
+                customerBirth: rest.customerBirth || "",
+                customerGender: rest.customerGender || "-",
+                customerPhone: rest.customerPhone || "",
+                customerAddress: rest.customerAddress || "",
+                customerZipcode: rest.customerZipcode || "",
+                applicationNo,
+                status: status || "접수",
+                assignedTo: assignedTo || "",
+                createdAt: now,
+                updatedAt: now,
+            });
+            count++;
+        }
+        return count;
     },
 });
