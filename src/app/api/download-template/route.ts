@@ -25,7 +25,10 @@ export async function GET(req: NextRequest) {
         if (fileUrl) {
             console.log(`Downloading template from Convex URL: ${fileUrl}`);
             // 2. 파일 URL에서 데이터 가져오기 (Server-to-Server Fetch는 CORS 문제 없음)
-            const fileResponse = await fetch(fileUrl);
+            // Cache busting을 위해 timestamp 추가 (필요시)
+            const fileResponse = await fetch(fileUrl + (fileUrl.includes('?') ? '&' : '?') + 't=' + Date.now(), {
+                cache: 'no-store'
+            });
 
             if (fileResponse.ok) {
                 const fileBuffer = await fileResponse.arrayBuffer();
