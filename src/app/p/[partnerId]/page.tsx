@@ -485,7 +485,6 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
 
                 {/* 상품 선택 */}
                 <section id="product-selection" className="py-12 md:py-24 scroll-mt-24 bg-gradient-to-b from-[#f2f4f6] to-white relative overflow-hidden">
-                    {/* 데코레이션 배경 요소 */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
 
                     <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -500,18 +499,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
 
                         <div className="grid lg:grid-cols-2 gap-10 md:gap-16 max-w-6xl mx-auto">
                             {/* 더 해피 450 ONE */}
-                            <div
-                                className={`group relative card !p-0 cursor-pointer transition-all duration-500 overflow-hidden border-2 ${selectedProduct === "happy450"
-                                    ? "ring-4 ring-sono-primary/20 border-sono-primary shadow-2xl scale-[1.03] bg-white"
-                                    : "border-transparent bg-white/80 backdrop-blur-sm hover:shadow-2xl hover:scale-[1.01] hover:border-gray-200"
-                                    }`}
-                                onClick={() => {
-                                    setSelectedProduct("happy450");
-                                    setSelectedPlan("");
-                                    setSelectedPlan("");
-                                    setShowForm(false);
-                                }}
-                            >
+                            <div className="group relative card !p-0 transition-all duration-500 overflow-hidden border-2 border-transparent bg-white/80 backdrop-blur-sm hover:shadow-2xl hover:scale-[1.01] hover:border-gray-200">
                                 <div className="p-6 md:p-14">
                                     <div className="flex items-start justify-between mb-10">
                                         <div>
@@ -522,74 +510,60 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                             <h3 className="text-4xl font-black text-sono-dark tracking-tighter leading-tight mb-2">더 해피 450 ONE</h3>
                                             <p className="text-sono-primary font-bold">실속과 가성비를 모두 잡은 베이직 모델</p>
                                         </div>
-                                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${selectedProduct === "happy450" ? "bg-sono-primary text-white scale-110 shadow-lg shadow-sono-primary/30" : "bg-gray-100 text-gray-300"}`}>
-                                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        </div>
                                     </div>
-
-                                    <div className="space-y-4 md:space-y-6 mb-8 md:mb-12">
-                                        {[
-                                            { text: partner.pointInfo, sub: "가입 즉시 제휴몰 포인트 적립" },
-                                            { text: "납입금 100% 전액 환급", sub: "미이용 시 만기에 전액 돌려받는 안심 환급" },
-                                            { text: "소노그룹 멤버십 무상 제공", sub: "전국 리조트 및 레저 시설 할인 혜택" }
-                                        ].map((item, i) => (
-                                            <div key={i} className="flex gap-4">
-                                                <div className="w-6 h-6 rounded-full bg-sono-success/10 text-sono-success flex items-center justify-center flex-shrink-0 mt-1">
-                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                    </svg>
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-sono-dark text-lg leading-tight">{item.text}</p>
-                                                    <p className="text-sm text-[#8b95a1] mt-1">{item.sub}</p>
-                                                </div>
+                                    {[
+                                        { text: partner.pointInfo, sub: "가입 즉시 제휴몰 포인트 적립" },
+                                        { text: "납입금 100% 전액 환급", sub: "미이용 시 만기에 전액 돌려받는 안심 환급" },
+                                        { text: "소노그룹 멤버십 무상 제공", sub: "전국 리조트 및 레저 시설 할인 혜택" }
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex gap-4">
+                                            <div className="w-6 h-6 rounded-full bg-sono-success/10 text-sono-success flex items-center justify-center flex-shrink-0 mt-1">
+                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
                                             </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="pt-8 md:pt-10 border-t border-gray-100 mb-8 md:mb-10">
-                                        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                                            <div className="text-[#8b95a1] font-bold text-lg mb-1">매월 납입금</div>
-                                            <div className="flex items-baseline gap-1">
-                                                <span className="text-5xl font-black text-sono-primary tracking-tighter">18,000</span>
-                                                <span className="text-2xl font-bold text-[#8b95a1]">원</span>
-                                                <span className="text-sm font-bold text-[#8b95a1] ml-1">부터~</span>
+                                            <div>
+                                                <p className="font-bold text-sono-dark text-lg leading-tight">{item.text}</p>
+                                                <p className="text-sm text-[#8b95a1] mt-1">{item.sub}</p>
                                             </div>
                                         </div>
-                                    </div>
+                                    ))}
+                                </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <Link
-                                            href={`/p/${resolvedParams.partnerId}/products/happy450`}
-                                            className="flex items-center justify-center py-4 rounded-xl border-2 border-gray-100 text-sono-dark font-bold hover:bg-gray-50 transition-colors"
-                                        >
-                                            상품 자세히 보기
-                                        </Link>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                setModalProduct("happy450");
-                                                setIsInquiryModalOpen(true);
-                                            }}
-                                            className={`flex items-center justify-center py-4 rounded-xl font-bold transition-all ${selectedProduct === "happy450" ? "bg-sono-primary text-white shadow-lg shadow-sono-primary/20" : "bg-sono-dark text-white hover:bg-black"}`}
-                                        >
-                                            가입 신청하기
-                                        </button>
+                                <div className="pt-8 md:pt-10 border-t border-gray-100 mb-8 md:mb-10">
+                                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                                        <div className="text-[#8b95a1] font-bold text-lg mb-1">매월 납입금</div>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-5xl font-black text-sono-primary tracking-tighter">18,000</span>
+                                            <span className="text-2xl font-bold text-[#8b95a1]">원</span>
+                                            <span className="text-sm font-bold text-[#8b95a1] ml-1">부터~</span>
+                                        </div>
                                     </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Link
+                                        href={`/p/${resolvedParams.partnerId}/products/happy450`}
+                                        className="flex items-center justify-center py-4 rounded-xl border-2 border-gray-100 text-sono-dark font-bold hover:bg-gray-50 transition-colors"
+                                    >
+                                        상품 자세히 보기
+                                    </Link>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setModalProduct("happy450");
+                                            setIsInquiryModalOpen(true);
+                                        }}
+                                        className="flex items-center justify-center py-4 rounded-xl font-bold transition-all bg-sono-dark text-white hover:bg-black"
+                                    >
+                                        가입 신청하기
+                                    </button>
                                 </div>
                             </div>
 
                             {/* 스마트케어 */}
-                            <div
-                                className={`group relative card !p-0 cursor-default transition-all duration-500 overflow-hidden border-2 ${selectedProduct === "smartcare"
-                                    ? "ring-4 ring-sono-primary/20 border-sono-primary shadow-2xl scale-[1.03] bg-white"
-                                    : "border-transparent bg-white/80 backdrop-blur-sm hover:shadow-2xl hover:scale-[1.01] hover:border-gray-200"
-                                    }`}
-                            >
-                                {/* 추천 태그 */}
+                            <div className="group relative card !p-0 transition-all duration-500 overflow-hidden border-2 border-transparent bg-white/80 backdrop-blur-sm hover:shadow-2xl hover:scale-[1.01] hover:border-gray-200">
                                 <div className="absolute top-8 -right-12 bg-sono-gold text-white font-black text-xs py-2 w-48 text-center rotate-45 shadow-lg z-20">
                                     RECOMMENDED
                                 </div>
@@ -605,402 +579,143 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                             <h3 className="text-4xl font-black text-sono-dark tracking-tighter leading-tight mb-2">스마트케어</h3>
                                             <p className="text-sono-gold font-bold">삼성/LG 최신 가전 지원 프리미엄 모델</p>
                                         </div>
-                                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${selectedProduct === "smartcare" ? "bg-sono-primary text-white scale-110 shadow-lg shadow-sono-primary/30" : "bg-gray-100 text-gray-300"}`}>
-                                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        </div>
                                     </div>
-
-                                    <div className="space-y-6 mb-12">
-                                        {[
-                                            { text: "삼성/LG 최신 가전 지원", sub: "내가 원하는 가전을 가입 즉시 배송/설치" },
-                                            { text: partner.pointInfo, sub: "가입 즉시 제휴몰 포인트 추가 적립" },
-                                            { text: "납입금 100% 전액 환급", sub: "만기 시 가전 가격 포함 납입금 100% 환급" }
-                                        ].map((item, i) => (
-                                            <div key={i} className="flex gap-4">
-                                                <div className="w-6 h-6 rounded-full bg-sono-primary/10 text-sono-primary flex items-center justify-center flex-shrink-0 mt-1">
-                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                    </svg>
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-sono-dark text-lg leading-tight">{item.text}</p>
-                                                    <p className="text-sm text-[#8b95a1] mt-1">{item.sub}</p>
-                                                </div>
+                                    {[
+                                        { text: "삼성/LG 최신 가전 지원", sub: "내가 원하는 가전을 가입 즉시 배송/설치" },
+                                        { text: partner.pointInfo, sub: "가입 즉시 제휴몰 포인트 추가 적립" },
+                                        { text: "납입금 100% 전액 환급", sub: "만기 시 가전 가격 포함 납입금 100% 환급" }
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex gap-4">
+                                            <div className="w-6 h-6 rounded-full bg-sono-primary/10 text-sono-primary flex items-center justify-center flex-shrink-0 mt-1">
+                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
                                             </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="pt-10 border-t border-gray-100 mb-10">
-                                        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                                            <div className="text-[#8b95a1] font-bold text-lg mb-1">매월 납입금</div>
-                                            <div className="flex items-baseline gap-1">
-                                                <span className="text-5xl font-black text-sono-primary tracking-tighter">33,000</span>
-                                                <span className="text-2xl font-bold text-[#8b95a1]">원</span>
-                                                <span className="text-sm font-bold text-[#8b95a1] ml-1">부터~</span>
+                                            <div>
+                                                <p className="font-bold text-sono-dark text-lg leading-tight">{item.text}</p>
+                                                <p className="text-sm text-[#8b95a1] mt-1">{item.sub}</p>
                                             </div>
                                         </div>
-                                    </div>
+                                    ))}
+                                </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <Link
-                                            href={`/p/${resolvedParams.partnerId}/products/smartcare`}
-                                            className="flex items-center justify-center py-4 rounded-xl border-2 border-gray-100 text-sono-dark font-bold hover:bg-gray-50 transition-colors"
-                                        >
-                                            상품 자세히 보기
-                                        </Link>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                setModalProduct("smartcare");
-                                                setIsInquiryModalOpen(true);
-                                            }}
-                                            className={`flex items-center justify-center py-4 rounded-xl font-bold transition-all ${selectedProduct === "smartcare" ? "bg-sono-primary text-white shadow-lg shadow-sono-primary/20" : "bg-sono-dark text-white hover:bg-black"}`}
-                                        >
-                                            가입 신청하기
-                                        </button>
+                                <div className="pt-10 border-t border-gray-100 mb-10">
+                                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                                        <div className="text-[#8b95a1] font-bold text-lg mb-1">매월 납입금</div>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-5xl font-black text-sono-primary tracking-tighter">33,000</span>
+                                            <span className="text-2xl font-bold text-[#8b95a1]">원</span>
+                                            <span className="text-sm font-bold text-[#8b95a1] ml-1">부터~</span>
+                                        </div>
                                     </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Link
+                                        href={`/p/${resolvedParams.partnerId}/products/smartcare`}
+                                        className="flex items-center justify-center py-4 rounded-xl border-2 border-gray-100 text-sono-dark font-bold hover:bg-gray-50 transition-colors"
+                                    >
+                                        상품 자세히 보기
+                                    </Link>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setModalProduct("smartcare");
+                                            setIsInquiryModalOpen(true);
+                                        }}
+                                        className="flex items-center justify-center py-4 rounded-xl font-bold transition-all bg-sono-dark text-white hover:bg-black"
+                                    >
+                                        가입 신청하기
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
-                        {/* 하단 화살표 안내 */}
-                        {showForm && (
-                            <div className="mt-20 text-center animate-bounce">
-                                <p className="text-sono-primary font-bold mb-4">아래 신청 양식으로 이동하세요</p>
-                                <svg className="w-10 h-10 text-sono-primary mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7-7-7m14-8l-7 7-7-7" />
-                                </svg>
-                            </div>
-                        )}
                     </div>
                 </section>
 
-                {/* 스마트케어 플랜 선택 */}
-                {selectedProduct === "smartcare" && (
-                    <section className="pb-24 md:pb-32 animate-fade-in">
-                        <div className="max-w-6xl mx-auto px-6">
-                            <h3 className="text-2xl font-bold text-sono-dark text-center mb-12 tracking-tight">상세 플랜을 선택해주세요</h3>
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                                {[
-                                    { name: "실속형", units: "2구좌", price: "33,000" },
-                                    { name: "인기형", units: "3구좌", price: "49,500", popular: true },
-                                    { name: "베스트", units: "4구좌", price: "66,000" },
-                                    { name: "프리미엄", units: "6구좌", price: "99,000" },
-                                ].map((plan) => (
-                                    <div
-                                        key={plan.name}
-                                        className={`card text-center cursor-pointer transition-all bg-white border-none !p-8 ${smartCareUnit === plan.units.replace('구좌', '')
-                                            ? "ring-2 ring-sono-primary shadow-xl"
-                                            : "hover:shadow-lg"
-                                            }`}
-                                        onClick={() => {
-                                            setSmartCareUnit(plan.units.replace('구좌', ''));
-                                            setSelectedAppliance("상담 시 결정");
-                                            setSelectedPlan(plan.name);
-                                        }}
-                                    >
-                                        {plan.popular && (
-                                            <div className="mb-3">
-                                                <span className="bg-sono-primary text-white text-[10px] font-bold px-3 py-1 rounded-full">MOST POPULAR</span>
-                                            </div>
-                                        )}
-                                        <h4 className="text-xl font-bold text-sono-dark mb-1">{plan.name}</h4>
-                                        <span className="text-sm font-bold text-[#8b95a1]">{plan.units}</span>
-                                        <div className="mt-6 flex flex-col">
-                                            <span className="text-2xl font-bold text-sono-primary tracking-tight">{plan.price}</span>
-                                            <span className="text-sm font-bold text-[#8b95a1]">원 / 월</span>
-                                        </div>
-                                    </div>
-                                ))}
+
+
+                {/* 중요정보 고지사항 */}
+                <section className="py-20 bg-[#f9fafb]">
+                    <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                        <h2 className="text-3xl md:text-4xl font-extrabold text-[#111] text-center mb-12">중요정보 고지사항</h2>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {/* 환급기준 및 환급시기 */}
+                            <div className="bg-white p-8 rounded-[20px] shadow-sm hover:shadow-md transition-shadow">
+                                <h3 className="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2.5">
+                                    <span className="w-1.5 h-5 bg-blue-600 rounded-full inline-block"></span>
+                                    환급기준 및 환급시기
+                                </h3>
+                                <ul className="space-y-3">
+                                    <li className="flex items-start gap-3">
+                                        <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
+                                        <p className="text-gray-600 font-medium leading-relaxed">중도해약에 대한 환급 기준은 상조서비스 약관 규정에 의해 환급됩니다.</p>
+                                    </li>
+                                    <li className="flex items-start gap-3">
+                                        <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
+                                        <p className="text-gray-600 font-medium leading-relaxed">환급금은 신청완료일로부터 3영업일 이내에 수령하실 수 있습니다.</p>
+                                    </li>
+                                </ul>
                             </div>
 
-                            {/* 가전제품 선택 리스트 추가 */}
-                            <div className="mt-16 bg-white rounded-[32px] p-8 md:p-12 shadow-sm border border-gray-100">
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                            {/* 총 고객환급의무액 및 자산 현황 */}
+                            <div className="bg-white p-8 rounded-[20px] shadow-sm hover:shadow-md transition-shadow">
+                                <h3 className="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2.5">
+                                    <span className="w-1.5 h-5 bg-blue-600 rounded-full inline-block"></span>
+                                    총 고객환급의무액 및 자산 현황
+                                </h3>
+                                <div className="bg-blue-50/50 rounded-xl p-5 mb-3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div className="sm:border-r sm:border-blue-100 sm:pr-6">
+                                        <p className="text-xs font-bold text-gray-500 mb-1">총 고객환급의무액</p>
+                                        <p className="text-xl md:text-2xl font-black text-blue-600 tracking-tight">1,068,990,831천원</p>
+                                    </div>
                                     <div>
-                                        <h4 className="text-2xl font-extrabold text-sono-dark tracking-tighter mb-1">가전제품 브랜드/모델 선택</h4>
-                                        <p className="text-[#8b95a1] font-medium">원하시는 가전을 미리 찜해보세요. (상담 시 최종 변경 가능)</p>
-                                    </div>
-                                    <div className="inline-flex items-center gap-2 bg-sono-primary/5 text-sono-primary px-4 py-2 rounded-xl font-bold">
-                                        <span className="w-2 h-2 rounded-full bg-sono-primary animate-pulse"></span>
-                                        {smartCareUnit}구좌 전용 라인업
+                                        <p className="text-xs font-bold text-gray-500 mb-1">상조 관련 자산</p>
+                                        <p className="text-xl md:text-2xl font-black text-blue-600 tracking-tight">1,221,786,713천원</p>
                                     </div>
                                 </div>
-
-                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                                    <button
-                                        type="button"
-                                        onClick={() => setSelectedAppliance("상담 시 결정")}
-                                        className={`group relative flex flex-col items-center justify-center p-6 rounded-[28px] border-2 transition-all h-[240px] ${selectedAppliance === "상담 시 결정" ? "border-sono-primary bg-sono-primary/5 shadow-lg shadow-sono-primary/10" : "border-gray-50 bg-[#f9fafb] hover:border-gray-200"}`}
-                                    >
-                                        <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center text-sono-primary text-3xl mb-4 shadow-sm group-hover:scale-110 transition-transform">?</div>
-                                        <p className="font-black text-sono-dark text-lg mb-1 tracking-tighter">상담 시 결정</p>
-                                        <p className="text-[#8b95a1] font-medium text-xs text-center break-keep">플래너와 상담 후 가장 적합한 모델을 골라드릴게요.</p>
-                                    </button>
-
-                                    {allAppliances
-                                        .filter(item => item.tag && item.tag.includes(`${smartCareUnit}구좌`))
-                                        .map((item, idx) => (
-                                            <button
-                                                key={idx}
-                                                type="button"
-                                                onClick={() => setSelectedAppliance(`${item.brand} ${item.name}`)}
-                                                className={`group flex flex-col p-6 rounded-[28px] border-2 transition-all h-[240px] text-left relative overflow-hidden ${selectedAppliance === `${item.brand} ${item.name}` ? "border-sono-primary bg-white shadow-lg shadow-sono-primary/10" : "border-gray-50 bg-white hover:border-sono-primary/30"}`}
-                                            >
-                                                <div className="relative w-full h-[120px] mb-4 bg-[#f9fafb] rounded-2xl p-4 transition-transform group-hover:scale-105 duration-500">
-                                                    <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
-                                                </div>
-                                                <p className="text-[10px] font-bold text-[#8b95a1] mb-1 uppercase tracking-widest">{item.brand}</p>
-                                                <h5 className="font-extrabold text-sono-dark text-sm leading-tight line-clamp-2">{item.name}</h5>
-                                                {selectedAppliance === `${item.brand} ${item.name}` && (
-                                                    <div className="absolute top-4 right-4 w-6 h-6 bg-sono-primary text-white rounded-full flex items-center justify-center animate-fade-in shadow-md">
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                                                    </div>
-                                                )}
-                                            </button>
-                                        ))
-                                    }
-                                </div>
+                                <p className="text-xs text-gray-400 font-medium">* 2024년 12월말 기준, 공인회계사 회계감사를 완료하였습니다.</p>
                             </div>
-                        </div>
-                    </section>
-                )}
 
-
-                {/* 신청 폼 */}
-                {showForm && (selectedProduct === "happy450" || (selectedProduct === "smartcare" && selectedPlan)) && (
-                    <section id="application-form" className="pb-32 animate-fade-in scroll-mt-24">
-                        <div className="max-w-4xl mx-auto px-6">
-                            <div className="card bg-white !p-10 md:!p-16">
-                                <div className="text-center mb-12">
-                                    <h3 className="text-3xl font-bold text-sono-dark mb-4 tracking-tight">간편 상담 신청</h3>
-                                    <p className="text-[#6b7684] font-medium leading-relaxed">
-                                        신청을 완료하시면 대명소노 그룹의 전문 플래너가<br className="hidden md:block" />
-                                        정확한 혜택 안내를 드릴 수 있도록 빠르게 연락드립니다.
+                            {/* 고객 불입금 관리방법 */}
+                            <div className="bg-white p-8 rounded-[20px] shadow-sm hover:shadow-md transition-shadow">
+                                <h3 className="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2.5">
+                                    <span className="w-1.5 h-5 bg-blue-600 rounded-full inline-block"></span>
+                                    고객 불입금 관리방법
+                                </h3>
+                                <div className="flex items-start gap-3">
+                                    <span className="w-1.5 h-14 bg-blue-100 rounded-full shrink-0 hidden sm:block"></span>
+                                    <p className="text-gray-600 font-medium leading-relaxed break-keep">
+                                        [할부거래에 관한 법률] 제18조에 의거 선불식 할부거래업 등록하였으며, 동법 제27조에 따라 고객 불입금의 50%는 상조보증공제조합에 소비자피해보상을 위한 공제계약을 체결하고 있습니다.
                                     </p>
                                 </div>
+                            </div>
 
-                                <form onSubmit={handleSubmit} className="space-y-10">
-                                    <div className="grid md:grid-cols-2 gap-x-8 gap-y-8">
-                                        <div>
-                                            <label className="input-label !text-[#4e5968] !font-bold mb-2 block">
-                                                성함 <span className="text-sono-primary">*</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4"
-                                                placeholder="홍길동"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="input-label !text-[#4e5968] !font-bold mb-2 block">
-                                                연락처 <span className="text-sono-primary">*</span>
-                                            </label>
-                                            <input
-                                                type="tel"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handlePhoneChange}
-                                                className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4"
-                                                placeholder="010-1234-5678"
-                                                inputMode="numeric"
-                                                required
-                                            />
-                                        </div>
-                                        <div className="md:col-span-2">
-                                            <label className="input-label !text-[#4e5968] !font-bold mb-2 block">
-                                                주소 <span className="text-sono-primary">*</span>
-                                            </label>
-                                            <div className="flex gap-3 mb-3">
-                                                <input
-                                                    type="text"
-                                                    name="zonecode"
-                                                    value={formData.zonecode}
-                                                    className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 flex-1"
-                                                    placeholder="우편번호"
-                                                    readOnly
-                                                    required
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={openAddressSearch}
-                                                    className="bg-sono-primary text-white font-bold px-8 py-3 rounded-2xl hover:brightness-110 transition-all shadow-lg shadow-sono-primary/10"
-                                                >
-                                                    검색
-                                                </button>
-                                            </div>
-                                            <input
-                                                type="text"
-                                                name="address"
-                                                value={formData.address}
-                                                className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 mb-3"
-                                                placeholder="기본 주소"
-                                                readOnly
-                                                required
-                                            />
-                                            <input
-                                                type="text"
-                                                name="addressDetail"
-                                                value={formData.addressDetail}
-                                                onChange={handleChange}
-                                                className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4"
-                                                placeholder="상세 주소 (동/호수)"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="input-label !text-[#4e5968] !font-bold mb-2 block">희망 상담 시간</label>
-                                            <select
-                                                name="preferredTime"
-                                                value={formData.preferredTime}
-                                                onChange={handleChange}
-                                                className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4"
-                                            >
-                                                <option value="">선택 안 함 (상관없음)</option>
-                                                <option value="오전 (09:00~12:00)">오전 (09:00~12:00)</option>
-                                                <option value="오후 (12:00~18:00)">오후 (12:00~18:00)</option>
-                                                <option value="저녁 (18:00~21:00)">저녁 (18:00~21:00)</option>
-                                            </select>
-                                        </div>
-                                        <div className="md:col-span-2">
-                                            <label className="input-label !text-[#4e5968] !font-bold mb-2 block">문의사항 (선택사항)</label>
-                                            <textarea
-                                                name="inquiry"
-                                                value={formData.inquiry}
-                                                onChange={handleChange}
-                                                className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 min-h-[120px] resize-none"
-                                                placeholder="상담 시 궁금하신 점이나 추가 요청사항을 적어주세요."
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-8">
-                                        <div className="bg-[#f2f4f6] rounded-2xl p-6">
-                                            <label className="flex items-center gap-4 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    name="privacyAgreed"
-                                                    id="formPrivacyAgreed"
-                                                    checked={formData.privacyAgreed}
-                                                    onChange={handleChange}
-                                                    className="w-6 h-6 rounded-lg border-gray-300 text-sono-primary focus:ring-sono-primary"
-                                                    required
-                                                />
-                                                <span className="text-[#4e5968] font-bold">
-                                                    개인정보 수집 및 이용에 동의합니다 <span className="text-sono-primary">(필수)</span>
-                                                </span>
-                                            </label>
-                                        </div>
-
-                                        <button
-                                            type="submit"
-                                            disabled={isSubmitting}
-                                            className="w-full btn-primary py-5 text-xl shadow-xl shadow-sono-primary/20 disabled:opacity-50"
-                                        >
-                                            {isSubmitting ? (
-                                                <span className="flex items-center justify-center gap-3">
-                                                    <svg className="animate-spin w-6 h-6" fill="none" viewBox="0 0 24 24">
-                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                                    </svg>
-                                                    상담 신청 데이터 저장 중...
-                                                </span>
-                                            ) : (
-                                                "상담 신청 완료하기"
-                                            )}
-                                        </button>
-                                    </div>
-                                </form>
+                            {/* 소비자 유의사항 */}
+                            <div className="bg-white p-8 rounded-[20px] shadow-sm hover:shadow-md transition-shadow">
+                                <h3 className="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2.5">
+                                    <span className="w-1.5 h-5 bg-blue-600 rounded-full inline-block"></span>
+                                    소비자 유의사항
+                                </h3>
+                                <ul className="space-y-3">
+                                    <li className="flex items-start gap-3">
+                                        <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
+                                        <p className="text-gray-600 font-medium leading-relaxed">장의차량 운행 시 발생되는 도로공사 비용(통행료) 및 주차비 등은 고객 부담입니다.</p>
+                                    </li>
+                                    <li className="flex items-start gap-3">
+                                        <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
+                                        <p className="text-gray-600 font-medium leading-relaxed">장례식장 임대료 및 접객용 음식료 등은 상품 구성에서 제외되어 있습니다.</p>
+                                    </li>
+                                    <li className="flex items-start gap-3">
+                                        <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
+                                        <p className="text-gray-600 font-medium leading-relaxed">회비 납입 도중 행사 발생 시, 발인 전까지 잔여 회비를 일시납 하셔야 합니다.</p>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
-                        {/* 중요정보 고지사항 */}
-                        <div className="py-20 bg-[#f9fafb]">
-                            <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                                <h2 className="text-3xl md:text-4xl font-extrabold text-[#111] text-center mb-12">중요정보 고지사항</h2>
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    {/* 환급기준 및 환급시기 */}
-                                    <div className="bg-white p-8 rounded-[20px] shadow-sm hover:shadow-md transition-shadow">
-                                        <h3 className="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2.5">
-                                            <span className="w-1.5 h-5 bg-blue-600 rounded-full inline-block"></span>
-                                            환급기준 및 환급시기
-                                        </h3>
-                                        <ul className="space-y-3">
-                                            <li className="flex items-start gap-3">
-                                                <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
-                                                <p className="text-gray-600 font-medium leading-relaxed">중도해약에 대한 환급 기준은 상조서비스 약관 규정에 의해 환급됩니다.</p>
-                                            </li>
-                                            <li className="flex items-start gap-3">
-                                                <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
-                                                <p className="text-gray-600 font-medium leading-relaxed">환급금은 신청완료일로부터 3영업일 이내에 수령하실 수 있습니다.</p>
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                    {/* 총 고객환급의무액 및 자산 현황 */}
-                                    <div className="bg-white p-8 rounded-[20px] shadow-sm hover:shadow-md transition-shadow">
-                                        <h3 className="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2.5">
-                                            <span className="w-1.5 h-5 bg-blue-600 rounded-full inline-block"></span>
-                                            총 고객환급의무액 및 자산 현황
-                                        </h3>
-                                        <div className="bg-blue-50/50 rounded-xl p-5 mb-3 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                            <div className="sm:border-r sm:border-blue-100 sm:pr-6">
-                                                <p className="text-xs font-bold text-gray-500 mb-1">총 고객환급의무액</p>
-                                                <p className="text-xl md:text-2xl font-black text-blue-600 tracking-tight">1,068,990,831천원</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-bold text-gray-500 mb-1">상조 관련 자산</p>
-                                                <p className="text-xl md:text-2xl font-black text-blue-600 tracking-tight">1,221,786,713천원</p>
-                                            </div>
-                                        </div>
-                                        <p className="text-xs text-gray-400 font-medium">* 2024년 12월말 기준, 공인회계사 회계감사를 완료하였습니다.</p>
-                                    </div>
-
-                                    {/* 고객 불입금 관리방법 */}
-                                    <div className="bg-white p-8 rounded-[20px] shadow-sm hover:shadow-md transition-shadow">
-                                        <h3 className="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2.5">
-                                            <span className="w-1.5 h-5 bg-blue-600 rounded-full inline-block"></span>
-                                            고객 불입금 관리방법
-                                        </h3>
-                                        <div className="flex items-start gap-3">
-                                            <span className="w-1.5 h-14 bg-blue-100 rounded-full shrink-0 hidden sm:block"></span>
-                                            <p className="text-gray-600 font-medium leading-relaxed break-keep">
-                                                [할부거래에 관한 법률] 제18조에 의거 선불식 할부거래업 등록하였으며, 동법 제27조에 따라 고객 불입금의 50%는 상조보증공제조합에 소비자피해보상을 위한 공제계약을 체결하고 있습니다.
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* 소비자 유의사항 */}
-                                    <div className="bg-white p-8 rounded-[20px] shadow-sm hover:shadow-md transition-shadow">
-                                        <h3 className="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2.5">
-                                            <span className="w-1.5 h-5 bg-blue-600 rounded-full inline-block"></span>
-                                            소비자 유의사항
-                                        </h3>
-                                        <ul className="space-y-3">
-                                            <li className="flex items-start gap-3">
-                                                <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
-                                                <p className="text-gray-600 font-medium leading-relaxed">장의차량 운행 시 발생되는 도로공사 비용(통행료) 및 주차비 등은 고객 부담입니다.</p>
-                                            </li>
-                                            <li className="flex items-start gap-3">
-                                                <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
-                                                <p className="text-gray-600 font-medium leading-relaxed">장례식장 임대료 및 접객용 음식료 등은 상품 구성에서 제외되어 있습니다.</p>
-                                            </li>
-                                            <li className="flex items-start gap-3">
-                                                <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
-                                                <p className="text-gray-600 font-medium leading-relaxed">회비 납입 도중 행사 발생 시, 발인 전까지 잔여 회비를 일시납 하셔야 합니다.</p>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                )}
+                    </div>
+                </section>
             </main >
             {!isInquiryModalOpen && <Footer />
             }
