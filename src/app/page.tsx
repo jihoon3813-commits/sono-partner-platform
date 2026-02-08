@@ -124,48 +124,33 @@ export default function HomePage() {
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
                             {[
                                 {
-                                    icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />,
-                                    value: "1조원+",
-                                    label: "고객 선수금 돌파",
-                                    info: "(2024년 6월 기준)",
-                                    color: "text-sono-primary",
-                                    bgColor: "bg-sono-primary/10"
+                                    image: "https://github.com/jihoon3813-commits/img_sono/blob/main/credibility_list01.jpg?raw=true",
+                                    title: "고객 선수금 1조 돌파",
+                                    subtitle: "2024 06월 기준"
                                 },
                                 {
-                                    icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />,
-                                    value: "100억원",
-                                    label: "자본금 보유",
-                                    info: "(법정 기준의 6배)",
-                                    color: "text-sono-gold",
-                                    bgColor: "bg-sono-gold/10"
+                                    image: "https://github.com/jihoon3813-commits/img_sono/blob/main/credibility_list03.jpg?raw=true",
+                                    title: "자본금 100억원",
+                                    subtitle: "법정 자본금(15억원)요건 6배"
                                 },
                                 {
-                                    icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />,
-                                    value: "1등급",
-                                    label: "신용평가 획득",
-                                    info: "(재무 안정성 최상위)",
-                                    color: "text-sono-success",
-                                    bgColor: "bg-sono-success/10"
+                                    image: "https://github.com/jihoon3813-commits/img_sono/blob/main/credibility_list04.jpg?raw=true",
+                                    title: "대명소노그룹사",
+                                    subtitle: "2024년 기준 대규모기업"
                                 },
                                 {
-                                    icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />,
-                                    value: "150만+",
-                                    label: "누적 고객 수",
-                                    info: "(신뢰의 기반)",
-                                    color: "text-sono-primary",
-                                    bgColor: "bg-sono-primary/10"
+                                    image: "https://github.com/jihoon3813-commits/img_sono/blob/main/credibility_list02.jpg?raw=true",
+                                    title: "신용평가 1등급",
+                                    subtitle: "기준: 2025.8.1~2025.7.31 / 상조보증공제조합"
                                 }
                             ].map((item, i) => (
-                                <div key={i} className="card group hover:bg-[#f9fafb] border border-transparent hover:border-gray-100 !p-6 md:!p-8 flex flex-row md:flex-col items-center md:items-start text-left gap-4 md:gap-0">
-                                    <div className={`w-14 h-14 md:mb-8 rounded-2xl ${item.bgColor} flex items-center justify-center flex-shrink-0`}>
-                                        <svg className={`w-7 h-7 ${item.color}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            {item.icon}
-                                        </svg>
+                                <div key={i} className="card !p-0 overflow-hidden border border-gray-100 shadow-sm transition-all hover:shadow-md group">
+                                    <div className="aspect-[4/3] relative overflow-hidden">
+                                        <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                     </div>
-                                    <div>
-                                        <p className={`text-3xl md:text-4xl font-bold ${item.color} mb-1 md:mb-2 tracking-tight`}>{item.value}</p>
-                                        <p className="text-base md:text-lg font-bold text-sono-dark">{item.label}</p>
-                                        <p className="text-xs md:text-sm font-medium text-[#8b95a1] mt-0.5 md:mt-1">{item.info}</p>
+                                    <div className="p-6 bg-white">
+                                        <p className="font-bold text-sono-dark text-lg mb-1">{item.title}</p>
+                                        <p className="text-xs text-[#8b95a1] font-medium leading-relaxed">{item.subtitle}</p>
                                     </div>
                                 </div>
                             ))}
