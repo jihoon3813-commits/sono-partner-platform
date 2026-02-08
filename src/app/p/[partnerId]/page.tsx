@@ -353,7 +353,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                 {/* Sono Logo */}
                                 <div className="flex items-center justify-center">
                                     <img
-                                        src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png?raw=true"
+                                        src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA.png?raw=true"
                                         alt="Sono I'M READY"
                                         className="h-6 sm:h-8 w-auto object-contain max-w-[120px]"
                                     />
