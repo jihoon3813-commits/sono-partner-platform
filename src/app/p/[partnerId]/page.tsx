@@ -445,34 +445,46 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                             </p>
                         </div>
 
-                        {/* 인증 배지 */}
-                        <div className="bg-white rounded-[24px] md:rounded-[32px] p-6 md:p-12 text-center border border-gray-100 shadow-sm max-w-6xl mx-auto">
-                            <h3 className="font-bold text-[#4e5968] text-xl mb-10 tracking-tight">대내외적으로 공인된 신뢰성</h3>
-                            <div className="grid grid-cols-1 md:flex md:flex-wrap justify-center gap-4 md:gap-20">
-                                {[
-                                    { label: "CCM 인증", info: "소비자중심경영 인증", color: "from-blue-500 to-blue-600" },
-                                    { label: "ISMS-P 인증", info: "정보보호 관리체계 인증", color: "from-green-500 to-green-600" },
-                                    { label: "업계 2위", info: "대한민국 상조업계", color: "from-purple-500 to-purple-600" }
-                                ].map((badge, i) => (
-                                    <div key={i} className="flex flex-row md:flex-col items-center gap-4 p-4 md:p-0 bg-[#f9fafb] md:bg-transparent rounded-2xl md:rounded-none">
-                                        <div className={`w-12 h-12 md:w-16 md:h-16 rounded-[18px] md:rounded-[24px] bg-gradient-to-br ${badge.color} flex items-center justify-center shadow-lg flex-shrink-0`}>
-                                            <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <div className="text-left md:text-center">
-                                            <p className="font-bold text-sono-dark text-sm md:text-base">{badge.label}</p>
-                                            <p className="text-xs md:text-sm font-medium text-[#8b95a1]">{badge.info}</p>
-                                        </div>
+
+                        {/* 주요 사업 영역 */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12 max-w-6xl mx-auto">
+                            {[
+                                {
+                                    category: "LIFE STYLE",
+                                    title: "소노아임레디",
+                                    desc: "상조 · 웨딩 · 여행 토탈라이프케어 서비스",
+                                    logo: "https://www.sonoimready.com/assets/images/cs/logo_dm_h_dark.png"
+                                },
+                                {
+                                    category: "HOTEL & RESORT",
+                                    title: "소노호텔앤리조트",
+                                    desc: "세계로 향하는 대한민국 대표 호스피탈리티 기업",
+                                    logo: "https://www.sonoimready.com/assets/images/cs/logo_sono.png"
+                                },
+                                {
+                                    category: "ENTERTAINMENTS",
+                                    title: "비발디파크 오션월드/스키월드",
+                                    desc: "대명소노그룹의 흥미로운 여행 액티비티\n대명소노그룹 골프, 승마, 요트, Pet, 소노 스카이거너스 프로농구단",
+                                    logo: "https://www.sonoimready.com/assets/images/cs/logo_vivaldi_park.png"
+                                }
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white rounded-[24px] md:rounded-[32px] p-8 md:p-10 border border-gray-100 shadow-sm flex flex-col min-h-[280px] text-left relative group hover:shadow-md transition-all">
+                                    <div className="flex-1">
+                                        <p className="text-sono-primary font-bold text-xs md:text-sm tracking-wider mb-3 leading-none">{item.category}</p>
+                                        <h4 className="text-xl md:text-2xl font-black text-sono-dark mb-4 break-keep leading-tight">{item.title}</h4>
+                                        <p className="text-[#8b95a1] text-xs md:text-sm font-medium leading-relaxed whitespace-pre-line break-keep">{item.desc}</p>
                                     </div>
-                                ))}
-                            </div>
+                                    <div className="mt-8 flex justify-end">
+                                        <img src={item.logo} alt={item.title} className="h-6 md:h-8 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity" />
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </section>
 
                 {/* 상품 선택 */}
-                <section id="product-selection" className="py-24 md:py-40 scroll-mt-24 bg-gradient-to-b from-[#f2f4f6] to-white relative overflow-hidden">
+                <section id="product-selection" className="py-12 md:py-24 scroll-mt-24 bg-gradient-to-b from-[#f2f4f6] to-white relative overflow-hidden">
                     {/* 데코레이션 배경 요소 */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
 
@@ -909,8 +921,9 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                         </div>
                     </section>
                 )}
-            </main>
-            {!isInquiryModalOpen && <Footer />}
+            </main >
+            {!isInquiryModalOpen && <Footer />
+            }
 
             <InquiryModal
                 isOpen={isInquiryModalOpen}
