@@ -397,24 +397,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                             </p>
                         </div>
 
-                        {/* 브랜드 의미 */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-24 max-w-6xl mx-auto">
-                            {[
-                                { char: "S", label: "SONO", desc: "축적된 자산의 모든 서비스", color: "bg-sono-primary" },
-                                { char: "I", label: "I'M", desc: "고객 맞춤형 서비스", color: "bg-sono-gold" },
-                                { char: "R", label: "READY", desc: "항상 준비된 상태", color: "bg-sono-success" }
-                            ].map((item, i) => (
-                                <div key={i} className="flex items-center gap-4 md:gap-5 px-5 py-5 md:px-8 md:py-7 bg-white rounded-[28px] md:rounded-[32px] shadow-sm border border-gray-50 text-left transition-all hover:shadow-md">
-                                    <span className={`w-12 h-12 md:w-14 md:h-14 rounded-[16px] md:rounded-[18px] ${item.color} flex items-center justify-center text-white text-lg md:text-xl font-bold shadow-lg flex-shrink-0`}>
-                                        {item.char}
-                                    </span>
-                                    <div>
-                                        <p className="text-[10px] md:text-xs font-bold text-[#8b95a1] mb-0.5 md:mb-1">{item.label}</p>
-                                        <p className="font-bold text-sono-dark text-base md:text-xl leading-tight">{item.desc}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+
 
                         {/* 주요 성과 카드 */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-24 max-w-6xl mx-auto">
