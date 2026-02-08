@@ -435,6 +435,16 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                             ))}
                         </div>
 
+                        {/* 브랜드 소개 텍스트 */}
+                        <div className="max-w-4xl mx-auto mb-24 text-center">
+                            <p className="text-[#4e5968] text-lg md:text-xl leading-relaxed font-medium break-keep">
+                                지난 40년 이상 국내 레저사업을 이끌어온 대명소노그룹의 서비스 노하우를 바탕으로 설립된 (주)소노스테이션의 대표 브랜드 소노아임레디.
+                                소노아임레디는 상조 서비스를 중심으로 여행, 교육, 웨딩 등 삶에 필요한 서비스를 제공하고 있습니다.
+                                다양한 라이프케어 서비스를 소비자가 원하는 시점에 선택하여 이용할 수 있도록 항상 준비되어 있습니다.
+                                소노아임레디를 통해 고객의 삶을 더욱 풍요롭게 하는 것이 우리 브랜드의 목표입니다.
+                            </p>
+                        </div>
+
                         {/* 인증 배지 */}
                         <div className="bg-white rounded-[24px] md:rounded-[32px] p-6 md:p-12 text-center border border-gray-100 shadow-sm max-w-6xl mx-auto">
                             <h3 className="font-bold text-[#4e5968] text-xl mb-10 tracking-tight">대내외적으로 공인된 신뢰성</h3>
