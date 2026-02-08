@@ -9,17 +9,20 @@ export default function Footer() {
                     <div className="md:col-span-4">
                         <div className="flex items-center mb-6">
                             <img
-                                src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94%20BI_3.png?raw=true"
+                                src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png?raw=true"
                                 alt="SONO I'M READY"
                                 className="h-7 w-auto object-contain grayscale opacity-80"
                             />
                         </div>
-                        <p className="text-[#6b7684] font-medium text-sm leading-relaxed mb-8 break-keep">
-                            대한민국 상조업계 2위 소노아임레디와 함께하는 제휴 파트너 플랫폼입니다.
-                            회원제 쇼핑몰을 위한 새로운 수익 창출 기회를 제공합니다.
-                        </p>
                         <div className="space-y-1.5 text-xs font-bold text-[#adb5bd]">
-                            <p className="text-sono-dark text-base font-bold mb-2">(주)라이프앤조이 | 소노아임레디 공식총판</p>
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="text-sono-dark text-base font-bold">(주)라이프앤조이 |</span>
+                                <img
+                                    src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA.png?raw=true"
+                                    alt="소노아임레디 공식총판"
+                                    className="h-5 w-auto object-contain"
+                                />
+                            </div>
                             <p>경기도 하남시 미사대로 510, 624호(아이에스비즈타워) <span className="mx-2 opacity-30">|</span> 사업자등록번호 : 388-86-02921</p>
                             <p>E-mail : lifenjoy0296@gmail.com <span className="mx-2 opacity-30">|</span> 개인정보보호책임자 : 이지건(lifenjoy0108@gmail.co.kr)</p>
                         </div>

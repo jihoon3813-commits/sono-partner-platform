@@ -25,16 +25,16 @@ export default function HomePage() {
                                 <div className="inline-block bg-sono-primary text-white border border-white/20 mb-6 px-4 py-2 rounded-lg text-sm font-bold shadow-xl">
                                     상조를 넘어 라이프케어로
                                 </div>
-                                <h1 className="leading-[1.2] mb-8 tracking-tighter filter drop-shadow-2xl">
-                                    <span className="block text-3xl md:text-4xl lg:text-5xl mb-4 text-white/90 font-extrabold">소노아임레디와 함께</span>
-                                    <span className="text-4xl md:text-5xl lg:text-[4.5rem] font-black text-white drop-shadow-md block">
-                                        파트너사의<br />
-                                        새로운 수익 모델을<br />
-                                        도입하세요.
+                                <h1 className="leading-[1.1] mb-8 tracking-tighter filter drop-shadow-2xl">
+                                    <span className="block text-xl md:text-2xl lg:text-3xl mb-6 text-white/90 font-extrabold">소노아임레디 공식총판과 함께</span>
+                                    <span className="text-3xl md:text-6xl lg:text-[4.5rem] font-black text-white drop-shadow-md block leading-[1.15]">
+                                        <span className="block mb-2 whitespace-nowrap">파트너사의 비즈니스에</span>
+                                        <span className="block mb-2">새로운 수익 모델을</span>
+                                        <span className="block">도입하세요.</span>
                                     </span>
                                 </h1>
                                 <p className="text-xl md:text-2xl text-white mb-12 leading-relaxed max-w-2xl break-keep font-semibold drop-shadow-sm">
-                                    소노아임레디의 제휴 파트너가 되어 파트너사의 회원들에게 최고의 혜택을 제공하고, 파트너사는 안정적인 수익을 확보할 수 있습니다.
+                                    소노아임레디 공식총판의 제휴파트너가 되어 파트너사의 회원들에게 최고의 혜택을 제공하고, 파트너사는 안정적인 수익을 확보할 수 있습니다.
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-5">
                                     <Link href="/partner/apply" className="bg-white text-sono-primary hover:bg-sono-gold hover:text-white px-10 py-5 rounded-2xl font-bold text-xl active:scale-[0.98] transition-all duration-300 shadow-2xl shadow-black/20 text-center">
@@ -395,7 +395,7 @@ export default function HomePage() {
                             <span className="badge-primary mb-6 px-4 py-2">BENEFITS</span>
                             <h2 className="section-title">파트너에게 드리는 혜택</h2>
                             <p className="section-subtitle max-w-2xl mx-auto">
-                                소노아임레디 제휴 파트너가 되시면 다양한 혜택을 제공해 드립니다.
+                                소노아임레디 공식총판의 제휴파트너가 되시면 다양한 혜택을 제공해 드립니다.
                             </p>
                         </div>
 
@@ -671,7 +671,7 @@ export default function HomePage() {
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-sono-primary/10 to-transparent z-0"></div>
                     <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 text-center relative z-10">
                         <h2 className="text-4xl md:text-5xl font-bold mb-10 tracking-tighter leading-tight">
-                            소노아임레디 제휴 파트너가 되어<br />
+                            소노아임레디 공식총판의 제휴파트너가 되어<br />
                             <span className="text-gradient">새로운 수익의 기회</span>를 잡으세요
                         </h2>
                         <p className="text-xl text-white/60 mb-12 font-medium">

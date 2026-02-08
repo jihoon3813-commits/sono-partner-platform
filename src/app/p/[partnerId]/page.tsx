@@ -353,7 +353,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                 {/* Sono Logo */}
                                 <div className="flex items-center justify-center">
                                     <img
-                                        src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94%20BI_3.png?raw=true"
+                                        src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png?raw=true"
                                         alt="Sono I'M READY"
                                         className="h-6 sm:h-8 w-auto object-contain max-w-[120px]"
                                     />
@@ -365,7 +365,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                             {partner.landingTitle || `${partner.name} 회원`}님을 위한<br />특별한 라이프 케어 솔루션
                         </h1>
                         <p className="text-xl md:text-2xl text-white/90 font-bold mb-12 leading-relaxed break-keep max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                            소노아임레디와 함께하는 프리미엄 혜택<br />
+                            소노아임레디 공식총판과 함께하는 프리미엄 혜택<br />
                             <span className="text-sono-gold underline underline-offset-8 decoration-sono-gold/40">{partner.pointInfo}</span>
                         </p>
                         <div className="flex flex-col sm:flex-row gap-5 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }}>

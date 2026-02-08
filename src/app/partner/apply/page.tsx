@@ -228,7 +228,7 @@ export default function PartnerApplyPage() {
                             제휴 파트너 신청
                         </h1>
                         <p className="text-xl text-gray-200 font-medium leading-relaxed max-w-2xl mx-auto break-keep">
-                            소노아임레디와 함께할 파트너사를 기다립니다.<br />
+                            소노아임레디 공식총판과 함께할 파트너사를 기다립니다.<br />
                             아래 정보를 입력해주시면 검토 후 연락드리겠습니다.
                         </p>
                     </div>
