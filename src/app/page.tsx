@@ -394,6 +394,87 @@ export default function HomePage() {
                     </div>
                 </section>
 
+                {/* 중요정보 고지사항 */}
+                <section className="py-20 bg-[#f9fafb]">
+                    <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                        <h2 className="text-3xl md:text-4xl font-extrabold text-[#111] text-center mb-12">중요정보 고지사항</h2>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {/* 환급기준 및 환급시기 */}
+                            <div className="bg-white p-8 rounded-[20px] shadow-sm hover:shadow-md transition-shadow">
+                                <h3 className="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2.5">
+                                    <span className="w-1.5 h-5 bg-blue-600 rounded-full inline-block"></span>
+                                    환급기준 및 환급시기
+                                </h3>
+                                <ul className="space-y-3">
+                                    <li className="flex items-start gap-3">
+                                        <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
+                                        <p className="text-gray-600 font-medium leading-relaxed">중도해약에 대한 환급 기준은 상조서비스 약관 규정에 의해 환급됩니다.</p>
+                                    </li>
+                                    <li className="flex items-start gap-3">
+                                        <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
+                                        <p className="text-gray-600 font-medium leading-relaxed">환급금은 신청완료일로부터 3영업일 이내에 수령하실 수 있습니다.</p>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            {/* 총 고객환급의무액 및 자산 현황 */}
+                            <div className="bg-white p-8 rounded-[20px] shadow-sm hover:shadow-md transition-shadow">
+                                <h3 className="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2.5">
+                                    <span className="w-1.5 h-5 bg-blue-600 rounded-full inline-block"></span>
+                                    총 고객환급의무액 및 자산 현황
+                                </h3>
+                                <div className="bg-blue-50/50 rounded-xl p-5 mb-3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div className="sm:border-r sm:border-blue-100 sm:pr-6">
+                                        <p className="text-xs font-bold text-gray-500 mb-1">총 고객환급의무액</p>
+                                        <p className="text-xl md:text-2xl font-black text-blue-600 tracking-tight">1,068,990,831천원</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold text-gray-500 mb-1">상조 관련 자산</p>
+                                        <p className="text-xl md:text-2xl font-black text-blue-600 tracking-tight">1,221,786,713천원</p>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-gray-400 font-medium">* 2024년 12월말 기준, 공인회계사 회계감사를 완료하였습니다.</p>
+                            </div>
+
+                            {/* 고객 불입금 관리방법 */}
+                            <div className="bg-white p-8 rounded-[20px] shadow-sm hover:shadow-md transition-shadow">
+                                <h3 className="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2.5">
+                                    <span className="w-1.5 h-5 bg-blue-600 rounded-full inline-block"></span>
+                                    고객 불입금 관리방법
+                                </h3>
+                                <div className="flex items-start gap-3">
+                                    <span className="w-1.5 h-14 bg-blue-100 rounded-full shrink-0 hidden sm:block"></span>
+                                    <p className="text-gray-600 font-medium leading-relaxed break-keep">
+                                        [할부거래에 관한 법률] 제18조에 의거 선불식 할부거래업 등록하였으며, 동법 제27조에 따라 고객 불입금의 50%는 상조보증공제조합에 소비자피해보상을 위한 공제계약을 체결하고 있습니다.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* 소비자 유의사항 */}
+                            <div className="bg-white p-8 rounded-[20px] shadow-sm hover:shadow-md transition-shadow">
+                                <h3 className="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2.5">
+                                    <span className="w-1.5 h-5 bg-blue-600 rounded-full inline-block"></span>
+                                    소비자 유의사항
+                                </h3>
+                                <ul className="space-y-3">
+                                    <li className="flex items-start gap-3">
+                                        <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
+                                        <p className="text-gray-600 font-medium leading-relaxed">장의차량 운행 시 발생되는 도로공사 비용(통행료) 및 주차비 등은 고객 부담입니다.</p>
+                                    </li>
+                                    <li className="flex items-start gap-3">
+                                        <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
+                                        <p className="text-gray-600 font-medium leading-relaxed">장례식장 임대료 및 접객용 음식료 등은 상품 구성에서 제외되어 있습니다.</p>
+                                    </li>
+                                    <li className="flex items-start gap-3">
+                                        <span className="w-1 h-1 bg-gray-400 rounded-full mt-2.5 shrink-0"></span>
+                                        <p className="text-gray-600 font-medium leading-relaxed">회비 납입 도중 행사 발생 시, 발인 전까지 잔여 회비를 일시납 하셔야 합니다.</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* 제휴 혜택 섹션 */}
                 <section id="partnership-guide" className="py-16 md:py-32 bg-[#f2f4f6]">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
