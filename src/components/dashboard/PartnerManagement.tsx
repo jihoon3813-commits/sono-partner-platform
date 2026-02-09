@@ -235,10 +235,10 @@ export default function PartnerManagement({ partners, onRefresh, isAdmin = false
 
     // Filter partners first
     const filteredPartners = partners.filter(p =>
-        p.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.loginId?.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by Login ID
-        p.partnerId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.managerName.toLowerCase().includes(searchTerm.toLowerCase())
+        (p.companyName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.loginId || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.partnerId || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.managerName || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // Build hierarchy from filtered partners

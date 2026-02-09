@@ -93,21 +93,21 @@ export default function PartnerDashboard() {
         return acc;
     }, {});
 
-    const statusList = ['접수', '상담중', '부재', '거부', '접수취소', '계약완료', '1회출금완료', '배송완료', '정산완료', '청약철회', '해약완료'];
+    const statusList = ['접수', '대기', '상담중', '부재', '보류', '거부', '접수취소', '정상가입', '1회출금', '청약철회', '해약'];
 
     const getStatusColor = (status: string) => {
         switch (status) {
             case '접수': return 'text-blue-500';
+            case '대기': return 'text-slate-500';
             case '상담중': return 'text-amber-500';
             case '부재': return 'text-gray-400';
+            case '보류': return 'text-orange-500';
             case '거부': return 'text-red-500';
             case '접수취소': return 'text-rose-500';
-            case '계약완료': return 'text-emerald-500';
-            case '1회출금완료': return 'text-teal-500';
-            case '배송완료': return 'text-indigo-500';
-            case '정산완료': return 'text-purple-500';
+            case '정상가입': return 'text-emerald-500';
+            case '1회출금': return 'text-teal-500';
             case '청약철회': return 'text-pink-500';
-            case '해약완료': return 'text-stone-500';
+            case '해약': return 'text-stone-500';
             default: return 'text-gray-400';
         }
     };

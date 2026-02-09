@@ -20,13 +20,13 @@ export async function POST() {
         const demoApplications = [
             { name: "김태희", phone: "010-1111-2222", product: "스마트케어", plan: "4구좌 / 삼성 Neo QLED 8K", status: "접수", address: "서울특별시 강남구 테헤란로 123" },
             { name: "이병헌", phone: "010-2222-3333", product: "더 해피 450 ONE", plan: "베이직", status: "상담중", address: "경기도 성남시 분당구 판교역로 45" },
-            { name: "송혜교", phone: "010-3333-4444", product: "스마트케어", plan: "2구좌 / LG 오브제 냉장고", status: "계약완료", address: "부산광역시 해운대구 마린시티 78" },
-            { name: "공유", phone: "010-4444-5555", product: "스마트케어", plan: "4구좌 / 삼성 비스포크 세탁기", status: "설치완료", address: "대구광역시 수성구 달구벌대로 99" },
-            { name: "수지", phone: "010-5555-6666", product: "더 해피 450 ONE", plan: "프리미엄", status: "취소", address: "인천광역시 연수구 송도미래로 12" },
+            { name: "송혜교", phone: "010-3333-4444", product: "스마트케어", plan: "2구좌 / LG 오브제 냉장고", status: "정상가입", address: "부산광역시 해운대구 마린시티 78" },
+            { name: "공유", phone: "010-4444-5555", product: "스마트케어", plan: "4구좌 / 삼성 비스포크 세탁기", status: "정상가입", address: "대구광역시 수성구 달구벌대로 99" },
+            { name: "수지", phone: "010-5555-6666", product: "더 해피 450 ONE", plan: "프리미엄", status: "접수취소", address: "인천광역시 연수구 송도미래로 12" },
             { name: "정우성", phone: "010-6666-7777", product: "스마트케어", plan: "4구좌 / LG 스타일러", status: "접수", address: "광주광역시 서구 상무중앙로 34" },
             { name: "한효주", phone: "010-7777-8888", product: "스마트케어", plan: "2구좌 / 삼성 Neo QLED 8K", status: "상담중", address: "대전광역시 서구 둔산로 56" },
-            { name: "조인성", phone: "010-8888-9999", product: "더 해피 450 ONE", plan: "베이직", status: "계약완료", address: "울산광역시 남구 삼산로 21" },
-            { name: "손예진", phone: "010-9999-0000", product: "스마트케어", plan: "4구좌 / 삼성 비스포크 세탁기", status: "설치완료", address: "제주특별자치도 제주시 노형로 8" },
+            { name: "조인성", phone: "010-8888-9999", product: "더 해피 450 ONE", plan: "베이직", status: "정상가입", address: "울산광역시 남구 삼산로 21" },
+            { name: "손예진", phone: "010-9999-0000", product: "스마트케어", plan: "4구좌 / 삼성 비스포크 세탁기", status: "정상가입", address: "제주특별자치도 제주시 노형로 8" },
             { name: "원빈", phone: "010-1010-2020", product: "더 해피 450 ONE", plan: "프리미엄", status: "접수", address: "강원도 춘천시 중앙로 15" },
         ];
 

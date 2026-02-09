@@ -60,10 +60,18 @@ export default defineSchema({
         deliveryDate: v.optional(v.string()),
         settlement_date: v.optional(v.string()),
         settlementDate: v.optional(v.string()),
+        // 추가 필드
+        firstPaymentDate: v.optional(v.string()), // 초회납입일
+        registrationDate: v.optional(v.string()), // 신규등록일
+        paymentMethod: v.optional(v.string()), // 납입방법
+        cancellationProcessing: v.optional(v.string()), // 해약처리
+        withdrawalProcessing: v.optional(v.string()), // 청약철회
+        remarks: v.optional(v.string()), // 비고(사유)
     })
         .index("by_applicationNo", ["applicationNo"])
         .index("by_partnerId", ["partnerId"])
-        .index("by_createdAt", ["createdAt"]),
+        .index("by_createdAt", ["createdAt"])
+        .index("by_customer_sync", ["customerName", "customerPhone", "partnerName", "registrationDate"]),
 
     // 상품 테이블 
     products: defineTable({

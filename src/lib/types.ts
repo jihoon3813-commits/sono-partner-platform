@@ -54,21 +54,27 @@ export interface Application {
     contractDate?: string;
     deliveryDate?: string;
     settlementDate?: string;
+    firstPaymentDate?: string;
+    registrationDate?: string;
+    paymentMethod?: string;
+    cancellationProcessing?: string;
+    withdrawalProcessing?: string;
+    remarks?: string;
 }
 
 // 계약 상태
 export type ApplicationStatus =
     | '접수'
+    | '대기'
     | '상담중'
     | '부재'
+    | '보류'
     | '거부'
     | '접수취소'
-    | '계약완료'
-    | '1회출금완료'
-    | '배송완료'
-    | '정산완료'
+    | '정상가입'
+    | '1회출금'
     | '청약철회'
-    | '해약완료';
+    | '해약';
 
 // 상태 변경 이력
 export interface StatusHistory {

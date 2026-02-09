@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Application, Partner, ApplicationStatus } from "@/lib/types";
 import CustomerDetailModal from "./CustomerDetailModal";
 import CustomerRegistrationModal from "./CustomerRegistrationModal";
+import BulkUploadModal from "./BulkUploadModal";
 
 interface CustomerManagementProps {
     applications: Application[];
@@ -18,25 +19,27 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         switch (status) {
             case '접수':
                 return 'bg-blue-50 text-blue-600 border border-blue-100';
+            case '대기':
+                return 'bg-slate-50 text-slate-600 border border-slate-100';
             case '상담중':
                 return 'bg-amber-50 text-amber-600 border border-amber-100';
             case '부재':
                 return 'bg-gray-50 text-gray-500 border border-gray-100';
+            case '보류':
+                return 'bg-orange-50 text-orange-600 border border-orange-100';
             case '거부':
+            case '수신거부':
                 return 'bg-red-50 text-red-600 border border-red-100';
             case '접수취소':
+            case '가입취소':
                 return 'bg-rose-50 text-rose-600 border border-rose-100';
-            case '계약완료':
+            case '정상가입':
                 return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
-            case '1회출금완료':
+            case '1회출금':
                 return 'bg-teal-50 text-teal-600 border border-teal-100';
-            case '배송완료':
-                return 'bg-indigo-50 text-indigo-600 border border-indigo-100';
-            case '정산완료':
-                return 'bg-purple-50 text-purple-600 border border-purple-100';
             case '청약철회':
                 return 'bg-pink-50 text-pink-600 border border-pink-100';
-            case '해약완료':
+            case '해약':
                 return 'bg-stone-50 text-stone-600 border border-stone-100';
             default:
                 return 'bg-gray-50 text-gray-400 border border-gray-200';
@@ -58,13 +61,19 @@ export default function CustomerManagement({ applications, onRefresh, partners =
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedApp, setSelectedApp] = useState<Application | null>(null);
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
+    const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
 
     // Filters
     const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter);
     const [productFilter, setProductFilter] = useState<string>("all");
+    const [partnersFilter, setPartnersFilter] = useState<string>("all");
     const [dateFilter, setDateFilter] = useState<string>("all");
     const [customStartDate, setCustomStartDate] = useState("");
     const [customEndDate, setCustomEndDate] = useState("");
+
+    // Pagination
+    const [itemsPerPage, setItemsPerPage] = useState(20);
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         if (initialStatusFilter) {
@@ -72,7 +81,12 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         }
     }, [initialStatusFilter]);
 
-    const statusOptions = ['전체', '접수', '상담중', '부재', '거부', '접수취소', '계약완료', '1회출금완료', '배송완료', '정산완료', '청약철회', '해약완료'];
+    // Reset page when filter changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, statusFilter, productFilter, dateFilter, customStartDate, customEndDate, itemsPerPage]);
+
+    const statusOptions = ['전체', '접수', '대기', '상담중', '부재', '보류', '거부', '접수취소', '정상가입', '1회출금', '청약철회', '해약'];
 
     // 상품 종류 추출 (전체 고객 데이터 기반)
     const productOptions = ['전체', ...Array.from(new Set(applications.map(app => app.productType).filter(Boolean)))];
@@ -100,27 +114,33 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         return d;
     };
 
-    const filteredApplications = applications.filter(app => {
-        // Search Term
-        const searchMatch =
-            app.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            app.customerPhone.includes(searchTerm) ||
-            app.partnerName.toLowerCase().includes(searchTerm.toLowerCase());
+    const now = new Date();
+    const today = now.toISOString().slice(0, 10);
+    const thisMonth = now.toISOString().slice(0, 7);
 
+    // 1. Initial filtered applications based on search, date, and basic criteria
+    const initialFiltered = (applications || []).filter(app => {
+        if (!app) return false;
+
+        // Search Match (Defensive)
+        const name = (app.customerName || "").toLowerCase();
+        const phone = (app.customerPhone || "");
+        const pName = (app.partnerName || "").toLowerCase();
+        const sTerm = (searchTerm || "").toLowerCase();
+        const searchMatch = name.includes(sTerm) || phone.includes(searchTerm) || pName.includes(sTerm);
         if (!searchMatch) return false;
 
-        // Status Filter
-        if (statusFilter !== 'all' && statusFilter !== '전체' && app.status !== statusFilter) return false;
-
-        // Product Filter
-        if (productFilter !== 'all' && productFilter !== '전체' && app.productType !== productFilter) return false;
-
         // Date Filter
-        if (dateFilter !== 'all') {
-            const appDate = new Date(app.createdAt);
-            if (dateFilter === 'custom') {
+        if (dateFilter && dateFilter !== "all") {
+            const createdAt = app.createdAt || "";
+            const appDate = new Date(createdAt);
+
+            if (dateFilter === "today") {
+                if (createdAt.slice(0, 10) !== today) return false;
+            } else if (dateFilter === "month") {
+                if (createdAt.slice(0, 7) !== thisMonth) return false;
+            } else if (dateFilter === 'custom') {
                 if (customStartDate && new Date(customStartDate) > appDate) return false;
-                // End date inclusive (until end of day)
                 if (customEndDate) {
                     const end = new Date(customEndDate);
                     end.setHours(23, 59, 59, 999);
@@ -132,16 +152,66 @@ export default function CustomerManagement({ applications, onRefresh, partners =
             }
         }
 
+        // Admin's Partner Filter
+        if (isAdmin && partnersFilter !== "all" && app.partnerId !== partnersFilter) return false;
+
         return true;
     });
 
-    const getPartnerLoginId = (partnerId: string) => {
+    // 2. Status & Product Filter
+    const filteredApplications = initialFiltered.filter(app => {
+        // Status Filter
+        const statusMatch = statusFilter === "all" || (app.status || "접수") === statusFilter;
+        if (!statusMatch) return false;
+
+        // Product Filter
+        const pType = (app.productType || "").toLowerCase();
+        const productMatch = productFilter === "all" ||
+            pType.includes(productFilter.toLowerCase()) ||
+            (app.productType || "").includes(productFilter);
+
+        return productMatch;
+    });
+
+    const formatDate = (val: string | undefined | number) => {
+        if (!val) return "-";
+
+        // Excel serial handling
+        const serial = typeof val === 'number' ? val : parseFloat(String(val));
+        if (!isNaN(serial) && serial > 30000 && serial < 60000) {
+            const date = new Date((serial - 25569) * 86400 * 1000);
+            return date.toLocaleDateString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit' })
+                .replace(/\. /g, '-').replace('.', '');
+        }
+
+        try {
+            const d = new Date(String(val));
+            if (isNaN(d.getTime())) return String(val);
+            return d.toLocaleDateString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit' })
+                .replace(/\. /g, '-').replace('.', '');
+        } catch {
+            return String(val);
+        }
+    };
+
+    const getPartnerLoginId = (partnerId: string, partnerName?: string) => {
         if (!partners || partners.length === 0) return partnerId;
-        const p = partners.find(p => p.partnerId === partnerId);
+
+        let p = partners.find(p => p.partnerId === partnerId);
+        if (!p && partnerName) {
+            p = partners.find(p => p.companyName === partnerName);
+        }
         return p?.loginId || partnerId;
     };
 
-    const displayApplications = isWidget ? filteredApplications.slice(0, 10) : filteredApplications;
+    // Calculate pagination
+    const totalPages = Math.ceil(filteredApplications.length / itemsPerPage);
+    const paginatedApplications = filteredApplications.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    const displayApplications = isWidget ? filteredApplications.slice(0, 10) : paginatedApplications;
 
     return (
         <div className={isWidget ? "" : "space-y-6"}>
@@ -161,13 +231,24 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setIsRegistrationModalOpen(true)}
-                                    className="flex items-center gap-2 px-3 py-1.5 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-all shadow-sm"
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-all shadow-sm whitespace-nowrap"
                                 >
                                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                                     </svg>
                                     고객 직접 등록
                                 </button>
+                                {isAdmin && (
+                                    <button
+                                        onClick={() => setIsBulkUploadModalOpen(true)}
+                                        className="flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white rounded-xl text-xs font-bold hover:bg-green-700 transition-all shadow-sm whitespace-nowrap"
+                                    >
+                                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                        </svg>
+                                        본사 엑셀 업로드
+                                    </button>
+                                )}
                                 <button
                                     onClick={() => {
                                         if (filteredApplications.length === 0) {
@@ -178,7 +259,8 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                         const headers = [
                                             "No.", "신청번호", "신청일시", "파트너사", "시스템ID", "로그인ID", "고객명", "연락처",
                                             "상품명", "결합제품(가전)", "신청구좌", "주소", "우편번호", "생년월일",
-                                            "성별", "이메일", "회원번호", "선호시간", "문의사항", "상태"
+                                            "성별", "이메일", "회원번호", "선호시간", "문의사항", "상태",
+                                            "초회납입일", "신규등록일", "납입방법", "해약처리", "청약철회", "비고(사유)"
                                         ];
 
                                         const rows = filteredApplications.map((app, index) => [
@@ -201,7 +283,13 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                             app.partnerMemberId || "-",
                                             app.preferredContactTime || "-",
                                             app.inquiry?.replace(/\n/g, " ") || "-",
-                                            app.status
+                                            app.status,
+                                            app.firstPaymentDate || "-",
+                                            app.registrationDate || "-",
+                                            app.paymentMethod || "-",
+                                            app.cancellationProcessing || "-",
+                                            app.withdrawalProcessing || "-",
+                                            app.remarks?.replace(/\n/g, " ") || "-"
                                         ]);
 
                                         const csvContent = [
@@ -228,17 +316,28 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                 </button>
                             </div>
                         </div>
-                        <div className="relative w-full md:w-64">
-                            <input
-                                type="text"
-                                placeholder="고객명, 연락처, 파트너사명 검색"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none w-full"
-                            />
-                            <svg className="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
+                        <div className="flex items-center gap-3">
+                            <select
+                                value={itemsPerPage}
+                                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                                className="bg-gray-50 border border-gray-200 text-sono-dark text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none font-bold"
+                            >
+                                <option value={20}>20개씩 보기</option>
+                                <option value={50}>50개씩 보기</option>
+                                <option value={100}>100개씩 보기</option>
+                            </select>
+                            <div className="relative w-full md:w-64">
+                                <input
+                                    type="text"
+                                    placeholder="고객명, 연락처, 파트너사명 검색"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none w-full"
+                                />
+                                <svg className="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
 
@@ -384,11 +483,11 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                             {filteredApplications.length - index}
                                         </td>
                                         <td className="px-2 py-4 text-xs text-gray-500 text-center whitespace-nowrap">
-                                            {new Date(app.createdAt).toLocaleString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                                            {app.registrationDate ? formatDate(app.registrationDate) : new Date(app.createdAt).toLocaleString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
                                         </td>
                                         <td className="px-2 py-4 text-center whitespace-nowrap">
                                             <div className="text-sm font-bold text-sono-dark">{app.partnerName}</div>
-                                            {partners.length > 0 && <div className="text-[10px] text-gray-400 font-bold">{getPartnerLoginId(app.partnerId)}</div>}
+                                            {partners.length > 0 && <div className="text-[10px] text-gray-400 font-bold">{getPartnerLoginId(app.partnerId, app.partnerName)}</div>}
                                         </td>
                                         <td className="px-2 py-4 text-center whitespace-nowrap min-w-[60px]">
                                             <div className="text-sm font-medium text-sono-dark">{app.customerName}</div>
@@ -403,7 +502,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                             {app.planType ? (app.planType.includes("구좌") ? app.planType : `${app.planType}구좌`) : "-"}
                                         </td>
                                         <td className="px-2 py-4 text-xs text-center text-gray-500 max-w-[200px] truncate" title={app.products}>
-                                            {(app.productType.toLowerCase().includes("smart") || app.productType.includes("스마트")) ? (app.products || "-") : "-"}
+                                            {((app.productType || "").toLowerCase().includes("smart") || (app.productType || "").includes("스마트")) ? (app.products || "-") : "-"}
                                         </td>
                                         <td className="px-2 py-4 text-center whitespace-nowrap">
                                             <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyles(app.status)}`}>
@@ -424,13 +523,83 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                 </div>
             </div>
 
+            {!isWidget && totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 py-4">
+                    <button
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                        className="p-2 text-gray-400 hover:text-sono-primary disabled:opacity-30 disabled:hover:text-gray-400"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className="p-2 text-gray-400 hover:text-sono-primary disabled:opacity-30 disabled:hover:text-gray-400"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+
+                    <div className="flex gap-1 mx-2">
+                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                            let pageNum;
+                            if (totalPages <= 5) {
+                                pageNum = i + 1;
+                            } else if (currentPage <= 3) {
+                                pageNum = i + 1;
+                            } else if (currentPage >= totalPages - 2) {
+                                pageNum = totalPages - 4 + i;
+                            } else {
+                                pageNum = currentPage - 2 + i;
+                            }
+
+                            return (
+                                <button
+                                    key={pageNum}
+                                    onClick={() => setCurrentPage(pageNum)}
+                                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${currentPage === pageNum
+                                        ? "bg-sono-primary text-white shadow-md shadow-sono-primary/20"
+                                        : "text-gray-500 hover:bg-gray-100"
+                                        }`}
+                                >
+                                    {pageNum}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                        className="p-2 text-gray-400 hover:text-sono-primary disabled:opacity-30 disabled:hover:text-gray-400"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                        className="p-2 text-gray-400 hover:text-sono-primary disabled:opacity-30 disabled:hover:text-gray-400"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            )}
+
             {selectedApp && (
                 <CustomerDetailModal
                     application={selectedApp}
                     onClose={() => setSelectedApp(null)}
                     onUpdate={onRefresh}
                     isAdmin={isAdmin}
-                    partnerLoginId={getPartnerLoginId(selectedApp.partnerId)}
+                    partnerLoginId={getPartnerLoginId(selectedApp.partnerId, selectedApp.partnerName)}
                 />
             )}
 
@@ -444,6 +613,15 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                     partner={currentUser || null}
                     partners={partners}
                     isAdmin={isAdmin}
+                />
+            )}
+
+            {isBulkUploadModalOpen && (
+                <BulkUploadModal
+                    onClose={() => setIsBulkUploadModalOpen(false)}
+                    onSuccess={() => {
+                        onRefresh();
+                    }}
                 />
             )}
         </div>

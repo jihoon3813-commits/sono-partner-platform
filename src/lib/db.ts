@@ -113,6 +113,38 @@ export async function updateApplicationAssignee(
     return true;
 }
 
+export async function updateApplicationDetails(
+    applicationNo: string,
+    updates: Partial<Application>
+): Promise<boolean> {
+    // Only send fields that are actually provided to avoid Convex validation errors with undefined values
+    const sanitizedUpdates: any = {};
+    const keys = [
+        'firstPaymentDate', 'registrationDate', 'paymentMethod',
+        'cancellationProcessing', 'withdrawalProcessing', 'remarks', 'status'
+    ];
+
+    keys.forEach(key => {
+        if ((updates as any)[key] !== undefined) {
+            sanitizedUpdates[key] = (updates as any)[key];
+        }
+    });
+
+    await getClient().mutation("applications:updateApplicationDetails" as any, {
+        applicationNo,
+        updates: sanitizedUpdates
+    });
+    return true;
+}
+
+export async function bulkSyncApplications(
+    applications: any[]
+): Promise<{ created: number, updated: number }> {
+    return await getClient().mutation("applications:bulkSyncApplications" as any, {
+        applications
+    });
+}
+
 // ============================================
 // 상태 변경 이력 함수
 // ============================================
