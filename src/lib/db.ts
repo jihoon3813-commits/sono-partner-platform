@@ -333,11 +333,11 @@ export async function getStats() {
     );
 
     const monthlyCompleted = applications.filter(
-        a => a.status === '계약완료' && a.contractDate?.slice(0, 7) === thisMonth
+        a => a.status === '정상가입' && a.contractDate?.slice(0, 7) === thisMonth
     );
 
     const inProgress = applications.filter(
-        a => !['계약완료', '배송완료', '정산완료', '거부', '접수취소', '계약취소'].includes(a.status)
+        a => !['정상가입', '1회출금', '해약', '청약철회', '거부', '접수취소', '수신거부', '가입취소'].includes(a.status)
     );
 
     return {
@@ -358,7 +358,7 @@ export async function getPartnerStats(partnerId: string) {
     );
 
     const monthlyCompleted = applications.filter(
-        a => a.status === '계약완료' && a.contractDate?.slice(0, 7) === thisMonth
+        a => a.status === '정상가입' && a.contractDate?.slice(0, 7) === thisMonth
     );
 
     return {
