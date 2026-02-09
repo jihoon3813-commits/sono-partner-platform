@@ -89,7 +89,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
     const statusOptions = ['전체', '접수', '대기', '상담중', '부재', '보류', '거부', '접수취소', '정상가입', '1회출금', '청약철회', '해약'];
 
     // 상품 종류 추출 (전체 고객 데이터 기반)
-    const productOptions = ['전체', ...Array.from(new Set(applications.map(app => app.productType).filter(Boolean)))];
+    const productOptions = ['전체', ...Array.from(new Set(applications.map(app => getProductTypeLabel(app.productType)).filter(Boolean)))];
 
     const dateOptions = [
         { label: '전체', value: 'all' },
@@ -165,10 +165,8 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         if (!statusMatch) return false;
 
         // Product Filter
-        const pType = (app.productType || "").toLowerCase();
-        const productMatch = productFilter === "all" ||
-            pType.includes(productFilter.toLowerCase()) ||
-            (app.productType || "").includes(productFilter);
+        const appProductLabel = getProductTypeLabel(app.productType);
+        const productMatch = productFilter === "all" || appProductLabel === productFilter;
 
         return productMatch;
     });
