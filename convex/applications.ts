@@ -263,26 +263,115 @@ export const bulkSyncApplications = mutation({
         const updatedNames: string[] = [];
 
         for (const data of args.applications) {
-            // Find existing using Index (Very Fast)
-            const existing = await ctx.db
+            // Server-side enforcement of data format
+
+            // 1. Phone Formatting
+            let formattedPhone = data.customerPhone.replace(/[^0-9]/g, "");
+            if (formattedPhone.length === 11) {
+                formattedPhone = `${formattedPhone.slice(0, 3)}-${formattedPhone.slice(3, 7)}-${formattedPhone.slice(7)}`;
+            } else if (formattedPhone.length === 10) {
+                if (formattedPhone.startsWith('02')) {
+                    formattedPhone = `${formattedPhone.slice(0, 2)}-${formattedPhone.slice(2, 6)}-${formattedPhone.slice(6)}`;
+                } else {
+                    formattedPhone = `${formattedPhone.slice(0, 3)}-${formattedPhone.slice(3, 6)}-${formattedPhone.slice(6)}`;
+                }
+            }
+
+            // 2. Product Name Enforcement
+            const finalProductType = (data.productType === "happy450" || data.productType === "해피450")
+                ? "더 해피 450 ONE"
+                : data.productType;
+
+            // 3. Date Formatting (Excel Serial to YYYY-MM-DD)
+            const formatDate = (val: string | undefined): string => {
+                if (!val) return "";
+                const serial = Number(val);
+                if (!isNaN(serial) && serial > 30000 && serial < 60000) {
+                    const date = new Date((serial - 25569) * 86400 * 1000);
+                    return date.toISOString().slice(0, 10);
+                }
+                return val;
+            };
+
+            const formattedFirstPaymentDate = formatDate(data.firstPaymentDate);
+            const formattedRegistrationDate = formatDate(data.registrationDate);
+
+            // Find existing using Index
+            // Try 1: Strict Match (New Standard)
+            let existing = await ctx.db
                 .query("applications")
                 .withIndex("by_customer_sync", (q) =>
                     q.eq("customerName", data.customerName)
-                        .eq("customerPhone", data.customerPhone)
+                        .eq("customerPhone", formattedPhone)
                         .eq("partnerName", data.partnerName)
-                        .eq("registrationDate", data.registrationDate)
+                        .eq("registrationDate", formattedRegistrationDate)
                 )
                 .first();
 
+            // Try 2: Legacy Match (If DB has old unformatted data)
+            if (!existing) {
+                // Common case: DB has unformatted phone ("01012345678") or serial date ("46008")
+                // We can't easily query ALL variants efficiently with a compound index if multiple fields vary.
+                // But most likely the Date is the main diff if Phone was already handled or vice versa.
+
+                // Let's rely on a softer search if possible? No, Convex Requires exact index match.
+                // We will try the most likely "Old Data" combination: Unformatted Phone + Serial Date
+                const unformattedPhone = data.customerPhone.replace(/[^0-9]/g, ""); // "01012341234"
+                const rawDate = data.registrationDate || "";
+
+                // Try with Unformatted Phone + Formatted Date
+                existing = await ctx.db
+                    .query("applications")
+                    .withIndex("by_customer_sync", (q) =>
+                        q.eq("customerName", data.customerName)
+                            .eq("customerPhone", unformattedPhone)
+                            .eq("partnerName", data.partnerName)
+                            .eq("registrationDate", formattedRegistrationDate)
+                    )
+                    .first();
+
+                // Try with Formatted Phone + Raw Date
+                if (!existing) {
+                    existing = await ctx.db
+                        .query("applications")
+                        .withIndex("by_customer_sync", (q) =>
+                            q.eq("customerName", data.customerName)
+                                .eq("customerPhone", formattedPhone)
+                                .eq("partnerName", data.partnerName)
+                                .eq("registrationDate", rawDate)
+                        )
+                        .first();
+                }
+
+                // Try with Unformatted Phone + Raw Date
+                if (!existing) {
+                    existing = await ctx.db
+                        .query("applications")
+                        .withIndex("by_customer_sync", (q) =>
+                            q.eq("customerName", data.customerName)
+                                .eq("customerPhone", unformattedPhone)
+                                .eq("partnerName", data.partnerName)
+                                .eq("registrationDate", rawDate)
+                        )
+                        .first();
+                }
+            }
+
             const partnerId = partnerMap.get(data.partnerName) || "unknown";
+
+            const finalData = {
+                ...data,
+                customerPhone: formattedPhone,
+                productType: finalProductType,
+                registrationDate: formattedRegistrationDate,
+                firstPaymentDate: formattedFirstPaymentDate,
+                partnerId,
+                updatedAt: now,
+            };
 
             if (existing) {
                 // Update
-                await ctx.db.patch(existing._id, {
-                    ...data,
-                    partnerId,
-                    updatedAt: now,
-                });
+                await ctx.db.patch(existing._id, finalData);
                 updated++;
                 updatedNames.push(data.customerName);
             } else {
@@ -292,15 +381,83 @@ export const bulkSyncApplications = mutation({
                 const applicationNo = `SA-${dateStr}-${random}`;
 
                 await ctx.db.insert("applications", {
-                    ...data,
+                    ...finalData,
                     applicationNo,
-                    partnerId,
                     createdAt: data.createdAt || now,
-                    updatedAt: now,
                 });
                 created++;
             }
         }
         return { created, updated, updatedNames };
     },
+});
+
+export const fixLegacyData = mutation({
+    handler: async (ctx) => {
+        const apps = await ctx.db.query("applications").collect();
+        let count = 0;
+
+        const formatDate = (val: string | undefined): string => {
+            if (!val) return "";
+            const serial = Number(val);
+            if (!isNaN(serial) && serial > 30000 && serial < 60000) {
+                const date = new Date((serial - 25569) * 86400 * 1000);
+                return date.toISOString().slice(0, 10);
+            }
+            return val;
+        };
+
+        const formatPhone = (str: string) => {
+            if (!str) return "";
+            if (str.includes("-")) return str; // Already formatted
+            const cleaned = str.replace(/[^0-9]/g, "");
+            if (cleaned.length === 11) {
+                return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`;
+            }
+            if (cleaned.length === 10) {
+                if (cleaned.startsWith('02')) {
+                    return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
+                }
+                return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+            }
+            return cleaned;
+        };
+
+        for (const app of apps) {
+            let needsUpdate = false;
+            const updates: any = {};
+
+            // Fix Product Name
+            if (app.productType === "happy450" || app.productType === "해피450") {
+                updates.productType = "더 해피 450 ONE";
+                needsUpdate = true;
+            }
+
+            // Fix Dates
+            const newRegDate = formatDate(app.registrationDate);
+            if (newRegDate !== app.registrationDate) {
+                updates.registrationDate = newRegDate;
+                needsUpdate = true;
+            }
+
+            const newPayDate = formatDate(app.firstPaymentDate);
+            if (newPayDate !== app.firstPaymentDate) {
+                updates.firstPaymentDate = newPayDate;
+                needsUpdate = true;
+            }
+
+            // Fix Phone
+            const newPhone = formatPhone(app.customerPhone || "");
+            if (app.customerPhone && newPhone !== app.customerPhone) {
+                updates.customerPhone = newPhone;
+                needsUpdate = true;
+            }
+
+            if (needsUpdate) {
+                await ctx.db.patch(app._id, updates);
+                count++;
+            }
+        }
+        return count;
+    }
 });

@@ -75,6 +75,21 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
                     if (idx.partnerName === -1) idx.partnerName = 3;
 
                     // 데이터는 헤더 다음 행부터 시작
+                    // Helper for phone formatting
+                    const formatPhoneNumber = (str: string) => {
+                        const cleaned = str.replace(/[^0-9]/g, "");
+                        if (cleaned.length === 11) {
+                            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`;
+                        }
+                        if (cleaned.length === 10) {
+                            if (cleaned.startsWith('02')) { // 02-1234-5678
+                                return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
+                            }
+                            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`; // 011-123-4567
+                        }
+                        return cleaned;
+                    };
+
                     const dataRows = rows.slice(headerIdx + 1);
 
                     dataRows.forEach((row) => {
@@ -82,7 +97,8 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
 
                         // 가입자명과 연락처가 필수
                         const name = getVal(idx.customerName);
-                        const phone = getVal(idx.customerPhone).replace(/-/g, "");
+                        // 자동 하이픈 포맷팅 적용
+                        const phone = formatPhoneNumber(getVal(idx.customerPhone));
 
                         if (!name || !phone) return;
 
@@ -90,7 +106,7 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
                             partnerName: getVal(idx.partnerName),
                             customerName: name,
                             customerPhone: phone,
-                            productType: "happy450",
+                            productType: "더 해피 450 ONE", // 상품명 변경 저장
                             planType: getVal(idx.planType),
                             firstPaymentDate: getVal(idx.firstPaymentDate),
                             registrationDate: getVal(idx.registrationDate),
