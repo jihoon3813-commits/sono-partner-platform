@@ -257,16 +257,19 @@ export const bulkSyncApplications = mutation({
         let updated = 0;
 
         // Fetch all partners for mapping names to IDs
+        const clean = (s: string | undefined) => (s || "").trim().replace(/\u00a0/g, " ").normalize("NFC");
         const partners = await ctx.db.query("partners").collect();
-        const partnerMap = new Map(partners.map(p => [p.companyName, p.partnerId]));
+        const partnerMap = new Map(partners.map(p => [clean(p.companyName), p.partnerId]));
 
         const updatedNames: string[] = [];
 
         for (const data of args.applications) {
             // Server-side enforcement of data format
+            const customerName = clean(data.customerName);
+            const partnerName = clean(data.partnerName);
 
             // 1. Phone Formatting
-            let formattedPhone = data.customerPhone.replace(/[^0-9]/g, "");
+            let formattedPhone = (data.customerPhone || "").replace(/[^0-9]/g, "");
             if (formattedPhone.length === 11) {
                 formattedPhone = `${formattedPhone.slice(0, 3)}-${formattedPhone.slice(3, 7)}-${formattedPhone.slice(7)}`;
             } else if (formattedPhone.length === 10) {
@@ -301,29 +304,26 @@ export const bulkSyncApplications = mutation({
             let existing = await ctx.db
                 .query("applications")
                 .withIndex("by_customer_sync", (q) =>
-                    q.eq("customerName", data.customerName)
+                    q.eq("customerName", customerName)
                         .eq("customerPhone", formattedPhone)
-                        .eq("partnerName", data.partnerName)
+                        .eq("partnerName", partnerName)
                 )
                 .first();
 
             // Try 2: Legacy Match (If DB has old unformatted data)
             if (!existing) {
-                // Common case: DB has unformatted phone ("01012345678")
-                const unformattedPhone = data.customerPhone.replace(/[^0-9]/g, ""); // "01012341234"
-
-                // Try with Unformatted Phone
+                const unformattedPhone = (data.customerPhone || "").replace(/[^0-9]/g, "");
                 existing = await ctx.db
                     .query("applications")
                     .withIndex("by_customer_sync", (q) =>
-                        q.eq("customerName", data.customerName)
+                        q.eq("customerName", customerName)
                             .eq("customerPhone", unformattedPhone)
-                            .eq("partnerName", data.partnerName)
+                            .eq("partnerName", partnerName)
                     )
                     .first();
             }
 
-            const partnerId = partnerMap.get(data.partnerName) || "unknown";
+            const partnerId = partnerMap.get(partnerName) || "unknown";
 
             // Prepare base data (exclude registrationDate to handle it conditionally)
             // We strip 'registrationDate' from 'data' to avoid accidental overwrite
@@ -332,6 +332,8 @@ export const bulkSyncApplications = mutation({
 
             const baseData = {
                 ...otherData,
+                customerName, // Use cleaned name
+                partnerName, // Use cleaned name
                 customerPhone: formattedPhone,
                 productType: finalProductType,
                 firstPaymentDate: formattedFirstPaymentDate,
