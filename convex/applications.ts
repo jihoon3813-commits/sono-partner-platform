@@ -289,18 +289,17 @@ export const bulkSyncApplications = mutation({
                 ? "더 해피 450 ONE"
                 : data.productType;
 
-            // 3. Date Formatting (Excel Serial to YYYY-MM-DD)
-            const formatDate = (val: string | undefined): string => {
-                if (!val) return "";
+            const formatDate = (val: any): string => {
+                if (val === undefined || val === null || val === "") return "";
                 const serial = Number(val);
                 if (!isNaN(serial) && serial > 30000 && serial < 60000) {
                     const date = new Date((serial - 25569) * 86400 * 1000);
                     return date.toISOString().slice(0, 10);
                 }
 
-                // Handle YYYY.MM.DD
-                if (typeof val === 'string' && val.includes('.')) {
-                    const parts = val.split('.');
+                const dateStr = String(val).trim();
+                if (dateStr.includes('.') || dateStr.includes('-')) {
+                    const parts = dateStr.split(/[.-]/);
                     if (parts.length === 3) {
                         const y = parts[0].trim();
                         const m = parts[1].trim().padStart(2, '0');
@@ -308,7 +307,7 @@ export const bulkSyncApplications = mutation({
                         return `${y}-${m}-${d}`;
                     }
                 }
-                return val;
+                return dateStr;
             };
 
             const formattedFirstPaymentDate = formatDate(data.firstPaymentDate);
@@ -350,9 +349,21 @@ export const bulkSyncApplications = mutation({
                 partnerName,
                 customerPhone: formattedPhone,
                 productType: finalProductType,
-                firstPaymentDate: formattedFirstPaymentDate,
                 partnerId,
             };
+
+            // Normalize ALL possible date fields in baseData
+            const dateFields = [
+                "contractDate", "deliveryDate", "settlementDate", "settlement_date",
+                "firstPaymentDate", "cancellationProcessing", "withdrawalProcessing", "customerBirth"
+            ];
+            for (const field of dateFields) {
+                if (baseData[field] !== undefined) {
+                    baseData[field] = formatDate(baseData[field]);
+                }
+            }
+            // Explicitly set the formatted firstPaymentDate
+            baseData.firstPaymentDate = formattedFirstPaymentDate;
 
             if (existing) {
                 // Determine if we need to update
@@ -363,11 +374,11 @@ export const bulkSyncApplications = mutation({
                 for (const key of Object.keys(baseData)) {
                     if (key === "updatedAt" || key === "createdAt") continue;
 
-                    const newVal = baseData[key] || "";
-                    const oldVal = (existing as any)[key] || "";
+                    const newVal = String(baseData[key] || "").trim();
+                    const oldVal = String((existing as any)[key] || "").trim();
 
                     if (newVal !== oldVal) {
-                        updates[key] = newVal;
+                        updates[key] = baseData[key];
                         hasChanges = true;
                     }
                 }
@@ -477,6 +488,20 @@ export const fixLegacyData = mutation({
 
             const newPayDate = formatDate(master.firstPaymentDate);
             if (newPayDate !== master.firstPaymentDate) { updates.firstPaymentDate = newPayDate; needsUpdate = true; }
+
+            // Normalize additional date fields
+            const dateFields = [
+                "contractDate", "deliveryDate", "settlementDate", "settlement_date",
+                "cancellationProcessing", "withdrawalProcessing", "customerBirth"
+            ];
+            for (const field of dateFields) {
+                const currentVal = (master as any)[field];
+                const normalized = formatDate(currentVal);
+                if (normalized !== String(currentVal || "").trim()) {
+                    updates[field] = normalized;
+                    needsUpdate = true;
+                }
+            }
 
             if (master.productType === "happy450" || master.productType === "해피450") {
                 updates.productType = "더 해피 450 ONE";
