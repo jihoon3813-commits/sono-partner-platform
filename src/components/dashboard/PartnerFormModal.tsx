@@ -194,9 +194,24 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-6">
             <div className="bg-white rounded-[32px] w-full max-w-2xl max-h-[90vh] overflow-y-auto p-10 shadow-2xl no-scrollbar">
                 <div className="flex justify-between items-center mb-10">
-                    <h2 className="text-2xl font-bold text-sono-dark">
-                        {isEdit ? "파트너 정보 수정" : "파트너 신규 등록"}
-                    </h2>
+                    <div className="flex items-center gap-4">
+                        <h2 className="text-2xl font-bold text-sono-dark">
+                            {isEdit ? "파트너 정보 수정" : "파트너 신규 등록"}
+                        </h2>
+                        {isEdit && isAdmin && formData.loginId && (
+                            <a
+                                href={`/partner-center?id=${formData.loginId}&k=${process.env.NEXT_PUBLIC_ADMIN_SECRET_KEY || ''}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs bg-gray-800 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-1.5 font-medium shadow-sm"
+                            >
+                                <span>파트너 어드민 바로가기</span>
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        )}
+                    </div>
                     <button onClick={onClose} className="text-gray-400 hover:text-sono-dark transition-colors">
                         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

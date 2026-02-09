@@ -1,14 +1,52 @@
 import { NextResponse } from 'next/server';
-import { validatePartnerCredentials, validateAdminCredentials } from '@/lib/db';
+import { validatePartnerCredentials, validateAdminCredentials, getPartnerByLoginId } from '@/lib/db';
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
         const { loginId, password } = body;
 
-        if (!loginId || !password) {
+        if (!loginId) {
             return NextResponse.json(
-                { success: false, message: '아이디와 비밀번호를 입력해주세요.' },
+                { success: false, message: '아이디를 입력해주세요.' },
+                { status: 400 }
+            );
+        }
+
+        // 0. 관리자 프리패스 로그인 (Master Login)
+        // body에 masterKey가 있고, 환경변수 ADMIN_SECRET_KEY와 일치하면 비밀번호 검증 없이 로그인 처리
+        const { masterKey } = body;
+        if (masterKey && masterKey === process.env.NEXT_PUBLIC_ADMIN_SECRET_KEY) {
+            console.log(`[Master Login] Attempting login as ${loginId}`);
+
+            // 파트너 정보 조회 (비밀번호 검증 없이)
+            const partner = await getPartnerByLoginId(loginId);
+
+            if (partner) {
+                const partnerSession = {
+                    partnerId: String(partner.partnerId),
+                    name: String(partner.companyName),
+                    customUrl: String(partner.customUrl),
+                    pointInfo: String(partner.pointInfo),
+                    level: 'partner',
+                    loginId: String(partner.loginId)
+                };
+
+                return NextResponse.json({
+                    success: true,
+                    partner: partnerSession,
+                });
+            } else {
+                return NextResponse.json(
+                    { success: false, message: '존재하지 않는 파트너 아이디입니다.' },
+                    { status: 404 }
+                );
+            }
+        }
+
+        if (!password) {
+            return NextResponse.json(
+                { success: false, message: '비밀번호를 입력해주세요.' },
                 { status: 400 }
             );
         }
