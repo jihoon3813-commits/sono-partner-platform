@@ -297,73 +297,43 @@ export const bulkSyncApplications = mutation({
             const formattedRegistrationDate = formatDate(data.registrationDate);
 
             // Find existing using Index
-            // Try 1: Strict Match (New Standard)
+            // Try 1: Strict Match (New Standard) - MATCH WITHOUT Date
             let existing = await ctx.db
                 .query("applications")
                 .withIndex("by_customer_sync", (q) =>
                     q.eq("customerName", data.customerName)
                         .eq("customerPhone", formattedPhone)
                         .eq("partnerName", data.partnerName)
-                        .eq("registrationDate", formattedRegistrationDate)
                 )
                 .first();
 
             // Try 2: Legacy Match (If DB has old unformatted data)
             if (!existing) {
-                // Common case: DB has unformatted phone ("01012345678") or serial date ("46008")
-                // We can't easily query ALL variants efficiently with a compound index if multiple fields vary.
-                // But most likely the Date is the main diff if Phone was already handled or vice versa.
-
-                // Let's rely on a softer search if possible? No, Convex Requires exact index match.
-                // We will try the most likely "Old Data" combination: Unformatted Phone + Serial Date
+                // Common case: DB has unformatted phone ("01012345678")
                 const unformattedPhone = data.customerPhone.replace(/[^0-9]/g, ""); // "01012341234"
-                const rawDate = data.registrationDate || "";
 
-                // Try with Unformatted Phone + Formatted Date
+                // Try with Unformatted Phone
                 existing = await ctx.db
                     .query("applications")
                     .withIndex("by_customer_sync", (q) =>
                         q.eq("customerName", data.customerName)
                             .eq("customerPhone", unformattedPhone)
                             .eq("partnerName", data.partnerName)
-                            .eq("registrationDate", formattedRegistrationDate)
                     )
                     .first();
-
-                // Try with Formatted Phone + Raw Date
-                if (!existing) {
-                    existing = await ctx.db
-                        .query("applications")
-                        .withIndex("by_customer_sync", (q) =>
-                            q.eq("customerName", data.customerName)
-                                .eq("customerPhone", formattedPhone)
-                                .eq("partnerName", data.partnerName)
-                                .eq("registrationDate", rawDate)
-                        )
-                        .first();
-                }
-
-                // Try with Unformatted Phone + Raw Date
-                if (!existing) {
-                    existing = await ctx.db
-                        .query("applications")
-                        .withIndex("by_customer_sync", (q) =>
-                            q.eq("customerName", data.customerName)
-                                .eq("customerPhone", unformattedPhone)
-                                .eq("partnerName", data.partnerName)
-                                .eq("registrationDate", rawDate)
-                        )
-                        .first();
-                }
             }
 
             const partnerId = partnerMap.get(data.partnerName) || "unknown";
 
-            const finalData = {
-                ...data,
+            // Prepare base data (exclude registrationDate to handle it conditionally)
+            // We strip 'registrationDate' from 'data' to avoid accidental overwrite
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { registrationDate: _ignore, ...otherData } = data;
+
+            const baseData = {
+                ...otherData,
                 customerPhone: formattedPhone,
                 productType: finalProductType,
-                registrationDate: formattedRegistrationDate,
                 firstPaymentDate: formattedFirstPaymentDate,
                 partnerId,
                 updatedAt: now,
@@ -371,7 +341,15 @@ export const bulkSyncApplications = mutation({
 
             if (existing) {
                 // Update
-                await ctx.db.patch(existing._id, finalData);
+                const updatePayload: any = { ...baseData };
+
+                // Only update registrationDate if existing record DOES NOT have it
+                // Logic: "Once registered, it should remain as is"
+                if (!existing.registrationDate && formattedRegistrationDate) {
+                    updatePayload.registrationDate = formattedRegistrationDate;
+                }
+
+                await ctx.db.patch(existing._id, updatePayload);
                 updated++;
                 updatedNames.push(data.customerName);
             } else {
@@ -381,7 +359,8 @@ export const bulkSyncApplications = mutation({
                 const applicationNo = `SA-${dateStr}-${random}`;
 
                 await ctx.db.insert("applications", {
-                    ...finalData,
+                    ...baseData,
+                    registrationDate: formattedRegistrationDate, // Always set for new records
                     applicationNo,
                     createdAt: data.createdAt || now,
                 });
