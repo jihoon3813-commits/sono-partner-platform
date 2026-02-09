@@ -257,7 +257,11 @@ export const bulkSyncApplications = mutation({
         let updated = 0;
 
         // Fetch all partners for mapping names to IDs
-        const clean = (s: string | undefined) => (s || "").trim().replace(/\u00a0/g, " ").normalize("NFC");
+        const clean = (s: string | undefined) => (s || "")
+            .trim()
+            .replace(/[\u200b-\u200f\ufeff\u00a0]/g, "") // Remove zero-width & invisible spaces
+            .normalize("NFC");
+
         const partners = await ctx.db.query("partners").collect();
         const partnerMap = new Map(partners.map(p => [clean(p.companyName), p.partnerId]));
 
@@ -293,6 +297,17 @@ export const bulkSyncApplications = mutation({
                     const date = new Date((serial - 25569) * 86400 * 1000);
                     return date.toISOString().slice(0, 10);
                 }
+
+                // Handle YYYY.MM.DD
+                if (typeof val === 'string' && val.includes('.')) {
+                    const parts = val.split('.');
+                    if (parts.length === 3) {
+                        const y = parts[0].trim();
+                        const m = parts[1].trim().padStart(2, '0');
+                        const d = parts[2].trim().padStart(2, '0');
+                        return `${y}-${m}-${d}`;
+                    }
+                }
                 return val;
             };
 
@@ -326,34 +341,50 @@ export const bulkSyncApplications = mutation({
             const partnerId = partnerMap.get(partnerName) || "unknown";
 
             // Prepare base data (exclude registrationDate to handle it conditionally)
-            // We strip 'registrationDate' from 'data' to avoid accidental overwrite
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { registrationDate: _ignore, ...otherData } = data;
 
-            const baseData = {
+            const baseData: any = {
                 ...otherData,
-                customerName, // Use cleaned name
-                partnerName, // Use cleaned name
+                customerName,
+                partnerName,
                 customerPhone: formattedPhone,
                 productType: finalProductType,
                 firstPaymentDate: formattedFirstPaymentDate,
                 partnerId,
-                updatedAt: now,
             };
 
             if (existing) {
-                // Update
-                const updatePayload: any = { ...baseData };
+                // Determine if we need to update
+                const updates: any = {};
+                let hasChanges = false;
 
-                // Only update registrationDate if existing record DOES NOT have it
-                // Logic: "Once registered, it should remain as is"
-                if (!existing.registrationDate && formattedRegistrationDate) {
-                    updatePayload.registrationDate = formattedRegistrationDate;
+                // Check all fields for changes
+                for (const key of Object.keys(baseData)) {
+                    if (key === "updatedAt" || key === "createdAt") continue;
+
+                    const newVal = baseData[key] || "";
+                    const oldVal = (existing as any)[key] || "";
+
+                    if (newVal !== oldVal) {
+                        updates[key] = newVal;
+                        hasChanges = true;
+                    }
                 }
 
-                await ctx.db.patch(existing._id, updatePayload);
-                updated++;
-                updatedNames.push(data.customerName);
+                // Preserve existing registrationDate
+                const existingRegDate = formatDate(existing.registrationDate);
+                if (!existingRegDate && formattedRegistrationDate) {
+                    updates.registrationDate = formattedRegistrationDate;
+                    hasChanges = true;
+                }
+
+                if (hasChanges) {
+                    updates.updatedAt = now;
+                    await ctx.db.patch(existing._id, updates);
+                    updated++;
+                    updatedNames.push(customerName);
+                }
             } else {
                 // Create
                 const dateStr = now.slice(0, 10).replace(/-/g, '');
@@ -362,9 +393,10 @@ export const bulkSyncApplications = mutation({
 
                 await ctx.db.insert("applications", {
                     ...baseData,
-                    registrationDate: formattedRegistrationDate, // Always set for new records
+                    registrationDate: formattedRegistrationDate,
                     applicationNo,
                     createdAt: data.createdAt || now,
+                    updatedAt: now,
                 });
                 created++;
             }
@@ -376,7 +408,22 @@ export const bulkSyncApplications = mutation({
 export const fixLegacyData = mutation({
     handler: async (ctx) => {
         const apps = await ctx.db.query("applications").collect();
-        let count = 0;
+        let fixedCount = 0;
+        let deletedCount = 0;
+
+
+        const clean = (s: string | undefined) => (s || "")
+            .trim()
+            .replace(/[\u200b-\u200f\ufeff\u00a0]/g, "")
+            .normalize("NFC");
+
+        const formatPhone = (str: string) => {
+            if (!str) return "";
+            const cleaned = str.replace(/[^0-9]/g, "");
+            if (cleaned.length === 11) return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`;
+            if (cleaned.length === 10) return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+            return str;
+        };
 
         const formatDate = (val: string | undefined): string => {
             if (!val) return "";
@@ -385,60 +432,69 @@ export const fixLegacyData = mutation({
                 const date = new Date((serial - 25569) * 86400 * 1000);
                 return date.toISOString().slice(0, 10);
             }
+            if (typeof val === 'string' && val.includes('.')) {
+                const parts = val.split('.');
+                if (parts.length === 3) return `${parts[0]}-${parts[1].trim().padStart(2, '0')}-${parts[2].trim().padStart(2, '0')}`;
+            }
             return val;
         };
 
-        const formatPhone = (str: string) => {
-            if (!str) return "";
-            if (str.includes("-")) return str; // Already formatted
-            const cleaned = str.replace(/[^0-9]/g, "");
-            if (cleaned.length === 11) {
-                return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`;
-            }
-            if (cleaned.length === 10) {
-                if (cleaned.startsWith('02')) {
-                    return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
-                }
-                return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
-            }
-            return cleaned;
-        };
-
+        // Group by Key
+        const groups = new Map<string, any[]>();
         for (const app of apps) {
+            const key = `${clean(app.customerName)}|${formatPhone(app.customerPhone || "")}|${clean(app.partnerName)}`;
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key)!.push(app);
+        }
+
+        for (const [key, members] of groups.entries()) {
+            // Sort by registrationDate then creationTime (Earliest first)
+            members.sort((a, b) => {
+                const dateA = formatDate(a.registrationDate) || "9999-99-99";
+                const dateB = formatDate(b.registrationDate) || "9999-99-99";
+                if (dateA !== dateB) return dateA.localeCompare(dateB);
+                return a._creationTime - b._creationTime;
+            });
+
+            const master = members[0];
+            const duplicates = members.slice(1);
+
+            // 1. Normalize Master
             let needsUpdate = false;
             const updates: any = {};
 
-            // Fix Product Name
-            if (app.productType === "happy450" || app.productType === "해피450") {
+            const newName = clean(master.customerName);
+            if (newName !== master.customerName) { updates.customerName = newName; needsUpdate = true; }
+
+            const newPartner = clean(master.partnerName);
+            if (newPartner !== master.partnerName) { updates.partnerName = newPartner; needsUpdate = true; }
+
+            const newPhone = formatPhone(master.customerPhone);
+            if (newPhone !== master.customerPhone) { updates.customerPhone = newPhone; needsUpdate = true; }
+
+            const newRegDate = formatDate(master.registrationDate);
+            if (newRegDate !== master.registrationDate) { updates.registrationDate = newRegDate; needsUpdate = true; }
+
+            const newPayDate = formatDate(master.firstPaymentDate);
+            if (newPayDate !== master.firstPaymentDate) { updates.firstPaymentDate = newPayDate; needsUpdate = true; }
+
+            if (master.productType === "happy450" || master.productType === "해피450") {
                 updates.productType = "더 해피 450 ONE";
                 needsUpdate = true;
             }
 
-            // Fix Dates
-            const newRegDate = formatDate(app.registrationDate);
-            if (newRegDate !== app.registrationDate) {
-                updates.registrationDate = newRegDate;
-                needsUpdate = true;
-            }
-
-            const newPayDate = formatDate(app.firstPaymentDate);
-            if (newPayDate !== app.firstPaymentDate) {
-                updates.firstPaymentDate = newPayDate;
-                needsUpdate = true;
-            }
-
-            // Fix Phone
-            const newPhone = formatPhone(app.customerPhone || "");
-            if (app.customerPhone && newPhone !== app.customerPhone) {
-                updates.customerPhone = newPhone;
-                needsUpdate = true;
-            }
-
             if (needsUpdate) {
-                await ctx.db.patch(app._id, updates);
-                count++;
+                await ctx.db.patch(master._id, updates);
+                fixedCount++;
+            }
+
+            // 2. Delete Duplicates
+            for (const dup of duplicates) {
+                await ctx.db.delete(dup._id);
+                deletedCount++;
             }
         }
-        return count;
+
+        return { fixedCount, deletedCount };
     }
 });

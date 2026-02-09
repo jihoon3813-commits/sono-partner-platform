@@ -71,7 +71,7 @@ export default defineSchema({
         .index("by_applicationNo", ["applicationNo"])
         .index("by_partnerId", ["partnerId"])
         .index("by_createdAt", ["createdAt"])
-        .index("by_customer_sync", ["customerName", "customerPhone", "partnerName", "registrationDate"]),
+        .index("by_customer_sync", ["customerName", "customerPhone", "partnerName"]),
 
     // 상품 테이블 
     products: defineTable({
