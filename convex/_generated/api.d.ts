@@ -17,6 +17,7 @@ import type * as requests from "../requests.js";
 import type * as resources from "../resources.js";
 import type * as settings from "../settings.js";
 import type * as telegram from "../telegram.js";
+import type * as utils from "../utils.js";
 
 import type {
   ApiFromModules,
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   resources: typeof resources;
   settings: typeof settings;
   telegram: typeof telegram;
+  utils: typeof utils;
 }>;
 
 /**

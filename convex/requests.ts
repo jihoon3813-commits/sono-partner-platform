@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
+import { nowKST } from "./utils";
 
 export const getPendingPartnerRequests = query({
     handler: async (ctx) => {
@@ -40,7 +41,7 @@ export const createPartnerRequest = mutation({
     },
     handler: async (ctx, args) => {
         const requestId = `PR-${Date.now()}`;
-        const createdAt = new Date().toISOString();
+        const createdAt = nowKST();
 
         await ctx.db.insert("partnerRequests", {
             ...args,
@@ -100,7 +101,7 @@ export const approvePartnerRequest = mutation({
         await ctx.db.patch(request._id, {
             status: "approved",
             reviewedBy: args.approvedBy,
-            reviewedAt: new Date().toISOString(),
+            reviewedAt: nowKST(),
         });
 
         // 2. 파트너 생성
@@ -127,8 +128,8 @@ export const approvePartnerRequest = mutation({
             status: args.status,
             parentPartnerId: args.parentPartnerId,
             parentPartnerName: args.parentPartnerName,
-            createdAt: new Date().toISOString(),
-            approvedAt: new Date().toISOString(),
+            createdAt: nowKST(),
+            approvedAt: nowKST(),
             approvedBy: args.approvedBy,
         });
 
@@ -152,7 +153,7 @@ export const rejectPartnerRequest = mutation({
         await ctx.db.patch(request._id, {
             status: "rejected",
             reviewedBy: args.rejectedBy,
-            reviewedAt: new Date().toISOString(),
+            reviewedAt: nowKST(),
         });
 
         return true;

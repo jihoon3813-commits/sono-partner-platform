@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
+import { nowKST } from "./utils";
 
 export const getSetting = query({
     args: { key: v.string() },
@@ -23,13 +24,13 @@ export const updateSetting = mutation({
         if (existing) {
             await ctx.db.patch(existing._id, {
                 value: args.value,
-                updatedAt: new Date().toISOString(),
+                updatedAt: nowKST(),
             });
         } else {
             await ctx.db.insert("settings", {
                 key: args.key,
                 value: args.value,
-                updatedAt: new Date().toISOString(),
+                updatedAt: nowKST(),
             });
         }
     },

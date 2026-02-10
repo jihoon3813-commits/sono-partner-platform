@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { nowKST } from "./utils";
 
 export const getAdminByEmail = query({
     args: { email: v.string() },
@@ -36,7 +37,7 @@ export const validateAdminCredentials = mutation({
 
         // 마지막 로그인 업데이트
         await ctx.db.patch(targetAdmin._id, {
-            lastLogin: new Date().toISOString()
+            lastLogin: nowKST()
         });
 
         return {

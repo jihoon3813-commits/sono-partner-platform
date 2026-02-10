@@ -1,6 +1,7 @@
 import { query, mutation, action } from "./_generated/server";
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
+import { nowKST } from "./utils";
 
 export const listResources = query({
     args: { type: v.optional(v.string()) },
@@ -56,7 +57,7 @@ export const createResource = mutation({
     handler: async (ctx, args) => {
         return await ctx.db.insert("resources", {
             ...args,
-            createdAt: new Date().toISOString(),
+            createdAt: nowKST(),
         });
     },
 });

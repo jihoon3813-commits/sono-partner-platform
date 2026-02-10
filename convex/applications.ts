@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
+import { nowKST, todayKSTStr } from "./utils";
 
 export const getAllApplications = query({
     handler: async (ctx) => {
@@ -52,11 +53,11 @@ export const createApplication = mutation({
     },
     handler: async (ctx, args) => {
         console.log(`[Convex] createApplication called with: ${JSON.stringify(args)}`);
-        const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        const dateStr = todayKSTStr();
         const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
         const generatedNo = `SA-${dateStr}-${random}`;
         const applicationNo = args.applicationNo || generatedNo;
-        const now = new Date().toISOString();
+        const now = nowKST();
 
         // Extract status and assignedTo from args or use defaults
         const { status, assignedTo, ...rest } = args;
@@ -112,10 +113,10 @@ export const updateApplicationStatus = mutation({
         const previousStatus = app.status;
         const updates: any = {
             status: args.newStatus,
-            updatedAt: new Date().toISOString(),
+            updatedAt: nowKST(),
         };
 
-        if (args.newStatus === "정상가입") updates.contractDate = new Date().toISOString();
+        if (args.newStatus === "정상가입") updates.contractDate = nowKST();
 
         await ctx.db.patch(app._id, updates);
 
@@ -126,7 +127,7 @@ export const updateApplicationStatus = mutation({
             previousStatus,
             newStatus: args.newStatus,
             changedBy: args.changedBy,
-            changedAt: new Date().toISOString(),
+            changedAt: nowKST(),
             memo: args.memo,
         });
 
@@ -150,7 +151,7 @@ export const updateApplicationAssignee = mutation({
 
         await ctx.db.patch(app._id, {
             assignedTo: args.assignedTo,
-            updatedAt: new Date().toISOString(),
+            updatedAt: nowKST(),
         });
 
         return true;
@@ -180,7 +181,7 @@ export const updateApplicationDetails = mutation({
 
         // Filter out undefined values to avoid Convex patch errors
         const patchData: any = {
-            updatedAt: new Date().toISOString(),
+            updatedAt: nowKST(),
         };
 
         Object.entries(args.updates).forEach(([key, value]) => {
@@ -218,7 +219,7 @@ export const createApplications = mutation({
         })),
     },
     handler: async (ctx, args) => {
-        const now = new Date().toISOString();
+        const now = nowKST();
         const dateStr = now.slice(0, 10).replace(/-/g, '');
         let count = 0;
 
@@ -283,7 +284,7 @@ export const bulkSyncApplications = mutation({
         })),
     },
     handler: async (ctx, args) => {
-        const now = new Date().toISOString();
+        const now = nowKST();
         let created = 0;
         let updated = 0;
 

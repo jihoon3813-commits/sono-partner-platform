@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { nowKST } from "./utils";
 // Force sync after npm install convex
 
 export const getAllPartners = query({
@@ -72,7 +73,7 @@ export const createPartner = mutation({
     },
     handler: async (ctx, args) => {
         const partnerId = `P-${Date.now()}`;
-        const createdAt = new Date().toISOString();
+        const createdAt = nowKST();
 
         const id = await ctx.db.insert("partners", {
             ...args,
