@@ -244,6 +244,22 @@ export const createApplications = mutation({
             });
             count++;
         }
+
+        // 디스코드 알림 전송
+        if (count > 0) {
+            const customerList = args.applications
+                .slice(0, 5)
+                .map(a => `  • ${a.customerName || "미입력"} (${a.customerPhone || "미입력"})`)
+                .join("\\n");
+            const moreText = count > 5 ? `\\n  ... 외 ${count - 5}명` : "";
+            const partnerInfo = args.applications[0]?.partnerName || "미입력";
+            const message = `📋 **고객 직접 등록 (${count}명)**\\n\\n` +
+                `🏢 파트너: ${partnerInfo}\\n` +
+                `👥 등록 고객:\\n${customerList}${moreText}\\n` +
+                `🕐 시간: ${now}`;
+            await ctx.scheduler.runAfter(0, internal.telegram.sendTelegramNotification, { message });
+        }
+
         return count;
     },
 });

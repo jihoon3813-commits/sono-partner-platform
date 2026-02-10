@@ -131,8 +131,12 @@ export default function InquiryModal({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validation for Birthdate
-        if (formData.birthdate.length !== 8) {
+        // Determine product type
+        const currentProduct = formData.selectedProduct || productType;
+        const isSmartCareProduct = ["smartcare", "스마트케어", "스마트 케어"].includes(currentProduct);
+
+        // Validation for Birthdate (only for 스마트케어)
+        if (isSmartCareProduct && formData.birthdate.length !== 8) {
             alert("생년월일은 8자리 숫자로 입력해주세요 (예: 19800101)");
             return;
         }
@@ -320,25 +324,29 @@ export default function InquiryModal({
                                 <label className="input-label !text-[#4e5968] !font-bold mb-2 block">연락처 <span className="text-sono-primary">*</span></label>
                                 <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="010-1234-5678" required />
                             </div>
-                            <div>
-                                <label className="input-label !text-[#4e5968] !font-bold mb-2 block">생년월일 (8자리) <span className="text-sono-primary">*</span></label>
-                                <input type="tel" name="birthdate" value={formData.birthdate} onChange={handleBirthdateChange} inputMode="numeric" maxLength={8} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="19800101" required />
-                            </div>
-                            <div>
-                                <label className="input-label !text-[#4e5968] !font-bold mb-2 block">성별 <span className="text-sono-primary">*</span></label>
-                                <div className="flex bg-[#f9fafb] p-1 rounded-2xl h-[56px]">
-                                    {["남", "여"].map((g) => (
-                                        <button
-                                            key={g}
-                                            type="button"
-                                            onClick={() => setFormData(prev => ({ ...prev, gender: g }))}
-                                            className={`flex-1 rounded-xl text-sm font-bold transition-all ${formData.gender === g ? "bg-white text-sono-primary shadow-sm" : "text-gray-400"}`}
-                                        >
-                                            {g}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                            {["smartcare", "스마트케어", "스마트 케어"].includes(formData.selectedProduct || productType) && (
+                                <>
+                                    <div>
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">생년월일 (8자리) <span className="text-sono-primary">*</span></label>
+                                        <input type="tel" name="birthdate" value={formData.birthdate} onChange={handleBirthdateChange} inputMode="numeric" maxLength={8} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="19800101" required />
+                                    </div>
+                                    <div>
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">성별 <span className="text-sono-primary">*</span></label>
+                                        <div className="flex bg-[#f9fafb] p-1 rounded-2xl h-[56px]">
+                                            {["남", "여"].map((g) => (
+                                                <button
+                                                    key={g}
+                                                    type="button"
+                                                    onClick={() => setFormData(prev => ({ ...prev, gender: g }))}
+                                                    className={`flex-1 rounded-xl text-sm font-bold transition-all ${formData.gender === g ? "bg-white text-sono-primary shadow-sm" : "text-gray-400"}`}
+                                                >
+                                                    {g}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         {["smartcare", "스마트케어"].includes(formData.selectedProduct || productType) && (
@@ -440,15 +448,17 @@ export default function InquiryModal({
                             </div>
                         )}
 
-                        <div>
-                            <label className="input-label !text-[#4e5968] !font-bold mb-2 block">주소</label>
-                            <div className="flex gap-2 mb-2">
-                                <input type="text" value={formData.zonecode} readOnly inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 flex-1" placeholder="우편번호" />
-                                <button type="button" onClick={openAddressSearch} className="bg-sono-primary text-white font-bold px-6 rounded-2xl">검색</button>
+                        {["smartcare", "스마트케어", "스마트 케어"].includes(formData.selectedProduct || productType) && (
+                            <div>
+                                <label className="input-label !text-[#4e5968] !font-bold mb-2 block">주소</label>
+                                <div className="flex gap-2 mb-2">
+                                    <input type="text" value={formData.zonecode} readOnly inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 flex-1" placeholder="우편번호" />
+                                    <button type="button" onClick={openAddressSearch} className="bg-sono-primary text-white font-bold px-6 rounded-2xl">검색</button>
+                                </div>
+                                <input type="text" value={formData.address} readOnly className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 mb-2" placeholder="기본 주소" />
+                                <input type="text" name="addressDetail" value={formData.addressDetail} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="상세 주소" />
                             </div>
-                            <input type="text" value={formData.address} readOnly className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 mb-2" placeholder="기본 주소" />
-                            <input type="text" name="addressDetail" value={formData.addressDetail} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="상세 주소" />
-                        </div>
+                        )}
 
                         <div className="bg-[#f2f4f6] rounded-[22px] p-6">
                             <label className="flex items-center gap-3 cursor-pointer">
