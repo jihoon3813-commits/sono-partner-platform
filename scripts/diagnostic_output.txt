@@ -1,0 +1,71 @@
+
+Total duplicate keys: 0
+
+
+=== PROBLEM RECORDS ===
+
+--- 박희철: 1 records ---
+{
+  "_creationTime": 1770627731690.9995,
+  "_id": "j975459aed5gspa9g4mqknrk7980t0et",
+  "applicationNo": "SA-20260209-520536",
+  "cancellationProcessing": "2025-10-14",
+  "createdAt": "8월 25일",
+  "customerName": "박희철",
+  "customerPhone": "010-4262-7353",
+  "firstPaymentDate": "",
+  "partnerId": "P-1770619312240",
+  "partnerName": "제이온",
+  "paymentMethod": "CMS",
+  "planType": "3",
+  "productType": "더 해피 450 ONE",
+  "registrationDate": "2025-08-26",
+  "remarks": "9/8 1구좌 가입완료, 9/10 2구좌 가입완료",
+  "status": "해약",
+  "updatedAt": "2026-02-09T23:29:35.555Z",
+  "withdrawalProcessing": ""
+}
+
+--- 이근자: 1 records ---
+{
+  "_creationTime": 1770627731691.007,
+  "_id": "j971wry0yzawpeztpym6zme03580vgqe",
+  "applicationNo": "SA-20260209-549232",
+  "cancellationProcessing": "2025-09-25",
+  "createdAt": "8월 26일",
+  "customerName": "이근자",
+  "customerPhone": "010-9739-5001",
+  "firstPaymentDate": "2025-09-15",
+  "partnerId": "P-1770619312240",
+  "partnerName": "제이온",
+  "paymentMethod": "카드",
+  "planType": "3",
+  "productType": "더 해피 450 ONE",
+  "registrationDate": "2025-08-26",
+  "remarks": "고객변심",
+  "status": "청약철회",
+  "updatedAt": "2026-02-09T09:02:11.693Z",
+  "withdrawalProcessing": ""
+}
+
+--- 서여선: 1 records ---
+{
+  "_creationTime": 1770627731691.0625,
+  "_id": "j978p9f100sdzps5btbmg5tqwx80twan",
+  "applicationNo": "SA-20260209-392353",
+  "cancellationProcessing": "",
+  "createdAt": "11월 14일",
+  "customerName": "서여선",
+  "customerPhone": "010-5765-0087",
+  "firstPaymentDate": "2025-11-14",
+  "partnerId": "P-1770619312240",
+  "partnerName": "제이온",
+  "paymentMethod": "카드",
+  "planType": "3",
+  "productType": "더 해피 450 ONE",
+  "registrationDate": "2025-10-23",
+  "remarks": "",
+  "status": "정상가입",
+  "updatedAt": "2026-02-09T09:02:11.693Z",
+  "withdrawalProcessing": ""
+}

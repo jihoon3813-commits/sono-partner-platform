@@ -1,4 +1,5 @@
 import { query, mutation } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { v } from "convex/values";
 
 export const getAllApplications = query({
@@ -74,6 +75,20 @@ export const createApplication = mutation({
             createdAt: now,
             updatedAt: now,
         });
+
+        // 텔레그램 알림 전송
+        const customerInfo = rest.customerName || "미입력";
+        const phoneInfo = rest.customerPhone || "미입력";
+        const productInfo = rest.productType || "미입력";
+        const partnerInfo = rest.partnerName || "미입력";
+        const message = `🔔 <b>신규 고객 등록</b>\n\n` +
+            `👤 고객명: ${customerInfo}\n` +
+            `📱 연락처: ${phoneInfo}\n` +
+            `📦 상품: ${productInfo}\n` +
+            `🏢 파트너: ${partnerInfo}\n` +
+            `📋 접수번호: ${applicationNo}\n` +
+            `🕐 시간: ${now}`;
+        await ctx.scheduler.runAfter(0, internal.telegram.sendTelegramNotification, { message });
 
         return await ctx.db.get(id);
     },
@@ -256,65 +271,101 @@ export const bulkSyncApplications = mutation({
         let created = 0;
         let updated = 0;
 
-        // Fetch all partners for mapping names to IDs
-        const clean = (s: string | undefined) => (s || "")
-            .trim()
-            .replace(/[\u200b-\u200f\ufeff\u00a0]/g, "") // Remove zero-width & invisible spaces
-            .normalize("NFC");
+        const syncSessionId = Math.random().toString(36).slice(2, 7);
+        const toCharCodes = (s: string) => Array.from(s).map(c => c.charCodeAt(0).toString(16)).join(',');
+        console.log(`[Sync ${syncSessionId}] Starting sync for ${args.applications.length} rows`);
+        const normalizeCompare = (v: any) => {
+            if (v === undefined || v === null) return "";
+            return String(v)
+                .trim()
+                .replace(/[\u200b-\u200f\ufeff\u00a0]/g, "")
+                .normalize("NFC");
+        };
+
+        const formatDate = (val: any): string => {
+            if (val === undefined || val === null || val === "") return "";
+            const serial = Number(val);
+            if (!isNaN(serial) && serial > 30000 && serial < 60000) {
+                const date = new Date((serial - 25569) * 86400 * 1000);
+                return date.toISOString().slice(0, 10);
+            }
+            const dateStr = String(val).trim();
+            if (dateStr.includes('.') || dateStr.includes('-')) {
+                const parts = dateStr.split(/[.-]/);
+                if (parts.length === 3) {
+                    const y = parts[0].trim();
+                    const m = parts[1].trim().padStart(2, '0');
+                    const d = parts[2].trim().padStart(2, '0');
+                    return `${y}-${m}-${d}`;
+                }
+            }
+            return dateStr;
+        };
 
         const partners = await ctx.db.query("partners").collect();
-        const partnerMap = new Map(partners.map(p => [clean(p.companyName), p.partnerId]));
+        const partnerMap = new Map(partners.map(p => [normalizeCompare(p.companyName), p.partnerId]));
 
-        const updatedNames: string[] = [];
+        const isAdvancedStatus = (s: string) => s !== "" && s !== "접수";
 
+        // 1. Deduplicate/Merge incoming records by key [Name|Phone|Partner]
+        const mergedApplications = new Map<string, any>();
         for (const data of args.applications) {
-            // Server-side enforcement of data format
-            const customerName = clean(data.customerName);
-            const partnerName = clean(data.partnerName);
-
-            // 1. Phone Formatting
-            let formattedPhone = (data.customerPhone || "").replace(/[^0-9]/g, "");
-            if (formattedPhone.length === 11) {
-                formattedPhone = `${formattedPhone.slice(0, 3)}-${formattedPhone.slice(3, 7)}-${formattedPhone.slice(7)}`;
-            } else if (formattedPhone.length === 10) {
-                if (formattedPhone.startsWith('02')) {
-                    formattedPhone = `${formattedPhone.slice(0, 2)}-${formattedPhone.slice(2, 6)}-${formattedPhone.slice(6)}`;
+            const customerName = normalizeCompare(data.customerName);
+            const partnerName = normalizeCompare(data.partnerName);
+            let rawPhone = (data.customerPhone || "").replace(/[^0-9]/g, "");
+            let formattedPhone = rawPhone;
+            // Standardize phone
+            if (rawPhone.length === 11) {
+                formattedPhone = `${rawPhone.slice(0, 3)}-${rawPhone.slice(3, 7)}-${rawPhone.slice(7)}`;
+            } else if (rawPhone.length === 10) {
+                if (rawPhone.startsWith('02')) {
+                    formattedPhone = `${rawPhone.slice(0, 2)}-${rawPhone.slice(2, 6)}-${rawPhone.slice(6)}`;
                 } else {
-                    formattedPhone = `${formattedPhone.slice(0, 3)}-${formattedPhone.slice(3, 6)}-${formattedPhone.slice(6)}`;
+                    formattedPhone = `${rawPhone.slice(0, 3)}-${rawPhone.slice(3, 6)}-${rawPhone.slice(6)}`;
                 }
             }
 
-            // 2. Product Name Enforcement
+            const key = `${customerName}|${formattedPhone}|${partnerName}`;
+            console.log(`[Sync ${syncSessionId}] Batch item key: ${key}`);
+            const existingInBatch = mergedApplications.get(key);
+
+            if (!existingInBatch) {
+                mergedApplications.set(key, { ...data, customerName, partnerName, customerPhone: formattedPhone });
+            } else {
+                for (const k of Object.keys(data)) {
+                    const newVal = normalizeCompare((data as any)[k]);
+                    const currentVal = normalizeCompare((existingInBatch as any)[k]);
+
+                    if (newVal !== "") {
+                        // Special status priority: don't let "" or "접수" overwrite an advanced status
+                        if (k === "status") {
+                            if (isAdvancedStatus(newVal) || !isAdvancedStatus(currentVal)) {
+                                (existingInBatch as any)[k] = (data as any)[k];
+                            }
+                        } else {
+                            (existingInBatch as any)[k] = (data as any)[k];
+                        }
+                    }
+                }
+            }
+        }
+
+        const updatedNamesSet = new Set<string>();
+        console.log(`[Sync ${syncSessionId}] Merged into ${mergedApplications.size} unique keys`);
+
+        for (const [key, data] of mergedApplications.entries()) {
+            const customerName = data.customerName;
+            const partnerName = data.partnerName;
+            const formattedPhone = data.customerPhone;
+
             const finalProductType = (data.productType === "happy450" || data.productType === "해피450")
                 ? "더 해피 450 ONE"
                 : data.productType;
-
-            const formatDate = (val: any): string => {
-                if (val === undefined || val === null || val === "") return "";
-                const serial = Number(val);
-                if (!isNaN(serial) && serial > 30000 && serial < 60000) {
-                    const date = new Date((serial - 25569) * 86400 * 1000);
-                    return date.toISOString().slice(0, 10);
-                }
-
-                const dateStr = String(val).trim();
-                if (dateStr.includes('.') || dateStr.includes('-')) {
-                    const parts = dateStr.split(/[.-]/);
-                    if (parts.length === 3) {
-                        const y = parts[0].trim();
-                        const m = parts[1].trim().padStart(2, '0');
-                        const d = parts[2].trim().padStart(2, '0');
-                        return `${y}-${m}-${d}`;
-                    }
-                }
-                return dateStr;
-            };
 
             const formattedFirstPaymentDate = formatDate(data.firstPaymentDate);
             const formattedRegistrationDate = formatDate(data.registrationDate);
 
             // Find existing using Index
-            // Try 1: Strict Match (New Standard) - MATCH WITHOUT Date
             let existing = await ctx.db
                 .query("applications")
                 .withIndex("by_customer_sync", (q) =>
@@ -324,9 +375,8 @@ export const bulkSyncApplications = mutation({
                 )
                 .first();
 
-            // Try 2: Legacy Match (If DB has old unformatted data)
             if (!existing) {
-                const unformattedPhone = (data.customerPhone || "").replace(/[^0-9]/g, "");
+                const unformattedPhone = formattedPhone.replace(/[^0-9]/g, "");
                 existing = await ctx.db
                     .query("applications")
                     .withIndex("by_customer_sync", (q) =>
@@ -339,10 +389,8 @@ export const bulkSyncApplications = mutation({
 
             const partnerId = partnerMap.get(partnerName) || "unknown";
 
-            // Prepare base data (exclude registrationDate to handle it conditionally)
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            // Prepare base data
             const { registrationDate: _ignore, ...otherData } = data;
-
             const baseData: any = {
                 ...otherData,
                 customerName,
@@ -352,38 +400,47 @@ export const bulkSyncApplications = mutation({
                 partnerId,
             };
 
-            // Normalize ALL possible date fields in baseData
             const dateFields = [
                 "contractDate", "deliveryDate", "settlementDate", "settlement_date",
-                "firstPaymentDate", "cancellationProcessing", "withdrawalProcessing", "customerBirth"
+                "cancellationProcessing", "withdrawalProcessing", "customerBirth"
             ];
             for (const field of dateFields) {
                 if (baseData[field] !== undefined) {
                     baseData[field] = formatDate(baseData[field]);
                 }
             }
-            // Explicitly set the formatted firstPaymentDate
             baseData.firstPaymentDate = formattedFirstPaymentDate;
 
             if (existing) {
-                // Determine if we need to update
                 const updates: any = {};
                 let hasChanges = false;
 
-                // Check all fields for changes
-                for (const key of Object.keys(baseData)) {
-                    if (key === "updatedAt" || key === "createdAt") continue;
+                for (const fKey of Object.keys(baseData)) {
+                    if (fKey === "updatedAt" || fKey === "createdAt") continue;
 
-                    const newVal = String(baseData[key] || "").trim();
-                    const oldVal = String((existing as any)[key] || "").trim();
+                    const newVal = normalizeCompare(baseData[fKey]);
+                    const oldVal = normalizeCompare((existing as any)[fKey]);
 
-                    if (newVal !== oldVal) {
-                        updates[key] = baseData[key];
-                        hasChanges = true;
+                    // Skip update if newVal is empty and oldVal is not (preserve DB data)
+                    if (newVal === "" && oldVal !== "") continue;
+
+                    // Specific Protection for Status Downgrade
+                    if (fKey === "status") {
+                        if (isAdvancedStatus(oldVal) && !isAdvancedStatus(newVal)) {
+                            console.log(`[Sync ${syncSessionId}] Status downgrade protected for ${customerName}: [${oldVal}] stays, [${newVal}] ignored`);
+                            continue;
+                        }
                     }
+
+                    // Skip update if both normalized values are identical
+                    if (newVal === oldVal) continue;
+
+                    // If we have a change, store the normalized version to prevent floating invisibles
+                    console.log(`[Sync ${syncSessionId}] ${customerName}.${fKey} DIFF: [${oldVal}](codes:${toCharCodes(oldVal)}) -> [${newVal}](codes:${toCharCodes(newVal)})`);
+                    updates[fKey] = (fKey === "productType" || fKey === "status") ? baseData[fKey] : newVal;
+                    hasChanges = true;
                 }
 
-                // Preserve existing registrationDate
                 const existingRegDate = formatDate(existing.registrationDate);
                 if (!existingRegDate && formattedRegistrationDate) {
                     updates.registrationDate = formattedRegistrationDate;
@@ -391,10 +448,19 @@ export const bulkSyncApplications = mutation({
                 }
 
                 if (hasChanges) {
+                    const changeDetails = Object.keys(updates)
+                        .filter(k => k !== 'updatedAt')
+                        .slice(0, 3)
+                        .map(k => {
+                            const oldV = normalizeCompare((existing as any)[k]);
+                            const newV = normalizeCompare(updates[k]);
+                            return `${k}:${oldV}→${newV}`;
+                        });
+                    const reasonStr = changeDetails.join(', ');
                     updates.updatedAt = now;
                     await ctx.db.patch(existing._id, updates);
                     updated++;
-                    updatedNames.push(customerName);
+                    updatedNamesSet.add(`${customerName} [${reasonStr}]`);
                 }
             } else {
                 // Create
@@ -404,6 +470,7 @@ export const bulkSyncApplications = mutation({
 
                 await ctx.db.insert("applications", {
                     ...baseData,
+                    status: baseData.status || "접수",
                     registrationDate: formattedRegistrationDate,
                     applicationNo,
                     createdAt: data.createdAt || now,
@@ -412,7 +479,7 @@ export const bulkSyncApplications = mutation({
                 created++;
             }
         }
-        return { created, updated, updatedNames };
+        return { created, updated, updatedNames: Array.from(updatedNamesSet) };
     },
 });
 

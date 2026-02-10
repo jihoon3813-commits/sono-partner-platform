@@ -1,4 +1,5 @@
 import { query, mutation } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { v } from "convex/values";
 
 export const getPendingPartnerRequests = query({
@@ -47,6 +48,18 @@ export const createPartnerRequest = mutation({
             status: "pending",
             createdAt,
         });
+
+        // 텔레그램 알림 전송
+        const message = `🌟 <b>신규 파트너 신청</b>\n\n` +
+            `🏢 업체명: ${args.companyName}\n` +
+            `👤 대표자: ${args.ceoName}\n` +
+            `📞 담당자: ${args.managerName} (${args.managerPhone})\n` +
+            `📧 이메일: ${args.managerEmail}\n` +
+            `🏪 업종: ${args.shopType}\n` +
+            `📋 신청번호: ${requestId}\n` +
+            `🕐 시간: ${createdAt}`;
+        await ctx.scheduler.runAfter(0, internal.telegram.sendTelegramNotification, { message });
+
         return requestId;
     },
 });

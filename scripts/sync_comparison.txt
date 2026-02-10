@@ -1,0 +1,56 @@
+=== BEFORE SYNC ===
+[
+  {
+    "_creationTime": 1770627731690.9995,
+    "_id": "j975459aed5gspa9g4mqknrk7980t0et",
+    "applicationNo": "SA-20260209-520536",
+    "cancellationProcessing": "2025-10-14",
+    "createdAt": "8월 25일",
+    "customerName": "박희철",
+    "customerPhone": "010-4262-7353",
+    "firstPaymentDate": "2025-09-08",
+    "partnerId": "P-1770619312240",
+    "partnerName": "제이온",
+    "paymentMethod": "CMS",
+    "planType": "3",
+    "productType": "더 해피 450 ONE",
+    "registrationDate": "2025-08-26",
+    "remarks": "9/8 1구좌 가입완료, 9/10 2구좌 가입완료",
+    "status": "해약",
+    "updatedAt": "2026-02-10T00:23:48.210Z",
+    "withdrawalProcessing": ""
+  }
+]
+
+=== AFTER SYNC ===
+[
+  {
+    "_creationTime": 1770627731690.9995,
+    "_id": "j975459aed5gspa9g4mqknrk7980t0et",
+    "applicationNo": "SA-20260209-520536",
+    "cancellationProcessing": "2025-10-14",
+    "createdAt": "8월 25일",
+    "customerName": "박희철",
+    "customerPhone": "010-4262-7353",
+    "firstPaymentDate": "2025-09-08",
+    "partnerId": "P-1770619312240",
+    "partnerName": "제이온",
+    "paymentMethod": "CMS",
+    "planType": "3",
+    "productType": "더 해피 450 ONE",
+    "registrationDate": "2025-08-26",
+    "remarks": "9/8 1구좌 가입완료, 9/10 2구좌 가입완료",
+    "status": "해약",
+    "updatedAt": "2026-02-10T00:23:48.210Z",
+    "withdrawalProcessing": ""
+  }
+]
+
+=== SYNC RESULT ===
+{
+  "created": 0,
+  "updated": 0,
+  "updatedNames": []
+}
+
+=== FIELD COMPARISON ===

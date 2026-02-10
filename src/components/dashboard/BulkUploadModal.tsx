@@ -113,7 +113,7 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
                             paymentMethod: getVal(idx.paymentMethod),
                             cancellationProcessing: getVal(idx.cancellationProcessing),
                             withdrawalProcessing: getVal(idx.withdrawalProcessing),
-                            status: getVal(idx.status) || "접수",
+                            status: getVal(idx.status),
                             remarks: getVal(idx.remarks),
                             createdAt: getVal(idx.createdAt),
                         };
@@ -129,6 +129,12 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
                 }
 
                 setProgress(`${allData.length}건의 데이터를 서버에 동기화 중...`);
+
+                // DEBUG: Log problem records
+                const debugNames = ["박희철", "이근자", "서여선"];
+                const debugRecords = allData.filter((d: any) => debugNames.includes(d.customerName));
+                console.log(`[BulkUpload Debug] Total records: ${allData.length}`);
+                console.log(`[BulkUpload Debug] Problem records:`, JSON.stringify(debugRecords, null, 2));
 
                 const res = await bulkSyncApplications(allData);
                 setResult(res);
