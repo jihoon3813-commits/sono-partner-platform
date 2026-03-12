@@ -353,7 +353,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                 {/* Sono Logo */}
                                 <div className="flex items-center justify-center">
                                     <img
-                                        src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA.png?raw=true"
+                                        src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA.png"
                                         alt="Sono I'M READY"
                                         className="h-9 sm:h-12 w-auto object-contain max-w-[200px]"
                                     />
@@ -403,22 +403,22 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-24 max-w-6xl mx-auto">
                             {[
                                 {
-                                    image: "https://github.com/jihoon3813-commits/img_sono/blob/main/credibility_list01.jpg?raw=true",
+                                    image: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/credibility_list01.jpg",
                                     title: "고객 선수금 1조 돌파",
                                     subtitle: "2024 06월 기준"
                                 },
                                 {
-                                    image: "https://github.com/jihoon3813-commits/img_sono/blob/main/credibility_list03.jpg?raw=true",
+                                    image: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/credibility_list03.jpg",
                                     title: "자본금 100억원",
                                     subtitle: "법정 자본금(15억원)요건 6배"
                                 },
                                 {
-                                    image: "https://github.com/jihoon3813-commits/img_sono/blob/main/credibility_list04.jpg?raw=true",
+                                    image: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/credibility_list04.jpg",
                                     title: "대명소노그룹사",
                                     subtitle: "2024년 기준 대규모기업"
                                 },
                                 {
-                                    image: "https://github.com/jihoon3813-commits/img_sono/blob/main/credibility_list02.jpg?raw=true",
+                                    image: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/credibility_list02.jpg",
                                     title: "신용평가 1등급",
                                     subtitle: "기준: 2025.8.1~2025.7.31 / 상조보증공제조합"
                                 }

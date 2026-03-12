@@ -124,22 +124,22 @@ export default function HomePage() {
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
                             {[
                                 {
-                                    image: "https://github.com/jihoon3813-commits/img_sono/blob/main/credibility_list01.jpg?raw=true",
+                                    image: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/credibility_list01.jpg",
                                     title: "고객 선수금 1조 돌파",
                                     subtitle: "2024 06월 기준"
                                 },
                                 {
-                                    image: "https://github.com/jihoon3813-commits/img_sono/blob/main/credibility_list03.jpg?raw=true",
+                                    image: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/credibility_list03.jpg",
                                     title: "자본금 100억원",
                                     subtitle: "법정 자본금(15억원)요건 6배"
                                 },
                                 {
-                                    image: "https://github.com/jihoon3813-commits/img_sono/blob/main/credibility_list04.jpg?raw=true",
+                                    image: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/credibility_list04.jpg",
                                     title: "대명소노그룹사",
                                     subtitle: "2024년 기준 대규모기업"
                                 },
                                 {
-                                    image: "https://github.com/jihoon3813-commits/img_sono/blob/main/credibility_list02.jpg?raw=true",
+                                    image: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/credibility_list02.jpg",
                                     title: "신용평가 1등급",
                                     subtitle: "기준: 2025.8.1~2025.7.31 / 상조보증공제조합"
                                 }

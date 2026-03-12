@@ -205,17 +205,17 @@ export default function Happy450Content({
                                 {
                                     title: "국가공인 장례지도사",
                                     desc: "입관 시 2명 투입 및 24시간 상시대기",
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/funeral_ready_list01_08.jpg?raw=true"
+                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/funeral_ready_list01_08.jpg"
                                 },
                                 {
                                     title: "프리미엄 장의 차량",
                                     desc: "최신형 리무진 및 대형 버스 즉시 투입",
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/funeral_ready_list01_09.jpg?raw=true"
+                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/funeral_ready_list01_09.jpg"
                                 },
                                 {
                                     title: "철저한 사후 관리",
                                     desc: "행사 후 품질 심사 및 피드백 상시 지원",
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/funeral_ready_list01_10.jpg?raw=true"
+                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/funeral_ready_list01_10.jpg"
                                 },
                             ].map((item, index) => (
                                 <div key={index} className="group bg-white rounded-[24px] md:rounded-[32px] overflow-hidden hover:shadow-2xl transition-all duration-500 border border-transparent hover:border-gray-100 flex flex-col md:block">
@@ -411,32 +411,32 @@ export default function Happy450Content({
                                 {
                                     title: "웨딩",
                                     desc: "품격 있는 웨딩부티크 스튜디오, 드레스 등 토탈 케어",
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product06.jpg?raw=true"
+                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product06.jpg"
                                 },
                                 {
                                     title: "크루즈",
                                     desc: "바다 위의 움직이는 호텔, 럭셔리 크루즈 여행",
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product09.jpg?raw=true"
+                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product09.jpg"
                                 },
                                 {
                                     title: "해외여행",
                                     desc: "전 세계 어디든 원하는 곳으로 떠나는 프리미엄 패키지",
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product01.jpg?raw=true"
+                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg"
                                 },
                                 {
                                     title: "골프",
                                     desc: "국내외 명문 골프장에서 즐기는 여유로운 라운딩",
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product02.jpg?raw=true"
+                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product02.jpg"
                                 },
                                 {
                                     title: "어학연수",
                                     desc: "자녀를 위한 해외 명문 학교 영어 캠프 및 연수 프로그램",
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product04.jpg?raw=true"
+                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product04.jpg"
                                 },
                                 {
                                     title: "라이프케어",
                                     desc: "소노시즌 매트리스, 최신 가전, 휴대폰 등 생활 전반 지원",
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product07.jpg?raw=true"
+                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product07.jpg"
                                 }
                             ].map((item, index) => (
                                 <div key={index} className="group bg-white rounded-[24px] md:rounded-[32px] overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-500 flex flex-row md:flex-col">

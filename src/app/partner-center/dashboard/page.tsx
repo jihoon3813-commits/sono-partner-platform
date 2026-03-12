@@ -121,7 +121,7 @@ export default function PartnerDashboard() {
                         <div className="flex justify-between w-full md:w-auto items-center">
                             <a href="/partner-center/dashboard" className="flex items-center gap-2">
                                 <img
-                                    src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png?raw=true"
+                                    src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png"
                                     alt="SONO Logo"
                                     className="h-8 w-auto brightness-0"
                                 />

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
         description: "소노아임레디 더 해피450 ONE - 특별한 혜택과 함께 최고의 라이프 서비스를 제공합니다.",
         images: [
             {
-                url: "https://github.com/jihoon3813-commits/img_sono/blob/main/%EB%8C%80%ED%91%9C%EC%9D%B4%EB%AF%B8%EC%A7%80_%EB%8D%94%ED%95%B4%ED%94%BC450.png?raw=true",
+                url: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EB%8C%80%ED%91%9C%EC%9D%B4%EB%AF%B8%EC%A7%80_%EB%8D%94%ED%95%B4%ED%94%BC450.png",
                 width: 1200,
                 height: 630,
             }

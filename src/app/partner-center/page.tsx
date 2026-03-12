@@ -151,7 +151,7 @@ export default function PartnerCenterLoginPage() {
                 <div className="text-center mb-12">
                     <Link href="/partner-center/dashboard" className="inline-block group">
                         <img
-                            src="https://github.com/jihoon3813-commits/img_sono/blob/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png?raw=true"
+                            src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png"
                             alt="SONO Partner Center"
                             className="h-16 w-auto object-contain mx-auto mb-6 transition-transform group-hover:scale-105 brightness-0"
                         />
