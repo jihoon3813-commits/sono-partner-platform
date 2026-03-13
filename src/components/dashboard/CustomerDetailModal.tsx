@@ -247,8 +247,8 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                     <div className="border-t border-gray-100 pt-4">
                         <h3 className="text-sm font-bold text-sono-primary mb-3">고객 정보</h3>
                         <div className="space-y-3">
-                            <InfoRow label="고객명" value={application.customerName} />
-                            <InfoRow label="연락처" value={application.customerPhone} />
+                            <InfoRow label="고객명" value={application.customerName} showCopy />
+                            <InfoRow label="연락처" value={application.customerPhone} showCopy showCopyNoHyphen />
                             <InfoRow label="생년월일" value={application.customerBirth} />
                             <InfoRow label="성별" value={application.customerGender} />
                             <InfoRow label="주소" value={`${application.customerAddress} ${application.customerZipcode}`} />
@@ -281,11 +281,32 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     );
 }
 
-function InfoRow({ label, value }: { label: string, value: string }) {
+function InfoRow({ label, value, showCopy, showCopyNoHyphen }: { label: string, value: string, showCopy?: boolean, showCopyNoHyphen?: boolean }) {
+    const handleCopy = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            alert("복사되었습니다.");
+        } catch (err) {
+            console.error("복사에 실패했습니다.", err);
+        }
+    };
+
     return (
-        <div className="flex text-sm">
-            <span className="w-24 text-gray-400 font-medium shrink-0">{label}</span>
-            <span className="text-sono-dark font-medium break-all">{value}</span>
+        <div className="flex text-sm items-start md:items-center py-0.5">
+            <span className="w-24 text-gray-400 font-medium shrink-0 pt-1 md:pt-0">{label}</span>
+            <div className="flex flex-wrap items-center gap-2 flex-1">
+                <span className="text-sono-dark font-medium break-all">{value}</span>
+                {showCopy && (
+                    <button onClick={() => handleCopy(value)} className="text-[10px] px-2 py-0.5 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded border border-gray-200 transition-colors font-bold shrink-0">
+                        {label === '연락처' ? '전체 복사' : '복사'}
+                    </button>
+                )}
+                {showCopyNoHyphen && (
+                    <button onClick={() => handleCopy(value.replace(/-/g, ''))} className="text-[10px] px-2 py-0.5 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded border border-gray-200 transition-colors font-bold shrink-0">
+                        숫자만 복사
+                    </button>
+                )}
+            </div>
         </div>
     );
 }
