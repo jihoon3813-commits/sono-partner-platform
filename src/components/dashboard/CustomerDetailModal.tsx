@@ -14,12 +14,10 @@ interface CustomerDetailModalProps {
 export default function CustomerDetailModal({ application, onClose, onUpdate, isAdmin = false, partnerLoginId }: CustomerDetailModalProps) {
     const getStatusStyles = (status: string) => {
         switch (status) {
-            case '접수':
-                return 'bg-blue-50 text-blue-600 border border-blue-100';
-            case '대기':
+            case '접수대기':
                 return 'bg-slate-50 text-slate-600 border border-slate-100';
-            case '상담중':
-                return 'bg-amber-50 text-amber-600 border border-amber-100';
+            case '접수완료':
+                return 'bg-blue-50 text-blue-600 border border-blue-100';
             case '부재':
                 return 'bg-gray-50 text-gray-500 border border-gray-100';
             case '보류':
@@ -32,6 +30,8 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                 return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
             case '1회출금':
                 return 'bg-teal-50 text-teal-600 border border-teal-100';
+            case '배송완료':
+                return 'bg-purple-50 text-purple-600 border border-purple-100';
             case '청약철회':
                 return 'bg-pink-50 text-pink-600 border border-pink-100';
             case '해약':
@@ -144,7 +144,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     };
 
     const statusOptions: ApplicationStatus[] = [
-        '접수', '대기', '상담중', '부재', '보류', '거부', '접수취소', '정상가입', '1회출금', '청약철회', '해약'
+        '접수대기', '접수완료', '부재', '보류', '거부', '접수취소', '정상가입', '1회출금', '배송완료', '청약철회', '해약'
     ];
 
     return (

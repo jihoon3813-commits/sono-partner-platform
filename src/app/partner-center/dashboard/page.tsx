@@ -59,6 +59,8 @@ export default function PartnerDashboard() {
         pendingRequests: realTimeData?.pendingRequests || []
     };
 
+    const currentPartner = dashboardData.partners.find((p: any) => p.partnerId === partner?.partnerId) || partner;
+
     const isLoading = !realTimeData || !partner;
 
     const fetchData = useCallback(() => {
@@ -140,7 +142,7 @@ export default function PartnerDashboard() {
                                     </svg>
                                 </button>
                                 <Link
-                                    href={partner?.customUrl && partner.customUrl !== "admin" ? `/p/${partner.customUrl}` : "/"}
+                                    href={partner?.customUrl && partner.customUrl !== "admin" ? `/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/products/smartcare" : ""}` : "/"}
                                     target="_blank"
                                     className="p-1.5 bg-gray-100 text-gray-500 rounded-lg border border-gray-200"
                                     title="홈페이지 바로가기"
@@ -190,7 +192,7 @@ export default function PartnerDashboard() {
 
                     <div className="hidden md:flex items-center gap-4">
                         <Link
-                            href={partner?.customUrl && partner.customUrl !== "admin" ? `/p/${partner.customUrl}` : "/"}
+                            href={partner?.customUrl && partner.customUrl !== "admin" ? `/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/products/smartcare" : ""}` : "/"}
                             target="_blank"
                             className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-all shadow-sm"
                         >
@@ -233,14 +235,22 @@ export default function PartnerDashboard() {
                         {/* Landing URL */}
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 md:p-6 rounded-[24px] md:rounded-[32px] shadow-sm border border-gray-100">
                             <div className="flex-1 flex flex-col gap-1 w-full overflow-hidden">
-                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">내 파트너 페이지 랜딩 URL</span>
+                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                                    {currentPartner.partnerGroup === "결합 상품 판매" ? "결합상품 페이지 랜딩 URL" : "내 파트너 페이지 랜딩 URL"}
+                                </span>
                                 <span className="text-sm md:text-lg font-mono text-sono-primary truncate">
-                                    {baseUrl.replace(/^https?:\/\//, "")}/p/{partner.customUrl}
+                                    {baseUrl.replace(/^https?:\/\//, "")}/p/{partner.customUrl}{currentPartner.partnerGroup === "결합 상품 판매" ? "/products/smartcare" : ""}
                                 </span>
                             </div>
                             <div className="flex gap-2 w-full md:w-auto">
                                 <button
-                                    onClick={handleCopyUrl}
+                                    onClick={() => {
+                                        const url = `${baseUrl}/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/products/smartcare" : ""}`;
+                                        navigator.clipboard.writeText(url).then(() => {
+                                            setCopySuccess(true);
+                                            setTimeout(() => setCopySuccess(false), 2000);
+                                        });
+                                    }}
                                     className={`flex-1 md:flex-none flex items-center justify-center gap-2 text-sm font-bold px-6 py-3.5 rounded-2xl transition-all ${copySuccess
                                         ? "bg-green-500 text-white animate-bounce-short"
                                         : "bg-sono-primary/10 text-sono-primary hover:bg-sono-primary hover:text-white"
@@ -252,7 +262,7 @@ export default function PartnerDashboard() {
                                     {copySuccess ? "주소 복사됨" : "랜딩 URL 복사"}
                                 </button>
                                 <a
-                                    href={`/p/${partner.customUrl}`}
+                                    href={`/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/products/smartcare" : ""}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex-1 md:flex-none flex items-center justify-center gap-2 text-sm font-bold px-6 py-3.5 rounded-2xl bg-gray-100 text-gray-500 hover:bg-sono-dark hover:text-white transition-all shadow-sm"
@@ -268,15 +278,17 @@ export default function PartnerDashboard() {
                         {/* Inquiry URL */}
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 md:p-6 rounded-[24px] md:rounded-[32px] shadow-sm border border-gray-100">
                             <div className="flex-1 flex flex-col gap-1 w-full overflow-hidden">
-                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">상담신청 전용 URL</span>
+                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                                    {currentPartner.partnerGroup === "결합 상품 판매" ? "결합상품 상담전용 URL" : "상담신청 전용 URL"}
+                                </span>
                                 <span className="text-sm md:text-lg font-mono text-purple-600 truncate">
-                                    {baseUrl.replace(/^https?:\/\//, "")}/p/{partner.customUrl}/inquiry
+                                    {baseUrl.replace(/^https?:\/\//, "")}/p/{partner.customUrl}{currentPartner.partnerGroup === "결합 상품 판매" ? "/inquiry?product=smartcare" : "/inquiry"}
                                 </span>
                             </div>
                             <div className="flex gap-2 w-full md:w-auto">
                                 <button
                                     onClick={() => {
-                                        const url = `${baseUrl}/p/${partner.customUrl}/inquiry`;
+                                        const url = `${baseUrl}/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/inquiry?product=smartcare" : "/inquiry"}`;
                                         navigator.clipboard.writeText(url).then(() => {
                                             alert("상담신청 URL이 복사되었습니다.");
                                         });
@@ -289,7 +301,7 @@ export default function PartnerDashboard() {
                                     URL 복사
                                 </button>
                                 <a
-                                    href={`/p/${partner.customUrl}/inquiry`}
+                                    href={`/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/inquiry?product=smartcare" : "/inquiry"}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex-1 md:flex-none flex items-center justify-center gap-2 text-sm font-bold px-6 py-3.5 rounded-2xl bg-gray-100 text-gray-500 hover:bg-sono-dark hover:text-white transition-all shadow-sm"

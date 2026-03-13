@@ -66,7 +66,7 @@ function PartnerRow({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-bold text-sono-dark">{partner.companyName}</div>
-                    <div className="text-xs text-gray-400 mt-1">{partner.shopType}</div>
+                    <div className="text-xs text-gray-400 mt-1">{partner.shopType} • {partner.partnerGroup || '전체 상품 판매'}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-sono-dark">{partner.managerName}</div>
@@ -155,6 +155,8 @@ function MobilePartnerRow({
                                     <span>ID: {partner.loginId}</span>
                                     <span>•</span>
                                     <span>{partner.shopType}</span>
+                                    <span>•</span>
+                                    <span>{partner.partnerGroup || '전체 상품 판매'}</span>
                                 </div>
                             </div>
                         </div>

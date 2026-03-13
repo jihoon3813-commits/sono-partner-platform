@@ -165,6 +165,7 @@ export async function POST(request: Request) {
                 brandColor: partnerData.brandColor || '#1e3a5f',
                 loginId: partnerData.loginId,
                 loginPassword: partnerData.loginPassword,
+                partnerGroup: partnerData.partnerGroup || '전체 상품 판매',
                 status: 'active',
                 parentPartnerId: partnerData.parentPartnerId || '',
                 parentPartnerName: partnerData.parentPartnerName || '',

@@ -60,7 +60,7 @@ export default function HomePage() {
                                         </div>
                                         <div className="space-y-5">
                                             {[
-                                                "최신 가전 지원",
+                                                "최신가전 렌탈금 전액 지원",
                                                 "제휴몰 포인트 지급",
                                                 "납입금 100% 환급",
                                                 "대명소노 멤버십"
@@ -308,9 +308,17 @@ export default function HomePage() {
 
                         <div className="grid md:grid-cols-2 gap-10">
                             {/* 더 해피 450 ONE */}
-                            <div className="card group border border-gray-100 hover:border-gray-200 bg-[#f9fafb] !p-10">
+                            <div className="card group border border-gray-100 bg-[#f9fafb] !p-10 relative overflow-hidden">
+                                {/* 어둡게 덮는 오버레이 */}
+                                <div className="absolute inset-0 bg-sono-dark/60 z-10 backdrop-blur-[1px]"></div>
+
+                                <div className="absolute inset-0 flex items-center justify-center z-20 p-6 text-center pointer-events-none">
+                                    <div className="bg-sono-dark/90 backdrop-blur-md text-white px-6 py-4 rounded-2xl font-bold shadow-2xl border border-white/20 animate-pulse">
+                                        일반 상품은 인증 제휴사 전용 상품입니다.<br />(별도 문의)
+                                    </div>
+                                </div>
                                 <div className="mb-8">
-                                    <div className="w-16 h-16 rounded-[20px] bg-sono-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <div className="w-16 h-16 rounded-[20px] bg-sono-primary/10 flex items-center justify-center mb-6 transition-transform">
                                         <svg className="w-8 h-8 text-sono-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                         </svg>
@@ -338,12 +346,12 @@ export default function HomePage() {
                                 </ul>
                                 <div className="flex justify-between items-center pt-8 border-t border-gray-200">
                                     <span className="text-lg font-bold text-[#8b95a1]">월 18,000원부터</span>
-                                    <Link href="/products/happy450" className="text-sono-primary font-bold hover:brightness-110 transition-all flex items-center gap-1 text-lg">
+                                    <div className="text-[#adb5bd] font-bold flex items-center gap-1 text-lg cursor-not-allowed">
                                         자세히 보기
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                                         </svg>
-                                    </Link>
+                                    </div>
                                 </div>
                             </div>
 
@@ -362,14 +370,14 @@ export default function HomePage() {
                                     <span className="badge-gold">가전결합상조</span>
                                 </div>
                                 <p className="text-white/80 text-lg mb-8 leading-relaxed font-medium">
-                                    삼성/LG 최신 가전제품 지원과 함께 포인트, 상조 서비스,
+                                    삼성/LG 최신 가전제품 렌탈금 지원과 함께 포인트, 상조 서비스,
                                     납입금 100% 환급까지 모든 혜택을 담은 프리미엄 상품입니다.
                                 </p>
                                 <ul className="space-y-4 mb-10">
                                     {[
-                                        "삼성/LG 최신 가전 지원",
+                                        "삼성/LG 최신가전 렌탈금 전액 지원",
                                         "제휴몰 포인트 지급",
-                                        "납입금 100% 환급 (만기 시)",
+                                        "납입금 100% 환급 (만기 납입 후 익월 해약 또는 라이프 서비스 사용 조건)",
                                         "4가지 플랜 (실속형~프리미엄)"
                                     ].map((text, i) => (
                                         <li key={i} className="flex items-center gap-3 text-white font-bold">

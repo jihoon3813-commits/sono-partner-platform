@@ -3,6 +3,7 @@
 import { useState, useEffect, use, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+import { useSearchParams } from "next/navigation";
 
 interface DaumPostcodeData {
     address: string;
@@ -25,6 +26,7 @@ interface PartnerData {
 
 export default function PartnerInquiryPage({ params }: { params: Promise<{ partnerId: string }> }) {
     const resolvedParams = use(params);
+    const searchParams = useSearchParams();
     const [partner, setPartner] = useState<PartnerData | null>(null);
     const [isLoadingPartner, setIsLoadingPartner] = useState(true);
 
@@ -39,7 +41,7 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
         zonecode: "",
         address: "",
         addressDetail: "",
-        selectedProduct: "",
+        selectedProduct: searchParams.get("product") || "",
         preferredTime: "",
         inquiry: "",
         privacyAgreed: false,

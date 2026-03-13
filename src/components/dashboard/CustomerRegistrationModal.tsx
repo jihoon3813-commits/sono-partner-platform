@@ -278,7 +278,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                 partnerMemberId: c.partnerMemberId,
                 preferredContactTime: "",
                 inquiry: c.inquiry,
-                status: "접수",
+                status: "접수대기",
                 assignedTo: ""
             }));
 

@@ -31,6 +31,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
         shopUrl: "",
         shopType: "회원제 쇼핑몰",
         memberCount: "",
+        partnerGroup: "전체 상품 판매",
         customUrl: "",
         logoUrl: "",
         logoText: "",
@@ -55,6 +56,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                 shopUrl: partner.shopUrl || "",
                 shopType: partner.shopType || "회원제 쇼핑몰",
                 memberCount: partner.memberCount || "",
+                partnerGroup: partner.partnerGroup || "전체 상품 판매",
                 customUrl: partner.customUrl || "",
                 logoUrl: partner.logoUrl || "",
                 logoText: partner.logoText || "",
@@ -385,6 +387,22 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                                     className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary"
                                     placeholder="45만 포인트 즉시 지급"
                                 />
+                            </div>
+                        </div>
+
+                        {/* Partner Group Selection */}
+                        <div className="grid grid-cols-2 gap-6 pt-2">
+                            <div className="space-y-2 col-span-2">
+                                <label className="text-xs font-bold text-gray-400 ml-1">상품 판매 그룹</label>
+                                <select
+                                    value={formData.partnerGroup}
+                                    onChange={(e) => setFormData({ ...formData, partnerGroup: e.target.value })}
+                                    className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary"
+                                >
+                                    <option value="전체 상품 판매">전체 상품 판매</option>
+                                    <option value="결합 상품 판매">결합 상품 판매</option>
+                                </select>
+                                <p className="text-[10px] text-gray-400 ml-1 mt-1">* 결합 상품 판매 그룹은 대시보드에 결합상품 관련 URL만 노출됩니다.</p>
                             </div>
                         </div>
 

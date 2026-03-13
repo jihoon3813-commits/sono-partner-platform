@@ -70,6 +70,10 @@ export const createPartner = mutation({
         parentPartnerId: v.optional(v.string()),
         parentPartnerName: v.optional(v.string()),
         logoUrl: v.optional(v.string()),
+        logoText: v.optional(v.string()),
+        landingTitle: v.optional(v.string()),
+        shopUrl: v.optional(v.string()),
+        partnerGroup: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const partnerId = `P-${Date.now()}`;

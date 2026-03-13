@@ -82,7 +82,7 @@ export default function SmartCareContent({
 
     return (
         <>
-            {!isModalOpen && <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} />}
+            {!isModalOpen && <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} productType="smartcare" />}
             <main className="pb-32"> {/* Add padding for fixed bottom bar */}
                 {/* 히어로 섹션 */}
                 <section
@@ -168,8 +168,8 @@ export default function SmartCareContent({
                             <div className="lg:col-span-2 grid md:grid-cols-2 gap-6">
                                 {[
                                     {
-                                        title: "프리미엄 가전 즉시 지원",
-                                        desc: "삼성, LG 등 최고급 브랜드 가전을 별도 비용 없이 즉시 지원받습니다.",
+                                        title: "프리미엄 가전 렌탈금 전액 지원",
+                                        desc: "삼성, LG 등 최고급 브랜드 가전의 렌탈료 전액을 지원받습니다.",
                                         icon: "⚡"
                                     },
                                     {
@@ -223,12 +223,16 @@ export default function SmartCareContent({
                                         <span className="text-lg opacity-60 ml-1">원~</span>
                                     </div>
                                     <ul className="space-y-2 md:space-y-4 mb-2 md:mb-4 opacity-80 text-sm font-bold">
-                                        <li className="flex items-center gap-2">✓ 가전 지원 혜택</li>
+                                        <li className="flex items-center gap-2">✓ 가전 렌탈료 전액 지원 혜택</li>
                                         <li className="flex items-center gap-2">✓ 멤버십 즉시 이용</li>
                                         <li className="flex items-center gap-2">✓ 100% 만기 환급</li>
                                     </ul>
                                 </div>
                             ))}
+                        </div>
+
+                        <div className="mt-6 md:mt-8 text-right">
+                            <p className="text-white/50 text-xs md:text-sm font-medium">※100% 만기 환급 : 만기 납입 후 익월 해약 또는 라이프 서비스 사용 조건</p>
                         </div>
                     </div>
                 </section>
@@ -815,7 +819,11 @@ export default function SmartCareContent({
                 <section className="py-16 md:py-32 bg-[#f2f4f6]">
                     <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
                         <div className="text-center mb-16 md:mb-24">
-                            <h2 className="section-title">중요정보 고지사항</h2>
+                            <h2 className="section-title mb-4 md:mb-6">중요정보 고지사항</h2>
+                            <p className="text-[#6b7684] text-sm md:text-base font-medium break-keep">
+                                본 상품은 ㈜소노스테이션 상조 서비스 및 ㈜비에스온 렌탈 서비스 계약이 별도로 체결되는 상품입니다.<br className="hidden md:block" />
+                                상조 서비스 중도 해약 시, 납입회차에 따른 해약환급금이 발생합니다. (가전 잔여 렌탈료 고객 부담)
+                            </p>
                         </div>
 
                         <div className="grid md:grid-cols-2 gap-8 md:gap-10">
@@ -928,7 +936,8 @@ export default function SmartCareContent({
                 onClose={() => setIsModalOpen(false)}
                 partnerName={partnerName}
                 partnerId={partnerId}
-                productType="스마트케어"
+                productType="smartcare"
+                showProductSelect={false}
                 initialAppliance={pickedAppliance
                     ? (pickedAppliance.model ? `${pickedAppliance.brand} ${pickedAppliance.name} (${pickedAppliance.model})` : `${pickedAppliance.brand} ${pickedAppliance.name}`)
                     : undefined}

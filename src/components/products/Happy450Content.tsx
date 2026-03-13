@@ -26,7 +26,7 @@ export default function Happy450Content({
 
     return (
         <>
-            {!isModalOpen && <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} />}
+            {!isModalOpen && <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} productType="happy450" />}
             <main>
                 {/* 히어로 섹션 */}
                 <section
@@ -653,7 +653,8 @@ export default function Happy450Content({
                 onClose={() => setIsModalOpen(false)}
                 partnerName={partnerName}
                 partnerId={partnerId}
-                productType="더 해피 450 ONE"
+                productType="happy450"
+                showProductSelect={false}
             />
         </>
     );

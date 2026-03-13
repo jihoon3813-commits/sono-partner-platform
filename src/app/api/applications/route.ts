@@ -93,7 +93,7 @@ export async function POST(request: Request) {
             partnerMemberId: partnerId !== readablePartnerId ? partnerId : '',
             preferredContactTime: preferredTime || '',
             inquiry: inquiry || '',
-            status: '접수',
+            status: '접수대기',
             assignedTo: '',
         };
         console.log('[API] Creating application in Convex...');

@@ -10,6 +10,7 @@ interface HeaderProps {
     partnerName?: string;
     partnerId?: string;
     partnerLogo?: string;
+    productType?: string;
 }
 
 export default function Header({
@@ -17,7 +18,8 @@ export default function Header({
     partnerUrl = "",
     partnerName = "",
     partnerId = "",
-    partnerLogo = ""
+    partnerLogo = "",
+    productType = ""
 }: HeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,6 +41,13 @@ export default function Header({
     const handleInquiryClick = () => {
         setIsMenuOpen(false);
         setIsModalOpen(true);
+    };
+
+    const handleRestrictedProductClick = (e: React.MouseEvent) => {
+        if (!partnerMode) {
+            e.preventDefault();
+            alert("일반 상품은 인증 제휴사 전용 상품입니다.(별도문의)");
+        }
     };
 
     return (
@@ -66,13 +75,13 @@ export default function Header({
                     <nav className="hidden md:flex items-center gap-10 relative z-10">
                         {partnerMode ? (
                             <>
-                                <Link href={happy450Href} className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>더 해피 450 ONE</Link>
-                                <Link href={smartcareHref} className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>스마트케어</Link>
+                                {/* <Link href={happy450Href} onClick={handleRestrictedProductClick} className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>더 해피 450 ONE</Link>
+                                <Link href={smartcareHref} className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>스마트케어</Link> */}
                             </>
                         ) : (
                             <>
                                 <Link href="/" className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>제휴 안내</Link>
-                                <Link href="/products/happy450" className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>더 해피 450 ONE</Link>
+                                <Link href="/products/happy450" onClick={handleRestrictedProductClick} className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>더 해피 450 ONE</Link>
                                 <Link href="/products/smartcare" className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>스마트케어</Link>
                             </>
                         )}
@@ -123,8 +132,8 @@ export default function Header({
                         <div className="flex flex-col gap-6 font-bold">
                             {partnerMode ? (
                                 <>
-                                    <Link href={happy450Href} className="text-xl text-sono-dark" onClick={() => setIsMenuOpen(false)}>더 해피 450 ONE</Link>
-                                    <Link href={smartcareHref} className="text-xl text-sono-dark" onClick={() => setIsMenuOpen(false)}>스마트케어</Link>
+                                    {/* <Link href={happy450Href} onClick={(e) => { handleRestrictedProductClick(e); setIsMenuOpen(false); }} className="text-xl text-sono-dark text-left" >더 해피 450 ONE</Link>
+                                    <Link href={smartcareHref} className="text-xl text-sono-dark" onClick={() => setIsMenuOpen(false)}>스마트케어</Link> */}
                                     <button
                                         onClick={handleInquiryClick}
                                         className="btn-primary w-full py-4 text-lg mt-4"
@@ -135,7 +144,7 @@ export default function Header({
                             ) : (
                                 <>
                                     <Link href="/" className="text-xl text-sono-dark" onClick={() => setIsMenuOpen(false)}>제휴 안내</Link>
-                                    <Link href="/products/happy450" className="text-xl text-sono-dark" onClick={() => setIsMenuOpen(false)}>더 해피 450 ONE</Link>
+                                    <Link href="/products/happy450" onClick={(e) => { handleRestrictedProductClick(e); setIsMenuOpen(false); }} className="text-xl text-sono-dark text-left" >더 해피 450 ONE</Link>
                                     <Link href="/products/smartcare" className="text-xl text-sono-dark" onClick={() => setIsMenuOpen(false)}>스마트케어</Link>
                                     <div className="grid grid-cols-2 gap-4 mt-6">
                                         <Link
@@ -167,7 +176,8 @@ export default function Header({
                 onClose={() => setIsModalOpen(false)}
                 partnerName={partnerName}
                 partnerId={partnerId}
-                showProductSelect={true}
+                productType={productType}
+                showProductSelect={!productType}
             />
         </>
     );

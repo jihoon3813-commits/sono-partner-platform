@@ -14,6 +14,7 @@ export default defineSchema({
         shopUrl: v.optional(v.string()),
         shopType: v.string(),
         memberCount: v.string(),
+        partnerGroup: v.optional(v.string()), // 'ALL' (전체 상품 판매) | 'COMBINED' (결합 상품 판매)
         customUrl: v.string(), // 도메인/p/뒤에 붙는 url
         logoUrl: v.optional(v.string()),
         logoText: v.optional(v.string()),
@@ -142,6 +143,7 @@ export default defineSchema({
 
         shopType: v.string(),
         shopUrl: v.optional(v.string()),
+        partnerGroup: v.optional(v.string()),
         monthlyVisitors: v.optional(v.string()),
         memberCount: v.optional(v.string()),
         mainProducts: v.optional(v.string()),

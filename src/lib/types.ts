@@ -13,6 +13,7 @@ export interface Partner {
     shopUrl: string;
     shopType: string;
     memberCount: string;
+    partnerGroup?: string;
     customUrl: string;
     logoUrl: string;
     logoText?: string;
@@ -64,15 +65,15 @@ export interface Application {
 
 // 계약 상태
 export type ApplicationStatus =
-    | '접수'
-    | '대기'
-    | '상담중'
+    | '접수대기'
+    | '접수완료'
     | '부재'
     | '보류'
     | '거부'
     | '접수취소'
     | '정상가입'
     | '1회출금'
+    | '배송완료'
     | '청약철회'
     | '해약';
 
@@ -132,6 +133,7 @@ export interface PartnerRequest {
 
     shopType: string;
     shopUrl: string;
+    partnerGroup?: string;
     monthlyVisitors: string;
     memberCount: string;
     mainProducts: string;
