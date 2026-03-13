@@ -265,6 +265,24 @@ export const createApplications = mutation({
     },
 });
 
+export const deleteApplications = mutation({
+    args: { applicationNos: v.array(v.string()) },
+    handler: async (ctx, args) => {
+        let count = 0;
+        for (const appNo of args.applicationNos) {
+            const app = await ctx.db
+                .query("applications")
+                .withIndex("by_applicationNo", (q) => q.eq("applicationNo", appNo))
+                .unique();
+            if (app) {
+                await ctx.db.delete(app._id);
+                count++;
+            }
+        }
+        return count;
+    }
+});
+
 export const bulkSyncApplications = mutation({
     args: {
         applications: v.array(v.object({

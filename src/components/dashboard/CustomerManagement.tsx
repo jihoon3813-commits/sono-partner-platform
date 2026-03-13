@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { Application, Partner, ApplicationStatus } from "@/lib/types";
 import CustomerDetailModal from "./CustomerDetailModal";
 import CustomerRegistrationModal from "./CustomerRegistrationModal";
@@ -62,6 +64,10 @@ export default function CustomerManagement({ applications, onRefresh, partners =
     const [selectedApp, setSelectedApp] = useState<Application | null>(null);
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
     const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
+    const [selectedAppIds, setSelectedAppIds] = useState<string[]>([]);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const deleteApplications = useMutation(api.applications.deleteApplications);
 
     // Filters
     const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter);
@@ -236,6 +242,33 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                     </svg>
                                     고객 직접 등록
                                 </button>
+                                {isAdmin && selectedAppIds.length > 0 && (
+                                    <button
+                                        onClick={async () => {
+                                            if (confirm(`선택한 ${selectedAppIds.length}건을 삭제하시겠습니까?`)) {
+                                                setIsDeleting(true);
+                                                try {
+                                                    await deleteApplications({ applicationNos: selectedAppIds });
+                                                    setSelectedAppIds([]);
+                                                    onRefresh();
+                                                    alert("삭제되었습니다.");
+                                                } catch (err) {
+                                                    console.error("Delete failed", err);
+                                                    alert("삭제 중 오류가 발생했습니다.");
+                                                } finally {
+                                                    setIsDeleting(false);
+                                                }
+                                            }
+                                        }}
+                                        disabled={isDeleting}
+                                        className="flex items-center gap-2 px-3 py-1.5 bg-red-600 text-white rounded-xl text-xs font-bold hover:bg-red-700 transition-all shadow-sm whitespace-nowrap"
+                                    >
+                                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        선택 삭제 ({selectedAppIds.length})
+                                    </button>
+                                )}
                                 {isAdmin && (
                                     <button
                                         onClick={() => setIsBulkUploadModalOpen(true)}
@@ -458,6 +491,22 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-[#f9fafb] border-b border-gray-100">
+                                {isAdmin && (
+                                    <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[40px]">
+                                        <input
+                                            type="checkbox"
+                                            checked={displayApplications.length > 0 && selectedAppIds.length === displayApplications.length}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedAppIds(displayApplications.map(app => app.applicationNo));
+                                                } else {
+                                                    setSelectedAppIds([]);
+                                                }
+                                            }}
+                                            className="rounded border-gray-300 text-sono-primary focus:ring-sono-primary"
+                                        />
+                                    </th>
+                                )}
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">No.</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[120px]">일시</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">파트너사</th>
@@ -472,11 +521,27 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                         <tbody className="divide-y divide-gray-100">
                             {displayApplications.length > 0 ? (
                                 displayApplications.map((app, index) => (
-                                    <tr
+                                     <tr
                                         key={app.applicationNo}
                                         onClick={() => setSelectedApp(app)}
                                         className="hover:bg-gray-50 transition-colors cursor-pointer"
                                     >
+                                        {isAdmin && (
+                                            <td className="px-2 py-4 text-center" onClick={(e) => e.stopPropagation()}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedAppIds.includes(app.applicationNo)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedAppIds(prev => [...prev, app.applicationNo]);
+                                                        } else {
+                                                            setSelectedAppIds(prev => prev.filter(id => id !== app.applicationNo));
+                                                        }
+                                                    }}
+                                                    className="rounded border-gray-300 text-sono-primary focus:ring-sono-primary"
+                                                />
+                                            </td>
+                                        )}
                                         <td className="px-2 py-4 text-center text-xs text-gray-400 font-bold">
                                             {filteredApplications.length - index}
                                         </td>
@@ -511,7 +576,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={9} className="px-6 py-20 text-center text-gray-400 font-medium">
+                                    <td colSpan={isAdmin ? 10 : 9} className="px-6 py-20 text-center text-gray-400 font-medium">
                                         신청 내역이 없습니다.
                                     </td>
                                 </tr>
