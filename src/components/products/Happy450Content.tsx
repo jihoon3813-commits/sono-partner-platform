@@ -114,7 +114,7 @@ export default function Happy450Content({
                                 {
                                     title: "SPECIAL",
                                     name: "납입금 100% 환급",
-                                    desc: "만기 시 서비스를 이용하지 않으면 납입금 전액(100%)을 환급받습니다.",
+                                    desc: "만기 납입 후 익월 해약 또는 라이프 서비스 사용 조건",
                                     icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />,
                                 },
                             ].map((benefit, index) => (
@@ -184,6 +184,11 @@ export default function Happy450Content({
                                     </ul>
                                 </div>
                             ))}
+                        </div>
+                        <div className="mt-8 md:mt-12 text-center">
+                            <p className="text-[#8b95a1] font-bold text-xs md:text-sm italic">
+                                *100% 환급 조건 : 만기 납입 후 익월 해약 또는 라이프 서비스 사용 시*
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -500,7 +505,7 @@ export default function Happy450Content({
                             <div className="relative animate-fade-in order-2 md:order-1">
                                 <div className="absolute -inset-10 bg-sono-primary/5 rounded-full blur-3xl"></div>
                                 <img
-                                    src="https://github.com/jihoon3813-commits/img_sono/blob/0ece40f4f520058678cf3548f6c075396274b894/photo_main_giftcard_app%20(1).png?raw=true"
+                                    src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_main_giftcard_app%20(1).png"
                                     alt="소노아임레디 모바일 앱 및 기프트카드"
                                     className="relative z-10 w-full max-w-[500px] mx-auto drop-shadow-2xl rounded-[40px]"
                                 />

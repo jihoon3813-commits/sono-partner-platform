@@ -215,7 +215,7 @@ export default function PartnerApplyPage() {
                 <section className="relative py-20 md:py-32 overflow-hidden">
                     <div className="absolute inset-0 z-0">
                         <img
-                            src="https://github.com/jihoon3813-commits/img_sono/blob/main/Generated%20Image%20January%2025,%202026%20-%2012_57PM.jpeg?raw=true"
+                            src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/Generated%20Image%20January%2025,%202026%20-%2012_57PM.jpeg"
                             alt="Partner Apply Hero"
                             className="w-full h-full object-cover"
                         />

@@ -779,7 +779,7 @@ export default function SmartCareContent({
                             <div className="relative animate-fade-in order-2 md:order-1">
                                 <div className="absolute -inset-10 bg-sono-primary/5 rounded-full blur-3xl"></div>
                                 <img
-                                    src="https://github.com/jihoon3813-commits/img_sono/blob/0ece40f4f520058678cf3548f6c075396274b894/photo_main_giftcard_app%20(1).png?raw=true"
+                                    src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_main_giftcard_app%20(1).png"
                                     alt="소노아임레디 모바일 앱 및 기프트카드"
                                     className="relative z-10 w-full max-w-[500px] mx-auto drop-shadow-2xl rounded-[40px]"
                                 />
