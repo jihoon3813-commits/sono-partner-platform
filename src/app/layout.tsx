@@ -4,6 +4,7 @@ import "./globals.css";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 
 export const metadata: Metadata = {
+    metadataBase: new URL("https://sono-partners.com"),
     title: "소노아임레디 제휴 파트너 플랫폼",
     description: "소노 아임레디 제휴 파트너 플랫폼",
     keywords: ["소노아임레디", "상조", "제휴", "파트너", "스마트케어", "더해피450", "회원제쇼핑몰"],
