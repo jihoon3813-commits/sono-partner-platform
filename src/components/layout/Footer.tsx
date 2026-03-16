@@ -54,7 +54,10 @@ export default function Footer() {
                 </div>
 
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-10 border-t border-gray-50">
-                    <p className="text-xs font-bold text-[#adb5bd]">COPYRIGHT © SINCE 2025 LIFE&JOY CO., LTD. ALL RIGHTS RESERVED.</p>
+                    <div className="flex flex-col items-center md:items-start gap-2 text-center md:text-left">
+                        <p className="text-xs font-bold text-[#adb5bd]">COPYRIGHT © SINCE 2025 LIFE&JOY CO., LTD. ALL RIGHTS RESERVED.</p>
+                        <p className="text-[10px] font-bold text-[#adb5bd]">관리번호 : 202603-라이프앤조이-001</p>
+                    </div>
                     <div className="flex gap-8">
                         <Link href="/privacy" className="text-xs font-bold text-[#adb5bd] hover:text-[#6b7684]">개인정보처리방침</Link>
                         <Link href="/terms" className="text-xs font-bold text-[#adb5bd] hover:text-[#6b7684]">이용약관</Link>
