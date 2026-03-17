@@ -53,10 +53,17 @@ export default function Footer() {
                     </div>
                 </div>
 
+                <div className="mb-12 text-[11px] text-[#8b95a1] leading-relaxed space-y-1">
+                    <p className="font-bold mb-2 text-[#4e5968]">[필수 안내사항]</p>
+                    <p>①본 상품은 상조 상품이며, 계약체결 시 계약서 및 가입 녹취 내용 미인지에 따른 손실은 계약자 등에게 귀속됩니다.</p>
+                    <p>②가입 상품에 따라 혜택 및 서비스 보장 종류 등 차등이 있을 수 있습니다.</p>
+                    <p>③본 광고는 비즈이노의 심의기준을 준수하였으며, 유효기간은 심의일로부터 1년입니다. (내용 변경 없을 시, 자동 연장)</p>
+                    <p className="mt-1">※ 광고 심의번호: 202603-라이프앤조이-001</p>
+                </div>
+
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-10 border-t border-gray-50">
                     <div className="flex flex-col items-center md:items-start gap-2 text-center md:text-left">
                         <p className="text-xs font-bold text-[#adb5bd]">COPYRIGHT © SINCE 2025 LIFE&JOY CO., LTD. ALL RIGHTS RESERVED.</p>
-                        <p className="text-[10px] font-bold text-[#adb5bd]">관리번호 : 202603-라이프앤조이-001</p>
                     </div>
                     <div className="flex gap-8">
                         <Link href="/privacy" className="text-xs font-bold text-[#adb5bd] hover:text-[#6b7684]">개인정보처리방침</Link>
