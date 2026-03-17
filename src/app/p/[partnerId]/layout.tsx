@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import PartnerTracker from "@/components/analytics/PartnerTracker";
 
 export const metadata: Metadata = {
     title: "소노아임레디 제휴 파트너 서비스",
@@ -21,5 +22,10 @@ export default function PartnerLayout({
 }: {
     children: React.ReactNode;
 }) {
-    return <>{children}</>;
+    return (
+        <>
+            <PartnerTracker />
+            {children}
+        </>
+    );
 }

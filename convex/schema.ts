@@ -204,4 +204,18 @@ export default defineSchema({
         createdAt: v.string(),
         updatedBy: v.optional(v.string()),
     }).index("by_type", ["type"]),
+
+    // 통계(방문자/페이지뷰) 테이블
+    analytics: defineTable({
+        partnerId: v.string(), // 파트너 ID (customUrl 또는 partnerId)
+        date: v.string(), // YYYY-MM-DD
+        path: v.string(), // 접속 경로
+        visitorId: v.string(), // 방문자 식별자 (세션/쿠키 기반)
+        userAgent: v.optional(v.string()),
+        createdAt: v.string(),
+    })
+        .index("by_partnerId", ["partnerId"])
+        .index("by_date", ["date"])
+        .index("by_partner_date", ["partnerId", "date"])
+        .index("by_path", ["path"]),
 });

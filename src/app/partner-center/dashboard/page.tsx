@@ -8,11 +8,12 @@ import CustomerManagement from "@/components/dashboard/CustomerManagement";
 import PartnerRequests from "@/components/dashboard/PartnerRequests";
 import ResourceCenter from "@/components/dashboard/ResourceCenter";
 import PartnerFormModal from "@/components/dashboard/PartnerFormModal";
+import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { PartnerRequest } from "@/lib/types";
 
-type Tab = "overview" | "partners" | "customers" | "requests" | "library";
+type Tab = "overview" | "partners" | "customers" | "requests" | "library" | "stats";
 
 export default function PartnerDashboard() {
     const router = useRouter();
@@ -166,7 +167,10 @@ export default function PartnerDashboard() {
                                 { id: "partners", label: "파트너 관리" },
                                 { id: "customers", label: "고객 관리" },
                                 { id: "library", label: "자료실" },
-                                ...(isAdmin ? [{ id: "requests", label: "입점 신청", count: dashboardData.pendingRequests.length }] : [])
+                                ...(isAdmin ? [
+                                    { id: "requests", label: "입점 신청", count: dashboardData.pendingRequests.length },
+                                    { id: "stats", label: "통계분석" }
+                                ] : [])
                             ].map((tab) => (
                                 <button
                                     key={tab.id}
@@ -384,6 +388,10 @@ export default function PartnerDashboard() {
                         onRefresh={() => fetchData()}
                         onSelectRequest={handleSelectRequest}
                     />
+                )}
+
+                {activeTab === "stats" && isAdmin && (
+                    <AnalyticsDashboard />
                 )}
 
                 {selectedRequest && (

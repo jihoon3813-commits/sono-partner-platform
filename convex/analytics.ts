@@ -1,0 +1,127 @@
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+
+// 페이지뷰/방문 기록
+export const recordHit = mutation({
+    args: {
+        partnerId: v.string(),
+        path: v.string(),
+        visitorId: v.string(),
+        userAgent: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const now = new Date();
+        const date = now.toISOString().split("T")[0]; // YYYY-MM-DD
+
+        await ctx.db.insert("analytics", {
+            partnerId: args.partnerId,
+            date: date,
+            path: args.path,
+            visitorId: args.visitorId,
+            userAgent: args.userAgent,
+            createdAt: now.toISOString(),
+        });
+    },
+});
+
+// 통계 데이터 조회 (관리자용)
+export const getStatsSummary = query({
+    args: {
+        startDate: v.optional(v.string()), // YYYY-MM-DD
+        endDate: v.optional(v.string()),   // YYYY-MM-DD
+        partnerId: v.optional(v.string()), // 특정 파트너 필터
+    },
+    handler: async (ctx, args) => {
+        // 파트너 정보 미리 로드 (정규화용)
+        const allPartners = await ctx.db.query("partners").collect();
+        const idMap: Record<string, string> = {};
+        const partnerInfoMap: Record<string, any> = {};
+
+        allPartners.forEach(p => {
+            const pid = p.partnerId.trim();
+            idMap[pid.toLowerCase()] = pid;
+            if (p.customUrl) {
+                idMap[p.customUrl.trim().toLowerCase()] = pid;
+            }
+            partnerInfoMap[pid] = p;
+        });
+
+        // 1. 데이터 수집
+        let rawLogs;
+        if (args.partnerId) {
+            const pid = args.partnerId.trim();
+            const searchIds = [pid];
+            const targetPartner = allPartners.find(p => p.partnerId === pid);
+            if (targetPartner?.customUrl) searchIds.push(targetPartner.customUrl.trim());
+
+            const results = await Promise.all(searchIds.map(id => 
+                ctx.db.query("analytics").withIndex("by_partnerId", (q) => q.eq("partnerId", id)).collect()
+            ));
+            rawLogs = results.flat();
+        } else {
+            rawLogs = await ctx.db.query("analytics").collect();
+        }
+
+        // 2. 필터링 및 정규화 통합
+        const dailyStats: Record<string, { pv: number, uv: Set<string> }> = {};
+        const partnerStats: Record<string, { pv: number, uv: Set<string> }> = {};
+        const pathStats: Record<string, { pv: number, uv: Set<string> }> = {};
+        let totalPv = 0;
+        const totalUvSet = new Set<string>();
+
+        rawLogs.forEach(log => {
+            if (args.startDate && log.date < args.startDate) return;
+            if (args.endDate && log.date > args.endDate) return;
+
+            // 파트너 ID 정규화
+            const logId = log.partnerId.trim().toLowerCase();
+            const normalizedPid = idMap[logId] || log.partnerId.trim();
+
+            totalPv++;
+            totalUvSet.add(log.visitorId);
+
+            // 일별 통계
+            if (!dailyStats[log.date]) dailyStats[log.date] = { pv: 0, uv: new Set() };
+            dailyStats[log.date].pv++;
+            dailyStats[log.date].uv.add(log.visitorId);
+
+            // 파트너별 통계
+            if (!partnerStats[normalizedPid]) partnerStats[normalizedPid] = { pv: 0, uv: new Set() };
+            partnerStats[normalizedPid].pv++;
+            partnerStats[normalizedPid].uv.add(log.visitorId);
+
+            // 페이지별 통계
+            const path = log.path || "/";
+            if (!pathStats[path]) pathStats[path] = { pv: 0, uv: new Set() };
+            pathStats[path].pv++;
+            pathStats[path].uv.add(log.visitorId);
+        });
+
+        // 3. 결과 포맷팅
+        const daily = Object.entries(dailyStats).map(([date, stats]) => ({
+            date,
+            pv: stats.pv,
+            uv: stats.uv.size
+        })).sort((a, b) => a.date.localeCompare(b.date));
+
+        const partner = Object.entries(partnerStats).map(([pid, stats]) => ({
+            partnerId: pid,
+            pv: stats.pv,
+            uv: stats.uv.size
+        })).sort((a, b) => b.pv - a.pv);
+
+        const paths = Object.entries(pathStats).map(([path, stats]) => ({
+            path,
+            pv: stats.pv,
+            uv: stats.uv.size
+        })).sort((a, b) => b.pv - a.pv);
+
+        return {
+            totalPv,
+            totalUv: totalUvSet.size,
+            daily,
+            partner,
+            paths
+        };
+    },
+});
