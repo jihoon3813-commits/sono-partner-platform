@@ -101,6 +101,7 @@ export const updateApplicationStatus = mutation({
         newStatus: v.string(),
         changedBy: v.string(),
         memo: v.optional(v.string()),
+        statusUpdatedAt: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const app = await ctx.db
@@ -115,6 +116,7 @@ export const updateApplicationStatus = mutation({
             status: args.newStatus,
             updatedAt: nowKST(),
         };
+        if (args.statusUpdatedAt) updates.statusUpdatedAt = args.statusUpdatedAt;
 
         if (args.newStatus === "정상가입") updates.contractDate = nowKST();
 

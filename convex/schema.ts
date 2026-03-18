@@ -68,6 +68,7 @@ export default defineSchema({
         cancellationProcessing: v.optional(v.string()), // 해약처리
         withdrawalProcessing: v.optional(v.string()), // 청약철회
         remarks: v.optional(v.string()), // 비고(사유)
+        statusUpdatedAt: v.optional(v.string()), // 상태값 변경일시
     })
         .index("by_applicationNo", ["applicationNo"])
         .index("by_partnerId", ["partnerId"])

@@ -61,6 +61,7 @@ export interface Application {
     cancellationProcessing?: string;
     withdrawalProcessing?: string;
     remarks?: string;
+    statusUpdatedAt?: string;
 }
 
 // 계약 상태

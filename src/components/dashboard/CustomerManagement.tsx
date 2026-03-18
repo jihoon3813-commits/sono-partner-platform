@@ -528,7 +528,17 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                         <tbody className="divide-y divide-gray-100">
                             {displayApplications.length > 0 ? (
                                 displayApplications.map((app, index) => {
-                                    const isUpdated = app.updatedAt && app.updatedAt !== app.createdAt;
+                                    // 24시간 이내 업데이트 여부 확인 (상태값 변경 기준)
+                                    const isUpdated = (() => {
+                                        if (!app.statusUpdatedAt) return false;
+                                        try {
+                                            const updatedAt = new Date(app.statusUpdatedAt).getTime();
+                                            const now = new Date().getTime();
+                                            return (now - updatedAt) < 24 * 60 * 60 * 1000;
+                                        } catch {
+                                            return false;
+                                        }
+                                    })();
                                     return (
                                         <tr
                                             key={app.applicationNo}

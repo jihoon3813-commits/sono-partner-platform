@@ -7,7 +7,7 @@ export async function PATCH(
 ) {
     try {
         const { id } = await params;
-        const { status, memo } = await body_json(request);
+        const { status, memo, statusUpdatedAt } = await body_json(request);
 
         if (!status) {
             return NextResponse.json(
@@ -19,7 +19,7 @@ export async function PATCH(
         // 실제로는 세션에서 관리자 정보를 가져와야 함
         const changedBy = 'admin';
 
-        const success = await updateApplicationStatus(id, status, changedBy, memo);
+        const success = await updateApplicationStatus(id, status, changedBy, memo, statusUpdatedAt);
 
         if (success) {
             return NextResponse.json({

@@ -109,7 +109,11 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
             const response = await fetch(`/api/applications/${application.applicationNo}/status`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status, memo }),
+                body: JSON.stringify({ 
+                    status, 
+                    memo,
+                    statusUpdatedAt: new Date().toISOString()
+                }),
             });
 
             const data = await response.json();

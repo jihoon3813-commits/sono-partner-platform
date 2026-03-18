@@ -91,13 +91,15 @@ export async function updateApplicationStatus(
     applicationNo: string,
     newStatus: ApplicationStatus,
     changedBy: string,
-    memo?: string
+    memo?: string,
+    statusUpdatedAt?: string
 ): Promise<boolean> {
     await getClient().mutation("applications:updateApplicationStatus" as any, {
         applicationNo,
         newStatus,
         changedBy,
-        memo
+        memo,
+        statusUpdatedAt
     });
     return true;
 }
@@ -124,7 +126,8 @@ export async function updateApplicationDetails(
         'cancellationProcessing', 'withdrawalProcessing', 'remarks', 'status',
         'customerName', 'customerPhone', 'customerBirth', 'customerGender',
         'customerAddress', 'customerZipcode', 'productType', 'products',
-        'planType', 'inquiry', 'preferredContactTime', 'partnerMemberId'
+        'planType', 'inquiry', 'preferredContactTime', 'partnerMemberId',
+        'statusUpdatedAt'
     ];
 
     keys.forEach(key => {
