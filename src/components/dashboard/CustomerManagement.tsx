@@ -208,14 +208,21 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         return p?.loginId || partnerId;
     };
 
+    // 3. Sorting by updatedAt (User request: updated items to the top)
+    const sortedApplications = [...filteredApplications].sort((a, b) => {
+        const timeA = new Date(a.updatedAt || a.createdAt).getTime();
+        const timeB = new Date(b.updatedAt || b.createdAt).getTime();
+        return timeB - timeA;
+    });
+
     // Calculate pagination
-    const totalPages = Math.ceil(filteredApplications.length / itemsPerPage);
-    const paginatedApplications = filteredApplications.slice(
+    const totalPages = Math.ceil(sortedApplications.length / itemsPerPage);
+    const paginatedApplications = sortedApplications.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
 
-    const displayApplications = isWidget ? filteredApplications.slice(0, 10) : paginatedApplications;
+    const displayApplications = isWidget ? sortedApplications.slice(0, 10) : paginatedApplications;
 
     return (
         <div className={isWidget ? "" : "space-y-6"}>
@@ -520,60 +527,69 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {displayApplications.length > 0 ? (
-                                displayApplications.map((app, index) => (
-                                     <tr
-                                        key={app.applicationNo}
-                                        onClick={() => setSelectedApp(app)}
-                                        className="hover:bg-gray-50 transition-colors cursor-pointer"
-                                    >
-                                        {isAdmin && (
-                                            <td className="px-2 py-4 text-center" onClick={(e) => e.stopPropagation()}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedAppIds.includes(app.applicationNo)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setSelectedAppIds(prev => [...prev, app.applicationNo]);
-                                                        } else {
-                                                            setSelectedAppIds(prev => prev.filter(id => id !== app.applicationNo));
-                                                        }
-                                                    }}
-                                                    className="rounded border-gray-300 text-sono-primary focus:ring-sono-primary"
-                                                />
+                                displayApplications.map((app, index) => {
+                                    const isUpdated = app.updatedAt && app.updatedAt !== app.createdAt;
+                                    return (
+                                        <tr
+                                            key={app.applicationNo}
+                                            onClick={() => setSelectedApp(app)}
+                                            className="hover:bg-gray-50 transition-colors cursor-pointer"
+                                        >
+                                            {isAdmin && (
+                                                <td className="px-2 py-4 text-center relative" onClick={(e) => e.stopPropagation()}>
+                                                    {isUpdated && (
+                                                        <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-red-500 rounded-full shadow-[0_0_4px_rgba(239,68,68,0.5)]" title="업데이트됨" />
+                                                    )}
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedAppIds.includes(app.applicationNo)}
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                setSelectedAppIds(prev => [...prev, app.applicationNo]);
+                                                            } else {
+                                                                setSelectedAppIds(prev => prev.filter(id => id !== app.applicationNo));
+                                                            }
+                                                        }}
+                                                        className="rounded border-gray-300 text-sono-primary focus:ring-sono-primary"
+                                                    />
+                                                </td>
+                                            )}
+                                            <td className={`px-2 py-4 text-center text-xs text-gray-400 font-bold relative ${!isAdmin ? 'pl-4' : ''}`}>
+                                                {!isAdmin && isUpdated && (
+                                                    <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-red-500 rounded-full shadow-[0_0_4px_rgba(239,68,68,0.5)]" title="업데이트됨" />
+                                                )}
+                                                {sortedApplications.length - ((currentPage - 1) * itemsPerPage + index)}
                                             </td>
-                                        )}
-                                        <td className="px-2 py-4 text-center text-xs text-gray-400 font-bold">
-                                            {filteredApplications.length - index}
-                                        </td>
-                                        <td className="px-2 py-4 text-xs text-gray-500 text-center whitespace-nowrap">
-                                            {app.registrationDate ? formatDate(app.registrationDate) : new Date(app.createdAt).toLocaleString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                                        </td>
-                                        <td className="px-2 py-4 text-center whitespace-nowrap">
-                                            <div className="text-sm font-bold text-sono-dark">{app.partnerName}</div>
-                                            {partners.length > 0 && <div className="text-[10px] text-gray-400 font-bold">{getPartnerLoginId(app.partnerId, app.partnerName)}</div>}
-                                        </td>
-                                        <td className="px-2 py-4 text-center whitespace-nowrap min-w-[60px]">
-                                            <div className="text-sm font-medium text-sono-dark">{app.customerName}</div>
-                                        </td>
-                                        <td className="px-2 py-4 text-xs text-center text-gray-500 whitespace-nowrap">
-                                            {app.customerPhone}
-                                        </td>
-                                        <td className="px-2 py-4 text-xs font-bold text-center text-sono-primary whitespace-nowrap">
-                                            {getProductTypeLabel(app.productType)}
-                                        </td>
-                                        <td className="px-2 py-4 text-xs text-center text-gray-600 font-bold whitespace-nowrap">
-                                            {app.planType ? (app.planType.includes("구좌") ? app.planType : `${app.planType}구좌`) : "-"}
-                                        </td>
-                                        <td className="px-2 py-4 text-xs text-center text-gray-500 max-w-[200px] truncate" title={app.products}>
-                                            {((app.productType || "").toLowerCase().includes("smart") || (app.productType || "").includes("스마트")) ? (app.products || "-") : "-"}
-                                        </td>
-                                        <td className="px-2 py-4 text-center whitespace-nowrap">
-                                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyles(app.status)}`}>
-                                                {app.status}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))
+                                            <td className="px-2 py-4 text-xs text-gray-500 text-center whitespace-nowrap">
+                                                {app.registrationDate ? formatDate(app.registrationDate) : new Date(app.createdAt).toLocaleString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                                            </td>
+                                            <td className="px-2 py-4 text-center whitespace-nowrap">
+                                                <div className="text-sm font-bold text-sono-dark">{app.partnerName}</div>
+                                                {partners.length > 0 && <div className="text-[10px] text-gray-400 font-bold">{getPartnerLoginId(app.partnerId, app.partnerName)}</div>}
+                                            </td>
+                                            <td className="px-2 py-4 text-center whitespace-nowrap min-w-[60px]">
+                                                <div className="text-sm font-medium text-sono-dark">{app.customerName}</div>
+                                            </td>
+                                            <td className="px-2 py-4 text-xs text-center text-gray-500 whitespace-nowrap">
+                                                {app.customerPhone}
+                                            </td>
+                                            <td className="px-2 py-4 text-xs font-bold text-center text-sono-primary whitespace-nowrap">
+                                                {getProductTypeLabel(app.productType)}
+                                            </td>
+                                            <td className="px-2 py-4 text-xs text-center text-gray-600 font-bold whitespace-nowrap">
+                                                {app.planType ? (app.planType.includes("구좌") ? app.planType : `${app.planType}구좌`) : "-"}
+                                            </td>
+                                            <td className="px-2 py-4 text-xs text-center text-gray-500 max-w-[200px] truncate" title={app.products}>
+                                                {((app.productType || "").toLowerCase().includes("smart") || (app.productType || "").includes("스마트")) ? (app.products || "-") : "-"}
+                                            </td>
+                                            <td className="px-2 py-4 text-center whitespace-nowrap">
+                                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyles(app.status)}`}>
+                                                    {app.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
                             ) : (
                                 <tr>
                                     <td colSpan={isAdmin ? 10 : 9} className="px-6 py-20 text-center text-gray-400 font-medium">

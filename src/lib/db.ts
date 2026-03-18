@@ -121,7 +121,10 @@ export async function updateApplicationDetails(
     const sanitizedUpdates: any = {};
     const keys = [
         'firstPaymentDate', 'registrationDate', 'paymentMethod',
-        'cancellationProcessing', 'withdrawalProcessing', 'remarks', 'status'
+        'cancellationProcessing', 'withdrawalProcessing', 'remarks', 'status',
+        'customerName', 'customerPhone', 'customerBirth', 'customerGender',
+        'customerAddress', 'customerZipcode', 'productType', 'products',
+        'planType', 'inquiry', 'preferredContactTime', 'partnerMemberId'
     ];
 
     keys.forEach(key => {
