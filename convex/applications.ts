@@ -163,30 +163,7 @@ export const updateApplicationAssignee = mutation({
 export const updateApplicationDetails = mutation({
     args: {
         applicationNo: v.string(),
-        updates: v.object({
-            firstPaymentDate: v.optional(v.string()),
-            registrationDate: v.optional(v.string()),
-            paymentMethod: v.optional(v.string()),
-            cancellationProcessing: v.optional(v.string()),
-            withdrawalProcessing: v.optional(v.string()),
-            remarks: v.optional(v.string()),
-            status: v.optional(v.string()),
-            customerName: v.optional(v.string()),
-            customerPhone: v.optional(v.string()),
-            customerBirth: v.optional(v.string()),
-            customerGender: v.optional(v.string()),
-            customerAddress: v.optional(v.string()),
-            customerZipcode: v.optional(v.string()),
-            productType: v.optional(v.string()),
-            products: v.optional(v.string()),
-            planType: v.optional(v.string()),
-            inquiry: v.optional(v.string()),
-            preferredContactTime: v.optional(v.string()),
-            partnerMemberId: v.optional(v.string()),
-            statusUpdatedAt: v.optional(v.string()),
-            partnerName: v.optional(v.string()),
-            assignedTo: v.optional(v.string()),
-        }),
+        updates: v.any(),
     },
     handler: async (ctx, args) => {
         const app = await ctx.db
