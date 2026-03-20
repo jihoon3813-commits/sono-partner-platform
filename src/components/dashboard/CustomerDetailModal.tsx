@@ -280,8 +280,8 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                         <div className="space-y-3">
                             {isAdmin ? (
                                 <>
-                                    <InputRow label="고객명" value={customerName} onChange={setCustomerName} />
-                                    <InputRow label="연락처" value={customerPhone} onChange={setCustomerPhone} placeholder="010-0000-0000" />
+                                    <InputRow label="고객명" value={customerName} onChange={setCustomerName} showCopy />
+                                    <InputRow label="연락처" value={customerPhone} onChange={setCustomerPhone} placeholder="010-0000-0000" showCopy showCopyNoHyphen />
                                     <InputRow label="생년월일" value={customerBirth} onChange={setCustomerBirth} placeholder="YYMMDD" />
                                     <div className="flex items-center gap-2 text-sm">
                                         <span className="w-24 text-gray-400 font-medium shrink-0">성별</span>
@@ -370,34 +370,95 @@ function InfoRow({ label, value, showCopy, showCopyNoHyphen }: { label: string, 
     return (
         <div className="flex text-sm items-start md:items-center py-0.5">
             <span className="w-24 text-gray-400 font-medium shrink-0 pt-1 md:pt-0">{label}</span>
-            <div className="flex flex-wrap items-center gap-2 flex-1">
+            <div className="flex flex-wrap items-center gap-1.5 flex-1">
                 <span className="text-sono-dark font-medium break-all">{value}</span>
-                {showCopy && (
-                    <button onClick={() => handleCopy(value)} className="text-[10px] px-2 py-0.5 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded border border-gray-200 transition-colors font-bold shrink-0">
-                        {label === '연락처' ? '전체 복사' : '복사'}
-                    </button>
-                )}
-                {showCopyNoHyphen && (
-                    <button onClick={() => handleCopy(value.replace(/-/g, ''))} className="text-[10px] px-2 py-0.5 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded border border-gray-200 transition-colors font-bold shrink-0">
-                        숫자만 복사
-                    </button>
-                )}
+                <div className="flex gap-1">
+                    {showCopy && (
+                        <button 
+                            onClick={() => handleCopy(value)} 
+                            className="p-1.5 bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-lg transition-colors border border-gray-200"
+                            title={label === '연락처' ? "전체 복사" : "복사"}
+                        >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                        </button>
+                    )}
+                    {showCopyNoHyphen && (
+                        <button 
+                            onClick={() => handleCopy(value.replace(/-/g, ''))} 
+                            className="p-1.5 bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-lg transition-colors border border-gray-200 flex items-center gap-1"
+                            title="숫자만 복사"
+                        >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <span className="text-[9px] font-bold text-sono-primary tracking-tighter">123</span>
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );
 }
 
-function InputRow({ label, value, onChange, placeholder, type = "text" }: { label: string, value: string, onChange: (val: string) => void, placeholder?: string, type?: string }) {
+function InputRow({ label, value, onChange, placeholder, type = "text", showCopy, showCopyNoHyphen }: { 
+    label: string, 
+    value: string, 
+    onChange: (val: string) => void, 
+    placeholder?: string, 
+    type?: string,
+    showCopy?: boolean,
+    showCopyNoHyphen?: boolean
+}) {
+    const handleCopy = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            alert("복사되었습니다.");
+        } catch (err) {
+            console.error("복사에 실패했습니다.", err);
+        }
+    };
+
     return (
         <div className="flex items-center gap-2 text-sm">
             <span className="w-24 text-gray-400 font-medium shrink-0">{label}</span>
-            <input
-                type={type}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                placeholder={placeholder}
-                className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
-            />
+            <div className="flex-1 flex gap-1.5 items-center">
+                <input
+                    type={type}
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    placeholder={placeholder}
+                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                />
+                <div className="flex gap-1 shrink-0">
+                    {showCopy && (
+                        <button 
+                            type="button"
+                            onClick={() => handleCopy(value)}
+                            className="p-1.5 bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-lg transition-colors border border-gray-200"
+                            title={label === '연락처' ? "전체 복사" : "복사"}
+                        >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                        </button>
+                    )}
+                    {showCopyNoHyphen && (
+                        <button 
+                            type="button"
+                            onClick={() => handleCopy(value.replace(/-/g, ''))}
+                            className="p-1.5 bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-lg transition-colors border border-gray-200 flex items-center gap-1"
+                            title="숫자만 복사"
+                        >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <span className="text-[9px] font-bold text-sono-primary tracking-tighter">123</span>
+                        </button>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

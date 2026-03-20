@@ -189,6 +189,10 @@ export const updateApplicationDetails = mutation({
         Object.entries(args.updates).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
                 patchData[key] = value;
+                // If status is updated, also update statusUpdatedAt
+                if (key === 'status') {
+                    patchData.statusUpdatedAt = nowKST();
+                }
             }
         });
 
