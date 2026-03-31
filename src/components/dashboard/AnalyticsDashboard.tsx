@@ -89,25 +89,25 @@ export default function AnalyticsDashboard() {
                     </div>
                 </div>
                 {stats.daily.length > 0 ? (
-                    <div className="h-64 flex items-end gap-2 md:gap-4 overflow-x-auto pb-4 scrollbar-thin">
+                    <div className="h-64 flex items-stretch gap-2 md:gap-4 overflow-x-auto pb-4 scrollbar-thin">
                         {stats.daily.map((d: any) => (
-                            <div key={d.date} className="flex-1 min-w-[40px] flex flex-col items-center gap-2 group relative">
+                            <div key={d.date} className="flex-1 min-w-[32px] max-w-[80px] flex flex-col items-center group relative h-full">
                                 <div className="absolute bottom-full mb-2 bg-sono-dark text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-xl font-bold">
                                     {d.date}: PV {d.pv} / UV {d.uv}
                                 </div>
-                                <div className="w-full flex justify-center items-end gap-[2px] flex-1">
+                                <div className="w-full flex justify-center items-end gap-[2px] flex-1 pb-2">
                                     {/* PV Bar - Solid Primary */}
                                     <div 
-                                        className="w-3 bg-sono-primary rounded-t-sm transition-all group-hover:brightness-110"
-                                        style={{ height: `${Math.max((d.pv / maxDailyPv) * 100, d.pv > 0 ? 2 : 0)}%` }}
+                                        className="w-2.5 bg-sono-primary rounded-t-sm transition-all group-hover:brightness-110"
+                                        style={{ height: `${Math.max((d.pv / maxDailyPv) * 100, d.pv > 0 ? 3 : 0)}%` }}
                                     ></div>
-                                    {/* UV Bar - Gray-200 to match legend */}
+                                    {/* UV Bar - Gray-200 */}
                                     <div 
-                                        className="w-3 bg-gray-200 rounded-t-sm transition-all group-hover:bg-gray-300"
-                                        style={{ height: `${Math.max((d.uv / maxDailyPv) * 100, d.uv > 0 ? 2 : 0)}%` }}
+                                        className="w-2.5 bg-gray-200 rounded-t-sm transition-all group-hover:bg-gray-300"
+                                        style={{ height: `${Math.max((d.uv / maxDailyPv) * 100, d.uv > 0 ? 3 : 0)}%` }}
                                     ></div>
                                 </div>
-                                <span className="text-[10px] font-bold text-gray-400 mt-2 rotate-45 origin-left md:rotate-0">{d.date.substring(5)}</span>
+                                <span className="text-[10px] font-bold text-gray-400 pb-1 flex-shrink-0">{d.date.substring(8)}</span>
                             </div>
                         ))}
                     </div>

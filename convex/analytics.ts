@@ -58,14 +58,17 @@ export const getStatsSummary = query({
 
         // 시작일/종료일 기준 모든 날짜 초기화 (데이터가 없어도 차트에 표시되도록)
         if (args.startDate && args.endDate) {
-            let curr = new Date(args.startDate);
-            const end = new Date(args.endDate);
-            // 무한 루프 방지 및 최대 31일 제한 (안전장치)
+            const startParts = args.startDate.split("-").map(Number);
+            const endParts = args.endDate.split("-").map(Number);
+            
+            let curr = new Date(Date.UTC(startParts[0], startParts[1] - 1, startParts[2]));
+            const end = new Date(Date.UTC(endParts[0], endParts[1] - 1, endParts[2]));
+            
             let count = 0;
             while (curr <= end && count < 60) {
                 const dStr = curr.toISOString().split("T")[0];
                 dailyStats[dStr] = { pv: 0, uv: new Set() };
-                curr.setDate(curr.getDate() + 1);
+                curr.setUTCDate(curr.getUTCDate() + 1);
                 count++;
             }
         }
