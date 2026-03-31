@@ -43,6 +43,8 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                 return 'bg-pink-50 text-pink-600 border border-pink-100';
             case '해약':
                 return 'bg-stone-50 text-stone-600 border border-stone-100';
+            case '정산완료':
+                return 'bg-amber-50 text-amber-600 border border-amber-100';
             default:
                 return 'bg-gray-50 text-gray-400 border border-gray-200';
         }
@@ -92,7 +94,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         setCurrentPage(1);
     }, [searchTerm, statusFilter, productFilter, dateFilter, customStartDate, customEndDate, itemsPerPage]);
 
-    const statusOptions = ['전체', '접수대기', '접수완료', '부재', '보류', '거부', '접수취소', '정상가입', '1회출금', '배송완료', '청약철회', '해약'];
+    const statusOptions = ['전체', '접수대기', '접수완료', '부재', '보류', '거부', '접수취소', '정상가입', '1회출금', '배송완료', '청약철회', '해약', '정산완료'];
 
     // 상품 종류 추출 (전체 고객 데이터 기반)
     const productOptions = ['전체', ...Array.from(new Set(applications.map(app => getProductTypeLabel(app.productType)).filter(Boolean)))];
