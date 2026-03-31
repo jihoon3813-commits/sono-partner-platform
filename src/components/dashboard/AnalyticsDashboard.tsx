@@ -90,26 +90,31 @@ export default function AnalyticsDashboard() {
                 </div>
                 {stats.daily.length > 0 ? (
                     <div className="h-64 flex items-stretch gap-2 md:gap-4 overflow-x-auto pb-4 scrollbar-thin">
+                        <div className="flex-1"></div> {/* Left spacer */}
                         {stats.daily.map((d: any) => (
-                            <div key={d.date} className="flex-1 min-w-[32px] max-w-[80px] flex flex-col items-center group relative h-full">
-                                <div className="absolute bottom-full mb-2 bg-sono-dark text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-xl font-bold">
-                                    {d.date}: PV {d.pv} / UV {d.uv}
+                            <div key={d.date} className="flex-shrink-0 w-16 md:w-20 flex flex-col items-center group relative h-full">
+                                <div className="w-full flex justify-center items-end gap-[4px] flex-1 pb-2">
+                                    {/* PV Container */}
+                                    <div className="flex flex-col items-center gap-1">
+                                        <span className="text-[9px] font-black text-sono-primary">{d.pv}</span>
+                                        <div 
+                                            className="w-3 bg-sono-primary rounded-t-sm transition-all group-hover:brightness-110"
+                                            style={{ height: `${Math.max((d.pv / maxDailyPv) * 70, d.pv > 0 ? 4 : 0)}%` }}
+                                        ></div>
+                                    </div>
+                                    {/* UV Container */}
+                                    <div className="flex flex-col items-center gap-1">
+                                        <span className="text-[9px] font-black text-gray-400">{d.uv}</span>
+                                        <div 
+                                            className="w-3 bg-gray-200 rounded-t-sm transition-all group-hover:bg-gray-300"
+                                            style={{ height: `${Math.max((d.uv / maxDailyPv) * 70, d.uv > 0 ? 4 : 0)}%` }}
+                                        ></div>
+                                    </div>
                                 </div>
-                                <div className="w-full flex justify-center items-end gap-[2px] flex-1 pb-2">
-                                    {/* PV Bar - Solid Primary */}
-                                    <div 
-                                        className="w-2.5 bg-sono-primary rounded-t-sm transition-all group-hover:brightness-110"
-                                        style={{ height: `${Math.max((d.pv / maxDailyPv) * 100, d.pv > 0 ? 3 : 0)}%` }}
-                                    ></div>
-                                    {/* UV Bar - Gray-200 */}
-                                    <div 
-                                        className="w-2.5 bg-gray-200 rounded-t-sm transition-all group-hover:bg-gray-300"
-                                        style={{ height: `${Math.max((d.uv / maxDailyPv) * 100, d.uv > 0 ? 3 : 0)}%` }}
-                                    ></div>
-                                </div>
-                                <span className="text-[10px] font-bold text-gray-400 pb-1 flex-shrink-0">{d.date.substring(8)}</span>
+                                <span className="text-[10px] font-bold text-gray-400 pb-1 flex-shrink-0">{d.date.substring(5)}</span>
                             </div>
                         ))}
+                        <div className="flex-1"></div> {/* Right spacer */}
                     </div>
                 ) : (
                     <div className="h-40 flex items-center justify-center text-gray-400 font-bold">데이터가 없습니다.</div>
