@@ -32,50 +32,54 @@ export const getStatsSummary = query({
         partnerId: v.optional(v.string()), // 특정 파트너 필터
     },
     handler: async (ctx, args) => {
-        // 파트너 정보 미리 로드 (정규화용)
+        // 1. 데이터 수집 및 전처리를 위한 맵 구성
         const allPartners = await ctx.db.query("partners").collect();
         const idMap: Record<string, string> = {};
-        const partnerInfoMap: Record<string, any> = {};
-
         allPartners.forEach(p => {
             const pid = p.partnerId.trim();
             idMap[pid.toLowerCase()] = pid;
             if (p.customUrl) {
                 idMap[p.customUrl.trim().toLowerCase()] = pid;
             }
-            partnerInfoMap[pid] = p;
         });
 
-        // 1. 데이터 수집
-        let rawLogs;
-        if (args.partnerId) {
-            const pid = args.partnerId.trim();
-            const searchIds = [pid];
-            const targetPartner = allPartners.find(p => p.partnerId === pid);
-            if (targetPartner?.customUrl) searchIds.push(targetPartner.customUrl.trim());
+        // 2. 데이터 수집 (지수 사용 최적화)
+        const rawLogs = await (args.startDate 
+            ? ctx.db.query("analytics").withIndex("by_date", (q) => q.gte("date", args.startDate!))
+            : ctx.db.query("analytics")
+        ).collect();
 
-            const results = await Promise.all(searchIds.map(id => 
-                ctx.db.query("analytics").withIndex("by_partnerId", (q) => q.eq("partnerId", id)).collect()
-            ));
-            rawLogs = results.flat();
-        } else {
-            rawLogs = await ctx.db.query("analytics").collect();
-        }
-
-        // 2. 필터링 및 정규화 통합
+        // 3. 필터링 및 집계
         const dailyStats: Record<string, { pv: number, uv: Set<string> }> = {};
         const partnerStats: Record<string, { pv: number, uv: Set<string> }> = {};
         const pathStats: Record<string, { pv: number, uv: Set<string> }> = {};
         let totalPv = 0;
         const totalUvSet = new Set<string>();
 
+        // 시작일/종료일 기준 모든 날짜 초기화 (데이터가 없어도 차트에 표시되도록)
+        if (args.startDate && args.endDate) {
+            let curr = new Date(args.startDate);
+            const end = new Date(args.endDate);
+            // 무한 루프 방지 및 최대 31일 제한 (안전장치)
+            let count = 0;
+            while (curr <= end && count < 60) {
+                const dStr = curr.toISOString().split("T")[0];
+                dailyStats[dStr] = { pv: 0, uv: new Set() };
+                curr.setDate(curr.getDate() + 1);
+                count++;
+            }
+        }
+
         rawLogs.forEach(log => {
-            if (args.startDate && log.date < args.startDate) return;
+            // 날짜 범위 확인 (endDate 필터링)
             if (args.endDate && log.date > args.endDate) return;
 
             // 파트너 ID 정규화
             const logId = log.partnerId.trim().toLowerCase();
             const normalizedPid = idMap[logId] || log.partnerId.trim();
+            
+            // 파트너 필터 확인
+            if (args.partnerId && normalizedPid !== args.partnerId) return;
 
             totalPv++;
             totalUvSet.add(log.visitorId);

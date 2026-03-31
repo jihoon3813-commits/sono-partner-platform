@@ -23,7 +23,7 @@ export default function AnalyticsDashboard() {
 
     if (!stats) return <div className="p-10 text-center font-bold text-gray-400">통계 데이터를 불러오는 중...</div>;
 
-    const maxDailyPv = Math.max(...(stats.daily.map((d: any) => d.pv) || [1]), 1);
+    const maxDailyPv = Math.max(...(stats.daily.map((d: any) => Math.max(d.pv, d.uv)) || [1]), 1);
     const maxPartnerPv = Math.max(...(stats.partner.map((p: any) => p.pv) || [1]), 1);
 
     return (
@@ -89,22 +89,22 @@ export default function AnalyticsDashboard() {
                     </div>
                 </div>
                 {stats.daily.length > 0 ? (
-                    <div className="h-64 flex items-end gap-2 md:gap-4 overflow-x-auto pb-4">
+                    <div className="h-64 flex items-end gap-2 md:gap-4 overflow-x-auto pb-4 scrollbar-thin">
                         {stats.daily.map((d: any) => (
-                            <div key={d.date} className="flex-1 min-w-[30px] flex flex-col items-center gap-2 group relative">
+                            <div key={d.date} className="flex-1 min-w-[40px] flex flex-col items-center gap-2 group relative">
                                 <div className="absolute bottom-full mb-2 bg-sono-dark text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-xl font-bold">
-                                    PV: {d.pv} / UV: {d.uv}
+                                    {d.date}: PV {d.pv} / UV {d.uv}
                                 </div>
-                                <div className="w-full flex flex-col justify-end items-center gap-1 flex-1">
-                                    {/* UV Bar */}
+                                <div className="w-full flex justify-center items-end gap-[2px] flex-1">
+                                    {/* PV Bar - Solid Primary */}
                                     <div 
-                                        className="w-2 bg-gray-100 rounded-t-sm transition-all group-hover:bg-gray-200"
-                                        style={{ height: `${(d.uv / maxDailyPv) * 100}%` }}
+                                        className="w-3 bg-sono-primary rounded-t-sm transition-all group-hover:brightness-110"
+                                        style={{ height: `${Math.max((d.pv / maxDailyPv) * 100, d.pv > 0 ? 2 : 0)}%` }}
                                     ></div>
-                                    {/* PV Bar */}
+                                    {/* UV Bar - Gray-200 to match legend */}
                                     <div 
-                                        className="w-4 bg-sono-primary/40 rounded-t-sm transition-all group-hover:bg-sono-primary"
-                                        style={{ height: `${(d.pv / maxDailyPv) * 100}%` }}
+                                        className="w-3 bg-gray-200 rounded-t-sm transition-all group-hover:bg-gray-300"
+                                        style={{ height: `${Math.max((d.uv / maxDailyPv) * 100, d.uv > 0 ? 2 : 0)}%` }}
                                     ></div>
                                 </div>
                                 <span className="text-[10px] font-bold text-gray-400 mt-2 rotate-45 origin-left md:rotate-0">{d.date.substring(5)}</span>
