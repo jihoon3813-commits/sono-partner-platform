@@ -93,21 +93,21 @@ export default function AnalyticsDashboard() {
                         <div className="flex-1"></div> {/* Left spacer */}
                         {stats.daily.map((d: any) => (
                             <div key={d.date} className="flex-shrink-0 w-16 md:w-20 flex flex-col items-center group relative h-full">
-                                <div className="w-full flex justify-center items-end gap-[4px] flex-1 pb-2">
-                                    {/* PV Container */}
-                                    <div className="flex flex-col items-center gap-1">
+                                <div className="w-full flex justify-center items-end gap-[6px] flex-1 pb-2 h-full">
+                                    {/* PV Column */}
+                                    <div className="flex flex-col items-center justify-end h-full gap-1">
                                         <span className="text-[9px] font-black text-sono-primary">{d.pv}</span>
                                         <div 
                                             className="w-3 bg-sono-primary rounded-t-sm transition-all group-hover:brightness-110"
-                                            style={{ height: `${Math.max((d.pv / maxDailyPv) * 70, d.pv > 0 ? 4 : 0)}%` }}
+                                            style={{ height: `${Math.max((d.pv / maxDailyPv) * 70, d.pv > 0 ? 5 : 0)}%` }}
                                         ></div>
                                     </div>
-                                    {/* UV Container */}
-                                    <div className="flex flex-col items-center gap-1">
+                                    {/* UV Column */}
+                                    <div className="flex flex-col items-center justify-end h-full gap-1">
                                         <span className="text-[9px] font-black text-gray-400">{d.uv}</span>
                                         <div 
                                             className="w-3 bg-gray-200 rounded-t-sm transition-all group-hover:bg-gray-300"
-                                            style={{ height: `${Math.max((d.uv / maxDailyPv) * 70, d.uv > 0 ? 4 : 0)}%` }}
+                                            style={{ height: `${Math.max((d.uv / maxDailyPv) * 70, d.uv > 0 ? 5 : 0)}%` }}
                                         ></div>
                                     </div>
                                 </div>
