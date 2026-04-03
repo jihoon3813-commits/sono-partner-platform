@@ -107,8 +107,8 @@ export default function Happy450Content({
                                 },
                                 {
                                     title: "BENEFIT 02",
-                                    name: "레디캐시 적립",
-                                    desc: "납입금의 일부를 레디캐시로 적립하여 쇼핑에 즉시 사용할 수 있습니다.",
+                                    name: "레디캐시 전환",
+                                    desc: "납입금의 일부를 레디캐시로 전환하여 소노아임레디몰과 제휴 매장에 즉시 사용할 수 있습니다.",
                                     icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />,
                                 },
                                 {
@@ -148,9 +148,9 @@ export default function Happy450Content({
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-10 max-w-5xl mx-auto">
                             {[
-                                { name: "실속형", units: "1구좌", price: "18,000", desc: "가장 기본적인 상조 서비스" },
-                                { name: "인기형", units: "2구좌", price: "36,000", desc: "더 풍성한 서비스 구성", popular: true },
-                                { name: "베스트", units: "3구좌", price: "54,000", desc: "프리미엄 서비스 구성" },
+                                { name: "실속형", units: "더 해피450 ONE 1구좌", price: "18,000", desc: "가장 기본적인 상조 서비스" },
+                                { name: "인기형", units: "더 해피450 ONE 2구좌", price: "36,000", desc: "더 풍성한 서비스 구성", popular: true },
+                                { name: "베스트", units: "더 해피450 ONE 3구좌", price: "54,000", desc: "프리미엄 서비스 구성" },
                             ].map((plan, index) => (
                                 <div key={index} className={`card relative !p-5 md:!p-12 flex flex-col h-full transition-all ${plan.popular ? 'ring-2 ring-sono-primary shadow-xl shadow-sono-primary/10 md:scale-105 z-10' : 'bg-[#f9fafb] border-none'}`}>
                                     {plan.popular && (
@@ -170,7 +170,7 @@ export default function Happy450Content({
                                     <ul className="space-y-2 md:space-y-4 text-sm font-bold mb-2 md:mb-4">
                                         {[
                                             "제휴몰 포인트 지급",
-                                            "레디캐시 적립",
+                                            "레디캐시 전환",
                                             "소노그룹 멤버십",
                                             "납입금 100% 환급"
                                         ].map((text, i) => (
@@ -185,16 +185,19 @@ export default function Happy450Content({
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-8 md:mt-12 text-center">
+                        <div className="mt-8 md:mt-12 text-center space-y-1 md:space-y-2">
                             <p className="text-[#8b95a1] font-bold text-xs md:text-sm italic">
                                 *100% 환급 조건 : 만기 납입 후 익월 해약 또는 라이프 서비스 사용 시*
+                            </p>
+                            <p className="text-[#8b95a1] font-bold text-xs md:text-sm italic">
+                                *레디캐시 사용 조건 : 가입 상품의 해약환급금 80% 사용 가능*
                             </p>
                         </div>
                     </div>
                 </section>
 
                 {/* 상조 서비스 */}
-                <section className="py-16 md:py-32 bg-[#f9fafb]">
+                <section className="py-16 md:py-32 bg-white">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         <div className="text-center mb-16 md:mb-24">
                             <span className="badge-primary mb-6 px-4 py-2">FUNERAL SERVICE</span>
@@ -205,41 +208,72 @@ export default function Happy450Content({
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-10">
+                        <div className="grid md:grid-cols-3 gap-8 md:gap-10 mb-20 md:mb-32">
                             {[
                                 {
-                                    title: "국가공인 장례지도사",
-                                    desc: "입관 시 2명 투입 및 24시간 상시대기",
-                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/funeral_ready_list01_08.jpg"
+                                    title: "정성을 다하는 서비스",
+                                    desc: "고인을 위한 관과 수의를 정직하게 정성을 다합니다.",
+                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/fileView%20(2).jpg?raw=true"
                                 },
                                 {
-                                    title: "프리미엄 장의 차량",
-                                    desc: "최신형 리무진 및 대형 버스 즉시 투입",
-                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/funeral_ready_list01_09.jpg"
+                                    title: "고객님을 위로하는 마음",
+                                    desc: "전문 장례지도사가 모든 예법주관부터 행정업무까지 편리하게 지원합니다.",
+                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/fileView%20(3).jpg?raw=true"
                                 },
                                 {
-                                    title: "철저한 사후 관리",
-                                    desc: "행사 후 품질 심사 및 피드백 상시 지원",
-                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/funeral_ready_list01_10.jpg"
+                                    title: "전문가의 따뜻한 손길",
+                                    desc: "필요한 장의용품부터 고인 전용 차량까지 모두 제공합니다.",
+                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/fileView%20(1).jpg?raw=true"
                                 },
                             ].map((item, index) => (
-                                <div key={index} className="group bg-white rounded-[24px] md:rounded-[32px] overflow-hidden hover:shadow-2xl transition-all duration-500 border border-transparent hover:border-gray-100 flex flex-col md:block">
-                                    <div className="flex md:block">
-                                        <div className="relative w-32 md:w-full h-32 md:h-56 overflow-hidden flex-shrink-0">
-                                            <img
-                                                src={item.img}
-                                                alt={item.title}
-                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                        </div>
-                                        <div className="p-4 md:p-10 text-left md:text-center flex flex-col justify-center">
-                                            <h3 className="text-base md:text-2xl font-bold text-sono-dark mb-1 md:mb-4 tracking-tight group-hover:text-sono-primary transition-colors leading-tight">{item.title}</h3>
-                                            <p className="text-[#6b7684] text-xs md:text-base font-medium leading-relaxed break-keep">{item.desc}</p>
-                                        </div>
+                                <div key={index} className="flex flex-col text-center group">
+                                    <div className="relative aspect-[4/3] rounded-[32px] overflow-hidden bg-gray-100 mb-6 md:mb-10 shadow-sm transition-all duration-500 hover:shadow-2xl">
+                                        {item.img ? (
+                                            <img src={item.img} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-[#8b95a1] font-bold">이미지 준비중</div>
+                                        )}
                                     </div>
+                                    <h3 className="text-xl md:text-2xl font-bold text-sono-dark mb-3 md:mb-4 tracking-tight group-hover:text-sono-primary transition-colors leading-tight">{item.title}</h3>
+                                    <p className="text-[#6b7684] text-sm md:text-lg font-medium leading-relaxed break-keep px-4">{item.desc}</p>
                                 </div>
                             ))}
+                        </div>
+
+                        {/* 소노아임레디 상조 서비스만의 특별함 */}
+                        <div className="max-w-4xl mx-auto animate-fade-in">
+                            <div className="relative bg-[#dce9f5] py-4 rounded-sm mb-12 overflow-hidden shadow-sm">
+                                <div className="absolute right-0 top-0 bottom-0 w-12 bg-[#1a3a63] -skew-x-[25deg] origin-top-right transform translate-x-6"></div>
+                                <h3 className="text-[#1a3a63] text-lg md:text-2xl font-black text-center tracking-tight relative z-10">
+                                    소노아임레디 상조 서비스만의 특별함
+                                </h3>
+                            </div>
+
+                            <div className="divide-y divide-gray-100 border-b border-gray-100">
+                                {[
+                                    {
+                                        title: "처음부터 끝까지",
+                                        desc: <>장례지도사는 1건의 장례가 끝날 때까지 책임지고 함께합니다.<br />24시간 긴급의전센터(1588-2227)를 운영하며 접수 시 전문 장례지도사가 2시간 이내 현장에 도착하여 도와드립니다.<br /><span className="text-[11px] text-[#8b95a1]">*도서 및 산간지역 제외, 상황에 따라 출동시간은 변동될 수 있음</span></>
+                                    },
+                                    {
+                                        title: "전문가와 같이",
+                                        desc: <>고객 만족도 99%*의 전문 장례지도사가 장례물품 준비부터 장례 진행, 행정 절차까지 유가족이 큰 어려움 없이 마무리할 수 있도록 곁에서 세심하게 관리해 드립니다.<br /><span className="text-[11px] text-[#8b95a1]">*2026년 기준</span></>
+                                    },
+                                    {
+                                        title: "용품 보증 시스템",
+                                        desc: <>규격용품보다 하위용품은 사용하지 않습니다. 소노아임레디만의 디자인 특허 고깔, 대마 100% 수의 등 빠짐없이 정직하게 준비해 드립니다.<br /><span className="text-[11px] text-[#8b95a1]">*고깔: 디자인등록증 제 30-1110105호/수의: 2024년 1월 fiti 직물테스트 기준 *1년 단위 주기 테스트 진행</span></>
+                                    }
+                                ].map((row, i) => (
+                                    <div key={i} className="flex flex-col md:flex-row py-8 md:py-12 gap-4 md:gap-12">
+                                        <div className="md:w-32 lg:w-40 flex-shrink-0">
+                                            <h4 className="text-sono-dark text-lg md:text-xl font-black tracking-tighter leading-tight break-keep">{row.title}</h4>
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-sono-dark font-bold text-sm md:text-lg leading-relaxed md:leading-snug break-keep">{row.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -434,14 +468,24 @@ export default function Happy450Content({
                                     img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product02.jpg"
                                 },
                                 {
-                                    title: "어학연수",
+                                    title: "교육/어학연수",
                                     desc: "자녀를 위한 해외 명문 학교 영어 캠프 및 연수 프로그램",
                                     img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product04.jpg"
                                 },
                                 {
-                                    title: "라이프케어",
-                                    desc: "소노시즌 매트리스, 최신 가전, 휴대폰 등 생활 전반 지원",
+                                    title: "리빙",
+                                    desc: "소노시즌 매트리스, 최신 가전, 휴대폰, 1:1 맞춤케어, 이사 컨시어지, 입주청소&정리수납, 키즈/침실/주방/거실 가구 패키지 등",
                                     img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product07.jpg"
+                                },
+                                {
+                                    title: "명품케어",
+                                    desc: <>글로벌 명품 브랜드의 제품<br/>수선/매입/해외명품관 쇼핑</>,
+                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product10.jpg?raw=true"
+                                },
+                                {
+                                    title: "쉼케어",
+                                    desc: <>종합심리검사+해석상담<br/>장지 시설/안치 장소 및 시설 안내</>,
+                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product08.jpg?raw=true"
                                 }
                             ].map((item, index) => (
                                 <div key={index} className="group bg-white rounded-[24px] md:rounded-[32px] overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-500 flex flex-row md:flex-col">
@@ -491,53 +535,89 @@ export default function Happy450Content({
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-lg md:text-2xl mb-1 md:mb-4 tracking-tight leading-tight">레저 시설 할인 혜택</h3>
-                                    <p className="text-white/70 text-sm md:text-lg font-medium leading-tight md:leading-relaxed">오션월드, 스키장, 골프장 등 모든 레저 시설 할인권을 제공합니다.</p>
+                                    <p className="text-white/70 text-sm md:text-lg font-medium leading-tight md:leading-relaxed break-keep">워터파크(오션월드, 오션어드벤처, 오션플레이), 스키, 골프, 사우나 등 10~35%(최대 35%) 우대 혜택</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* 포인트/레디캐시 활용 안내 섹션 */}
-                <section className="py-16 md:py-24 bg-white overflow-hidden">
+                {/* 소노아임레디몰 */}
+                <section className="py-16 md:py-32 bg-[#fafbfc]">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
-                            <div className="relative animate-fade-in order-2 md:order-1">
-                                <div className="absolute -inset-10 bg-sono-primary/5 rounded-full blur-3xl"></div>
-                                <img
-                                    src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_main_giftcard_app%20(1).png"
-                                    alt="소노아임레디 모바일 앱 및 기프트카드"
-                                    className="relative z-10 w-full max-w-[500px] mx-auto drop-shadow-2xl rounded-[40px]"
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-16 border-b border-gray-200 pb-6 md:pb-8 gap-4">
+                            <div>
+                                <h2 className="text-3xl md:text-5xl font-black text-sono-dark mb-3 md:mb-4 tracking-tighter">소노아임레디몰</h2>
+                                <p className="text-[#6b7684] text-sm md:text-xl font-bold">소노아임레디 회원을 위한 특별 혜택이 가득한 쇼핑몰!</p>
+                            </div>
+                            <a href="https://www.imreadymall.com/" target="_blank" rel="noopener noreferrer" className="text-[#8b95a1] font-bold text-sm md:text-lg hover:text-sono-primary transition-colors flex items-center gap-1 shrink-0">
+                                소노아임레디몰 바로가기
+                                <svg className="w-4 h-4 md:w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+                            </a>
+                        </div>
+
+                        <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
+                            <div className="flex-1 w-full animate-fade-in">
+                                <img 
+                                    src="https://github.com/jihoon3813-commits/img_sono/blob/main/computer_main.png?raw=true" 
+                                    alt="소노아임레디몰 메인" 
+                                    className="w-full h-auto drop-shadow-2xl transition-transform duration-700 hover:scale-[1.02]"
                                 />
                             </div>
-                            <div className="animate-fade-in order-1 md:order-2 text-center md:text-left">
-                                <span className="badge-primary mb-6 px-4 py-2 inline-block">MOBILE EXPERIENCE</span>
-                                <h2 className="section-title mb-8">모바일로 더 스마트한<br />포인트 혜택</h2>
-                                <div className="space-y-10 md:space-y-8">
-                                    <div className="flex flex-col items-center md:flex-row md:items-start gap-4 md:gap-6">
-                                        <div className="w-12 h-12 rounded-2xl bg-sono-primary/10 text-sono-primary flex items-center justify-center flex-shrink-0 font-bold text-xl">01</div>
-                                        <div>
-                                            <h4 className="font-bold text-sono-dark text-xl mb-2 tracking-tight">실시간 포인트 확인 및 사용</h4>
-                                            <p className="text-[#6b7684] font-medium leading-relaxed">적립된 제휴몰 포인트와 레디캐시를 모바일에서 실시간으로 확인하고, 소노아임레디몰에서 즉시 현금처럼 사용할 수 있습니다.</p>
+                            
+                            <div className="flex-1 w-full space-y-6 md:space-y-10">
+                                {[
+                                    {
+                                        title: "매일 기다려지는 특가 상품과 이벤트",
+                                        desc: "타임딜, 릴레이딜부터 룰렛 이벤트! 매일 새로운 상품과 이벤트가 쏟아집니다!",
+                                        icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                                    },
+                                    {
+                                        title: "초청 회원 가능",
+                                        desc: "소중한 지인들과 함께 특가를 즐기고, 나에게는 포인트가 쌓이는 즐거움을 경험해보세요!",
+                                        icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    },
+                                    {
+                                        title: "더욱 강력해진 적립&쿠폰 혜택",
+                                        desc: <>만기까지 유지하신 고객님들께는 혜택을 더 드려요!<br className="hidden md:block" />특별 적립 & 쿠폰, 더 강력해진 혜택을 드립니다</>,
+                                        icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    }
+                                ].map((benefit, i) => (
+                                    <div key={i} className="flex gap-6 md:gap-8 group border-b border-gray-100 pb-6 md:pb-10 last:border-none">
+                                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-sono-primary group-hover:bg-sono-primary group-hover:text-white transition-all duration-300 flex-shrink-0">
+                                            <svg className="w-6 h-6 md:w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                {benefit.icon}
+                                            </svg>
+                                        </div>
+                                        <div className="flex flex-col justify-center">
+                                            <h3 className="text-lg md:text-xl font-black text-sono-dark mb-2">{benefit.title}</h3>
+                                            <p className="text-[#8b95a1] text-sm md:text-base font-bold leading-relaxed break-keep">{benefit.desc}</p>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col items-center md:flex-row md:items-start gap-4 md:gap-6">
-                                        <div className="w-12 h-12 rounded-2xl bg-sono-gold/10 text-sono-gold flex items-center justify-center flex-shrink-0 font-bold text-xl">02</div>
-                                        <div>
-                                            <h4 className="font-bold text-sono-dark text-xl mb-2 tracking-tight">다양한 모바일 기프트 상품</h4>
-                                            <p className="text-[#6b7684] font-medium leading-relaxed">전환 서비스를 통해 일상의 즐거움을 더하는 모바일 상품권 및 기프트 카드로 교환하여 언제 어디서나 편리하게 이용하세요.</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col items-center md:flex-row md:items-start gap-4 md:gap-6">
-                                        <div className="w-12 h-12 rounded-2xl bg-sono-success/10 text-sono-success flex items-center justify-center flex-shrink-0 font-bold text-xl">03</div>
-                                        <div>
-                                            <h4 className="font-bold text-sono-dark text-xl mb-2 tracking-tight">내 손안의 라이프 솔루션</h4>
-                                            <p className="text-[#6b7684] font-medium leading-relaxed">복잡한 절차 없이 앱 하나로 가전 배송 조회부터 멤버십 혜택 예약까지, 모든 라이프 서비스를 스마트하게 관리할 수 있습니다.</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
+                    </div>
+                </section>
+
+                {/* 레디캐시 안내 */}
+                <section className="py-16 md:py-24 bg-[#f1f5f9]">
+                    <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12">
+                        <h3 className="text-2xl md:text-3xl font-black text-sono-dark mb-8 tracking-tight">레디캐시 안내</h3>
+                        <ul className="space-y-4 md:space-y-6">
+                            {[
+                                "레디캐시는 회원님이 가입한 상품의 해약환급금 내에서 당사가 정한 기준 금액에 한 해 1원당 1캐시로 전환하여 사용 가능합니다.",
+                                "레디캐시는 납입한 상품 금액에서 사용한 레디캐시 금액만큼 차감되며 상품 이용(장례 또는 전환 서비스) 시, 사용한 레디캐시 금액만큼 추가 금액이 발생합니다.",
+                                "레디캐시의 환불은 취소 완료일로부터 3영업일 이내 사용한 레디캐시 금액만큼 환불됩니다.",
+                                "제휴 상황에 따라 일부 서비스는 변동될 수 있습니다. 자세한 내용은 공식 홈페이지 제휴 서비스 페이지를 참고하시기 바랍니다.",
+                                "고객님께서 가입한 상품에 따라 레디캐시 발생 시점 및 금액은 상이할 수 있습니다."
+                            ].map((text, i) => (
+                                <li key={i} className="flex gap-4 text-sm md:text-lg text-[#4e5968] font-bold leading-relaxed">
+                                    <span className="flex-shrink-0 mt-3 w-1.5 h-1.5 rounded-full bg-[#8b95a1]"></span>
+                                    <p className="break-keep">{text}</p>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </section>
 

@@ -365,9 +365,10 @@ export default function InquiryModal({
                                                         productListRef.current.scrollTop = 0;
                                                     }
                                                 }}
-                                                className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${selectedUnit === u ? "bg-white text-sono-primary shadow-sm" : "text-[#8b95a1]"}`}
+                                                className={`flex-1 py-2 md:py-3 rounded-xl transition-all flex flex-col items-center justify-center ${selectedUnit === u ? "bg-white text-sono-primary shadow-sm" : "text-[#8b95a1]"}`}
                                             >
-                                                {u}구좌
+                                                <span className={`text-[9px] font-bold mb-0.5 ${selectedUnit === u ? "text-sono-primary/60" : "text-[#8b95a1]/60"}`}>스마트케어330</span>
+                                                <span className="text-sm md:text-base font-black">{u}구좌</span>
                                             </button>
                                         ))}
                                     </div>

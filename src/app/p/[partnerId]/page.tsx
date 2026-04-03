@@ -403,22 +403,22 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-24 max-w-6xl mx-auto">
                             {[
                                 {
-                                    image: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/credibility_list01.jpg",
+                                    image: "https://www.sonoimready.com/assets/images/cs/photo_story_company01.jpg",
                                     title: "고객 선수금 1조 돌파",
                                     subtitle: "2024 06월 기준"
                                 },
                                 {
-                                    image: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/credibility_list03.jpg",
+                                    image: "https://www.sonoimready.com/assets/images/cs/photo_story_company02.jpg",
                                     title: "자본금 100억원",
                                     subtitle: "법정 자본금(15억원)요건 6배"
                                 },
                                 {
-                                    image: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/credibility_list04.jpg",
+                                    image: "https://www.sonoimready.com/assets/images/cs/photo_story_company03.jpg",
                                     title: "대명소노그룹사",
                                     subtitle: "2024년 기준 대규모기업"
                                 },
                                 {
-                                    image: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/credibility_list02.jpg",
+                                    image: "https://www.sonoimready.com/assets/images/cs/photo_story_company04.jpg",
                                     title: "신용평가 1등급",
                                     subtitle: "기준: 2025.8.1~2025.7.31 / 상조보증공제조합"
                                 }
@@ -514,7 +514,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                     {[
                                         { text: partner.pointInfo, sub: "가입 즉시 제휴몰 포인트 적립" },
                                         { text: "납입금 100% 전액 환급", sub: "미이용 시 만기에 전액 돌려받는 안심 환급" },
-                                        { text: "소노그룹 멤버십 무상 제공", sub: "전국 리조트 및 레저 시설 할인 혜택" }
+                                        { text: "소노그룹 멤버십 제공", sub: "전국 리조트 및 레저 시설 우대 혜택" }
                                     ].map((item, i) => (
                                         <div key={i} className="flex gap-4">
                                             <div className="w-6 h-6 rounded-full bg-sono-success/10 text-sono-success flex items-center justify-center flex-shrink-0 mt-1">
@@ -577,11 +577,11 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                                 BEST CHOICE
                                             </div>
                                             <h3 className="text-4xl font-black text-sono-dark tracking-tighter leading-tight mb-2">스마트케어</h3>
-                                            <p className="text-sono-gold font-bold">삼성/LG 최신 가전 지원 프리미엄 모델</p>
+                                            <p className="text-sono-gold font-bold">삼성/LG 최신가전 렌탈(금) 전액지원</p>
                                         </div>
                                     </div>
                                     {[
-                                        { text: "삼성/LG 최신 가전 지원", sub: "내가 원하는 가전을 가입 즉시 배송/설치" },
+                                        { text: "삼성/LG 최신가전 렌탈(금) 전액 지원", sub: "내가 원하는 가전을 가입 즉시 배송/설치" },
                                         { text: partner.pointInfo, sub: "가입 즉시 제휴몰 포인트 추가 적립" },
                                         { text: "납입금 100% 전액 환급", sub: "만기 시 가전 가격 포함 납입금 100% 환급" }
                                     ].map((item, i) => (
