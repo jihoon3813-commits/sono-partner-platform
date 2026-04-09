@@ -249,133 +249,155 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                 </div>
             ) : (
                 <div className="bg-white p-6 rounded-2xl shadow-sm space-y-6">
-                    <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-                        <div className="flex items-center gap-4">
-                            <div>
-                                <h2 className="text-xl font-bold text-sono-dark">고객 상담 내역</h2>
-                                <p className="text-sm text-gray-500 mt-1 whitespace-nowrap">총 {filteredApplications.length}건의 신청 내역이 있습니다.</p>
-                            </div>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setIsRegistrationModalOpen(true)}
-                                    className="flex items-center gap-2 px-3 py-1.5 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-all shadow-sm whitespace-nowrap"
-                                >
-                                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                                    </svg>
-                                    고객 직접 등록
-                                </button>
-                                {isAdmin && selectedAppIds.length > 0 && (
-                                    <button
-                                        onClick={async () => {
-                                            if (confirm(`선택한 ${selectedAppIds.length}건을 삭제하시겠습니까?`)) {
-                                                setIsDeleting(true);
-                                                try {
-                                                    await deleteApplications({ applicationNos: selectedAppIds });
-                                                    setSelectedAppIds([]);
-                                                    onRefresh();
-                                                    alert("삭제되었습니다.");
-                                                } catch (err) {
-                                                    console.error("Delete failed", err);
-                                                    alert("삭제 중 오류가 발생했습니다.");
-                                                } finally {
-                                                    setIsDeleting(false);
-                                                }
-                                            }
-                                        }}
-                                        disabled={isDeleting}
-                                        className="flex items-center gap-2 px-3 py-1.5 bg-red-600 text-white rounded-xl text-xs font-bold hover:bg-red-700 transition-all shadow-sm whitespace-nowrap"
-                                    >
-                                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                        선택 삭제 ({selectedAppIds.length})
-                                    </button>
-                                )}
-                                {isAdmin && (
-                                    <button
-                                        onClick={() => setIsBulkUploadModalOpen(true)}
-                                        className="flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white rounded-xl text-xs font-bold hover:bg-green-700 transition-all shadow-sm whitespace-nowrap"
-                                    >
-                                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                        </svg>
-                                        본사 엑셀 업로드
-                                    </button>
-                                )}
-                                <button
-                                    onClick={() => {
-                                        if (filteredApplications.length === 0) {
-                                            alert("다운로드할 데이터가 없습니다.");
-                                            return;
-                                        }
-
-                                        const headers = [
-                                            "No.", "신청번호", "신청일시", "파트너사", "시스템ID", "로그인ID", "고객명", "연락처",
-                                            "상품명", "결합제품(가전)", "신청구좌", "주소", "우편번호", "생년월일",
-                                            "성별", "이메일", "회원번호", "선호시간", "문의사항", "상태",
-                                            "초회납입일", "신규등록일", "납입방법", "해약처리", "청약철회", "비고(사유)"
-                                        ];
-
-                                        const rows = filteredApplications.map((app, index) => [
-                                            filteredApplications.length - index,
-                                            app.applicationNo,
-                                            new Date(app.createdAt).toLocaleString(),
-                                            app.partnerName,
-                                            app.partnerId,
-                                            getPartnerLoginId(app.partnerId),
-                                            app.customerName,
-                                            app.customerPhone,
-                                            app.productType,
-                                            app.products || "-",
-                                            app.planType,
-                                            app.customerAddress,
-                                            app.customerZipcode,
-                                            app.customerBirth || "-",
-                                            app.customerGender || "-",
-                                            app.customerEmail || "-",
-                                            app.partnerMemberId || "-",
-                                            app.preferredContactTime || "-",
-                                            app.inquiry?.replace(/\n/g, " ") || "-",
-                                            app.status,
-                                            app.firstPaymentDate || "-",
-                                            app.registrationDate || "-",
-                                            app.paymentMethod || "-",
-                                            app.cancellationProcessing || "-",
-                                            app.withdrawalProcessing || "-",
-                                            app.remarks?.replace(/\n/g, " ") || "-"
-                                        ]);
-
-                                        const csvContent = [
-                                            headers.join(","),
-                                            ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
-                                        ].join("\n");
-
-                                        const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
-                                        const link = document.createElement("a");
-                                        const url = URL.createObjectURL(blob);
-                                        link.setAttribute("href", url);
-                                        link.setAttribute("download", `고객상담내역_${new Date().toISOString().slice(0, 10)}.csv`);
-                                        link.style.visibility = "hidden";
-                                        document.body.appendChild(link);
-                                        link.click();
-                                        document.body.removeChild(link);
-                                    }}
-                                    className="flex items-center gap-2 px-3 py-1.5 bg-sono-primary text-white rounded-xl text-xs font-bold hover:bg-sono-dark transition-all shadow-sm"
-                                >
-                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                    엑셀 다운로드
-                                </button>
-                            </div>
+                    {/* Header Row: Title & Action Buttons */}
+                    <div className="flex flex-col lg:flex-row justify-between lg:items-end gap-6 border-b border-gray-100 pb-6">
+                        <div>
+                            <h2 className="text-2xl font-black text-sono-dark tracking-tighter">고객 상담 내역</h2>
+                            <p className="text-sm text-gray-400 mt-1.5 font-medium">총 <span className="text-sono-primary font-bold">{filteredApplications.length}</span>건의 신청 내역이 있습니다.</p>
                         </div>
-                        <div className="flex flex-wrap items-center gap-3">
+                        
+                        <div className="flex flex-wrap items-center gap-2">
+                            <button
+                                onClick={() => setIsRegistrationModalOpen(true)}
+                                className="flex items-center gap-2 px-4 py-2.5 bg-sono-dark text-white rounded-xl text-sm font-bold hover:bg-black transition-all shadow-md active:scale-95"
+                            >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                                </svg>
+                                고객 직접 등록
+                            </button>
+                            
+                            {isAdmin && selectedAppIds.length > 0 && (
+                                <button
+                                    onClick={async () => {
+                                        if (confirm(`선택한 ${selectedAppIds.length}건을 삭제하시겠습니까?`)) {
+                                            setIsDeleting(true);
+                                            try {
+                                                await deleteApplications({ applicationNos: selectedAppIds });
+                                                setSelectedAppIds([]);
+                                                onRefresh();
+                                                alert("삭제되었습니다.");
+                                            } catch (err) {
+                                                console.error("Delete failed", err);
+                                                alert("삭제 중 오류가 발생했습니다.");
+                                            } finally {
+                                                setIsDeleting(false);
+                                            }
+                                        }
+                                    }}
+                                    disabled={isDeleting}
+                                    className="flex items-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 border border-red-100 rounded-xl text-sm font-bold hover:bg-red-100 transition-all shadow-sm active:scale-95"
+                                >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    선택 삭제 ({selectedAppIds.length})
+                                </button>
+                            )}
+
+                            {isAdmin && (
+                                <button
+                                    onClick={() => setIsBulkUploadModalOpen(true)}
+                                    className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-sm font-bold hover:bg-emerald-100 transition-all shadow-sm active:scale-95"
+                                >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
+                                    본사 엑셀 업로드
+                                </button>
+                            )}
+
+                            <button
+                                onClick={() => {
+                                    if (filteredApplications.length === 0) {
+                                        alert("다운로드할 데이터가 없습니다.");
+                                        return;
+                                    }
+
+                                    const headers = [
+                                        "No.", "신청번호", "신청일시", "파트너사", "시스템ID", "로그인ID", "고객명", "연락처",
+                                        "상품명", "결합제품(가전)", "신청구좌", "주소", "우편번호", "생년월일",
+                                        "성별", "이메일", "회원번호", "선호시간", "문의사항", "상태",
+                                        "초회납입일", "신규등록일", "납입방법", "해약처리", "청약철회", "비고(사유)"
+                                    ];
+
+                                    const rows = filteredApplications.map((app, index) => [
+                                        filteredApplications.length - index,
+                                        app.applicationNo,
+                                        new Date(app.createdAt).toLocaleString(),
+                                        app.partnerName,
+                                        app.partnerId,
+                                        getPartnerLoginId(app.partnerId),
+                                        app.customerName,
+                                        app.customerPhone,
+                                        app.productType,
+                                        app.products || "-",
+                                        app.planType,
+                                        app.customerAddress,
+                                        app.customerZipcode,
+                                        app.customerBirth || "-",
+                                        app.customerGender || "-",
+                                        app.customerEmail || "-",
+                                        app.partnerMemberId || "-",
+                                        app.preferredContactTime || "-",
+                                        app.inquiry?.replace(/\n/g, " ") || "-",
+                                        app.status,
+                                        app.firstPaymentDate || "-",
+                                        app.registrationDate || "-",
+                                        app.paymentMethod || "-",
+                                        app.cancellationProcessing || "-",
+                                        app.withdrawalProcessing || "-",
+                                        app.remarks?.replace(/\n/g, " ") || "-"
+                                    ]);
+
+                                    const csvContent = [
+                                        headers.join(","),
+                                        ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+                                    ].join("\n");
+
+                                    const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
+                                    const link = document.createElement("a");
+                                    const url = URL.createObjectURL(blob);
+                                    link.setAttribute("href", url);
+                                    link.setAttribute("download", `고객상담내역_${new Date().toISOString().slice(0, 10)}.csv`);
+                                    link.style.visibility = "hidden";
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    link.click(); // Some browsers need this
+                                    document.body.removeChild(link);
+                                }}
+                                className="flex items-center gap-2 px-4 py-2.5 bg-sono-primary/10 text-sono-primary border border-sono-primary/20 rounded-xl text-sm font-bold hover:bg-sono-primary/20 transition-all active:scale-95"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                엑셀 다운로드
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Filter Bar: Search & Selects */}
+                    <div className="flex flex-col md:flex-row items-center gap-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                        <div className="relative flex-1 w-full">
+                            <input
+                                type="text"
+                                placeholder="고객명, 연락처, 파트너사명 검색"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none w-full shadow-sm"
+                            />
+                            <svg className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+
+                        <div className="flex items-center gap-2 w-full md:w-auto">
                             {isAdmin && partners.length > 0 && (
                                 <select
                                     value={partnersFilter}
                                     onChange={(e) => setPartnersFilter(e.target.value)}
-                                    className="bg-white border border-gray-200 text-sono-dark text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none font-bold min-w-[140px]"
+                                    className="flex-1 md:flex-none bg-white border border-gray-200 text-sono-dark text-sm rounded-2xl px-4 py-3 focus:ring-2 focus:ring-sono-primary outline-none font-bold shadow-sm min-w-[150px]"
                                 >
                                     <option value="all">모든 파트너사</option>
                                     {partners.map(p => (
@@ -386,7 +408,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value as any)}
-                                className="bg-white border border-gray-200 text-sono-dark text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none font-bold"
+                                className="flex-1 md:flex-none bg-white border border-gray-200 text-sono-dark text-sm rounded-2xl px-4 py-3 focus:ring-2 focus:ring-sono-primary outline-none font-bold shadow-sm"
                             >
                                 <option value="updatedAt">최근수정기준</option>
                                 <option value="createdAtDesc">등록일시(내림차순)</option>
@@ -395,24 +417,12 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                             <select
                                 value={itemsPerPage}
                                 onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                                className="bg-white border border-gray-200 text-sono-dark text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none font-bold"
+                                className="flex-1 md:flex-none bg-white border border-gray-200 text-sono-dark text-sm rounded-2xl px-4 py-3 focus:ring-2 focus:ring-sono-primary outline-none font-bold shadow-sm"
                             >
-                                <option value={20}>20개씩 보기</option>
-                                <option value={50}>50개씩 보기</option>
-                                <option value={100}>100개씩 보기</option>
+                                <option value={20}>20개 보기</option>
+                                <option value={50}>50개 보기</option>
+                                <option value={100}>100개 보기</option>
                             </select>
-                            <div className="relative w-full md:w-64">
-                                <input
-                                    type="text"
-                                    placeholder="고객명, 연락처, 파트너사명 검색"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none w-full"
-                                />
-                                <svg className="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
                         </div>
                     </div>
 
