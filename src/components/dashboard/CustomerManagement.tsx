@@ -79,6 +79,9 @@ export default function CustomerManagement({ applications, onRefresh, partners =
     const [customStartDate, setCustomStartDate] = useState("");
     const [customEndDate, setCustomEndDate] = useState("");
 
+    // Sorting
+    const [sortBy, setSortBy] = useState<"updatedAt" | "createdAtAsc" | "createdAtDesc">("updatedAt");
+
     // Pagination
     const [itemsPerPage, setItemsPerPage] = useState(20);
     const [currentPage, setCurrentPage] = useState(1);
@@ -92,7 +95,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
     // Reset page when filter changes
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchTerm, statusFilter, productFilter, dateFilter, customStartDate, customEndDate, itemsPerPage]);
+    }, [searchTerm, statusFilter, productFilter, partnersFilter, dateFilter, customStartDate, customEndDate, itemsPerPage, sortBy]);
 
     const statusOptions = ['전체', '접수대기', '접수완료', '부재', '보류', '거부', '접수취소', '정상가입', '1회출금', '배송완료', '청약철회', '해약', '정산완료'];
 
@@ -210,11 +213,22 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         return p?.loginId || partnerId;
     };
 
-    // 3. Sorting by updatedAt (User request: updated items to the top)
+    // 3. Sorting logic
     const sortedApplications = [...filteredApplications].sort((a, b) => {
-        const timeA = new Date(a.updatedAt || a.createdAt).getTime();
-        const timeB = new Date(b.updatedAt || b.createdAt).getTime();
-        return timeB - timeA;
+        if (sortBy === "updatedAt") {
+            const timeA = new Date(a.updatedAt || a.createdAt).getTime();
+            const timeB = new Date(b.updatedAt || b.createdAt).getTime();
+            return timeB - timeA;
+        } else if (sortBy === "createdAtDesc") {
+            const timeA = new Date(a.createdAt).getTime();
+            const timeB = new Date(b.createdAt).getTime();
+            return timeB - timeA;
+        } else if (sortBy === "createdAtAsc") {
+            const timeA = new Date(a.createdAt).getTime();
+            const timeB = new Date(b.createdAt).getTime();
+            return timeA - timeB;
+        }
+        return 0;
     });
 
     // Calculate pagination
@@ -356,11 +370,32 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                 </button>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-3">
+                            {isAdmin && partners.length > 0 && (
+                                <select
+                                    value={partnersFilter}
+                                    onChange={(e) => setPartnersFilter(e.target.value)}
+                                    className="bg-white border border-gray-200 text-sono-dark text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none font-bold min-w-[140px]"
+                                >
+                                    <option value="all">모든 파트너사</option>
+                                    {partners.map(p => (
+                                        <option key={p.partnerId} value={p.partnerId}>{p.companyName}</option>
+                                    ))}
+                                </select>
+                            )}
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value as any)}
+                                className="bg-white border border-gray-200 text-sono-dark text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none font-bold"
+                            >
+                                <option value="updatedAt">최근수정기준</option>
+                                <option value="createdAtDesc">등록일시(내림차순)</option>
+                                <option value="createdAtAsc">등록일시(오름차순)</option>
+                            </select>
                             <select
                                 value={itemsPerPage}
                                 onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                                className="bg-gray-50 border border-gray-200 text-sono-dark text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none font-bold"
+                                className="bg-white border border-gray-200 text-sono-dark text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none font-bold"
                             >
                                 <option value={20}>20개씩 보기</option>
                                 <option value={50}>50개씩 보기</option>
