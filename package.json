@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "adm-zip": "^0.5.16",
+    "cheerio": "^1.2.0",
     "convex": "^1.31.7",
     "dotenv": "^17.2.3",
     "next": "^15.1.6",
+    "puppeteer": "^24.40.0",
     "react": "^19.0.0",
     "react-daum-postcode": "^3.2.0",
     "react-dom": "^19.0.0",

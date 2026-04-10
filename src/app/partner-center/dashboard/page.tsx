@@ -4,16 +4,18 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import PartnerManagement from "@/components/dashboard/PartnerManagement";
+import ProductManagement from "@/components/dashboard/ProductManagement";
 import CustomerManagement from "@/components/dashboard/CustomerManagement";
 import PartnerRequests from "@/components/dashboard/PartnerRequests";
 import ResourceCenter from "@/components/dashboard/ResourceCenter";
 import PartnerFormModal from "@/components/dashboard/PartnerFormModal";
 import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
+import PromotionManagement from "@/components/dashboard/PromotionManagement";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { PartnerRequest } from "@/lib/types";
 
-type Tab = "overview" | "partners" | "customers" | "requests" | "library" | "stats";
+type Tab = "overview" | "partners" | "products" | "promotions" | "customers" | "requests" | "library" | "stats";
 
 export default function PartnerDashboard() {
     const router = useRouter();
@@ -121,15 +123,15 @@ export default function PartnerDashboard() {
             {/* Header */}
             <header className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 md:px-8 py-4">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
-                    <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 w-full md:w-auto">
+                    <div className="flex flex-col md:flex-row items-center gap-4 md:gap-4 w-full md:w-auto">
                         <div className="flex justify-between w-full md:w-auto items-center">
-                            <a href="/partner-center/dashboard" className="flex items-center gap-2">
+                            <a href="/partner-center/dashboard" className="flex items-center gap-1.5 flex-shrink-0">
                                 <img
                                     src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png"
                                     alt="SONO Logo"
-                                    className="h-8 w-auto brightness-0"
+                                    className="h-6 w-auto brightness-0"
                                 />
-                                <span className="font-bold text-lg tracking-tight text-sono-dark">PARTNER</span>
+                                <span className="font-extrabold text-base tracking-tighter text-sono-dark">DASHBOARD</span>
                             </a>
 
                             {/* Mobile Actions (Refresh & Home & Logout) */}
@@ -162,10 +164,14 @@ export default function PartnerDashboard() {
                             </div>
                         </div>
 
-                        <nav className="flex gap-1 bg-gray-50 p-1 rounded-xl w-full md:w-auto justify-center overflow-x-auto">
+                        <nav className="flex gap-0.5 bg-gray-50/80 p-1 rounded-[14px] w-full md:w-auto justify-center overflow-hidden">
                             {[
                                 { id: "overview", label: "대시보드" },
                                 { id: "partners", label: "파트너 관리" },
+                                ...(isAdmin ? [
+                                    { id: "products", label: "제품 관리" },
+                                    { id: "promotions", label: "프로모션 관리" },
+                                ] : []),
                                 { id: "customers", label: "고객 관리" },
                                 { id: "library", label: "자료실" },
                                 ...(isAdmin ? [
@@ -179,9 +185,9 @@ export default function PartnerDashboard() {
                                         setActiveTab(tab.id as Tab);
                                         fetchData();
                                     }}
-                                    className={`px-3 md:px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === tab.id
-                                        ? "bg-white text-sono-primary shadow-sm"
-                                        : "text-gray-400 hover:text-gray-600"
+                                    className={`px-3 py-2 rounded-[10px] text-[13px] font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${activeTab === tab.id
+                                        ? "bg-white text-sono-primary shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
+                                        : "text-gray-400 hover:text-gray-600 hover:bg-white/50"
                                         }`}
                                 >
                                     {tab.label}
@@ -195,40 +201,39 @@ export default function PartnerDashboard() {
                         </nav>
                     </div>
 
-                    <div className="hidden md:flex items-center gap-4">
+                    <div className="hidden lg:flex items-center gap-3">
                         <Link
                             href={partner?.customUrl && partner.customUrl !== "admin" ? `/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/products/smartcare" : ""}` : "/"}
                             target="_blank"
-                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-all shadow-sm"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 text-gray-500 rounded-xl text-xs font-bold hover:bg-gray-50 transition-all"
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                             </svg>
                             홈페이지
                         </Link>
                         <button
                             onClick={() => fetchData()}
-                            className="p-2.5 bg-sono-primary/10 text-sono-primary rounded-xl border border-sono-primary/20 hover:bg-sono-primary/20 transition-all"
+                            className="p-2 bg-gray-50 text-gray-400 rounded-xl border border-gray-100 hover:bg-gray-100 transition-all"
                             title="새로고침"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
                         </button>
-                        <div className="h-8 w-px bg-gray-200 mx-2"></div>
-                        <div className="text-right">
-                            <p className="text-xs font-bold text-gray-400">안녕하세요</p>
-                            <p className="text-sm font-black text-sono-dark">{partner.name} 님</p>
+                        <div className="h-6 w-px bg-gray-200 mx-1"></div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-black text-sono-dark whitespace-nowrap">{partner.name}님</span>
+                            <button
+                                onClick={() => {
+                                    localStorage.removeItem("partnerSession");
+                                    router.push("/partner-center");
+                                }}
+                                className="bg-gray-100 text-gray-500 px-3 py-1.5 rounded-xl text-[11px] font-black hover:bg-gray-200 transition-all"
+                            >
+                                로그아웃
+                            </button>
                         </div>
-                        <button
-                            onClick={() => {
-                                localStorage.removeItem("partnerSession");
-                                router.push("/partner-center");
-                            }}
-                            className="bg-gray-100 text-gray-500 px-4 py-2 rounded-xl text-sm font-black hover:bg-gray-200 transition-all"
-                        >
-                            로그아웃
-                        </button>
                     </div>
                 </div>
             </header>
@@ -371,6 +376,14 @@ export default function PartnerDashboard() {
 
                 {activeTab === "partners" && (
                     <PartnerManagement partners={dashboardData.partners as any} isAdmin={isAdmin} onRefresh={() => fetchData()} />
+                )}
+
+                {activeTab === "products" && isAdmin && (
+                    <ProductManagement />
+                )}
+
+                {activeTab === "promotions" && isAdmin && (
+                    <PromotionManagement />
                 )}
 
                 {activeTab === "customers" && (

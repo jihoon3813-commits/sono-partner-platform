@@ -77,12 +77,26 @@ export default defineSchema({
 
     // 상품 테이블 
     products: defineTable({
-        brand: v.optional(v.string()),
-        model: v.optional(v.string()),
-        name: v.optional(v.string()),
-        tag: v.optional(v.string()),
-        image: v.optional(v.string()),
-    }),
+        brand: v.string(),
+        model: v.string(),
+        name: v.string(),
+        category: v.optional(v.string()),
+        slotCount: v.optional(v.number()), // 구좌수 (2, 3, 4, 6 등)
+        monthlyPayment: v.optional(v.number()), // 월 납입금
+        cardDiscountPayment: v.optional(v.number()), // 카드 할인시 납입금
+        image: v.string(),
+        isVisible: v.optional(v.boolean()), // 노출 여부
+        hasGift: v.optional(v.boolean()), // 사은품 제공 여부
+        order: v.optional(v.number()), // 정렬 순서
+        promotionId: v.optional(v.id("promotions")), // 프로모션 연결
+        createdAt: v.optional(v.string()),
+        updatedAt: v.optional(v.string()),
+        tag: v.optional(v.string()), // Old field for compatibility during migration
+    })
+        .index("by_category", ["category"])
+        .index("by_brand", ["brand"])
+        .index("by_slotCount", ["slotCount"])
+        .index("by_isVisible", ["isVisible"]),
 
     // 파트너 신청서 (Legacy/Backup)
     partnerApplications: defineTable({
@@ -219,4 +233,15 @@ export default defineSchema({
         .index("by_date", ["date"])
         .index("by_partner_date", ["partnerId", "date"])
         .index("by_path", ["path"]),
+
+    // 프로모션 테이블
+    promotions: defineTable({
+        title: v.string(),
+        period: v.string(),
+        description: v.optional(v.string()), // 혜택 텍스트
+        imageUrl: v.optional(v.string()), // 혜택 이미지 URL or Storage ID
+        externalUrl: v.optional(v.string()), // 혜택 외부 링크 URL
+        isActive: v.boolean(),
+        createdAt: v.string(),
+    }).index("by_isActive", ["isActive"]),
 });

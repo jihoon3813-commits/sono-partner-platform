@@ -14,6 +14,7 @@ import type * as applications from "../applications.js";
 import type * as dashboard from "../dashboard.js";
 import type * as partners from "../partners.js";
 import type * as products from "../products.js";
+import type * as promotions from "../promotions.js";
 import type * as requests from "../requests.js";
 import type * as resources from "../resources.js";
 import type * as settings from "../settings.js";
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   dashboard: typeof dashboard;
   partners: typeof partners;
   products: typeof products;
+  promotions: typeof promotions;
   requests: typeof requests;
   resources: typeof resources;
   settings: typeof settings;

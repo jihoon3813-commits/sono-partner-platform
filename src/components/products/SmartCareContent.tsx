@@ -8,18 +8,18 @@ import { useState } from "react";
 import InquiryModal from "@/components/InquiryModal";
 
 interface Appliance {
+    _id: string;
     brand: string;
     model: string;
     name: string;
-    tag: string;
+    category: string;
+    slotCount: number;
+    monthlyPayment: number;
+    cardDiscountPayment: number;
     image: string;
-}
-
-interface SmartCareContentProps {
-    partnerMode?: boolean;
-    partnerUrl?: string;
-    partnerName?: string;
-    partnerId?: string;
+    isVisible: boolean;
+    hasGift: boolean;
+    promotionId?: string;
 }
 
 export default function SmartCareContent({
@@ -34,40 +34,55 @@ export default function SmartCareContent({
     const [selectedUnit, setSelectedUnit] = useState<string>("4");
     const [showAllOverlay, setShowAllOverlay] = useState(false);
 
-    // Convex Query
-    const productsData = useQuery(api.products.get);
+    // Convex Query - Fetch only visible products
+    const productsData = useQuery(api.products.get, { includeInactive: false });
+    const promotionsData = useQuery(api.promotions.get, { onlyActive: true });
+    
     const allAppliances = (productsData || []) as Appliance[];
+    const activePromotions = promotionsData || [];
     const isLoadingAppliances = productsData === undefined;
+    const [expandedProductNames, setExpandedProductNames] = useState<Set<string>>(new Set());
+    const categoriesOrder = ["에어컨", "냉장가전", "주방가전", "생활가전", "TV", "캠핑/레저", "가전패키지", "기타"];
+    
+    // Dynamic Slots based on available products
+    const availableSlots = Array.from(new Set(allAppliances.map(a => a.slotCount))).sort((a, b) => a - b);
+    
+    // Dynamic Categories based on current slot selection
+    const availableCategories = Array.from(new Set(
+        allAppliances
+            .filter(a => selectedUnit === "" ? true : a.slotCount === Number(selectedUnit))
+            .map(a => a.category)
+    )).sort((a, b) => {
+        const idxA = categoriesOrder.indexOf(a);
+        const idxB = categoriesOrder.indexOf(b);
+        if (idxA === -1) return 1;
+        if (idxB === -1) return -1;
+        return idxA - idxB;
+    });
 
-
+    const [selectedCategory, setSelectedCategory] = useState<string>("전체");
 
     // 페이지 내 버튼 문구 처리
     const ctaText = partnerMode ? "가입 신청하기" : "제휴 파트너 신청하기";
 
-    // 현재 구좌에 맞는 가전 필터링 (최대 12개)
-    // tag 컬럼에 '4구좌'와 같이 포함되어 있는지 확인
-    const filteredAppliances = allAppliances
-        .filter(item => selectedUnit === "" ? true : (item.tag && item.tag.includes(`${selectedUnit}구좌`)))
-        .slice(0, 12);
+    // 현재 구좌 및 카테고리에 맞는 가전 필터링
+    const filteredAppliances = allAppliances.filter(item => {
+        const matchesUnit = selectedUnit === "" ? true : item.slotCount === Number(selectedUnit);
+        const matchesCategory = selectedCategory === "전체" ? true : item.category === selectedCategory;
+        return matchesUnit && matchesCategory;
+    });
 
-    // 전체 가전 카테고리별 분류 (tag에서 구좌 정보 외의 첫 번째 단어를 카테고리로 가정하거나, 유연하게 처리)
-    const categories = Array.from(new Set(allAppliances.map(a => {
-        if (!a.tag) return "기타";
-        // tag가 "TV, 4구좌, BEST" 형태라고 가정할 때 첫 번째가 카테고리
-        return a.tag.split(',')[0].trim();
-    })));
+    // 프로모션 상품 필터링 (프로모션 세션용)
+    const promotionAppliances = allAppliances.filter(item => item.promotionId);
 
-    // Helper to determine unit from tag
-    const getUnitFromTag = (tag: string) => {
-        if (!tag) return "4";
-        const match = tag.match(/(\d+)구좌/);
-        return match ? match[1] : "4";
+    // Helper to determine unit from tag (for compatibility if needed)
+    const getUnitFromTag = (item: Appliance) => {
+        return item.slotCount.toString();
     };
 
     const handleApplianceClick = (item: Appliance) => {
         setPickedAppliance(item);
-        // Automatically select the unit corresponding to the product
-        const unit = getUnitFromTag(item.tag);
+        const unit = getUnitFromTag(item);
         if (unit && unit !== selectedUnit && selectedUnit !== "") {
             setSelectedUnit(unit);
         }
@@ -75,10 +90,14 @@ export default function SmartCareContent({
 
     const handleApplyWithProduct = () => {
         if (pickedAppliance) {
-            setSelectedUnit(getUnitFromTag(pickedAppliance.tag));
+            setSelectedUnit(getUnitFromTag(pickedAppliance));
             setIsModalOpen(true);
         }
     };
+
+    // Use these for the new UI mapping
+    const allWithNewFormat = allAppliances;
+    const filteredWithNewFormat = filteredAppliances;
 
     return (
         <>
@@ -234,104 +253,254 @@ export default function SmartCareContent({
                                 </div>
                             ))}
                         </div>
-
-                        <div className="mt-6 md:mt-8 text-right">
-                            <p className="text-white/50 text-xs md:text-sm font-medium">※100% 만기 환급 : 만기 납입 후 익월 해약 또는 라이프 서비스 사용 조건</p>
-                        </div>
                     </div>
                 </section>
-                {/* 가전 라인업 하이브리드 섹션 */}
-                <section className="py-16 md:py-32 bg-[#f2f4f6]" id="appliance-section">
+                {/* 가전 라인업 하이브리드 섹션 - 전면 수정 */}
+                <section className="py-20 md:py-32 bg-[#f9fafb]" id="appliance-section">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         <div className="text-center mb-16 md:mb-24">
-                            <span className="badge-primary mb-6 px-4 py-2">LINEUP</span>
-                            <h2 className="section-title">스마트케어 가전 라인업</h2>
-                            <p className="section-subtitle max-w-2xl mx-auto mb-12">
-                                TV, 세탁기, 냉장고부터 최신 IT 기기까지<br />
-                                라이프 스타일에 딱 맞는 가전을 선택해보세요.
+                            <span className="badge-primary mb-6 px-5 py-2">PREMIUM LINEUP</span>
+                            <h2 className="section-title tracking-tight mb-6">스마트케어 가전 라인업</h2>
+                            <p className="section-subtitle max-w-2xl mx-auto mb-16 text-gray-500 font-medium">
+                                라이프 스타일에 딱 맞는 최신 가전을 선택해보세요.<br />
+                                렌탈료 전액 지원으로 부담 없이 시작할 수 있습니다.
                             </p>
 
-                            {/* 구좌 필터 버튼 */}
-                            <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-16">
-                                {[
-                                    { label: "전체", val: "" },
-                                    { label: "2구좌", val: "2" },
-                                    { label: "3구좌", val: "3" },
-                                    { label: "4구좌", val: "4" },
-                                    { label: "6구좌", val: "6" },
-                                ].map((u) => (
+                        </div>
+
+                        {/* 프로모션 섹션 - 필터 위로 이동 */}
+                        {promotionAppliances.length > 0 && (
+                            <div className="mb-20 animate-fade-in text-left">
+                                <div className="flex items-center gap-3 mb-8">
+                                    <div className="bg-sono-primary text-white p-2.5 rounded-2xl shadow-lg shadow-sono-primary/20">
+                                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-2xl md:text-3xl font-black text-sono-dark tracking-tight">이 달의 프로모션 안내</h3>
+                                </div>
+
+                                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+                                    {promotionAppliances.map((item, index) => {
+                                        const promotion = activePromotions.find(p => p._id === item.promotionId);
+                                        return (
+                                            <div
+                                                key={`promo-${item._id}`}
+                                                className="group bg-white rounded-[40px] overflow-hidden border-2 border-sono-primary/20 hover:border-sono-primary hover:shadow-[0_20px_60px_rgba(46,78,162,0.15)] transition-all duration-500 flex flex-col h-full relative"
+                                            >
+
+
+                                                {/* Image Container */}
+                                                <div className="aspect-square bg-[#f9fafb] p-4 md:p-10 flex items-center justify-center relative overflow-hidden group-hover:bg-white transition-colors duration-500">
+                                                    <img src={item.image} alt={item.name} className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110" />
+                                                    {/* 프로모션 카드에도 구좌 표시 (우상단으로 이동) */}
+                                                    <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10">
+                                                        <span className="bg-sono-dark/80 backdrop-blur-md text-white text-[8px] md:text-[9px] font-black px-2 py-1 md:px-2.5 md:py-1.5 rounded-full shadow-lg">
+                                                            {item.slotCount}구좌
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-4 md:p-8 flex-grow flex flex-col bg-sono-primary/5">
+                                                    <div className="mb-3 md:mb-4">
+                                                        <h4 className="text-sono-primary font-black text-[9px] md:text-xs mb-1">[{promotion?.title || "특별 혜택"}]</h4>
+                                                        <h3 
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setExpandedProductNames(prev => {
+                                                                    const next = new Set(prev);
+                                                                    if (next.has(item.name)) next.delete(item.name);
+                                                                    else next.add(item.name);
+                                                                    return next;
+                                                                });
+                                                            }}
+                                                            className={`text-sono-dark font-black text-xs md:text-base leading-tight tracking-tighter cursor-pointer transition-all ${expandedProductNames.has(item.name) ? "line-clamp-none" : "line-clamp-2 min-h-[2rem] md:min-h-[2.5rem]"}`}
+                                                        >
+                                                            {item.name}
+                                                        </h3>
+                                                        <p className="text-gray-500 font-bold text-[9px] md:text-xs mt-1 md:mt-2 truncate underline decoration-sono-primary/30 uppercase">{promotion?.period}</p>
+                                                    </div>
+                                                    
+                                                    <div className="bg-white/60 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 border border-sono-primary/10 mb-4 md:mb-6">
+                                                        <p className="text-[10px] md:text-[11px] font-bold text-sono-primary leading-relaxed break-keep line-clamp-2">
+                                                            {promotion?.description || "지금 바로 상담 신청하고 혜택을 확인하세요."}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* 프로모션 카드에도 금액 표시 */}
+                                                    <div className="mb-4 md:mb-6 space-y-2">
+                                                        <div className="flex justify-between items-center px-1">
+                                                            <span className="text-gray-400 font-bold text-[9px] md:text-[10px]">월 납입금</span>
+                                                            <span className="text-sono-dark font-black text-xs md:text-sm">{item.monthlyPayment?.toLocaleString()}원</span>
+                                                        </div>
+                                                        <div className="flex flex-col md:flex-row md:justify-between md:items-center bg-white p-2 md:p-3 rounded-xl border border-sono-primary/10 gap-0.5">
+                                                            <span className="text-sono-primary font-black text-[9px] md:text-[10px] whitespace-nowrap">제휴카드 할인시</span>
+                                                            <span className="text-sono-primary font-black text-sm md:text-base leading-none">{item.cardDiscountPayment?.toLocaleString()}원</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <button
+                                                        onClick={() => {
+                                                            setPickedAppliance(item as any);
+                                                            setIsModalOpen(true);
+                                                        }}
+                                                        className="w-full py-3 md:py-4 bg-sono-primary text-white rounded-xl md:rounded-2xl font-black text-[11px] md:text-sm transition-all hover:bg-sono-dark shadow-lg shadow-sono-primary/20"
+                                                    >
+                                                        혜택 신청
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 필터 시스템 */}
+                        <div className="flex flex-col gap-4 md:gap-10">
+                            {/* 1. 구좌수 필터 - 모달 슬라이드 적용 및 크기 축소 */}
+                            <div className="flex flex-nowrap md:justify-center gap-2 overflow-x-auto pb-4 no-scrollbar -mx-6 px-6 md:mx-0 md:px-0">
+                                <button
+                                    onClick={() => { setSelectedUnit(""); setSelectedCategory("전체"); }}
+                                    className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap ${selectedUnit === ""
+                                        ? "bg-sono-primary text-white border-sono-primary shadow-lg shadow-sono-primary/20"
+                                        : "bg-white text-gray-400 border-gray-100"
+                                        }`}
+                                >
+                                    전체 구좌
+                                </button>
+                                {availableSlots.map((val) => (
                                     <button
-                                        key={u.val}
-                                        onClick={() => setSelectedUnit(u.val)}
-                                        className={`px-6 md:px-8 py-3.5 rounded-2xl font-bold text-sm md:text-base transition-all ${selectedUnit === u.val
-                                            ? "bg-sono-primary text-white shadow-xl shadow-sono-primary/20 scale-105"
-                                            : "bg-white text-[#8b95a1] hover:text-sono-dark border border-gray-100 shadow-sm"
+                                        key={val}
+                                        onClick={() => { setSelectedUnit(val.toString()); setSelectedCategory("전체"); }}
+                                        className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap ${selectedUnit === val.toString()
+                                            ? "bg-sono-primary text-white border-sono-primary shadow-lg shadow-sono-primary/20"
+                                            : "bg-white text-gray-400 border-gray-100"
                                             }`}
                                     >
-                                        {u.label}
+                                        {val}구좌
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* 2. 카테고리 필터 - 여백 조정 및 크기 축소 */}
+                            <div className="flex flex-nowrap md:justify-center gap-2 overflow-x-auto pb-4 no-scrollbar -mx-6 px-6 md:mx-0 md:px-0">
+                                {availableCategories.length > 0 && ["전체", ...availableCategories].map((cat) => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setSelectedCategory(cat)}
+                                        className={`px-4 py-2 rounded-full border text-xs md:text-sm font-bold whitespace-nowrap transition-all ${selectedCategory === cat
+                                            ? "bg-sono-primary text-white border-sono-primary shadow-md"
+                                            : "bg-white border-gray-100 text-gray-400 hover:bg-gray-50"
+                                        }`}
+                                    >
+                                        {cat}
                                     </button>
                                 ))}
                             </div>
                         </div>
 
                         {isLoadingAppliances ? (
-                            <div className="py-20 flex justify-center">
-                                <div className="animate-spin w-10 h-10 border-4 border-sono-primary border-t-transparent rounded-full"></div>
+                            <div className="py-20 flex flex-col items-center justify-center gap-6">
+                                <div className="animate-spin w-12 h-12 border-[5px] border-sono-primary border-t-transparent rounded-full"></div>
+                                <p className="text-gray-400 font-bold animate-pulse">최신 가전 데이터를 불러오고 있습니다...</p>
                             </div>
                         ) : (
-                            <>
-                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                                    {(selectedUnit === "" ? allAppliances.slice(0, 12) : filteredAppliances).map((item, index) => (
-                                        <button
-                                            key={index}
-                                            onClick={() => handleApplianceClick(item)}
-                                            className={`group relative bg-white rounded-[32px] overflow-hidden border transition-all duration-500 flex flex-col h-full text-left ${pickedAppliance?.name === item.name && pickedAppliance?.model === item.model ? "border-sono-primary ring-4 ring-sono-primary/20 shadow-2xl scale-[1.02] z-10" : "border-gray-50 hover:border-sono-primary/30 hover:shadow-2xl"}`}
-                                        >
-                                            <div className="relative pt-[100%] overflow-hidden bg-[#f9fafb] w-full">
-                                                <img
-                                                    src={item.image}
-                                                    alt={item.name}
-                                                    className="absolute inset-0 w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-110"
-                                                />
-                                                {item.tag.includes("BEST") && (
-                                                    <div className="absolute top-4 left-4 bg-sono-gold text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg">BEST</div>
-                                                )}
-                                                <div className="absolute top-4 right-4 bg-sono-dark/80 text-white text-[10px] font-bold px-2.5 py-1 rounded-full backdrop-blur-md">
-                                                    {item.tag.split(',').find(t => t.includes('구좌'))?.trim() || "상세문의"}
-                                                </div>
-                                                {pickedAppliance?.name === item.name && pickedAppliance?.model === item.model && (
-                                                    <div className="absolute inset-0 bg-sono-primary/10 flex items-center justify-center backdrop-blur-[1px]">
-                                                        <div className="bg-sono-primary text-white rounded-full p-3 shadow-xl transform scale-100 transition-transform">
-                                                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                            </svg>
+                            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+                                {(selectedUnit === "" ? allWithNewFormat : filteredWithNewFormat).map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className="group bg-white rounded-[40px] overflow-hidden border border-gray-100 hover:border-sono-primary/30 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 flex flex-col h-full relative"
+                                    >
+                                        {/* Promotion Tag (Top Left) */}
+                                        {item.promotionId ? (
+                                            <div className="absolute top-3 left-3 md:top-6 md:left-6 z-10">
+                                                <span className="bg-sono-primary text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                                                    <span className="animate-pulse">🔥</span> 프로모션
+                                                </span>
+                                            </div>
+                                        ) : item.hasGift ? (
+                                            <div className="absolute top-3 left-3 md:top-6 md:left-6 z-10">
+                                                <span className="bg-sono-gold text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                                                    <span className="animate-pulse">🎁</span> 사은품
+                                                </span>
+                                            </div>
+                                        ) : null}
+                                        
+                                        {/* Slot Tag */}
+                                        <div className="absolute top-3 right-3 md:top-6 md:right-6 z-10">
+                                            <span className="bg-sono-dark/80 backdrop-blur-md text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg">
+                                                {item.slotCount}구좌
+                                            </span>
+                                        </div>
+
+                                        {/* Image Container */}
+                                        <div className="aspect-square bg-[#f9fafb] p-4 md:p-10 flex items-center justify-center relative overflow-hidden group-hover:bg-white transition-colors duration-500">
+                                            <img
+                                                src={item.image}
+                                                alt={item.name}
+                                                className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        </div>
+
+                                        {/* Content Area */}
+                                        <div className="p-4 md:p-8 flex-grow flex flex-col">
+                                            <div className="mb-3 md:mb-4">
+                                                <span className="text-[9px] md:text-[10px] font-black text-sono-primary uppercase tracking-widest block mb-1">{item.brand}</span>
+                                                <h3 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setExpandedProductNames(prev => {
+                                                            const next = new Set(prev);
+                                                            if (next.has(item.name)) next.delete(item.name);
+                                                            else next.add(item.name);
+                                                            return next;
+                                                        });
+                                                    }}
+                                                    className={`text-sono-dark font-black text-xs md:text-base leading-tight tracking-tighter group-hover:text-sono-primary transition-all cursor-pointer ${expandedProductNames.has(item.name) ? "line-clamp-none" : "line-clamp-2 min-h-[2rem] md:min-h-[2.5rem]"}`}
+                                                >
+                                                    {item.name}
+                                                </h3>
+                                                <p className="text-gray-400 font-bold text-[10px] md:text-xs mt-1 md:mt-2 uppercase truncate">{item.model}</p>
+                                            </div>
+
+                                            {/* Price Area - 모바일 2열 배치 대응 */}
+                                            <div className="mt-auto pt-4 md:pt-6 border-t border-gray-50">
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-gray-400 font-bold text-[9px] md:text-xs">월 납입금</span>
+                                                        <span className="text-sono-dark font-black text-xs md:text-lg">{item.monthlyPayment?.toLocaleString()}원</span>
+                                                    </div>
+                                                    <div className="bg-sono-primary/5 p-2 md:p-3 rounded-xl md:rounded-2xl">
+                                                        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-0.5">
+                                                            <span className="text-sono-primary font-black text-[9px] md:text-[11px] whitespace-nowrap">제휴카드 할인시</span>
+                                                            <span className="text-sono-primary font-black text-sm md:text-xl leading-none">{item.cardDiscountPayment?.toLocaleString()}원</span>
                                                         </div>
                                                     </div>
-                                                )}
+                                                </div>
                                             </div>
-                                            <div className="p-6 md:p-8 flex-grow flex flex-col justify-center w-full">
-                                                <p className="text-[#8b95a1] font-bold text-[10px] md:text-xs mb-1.5 uppercase tracking-wider">{item.brand}</p>
-                                                <h3 className="text-sono-dark font-extrabold text-base md:text-xl tracking-tighter leading-tight group-hover:text-sono-primary transition-colors mb-1.5 break-keep">{item.name}</h3>
-                                                <p className="text-[#6b7684] font-bold text-xs md:text-sm uppercase">{item.model}</p>
-                                            </div>
-                                        </button>
-                                    ))}
-                                </div>
 
-                                <div className="mt-16 md:mt-24 text-center">
-                                    <button
-                                        onClick={() => setShowAllOverlay(true)}
-                                        className="inline-flex items-center gap-3 bg-white text-sono-dark border border-gray-200 hover:bg-gray-50 px-12 py-5 rounded-2xl font-bold text-xl transition-all shadow-sm active:scale-95"
-                                    >
-                                        전체 라인업 보기
-                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </>
+                                            <button
+                                                onClick={() => {
+                                                    setPickedAppliance(item as any);
+                                                    setIsModalOpen(true);
+                                                }}
+                                                className="w-full mt-6 py-4 bg-gray-50 text-gray-400 group-hover:bg-sono-dark group-hover:text-white rounded-2xl font-black text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                                            >
+                                                가입 신청하기
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                </svg>
+                                            </button>
+
+
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         )}
-                    </div>
+                        </div>
                 </section>
 
                 {/* 전체 라인업 오버레이 (풀스크린) */}
@@ -381,8 +550,8 @@ export default function SmartCareContent({
                             <div className="space-y-24">
                                 {categories.map((cat) => {
                                     const categoryItems = allAppliances.filter(a =>
-                                        a.tag.split(',')[0].trim() === cat &&
-                                        (selectedUnit === "" ? true : a.tag.includes(`${selectedUnit}구좌`))
+                                        a.category === cat &&
+                                        (selectedUnit === "" ? true : a.slotCount === Number(selectedUnit))
                                     );
 
                                     if (categoryItems.length === 0) return null;
@@ -407,7 +576,7 @@ export default function SmartCareContent({
                                                                 className="absolute inset-0 w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
                                                             />
                                                             <div className="absolute top-3 left-3 bg-white/80 backdrop-blur-sm text-[10px] font-bold px-2 py-1 rounded-lg border border-gray-100">
-                                                                {item.tag.split(',').find(t => t.includes('구좌'))?.trim() || "정보"}
+                                                                {item.slotCount}구좌
                                                             </div>
                                                             {pickedAppliance?.name === item.name && pickedAppliance?.model === item.model && (
                                                                 <div className="absolute inset-0 bg-sono-primary/10 flex items-center justify-center backdrop-blur-[1px]">
@@ -446,7 +615,7 @@ export default function SmartCareContent({
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-1">
                                         <span className="bg-sono-primary/10 text-sono-primary text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-                                            {getUnitFromTag(pickedAppliance.tag)}구좌
+                                            {pickedAppliance.slotCount}구좌
                                         </span>
                                         <span className="text-gray-400 text-xs font-bold uppercase truncate">{pickedAppliance.model}</span>
                                     </div>
@@ -1025,7 +1194,7 @@ export default function SmartCareContent({
                 initialAppliance={pickedAppliance
                     ? (pickedAppliance.model ? `${pickedAppliance.brand} ${pickedAppliance.name} (${pickedAppliance.model})` : `${pickedAppliance.brand} ${pickedAppliance.name}`)
                     : undefined}
-                initialUnit={pickedAppliance ? getUnitFromTag(pickedAppliance.tag) : selectedUnit}
+                initialUnit={pickedAppliance ? pickedAppliance.slotCount.toString() : selectedUnit}
             />
         </>
     );
