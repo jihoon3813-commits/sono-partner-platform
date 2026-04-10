@@ -108,6 +108,129 @@ export default function SmartCareContent({
     const allWithNewFormat = allAppliances;
     const filteredWithNewFormat = filteredAppliances;
 
+    // Helper for promotion types/colors
+    const getPromotionStyle = (promotionId?: string) => {
+        if (!promotionId) return null;
+        const promo = activePromotions.find(p => p._id === promotionId);
+        const title = promo?.title || "";
+        
+        // Priority 1: Check for explicit suffixes
+        if (title.includes("(A)")) {
+            return {
+                name: "blue",
+                border: "border-blue-500/40 hover:border-blue-500 hover:shadow-blue-500/10",
+                badge: "bg-blue-600 text-white",
+                benefit: "bg-blue-500 text-white border-blue-400 font-bold",
+                glow: "49, 130, 246",
+                tag: "bg-blue-600",
+                text: "text-blue-600",
+                bg: "bg-blue-50/50",
+                button: "bg-blue-600 hover:bg-blue-700 shadow-blue-600/20",
+                borderFull: "border-blue-200"
+            };
+        }
+        if (title.includes("(B)")) {
+            return {
+                name: "pink",
+                border: "border-pink-500/40 hover:border-pink-500 hover:shadow-pink-500/10",
+                badge: "bg-pink-600 text-white",
+                benefit: "bg-pink-500 text-white border-pink-400 font-bold",
+                glow: "236, 72, 153",
+                tag: "bg-pink-600",
+                text: "text-pink-600",
+                bg: "bg-pink-50/50",
+                button: "bg-pink-600 hover:bg-pink-700 shadow-pink-600/20",
+                borderFull: "border-pink-200"
+            };
+        }
+        if (title.includes("(C)")) {
+            return {
+                name: "orange",
+                border: "border-orange-500/40 hover:border-orange-500 hover:shadow-orange-500/10",
+                badge: "bg-orange-500 text-white",
+                benefit: "bg-orange-400 text-white border-orange-300 font-bold",
+                glow: "251, 146, 60",
+                tag: "bg-orange-500",
+                text: "text-orange-600",
+                bg: "bg-orange-50/50",
+                button: "bg-orange-500 hover:bg-orange-600 shadow-orange-500/20",
+                borderFull: "border-orange-200"
+            };
+        }
+        if (title.includes("(D)")) {
+            return {
+                name: "emerald",
+                border: "border-emerald-500/40 hover:border-emerald-500 hover:shadow-emerald-500/10",
+                badge: "bg-emerald-600 text-white",
+                benefit: "bg-emerald-500 text-white border-emerald-400 font-bold",
+                glow: "16, 185, 129",
+                tag: "bg-emerald-600",
+                text: "text-emerald-600",
+                bg: "bg-emerald-50/50",
+                button: "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20",
+                borderFull: "border-emerald-200"
+            };
+        }
+        if (title.includes("(E)")) {
+            return {
+                name: "purple",
+                border: "border-purple-500/40 hover:border-purple-500 hover:shadow-purple-500/10",
+                badge: "bg-purple-600 text-white",
+                benefit: "bg-purple-500 text-white border-purple-400 font-bold",
+                glow: "139, 92, 246",
+                tag: "bg-purple-600",
+                text: "text-purple-600",
+                bg: "bg-purple-50/50",
+                button: "bg-purple-600 hover:bg-purple-700 shadow-purple-600/20",
+                borderFull: "border-purple-200"
+            };
+        }
+
+        // Priority 2: Fallback to Brand Keywords
+        if (title.includes("삼성")) {
+            return {
+                name: "blue",
+                border: "border-blue-500/40 hover:border-blue-500 hover:shadow-blue-500/10",
+                badge: "bg-blue-600 text-white",
+                benefit: "bg-blue-500 text-white border-blue-400 font-bold",
+                glow: "49, 130, 246",
+                tag: "bg-blue-600",
+                text: "text-blue-600",
+                bg: "bg-blue-50/50",
+                button: "bg-blue-600 hover:bg-blue-700 shadow-blue-600/20",
+                borderFull: "border-blue-200"
+            };
+        }
+        if (title.includes("LG")) {
+            return {
+                name: "pink",
+                border: "border-pink-500/40 hover:border-pink-500 hover:shadow-pink-500/10",
+                badge: "bg-pink-600 text-white",
+                benefit: "bg-pink-500 text-white border-pink-400 font-bold",
+                glow: "236, 72, 153",
+                tag: "bg-pink-600",
+                text: "text-pink-600",
+                bg: "bg-pink-50/50",
+                button: "bg-pink-600 hover:bg-pink-700 shadow-pink-600/20",
+                borderFull: "border-pink-200"
+            };
+        }
+
+        // Priority 3: Default Gold
+        return {
+            name: "gold",
+            border: "border-orange-500/40 hover:border-orange-500 hover:shadow-orange-500/10",
+            badge: "bg-orange-500 text-white",
+            benefit: "bg-orange-400 text-white border-orange-300 font-bold",
+            glow: "251, 146, 60",
+            tag: "bg-orange-500",
+            text: "text-orange-600",
+            bg: "bg-orange-50/50",
+            button: "bg-orange-500 hover:bg-orange-600 shadow-orange-500/20",
+            borderFull: "border-orange-200"
+        };
+    };
+
     return (
         <>
             {!isModalOpen && <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} productType="smartcare" />}
@@ -292,16 +415,35 @@ export default function SmartCareContent({
                                 <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
                                     {promotionAppliances.map((item, index) => {
                                         const promotion = activePromotions.find(p => p._id === item.promotionId);
+                                        const promoStyle = getPromotionStyle(item.promotionId);
                                         return (
                                             <div
                                                 key={`promo-${item._id}`}
-                                                className="group bg-white rounded-[40px] overflow-hidden border-2 border-sono-primary/20 hover:border-sono-primary hover:shadow-[0_20px_60px_rgba(46,78,162,0.15)] transition-all duration-500 flex flex-col h-full relative"
+                                                className={`group bg-white rounded-[40px] overflow-hidden border-2 flex flex-col h-full relative transition-all duration-500 ${promoStyle?.border || 'border-sono-primary/20 hover:border-sono-primary hover:shadow-[0_20px_60px_rgba(46,78,162,0.15)]'} ${promoStyle ? promoStyle.borderFull : ''}`}
                                             >
 
+                                                {/* Promotion Tag (Top Left) - With Neon Effect */}
+                                                <div className="absolute top-3 left-3 md:top-6 md:left-6 z-10">
+                                                    <span 
+                                                        className={`text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg flex items-center gap-1 animate-neon-blink ${promoStyle?.tag || 'bg-sono-primary'}`}
+                                                        style={{ '--neon-color': promoStyle?.glow } as React.CSSProperties}
+                                                    >
+                                                        <span className="animate-pulse">🔥</span> 프로모션
+                                                    </span>
+                                                </div>
 
                                                 {/* Image Container */}
                                                 <div className="aspect-square bg-[#f9fafb] p-4 md:p-10 flex items-center justify-center relative overflow-hidden group-hover:bg-white transition-colors duration-500">
                                                     <img src={item.image} alt={item.name} className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110" />
+                                                    
+                                                    {/* Promotion Gift Image (Bottom Right) */}
+                                                    {promotion?.imageUrl && (
+                                                        <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 w-14 h-14 md:w-20 md:h-20 bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-white group-hover:scale-110 transition-transform duration-500 z-10 flex items-center justify-center">
+                                                            <img src={promotion.imageUrl} alt="사은품" className="w-full h-full object-contain p-1" />
+                                                            <div className="absolute top-0 right-0 bg-sono-primary text-white text-[6px] md:text-[8px] font-black px-1.5 py-0.5 rounded-bl-lg">GIFT</div>
+                                                        </div>
+                                                    )}
+
                                                     {/* 프로모션 카드에도 구좌 표시 (우상단으로 이동) */}
                                                     <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10">
                                                         <span className="bg-sono-dark/80 backdrop-blur-md text-white text-[8px] md:text-[9px] font-black px-2 py-1 md:px-2.5 md:py-1.5 rounded-full shadow-lg">
@@ -312,7 +454,7 @@ export default function SmartCareContent({
 
                                                 <div className="p-4 md:p-8 flex-grow flex flex-col bg-sono-primary/5">
                                                     <div className="mb-3 md:mb-4">
-                                                        <h4 className="text-sono-primary font-black text-[9px] md:text-xs mb-1">[{promotion?.title || "특별 혜택"}]</h4>
+                                                        <h4 className={`font-black text-[9px] md:text-xs mb-1 ${promoStyle?.text || 'text-sono-primary'}`}>[{promotion?.title || "특별 혜택"}]</h4>
                                                         <h3 
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
@@ -327,11 +469,12 @@ export default function SmartCareContent({
                                                         >
                                                             {item.name}
                                                         </h3>
-                                                        <p className="text-gray-500 font-bold text-[9px] md:text-xs mt-1 md:mt-2 truncate underline decoration-sono-primary/30 uppercase">{promotion?.period}</p>
+                                                        <p className={`font-bold text-[9px] md:text-xs mt-1 md:mt-2 truncate underline decoration-sono-primary/30 uppercase ${promoStyle?.text || 'text-gray-500'}`}>{promotion?.period}</p>
                                                     </div>
                                                     
-                                                    <div className="bg-white/60 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 border border-sono-primary/10 mb-4 md:mb-6">
-                                                        <p className="text-[10px] md:text-[11px] font-bold text-sono-primary leading-relaxed break-keep line-clamp-2">
+                                                    {/* Benefit Box with Blinking Effect */}
+                                                    <div className={`backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 border mb-4 md:mb-6 animate-benefit-blink ${promoStyle?.benefit || 'bg-sono-primary/5 text-sono-primary border-sono-primary/10'}`}>
+                                                        <p className="text-[10px] md:text-[11px] font-black leading-relaxed break-keep line-clamp-2 text-center">
                                                             {promotion?.description || "지금 바로 상담 신청하고 혜택을 확인하세요."}
                                                         </p>
                                                     </div>
@@ -353,7 +496,7 @@ export default function SmartCareContent({
                                                             setPickedAppliance(item as any);
                                                             setIsModalOpen(true);
                                                         }}
-                                                        className="w-full py-3 md:py-4 bg-sono-primary text-white rounded-xl md:rounded-2xl font-black text-[11px] md:text-sm transition-all hover:bg-sono-dark shadow-lg shadow-sono-primary/20"
+                                                        className={`w-full py-3 md:py-4 text-white rounded-xl md:rounded-2xl font-black text-[11px] md:text-sm transition-all shadow-lg ${promoStyle?.button || 'bg-sono-primary hover:bg-sono-dark shadow-sono-primary/20'}`}
                                                     >
                                                         혜택 신청
                                                     </button>
@@ -416,97 +559,119 @@ export default function SmartCareContent({
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
-                                {(selectedUnit === "" ? allWithNewFormat : filteredWithNewFormat).map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className="group bg-white rounded-[40px] overflow-hidden border border-gray-100 hover:border-sono-primary/30 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 flex flex-col h-full relative"
-                                    >
-                                        {/* Promotion Tag (Top Left) */}
-                                        {item.promotionId ? (
-                                            <div className="absolute top-3 left-3 md:top-6 md:left-6 z-10">
-                                                <span className="bg-sono-primary text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg flex items-center gap-1">
-                                                    <span className="animate-pulse">🔥</span> 프로모션
+                                {(selectedUnit === "" ? allWithNewFormat : filteredWithNewFormat).map((item, index) => {
+                                    const promoStyle = getPromotionStyle(item.promotionId);
+                                    const promotion = activePromotions.find(p => p._id === item.promotionId);
+                                    
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={`group bg-white rounded-[40px] overflow-hidden border transition-all duration-500 flex flex-col h-full relative ${promoStyle?.border || 'border-gray-100 hover:border-sono-primary/30 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)]'} ${promoStyle ? promoStyle.borderFull : ''}`}
+                                        >
+                                            {/* Promotion Tag (Top Left) - Neon Effect Applied */}
+                                            {item.promotionId ? (
+                                                <div className="absolute top-3 left-3 md:top-6 md:left-6 z-10">
+                                                    <span 
+                                                        className={`text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg flex items-center gap-1 animate-neon-blink ${promoStyle?.tag || 'bg-sono-primary'}`}
+                                                        style={{ '--neon-color': promoStyle?.glow } as React.CSSProperties}
+                                                    >
+                                                        <span className="animate-pulse">🔥</span> 프로모션
+                                                    </span>
+                                                </div>
+                                            ) : item.hasGift ? (
+                                                <div className="absolute top-3 left-3 md:top-6 md:left-6 z-10">
+                                                    <span className="bg-sono-gold text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                                                        <span className="animate-pulse">🎁</span> 사은품
+                                                    </span>
+                                                </div>
+                                            ) : null}
+                                            
+                                            {/* Slot Tag */}
+                                            <div className="absolute top-3 right-3 md:top-6 md:right-6 z-10">
+                                                <span className="bg-sono-dark/80 backdrop-blur-md text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg">
+                                                    {item.slotCount}구좌
                                                 </span>
                                             </div>
-                                        ) : item.hasGift ? (
-                                            <div className="absolute top-3 left-3 md:top-6 md:left-6 z-10">
-                                                <span className="bg-sono-gold text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg flex items-center gap-1">
-                                                    <span className="animate-pulse">🎁</span> 사은품
-                                                </span>
-                                            </div>
-                                        ) : null}
-                                        
-                                        {/* Slot Tag */}
-                                        <div className="absolute top-3 right-3 md:top-6 md:right-6 z-10">
-                                            <span className="bg-sono-dark/80 backdrop-blur-md text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg">
-                                                {item.slotCount}구좌
-                                            </span>
-                                        </div>
 
-                                        {/* Image Container */}
-                                        <div className="aspect-square bg-[#f9fafb] p-4 md:p-10 flex items-center justify-center relative overflow-hidden group-hover:bg-white transition-colors duration-500">
-                                            <img
-                                                src={item.image}
-                                                alt={item.name}
-                                                className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                        </div>
-
-                                        {/* Content Area */}
-                                        <div className="p-4 md:p-8 flex-grow flex flex-col">
-                                            <div className="mb-3 md:mb-4">
-                                                <span className="text-[9px] md:text-[10px] font-black text-sono-primary uppercase tracking-widest block mb-1">{item.brand}</span>
-                                                <h3 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setExpandedProductNames(prev => {
-                                                            const next = new Set(prev);
-                                                            if (next.has(item.name)) next.delete(item.name);
-                                                            else next.add(item.name);
-                                                            return next;
-                                                        });
-                                                    }}
-                                                    className={`text-sono-dark font-black text-xs md:text-base leading-tight tracking-tighter group-hover:text-sono-primary transition-all cursor-pointer ${expandedProductNames.has(item.name) ? "line-clamp-none" : "line-clamp-2 min-h-[2rem] md:min-h-[2.5rem]"}`}
-                                                >
-                                                    {item.name}
-                                                </h3>
-                                                <p className="text-gray-400 font-bold text-[10px] md:text-xs mt-1 md:mt-2 uppercase truncate">{item.model}</p>
-                                            </div>
-
-                                            {/* Price Area - 모바일 2열 배치 대응 */}
-                                            <div className="mt-auto pt-4 md:pt-6 border-t border-gray-50">
-                                                <div className="flex flex-col gap-2">
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-gray-400 font-bold text-[9px] md:text-xs">월 납입금</span>
-                                                        <span className="text-sono-dark font-black text-xs md:text-lg">{item.monthlyPayment?.toLocaleString()}원</span>
+                                            {/* Image Container */}
+                                            <div className="aspect-square bg-[#f9fafb] p-4 md:p-10 flex items-center justify-center relative overflow-hidden group-hover:bg-white transition-colors duration-500">
+                                                <img
+                                                    src={item.image}
+                                                    alt={item.name}
+                                                    className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
+                                                />
+                                                
+                                                {/* Promotion Gift Image (Bottom Right) */}
+                                                {promotion?.imageUrl && (
+                                                    <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 w-12 h-12 md:w-16 md:h-16 bg-white rounded-xl shadow-xl overflow-hidden border-2 border-white group-hover:scale-110 transition-transform duration-500 z-10 flex items-center justify-center">
+                                                        <img src={promotion.imageUrl} alt="사은품" className="w-full h-full object-contain p-1" />
+                                                        <div className="absolute top-0 right-0 bg-sono-primary text-white text-[6px] md:text-[8px] font-black px-1.5 py-0.5 rounded-bl-lg">GIFT</div>
                                                     </div>
-                                                    <div className="bg-sono-primary/5 p-2 md:p-3 rounded-xl md:rounded-2xl">
-                                                        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-0.5">
-                                                            <span className="text-sono-primary font-black text-[9px] md:text-[11px] whitespace-nowrap">제휴카드 할인시</span>
-                                                            <span className="text-sono-primary font-black text-sm md:text-xl leading-none">{item.cardDiscountPayment?.toLocaleString()}원</span>
+                                                )}
+
+                                                <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                            </div>
+
+                                            {/* Content Area */}
+                                            <div className="p-4 md:p-8 flex-grow flex flex-col">
+                                                <div className="mb-3 md:mb-4">
+                                                    <span className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest block mb-1 ${promoStyle?.text || 'text-sono-primary'}`}>{item.brand}</span>
+                                                    <h3 
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setExpandedProductNames(prev => {
+                                                                const next = new Set(prev);
+                                                                if (next.has(item.name)) next.delete(item.name);
+                                                                else next.add(item.name);
+                                                                return next;
+                                                            });
+                                                        }}
+                                                        className={`text-sono-dark font-black text-xs md:text-base leading-tight tracking-tighter group-hover:text-sono-primary transition-all cursor-pointer ${expandedProductNames.has(item.name) ? "line-clamp-none" : "line-clamp-2 min-h-[2rem] md:min-h-[2.5rem]"}`}
+                                                    >
+                                                        {item.name}
+                                                    </h3>
+                                                    <p className="text-gray-400 font-bold text-[10px] md:text-xs mt-1 md:mt-2 uppercase truncate">{item.model}</p>
+                                                </div>
+
+                                                {/* Benefit Box for Main List - Blinking Effect */}
+                                                {promotion && (
+                                                    <div className={`mt-2 p-2.5 rounded-xl border animate-benefit-blink ${promoStyle?.benefit || 'bg-sono-primary/5 text-sono-primary border-sono-primary/10'}`}>
+                                                        <p className="text-[9px] md:text-[10px] font-black leading-tight line-clamp-1">{promotion.description}</p>
+                                                    </div>
+                                                )}
+
+                                                {/* Price Area - 모바일 2열 배치 대응 */}
+                                                <div className="mt-auto pt-4 md:pt-6 border-t border-gray-50">
+                                                    <div className="flex flex-col gap-2">
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-gray-400 font-bold text-[9px] md:text-xs">월 납입금</span>
+                                                            <span className="text-sono-dark font-black text-xs md:text-lg">{item.monthlyPayment?.toLocaleString()}원</span>
+                                                        </div>
+                                                        <div className={`p-2 md:p-3 rounded-xl md:rounded-2xl ${promoStyle?.bg || 'bg-sono-primary/5'}`}>
+                                                            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-0.5">
+                                                                <span className={`font-black text-[9px] md:text-[11px] whitespace-nowrap ${promoStyle?.text || 'text-sono-primary'}`}>제휴카드 할인시</span>
+                                                                <span className={`font-black text-sm md:text-xl leading-none ${promoStyle?.text || 'text-sono-primary'}`}>{item.cardDiscountPayment?.toLocaleString()}원</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                <button
+                                                    onClick={() => {
+                                                        setPickedAppliance(item as any);
+                                                        setIsModalOpen(true);
+                                                    }}
+                                                    className={`w-full mt-6 py-4 bg-gray-50 text-gray-400 group-hover:text-white rounded-2xl font-black text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${promoStyle?.name === 'red' ? 'group-hover:bg-rose-600' : promoStyle?.name === 'blue' ? 'group-hover:bg-blue-600' : 'group-hover:bg-sono-dark'}`}
+                                                >
+                                                    가입 신청하기
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                    </svg>
+                                                </button>
                                             </div>
-
-                                            <button
-                                                onClick={() => {
-                                                    setPickedAppliance(item as any);
-                                                    setIsModalOpen(true);
-                                                }}
-                                                className="w-full mt-6 py-4 bg-gray-50 text-gray-400 group-hover:bg-sono-dark group-hover:text-white rounded-2xl font-black text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                                            >
-                                                가입 신청하기
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                                </svg>
-                                            </button>
-
-
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
                         </div>
