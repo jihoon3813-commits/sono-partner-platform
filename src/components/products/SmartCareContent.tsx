@@ -51,8 +51,8 @@ export default function SmartCareContent({
     const [expandedProductNames, setExpandedProductNames] = useState<Set<string>>(new Set());
     const categoriesOrder = ["에어컨", "냉장가전", "주방가전", "생활가전", "TV", "캠핑/레저", "가전패키지", "기타"];
     
-    // Dynamic Slots based on available products
-    const availableSlots = Array.from(new Set(allAppliances.map(a => a.slotCount))).sort((a, b) => a - b);
+    // Dynamic Slots based on available products - Ensure no undefined values
+    const availableSlots = Array.from(new Set(allAppliances.map(a => a.slotCount || 4))).sort((a, b) => a - b);
     
     // Dynamic Categories based on current slot selection
     const availableCategories = Array.from(new Set(
@@ -60,6 +60,8 @@ export default function SmartCareContent({
             .filter(a => selectedUnit === "" ? true : a.slotCount === Number(selectedUnit))
             .map(a => a.category)
     )).sort((a, b) => {
+        if (!a) return 1;
+        if (!b) return -1;
         const idxA = categoriesOrder.indexOf(a);
         const idxB = categoriesOrder.indexOf(b);
         if (idxA === -1) return 1;
@@ -84,7 +86,7 @@ export default function SmartCareContent({
 
     // Helper to determine unit from tag (for compatibility if needed)
     const getUnitFromTag = (item: Appliance) => {
-        return item.slotCount.toString();
+        return (item.slotCount || 4).toString();
     };
 
     const handleApplianceClick = (item: Appliance) => {
@@ -379,8 +381,8 @@ export default function SmartCareContent({
                                 {availableSlots.map((val) => (
                                     <button
                                         key={val}
-                                        onClick={() => { setSelectedUnit(val.toString()); setSelectedCategory("전체"); }}
-                                        className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap ${selectedUnit === val.toString()
+                                        onClick={() => { setSelectedUnit((val || 4).toString()); setSelectedCategory("전체"); }}
+                                        className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap ${selectedUnit === (val || 4).toString()
                                             ? "bg-sono-primary text-white border-sono-primary shadow-lg shadow-sono-primary/20"
                                             : "bg-white text-gray-400 border-gray-100"
                                             }`}
@@ -1201,7 +1203,7 @@ export default function SmartCareContent({
                 initialAppliance={pickedAppliance
                     ? (pickedAppliance.model ? `${pickedAppliance.brand} ${pickedAppliance.name} (${pickedAppliance.model})` : `${pickedAppliance.brand} ${pickedAppliance.name}`)
                     : undefined}
-                initialUnit={pickedAppliance ? pickedAppliance.slotCount.toString() : selectedUnit}
+                initialUnit={pickedAppliance ? (pickedAppliance.slotCount || 4).toString() : selectedUnit}
             />
         </>
     );
