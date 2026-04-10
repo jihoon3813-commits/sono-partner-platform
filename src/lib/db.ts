@@ -343,7 +343,7 @@ export async function getStats() {
     );
 
     const inProgress = applications.filter(
-        a => !['정상가입', '1회출금', '해약', '청약철회', '거부', '접수취소', '수신거부', '가입취소'].includes(a.status)
+        a => !['정상가입', '1회출금', '해약', '청약철회', '거부', '접수취소', '수신거부', '가입취소', '불가'].includes(a.status)
     );
 
     return {

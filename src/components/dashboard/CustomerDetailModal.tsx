@@ -23,7 +23,10 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
             case '보류':
                 return 'bg-orange-50 text-orange-600 border border-orange-100';
             case '거부':
+            case '불가':
                 return 'bg-red-50 text-red-600 border border-red-100';
+            case '녹취완료(출금확인중)':
+                return 'bg-cyan-50 text-cyan-600 border border-cyan-100';
             case '접수취소':
                 return 'bg-rose-50 text-rose-600 border border-rose-100';
             case '정상가입':
@@ -177,7 +180,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     };
 
     const statusOptions: ApplicationStatus[] = [
-        '접수대기', '접수완료', '부재', '보류', '거부', '접수취소', '정상가입', '1회출금', '배송완료', '청약철회', '해약', '정산완료'
+        '접수대기', '접수완료', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '1회출금', '배송완료', '청약철회', '해약', '정산완료'
     ];
 
     return (

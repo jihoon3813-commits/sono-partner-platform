@@ -28,8 +28,11 @@ export default function CustomerManagement({ applications, onRefresh, partners =
             case '보류':
                 return 'bg-orange-50 text-orange-600 border border-orange-100';
             case '거부':
+            case '불가':
             case '수신거부':
                 return 'bg-red-50 text-red-600 border border-red-100';
+            case '녹취완료(출금확인중)':
+                return 'bg-cyan-50 text-cyan-600 border border-cyan-100';
             case '접수취소':
             case '가입취소':
                 return 'bg-rose-50 text-rose-600 border border-rose-100';
@@ -97,7 +100,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         setCurrentPage(1);
     }, [searchTerm, statusFilter, productFilter, partnersFilter, dateFilter, customStartDate, customEndDate, itemsPerPage, sortBy]);
 
-    const statusOptions = ['전체', '접수대기', '접수완료', '부재', '보류', '거부', '접수취소', '정상가입', '1회출금', '배송완료', '청약철회', '해약', '정산완료'];
+    const statusOptions = ['전체', '접수대기', '접수완료', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '1회출금', '배송완료', '청약철회', '해약', '정산완료'];
 
     // 상품 종류 추출 (전체 고객 데이터 기반)
     const productOptions = ['전체', ...Array.from(new Set(applications.map(app => getProductTypeLabel(app.productType)).filter(Boolean)))];
