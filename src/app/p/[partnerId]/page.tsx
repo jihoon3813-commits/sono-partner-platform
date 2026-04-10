@@ -145,9 +145,10 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
     const [selectedAppliance, setSelectedAppliance] = useState<string>("상담 시 결정");
 
     // Convex Products Query
-    const productsData = useQuery(api.products.get, {});
+    const rawProductsData = useQuery(api.products.get);
+    const productsData = (rawProductsData || []).filter((p: any) => p.isVisible !== false);
     const allAppliances = productsData || [];
-    const isLoadingAppliances = productsData === undefined;
+    const isLoadingAppliances = rawProductsData === undefined;
 
     // Remove GAS Effect
     /*

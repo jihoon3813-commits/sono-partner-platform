@@ -25,14 +25,14 @@ interface Product {
 }
 
 export default function ProductManagement() {
-    const products = useQuery(api.products.get, { includeInactive: true });
+    const products = useQuery(api.products.get);
     const upsertProduct = useMutation(api.products.upsert);
     const toggleVisibility = useMutation(api.products.toggleVisibility);
     const toggleGift = useMutation(api.products.toggleGift);
     const removeProduct = useMutation(api.products.remove);
     const syncFromBilligo = useAction(api.products.syncFromBilligo);
     const updateOrder = useMutation(api.products.updateOrder);
-    const promotions = useQuery(api.promotions.get, { onlyActive: true });
+    const promotions = useQuery(api.promotions.get);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);

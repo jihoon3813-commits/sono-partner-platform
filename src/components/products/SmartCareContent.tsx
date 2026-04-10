@@ -41,12 +41,12 @@ export default function SmartCareContent({
     const [selectedUnit, setSelectedUnit] = useState<string>("4");
     const [showAllOverlay, setShowAllOverlay] = useState(false);
 
-    // Convex Query - Fetch only visible products
-    const productsData = useQuery(api.products.get, { includeInactive: false });
-    const promotionsData = useQuery(api.promotions.get, { onlyActive: true });
+    // Convex Query - Fetch and filter client-side for stability
+    const productsData = useQuery(api.products.get);
+    const promotionsData = useQuery(api.promotions.get);
     
-    const allAppliances = (productsData || []) as Appliance[];
-    const activePromotions = promotionsData || [];
+    const allAppliances = ((productsData || []) as Appliance[]).filter(p => p.isVisible !== false);
+    const activePromotions = (promotionsData || []).filter(p => p.isActive !== false);
     const isLoadingAppliances = productsData === undefined;
     const [expandedProductNames, setExpandedProductNames] = useState<Set<string>>(new Set());
     const categoriesOrder = ["에어컨", "냉장가전", "주방가전", "생활가전", "TV", "캠핑/레저", "가전패키지", "기타"];

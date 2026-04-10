@@ -2,14 +2,9 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
 export const get = query({
-    args: {
-        onlyActive: v.optional(v.boolean()),
-    },
-    handler: async (ctx, args) => {
-        let promotions = await ctx.db.query("promotions").collect();
-        if (args.onlyActive) {
-            promotions = promotions.filter((p) => p.isActive);
-        }
+    args: {},
+    handler: async (ctx) => {
+        const promotions = await ctx.db.query("promotions").collect();
         return promotions.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     },
 });

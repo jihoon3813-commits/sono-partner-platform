@@ -2,25 +2,18 @@ import { query, mutation, action, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 
-// 모든 상품 조회
+// 모든 상품 조회 (클라이언트 호환성을 위해 인자 제거)
 export const get = query({
-    args: {
-        includeInactive: v.optional(v.boolean()),
-    },
-    handler: async (ctx, args) => {
+    args: {},
+    handler: async (ctx) => {
         const all = await ctx.db.query("products").collect();
         // Sort by order (ascending), then by name as fallback
-        const sorted = all.sort((a, b) => {
+        return all.sort((a, b) => {
             if ((a.order ?? 0) !== (b.order ?? 0)) {
                 return (a.order ?? 0) - (b.order ?? 0);
             }
             return a.name.localeCompare(b.name);
         });
-
-        if (args.includeInactive) return sorted;
-        
-        // Return products where isVisible is true or not set (for legacy compatibility)
-        return sorted.filter(p => p.isVisible !== false);
     },
 });
 
