@@ -21,7 +21,7 @@ interface Product {
     order?: number;
     createdAt?: string;
     updatedAt?: string;
-    promotionId?: Id<"promotions">;
+    promotionId?: Id<"promotions"> | null;
 }
 
 export default function ProductManagement() {
