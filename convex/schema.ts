@@ -88,7 +88,7 @@ export default defineSchema({
         isVisible: v.optional(v.boolean()), // 노출 여부
         hasGift: v.optional(v.boolean()), // 사은품 제공 여부
         order: v.optional(v.number()), // 정렬 순서
-        promotionId: v.optional(v.id("promotions")), // 프로모션 연결
+        promotionId: v.optional(v.union(v.id("promotions"), v.null())), // 프로모션 연결
         createdAt: v.optional(v.string()),
         updatedAt: v.optional(v.string()),
         tag: v.optional(v.string()), // Old field for compatibility during migration

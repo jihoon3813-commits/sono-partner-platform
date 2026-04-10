@@ -32,7 +32,7 @@ export const upsert = mutation({
         isVisible: v.boolean(),
         hasGift: v.boolean(),
         order: v.optional(v.number()),
-        promotionId: v.optional(v.id("promotions")),
+        promotionId: v.optional(v.union(v.id("promotions"), v.null())),
     },
     handler: async (ctx, args) => {
         const { id, ...data } = args;
@@ -84,7 +84,7 @@ export const updateOrder = mutation({
 export const updatePromotion = mutation({
     args: { 
         id: v.id("products"), 
-        promotionId: v.optional(v.id("promotions")) 
+        promotionId: v.optional(v.union(v.id("promotions"), v.null())) 
     },
     handler: async (ctx, args) => {
         await ctx.db.patch(args.id, { 

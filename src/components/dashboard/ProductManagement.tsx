@@ -397,7 +397,7 @@ export default function ProductManagement() {
                                     <label className="text-xs font-bold text-[#8b95a1] mb-2 block ml-1">연결 프로모션 (선택)</label>
                                     <select
                                         value={editingProduct.promotionId || ""}
-                                        onChange={(e) => setEditingProduct({ ...editingProduct, promotionId: e.target.value ? e.target.value as Id<"promotions"> : undefined })}
+                                        onChange={(e) => setEditingProduct({ ...editingProduct, promotionId: e.target.value ? e.target.value as Id<"promotions"> : null })}
                                         className="w-full bg-[#f9fafb] border-none rounded-2xl py-3 px-4 text-sm font-bold focus:ring-2 focus:ring-sono-primary"
                                     >
                                         <option value="">없음</option>
