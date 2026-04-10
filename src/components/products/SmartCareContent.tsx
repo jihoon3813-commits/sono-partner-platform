@@ -22,6 +22,13 @@ interface Appliance {
     promotionId?: string;
 }
 
+interface SmartCareContentProps {
+    partnerMode?: boolean;
+    partnerUrl?: string;
+    partnerName?: string;
+    partnerId?: string;
+}
+
 export default function SmartCareContent({
     partnerMode = false,
     partnerUrl = "",
@@ -548,7 +555,7 @@ export default function SmartCareContent({
                             </div>
 
                             <div className="space-y-24">
-                                {categories.map((cat) => {
+                                {availableCategories.map((cat) => {
                                     const categoryItems = allAppliances.filter(a =>
                                         a.category === cat &&
                                         (selectedUnit === "" ? true : a.slotCount === Number(selectedUnit))

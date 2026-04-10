@@ -31,7 +31,7 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
     const [isLoadingPartner, setIsLoadingPartner] = useState(true);
 
     // Convex 실시간 제품 정보 쿼리
-    const productsData = useQuery(api.products.get);
+    const productsData = useQuery(api.products.get, {});
 
     const [formData, setFormData] = useState({
         name: "",

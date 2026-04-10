@@ -145,7 +145,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
     const [selectedAppliance, setSelectedAppliance] = useState<string>("상담 시 결정");
 
     // Convex Products Query
-    const productsData = useQuery(api.products.get);
+    const productsData = useQuery(api.products.get, {});
     const allAppliances = productsData || [];
     const isLoadingAppliances = productsData === undefined;
 

@@ -11,16 +11,16 @@ interface Product {
     brand: string;
     model: string;
     name: string;
-    category: string;
-    slotCount: number;
-    monthlyPayment: number;
-    cardDiscountPayment: number;
+    category?: string;
+    slotCount?: number;
+    monthlyPayment?: number;
+    cardDiscountPayment?: number;
     image: string;
-    isVisible: boolean;
-    hasGift: boolean;
+    isVisible?: boolean;
+    hasGift?: boolean;
     order?: number;
-    createdAt: string;
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
     promotionId?: Id<"promotions">;
 }
 

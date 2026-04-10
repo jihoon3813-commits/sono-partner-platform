@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Id } from "../../../convex/_generated/dataModel";
 
 export default function PromotionManagement() {
-    const promotions = useQuery(api.promotions.get);
+    const promotions = useQuery(api.promotions.get, {});
     const createPromotion = useMutation(api.promotions.create);
     const updatePromotion = useMutation(api.promotions.update);
     const removePromotion = useMutation(api.promotions.remove);
