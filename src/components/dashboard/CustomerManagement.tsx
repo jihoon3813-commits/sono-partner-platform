@@ -38,8 +38,6 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                 return 'bg-rose-50 text-rose-600 border border-rose-100';
             case '정상가입':
                 return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
-            case '1회출금':
-                return 'bg-teal-50 text-teal-600 border border-teal-100';
             case '배송완료':
                 return 'bg-purple-50 text-purple-600 border border-purple-100';
             case '청약철회':
@@ -71,6 +69,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
     const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
     const [selectedAppIds, setSelectedAppIds] = useState<string[]>([]);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [showStatusHelp, setShowStatusHelp] = useState(false);
 
     const deleteApplications = useMutation(api.applications.deleteApplications);
 
@@ -100,7 +99,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         setCurrentPage(1);
     }, [searchTerm, statusFilter, productFilter, partnersFilter, dateFilter, customStartDate, customEndDate, itemsPerPage, sortBy]);
 
-    const statusOptions = ['전체', '접수대기', '접수완료', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '1회출금', '배송완료', '청약철회', '해약', '정산완료'];
+    const statusOptions = ['전체', '접수대기', '접수완료', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '배송완료', '청약철회', '해약', '정산완료'];
 
     // 상품 종류 추출 (전체 고객 데이터 기반)
     const productOptions = ['전체', ...Array.from(new Set(applications.map(app => getProductTypeLabel(app.productType)).filter(Boolean)))];
@@ -572,7 +571,23 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">상품명</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">구좌</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">결합제품</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">상태</th>
+                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">
+                                    <div className="flex items-center justify-center gap-1">
+                                        상태
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setShowStatusHelp(true);
+                                            }}
+                                            className="text-gray-400 hover:text-sono-primary transition-colors flex items-center"
+                                            title="상태 용어 설명"
+                                        >
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -762,6 +777,66 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                         onRefresh();
                     }}
                 />
+            )}
+
+            {/* 상태 용어 설명 모달 */}
+            {showStatusHelp && (
+                <div 
+                    className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-[60] flex items-center justify-center p-4"
+                    onClick={() => setShowStatusHelp(false)}
+                >
+                    <div 
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden border border-gray-100 animate-in fade-in zoom-in duration-200"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                            <h3 className="font-bold text-sono-dark text-sm">상태 용어 설명</h3>
+                            <button onClick={() => setShowStatusHelp(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="p-5 space-y-4">
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+                                    <span className="text-xs font-bold text-slate-600">접수대기</span>
+                                </div>
+                                <p className="text-[11px] text-gray-500 pl-3.5 leading-relaxed">영업자가 등록한 상태</p>
+                            </div>
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                                    <span className="text-xs font-bold text-blue-600">접수완료</span>
+                                </div>
+                                <p className="text-[11px] text-gray-500 pl-3.5 leading-relaxed">소노 콜센터에 해피콜 요청한 상태</p>
+                            </div>
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-500"></div>
+                                    <span className="text-xs font-bold text-cyan-600">녹취완료(출금확인중)</span>
+                                </div>
+                                <p className="text-[11px] text-gray-500 pl-3.5 leading-relaxed">계약 녹취(해피콜)는 완료됐으나 1회차 출금확인이 안된 상태(신용카드는 실시간 확인 가능, CMS는 2~3일 소요)</p>
+                            </div>
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                                    <span className="text-xs font-bold text-emerald-600">정상가입</span>
+                                </div>
+                                <p className="text-[11px] text-gray-500 pl-3.5 leading-relaxed">1회출금 후 정상 계약 유지 상태</p>
+                            </div>
+                        </div>
+                        <div className="p-3 bg-gray-50 flex justify-end">
+                            <button 
+                                onClick={() => setShowStatusHelp(false)}
+                                className="text-[11px] font-bold text-gray-400 hover:text-sono-dark px-3 py-1 transition-colors"
+                            >
+                                닫기
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

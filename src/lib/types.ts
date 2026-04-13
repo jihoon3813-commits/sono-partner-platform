@@ -73,7 +73,6 @@ export type ApplicationStatus =
     | '거부'
     | '접수취소'
     | '정상가입'
-    | '1회출금'
     | '배송완료'
     | '청약철회'
     | '해약'
