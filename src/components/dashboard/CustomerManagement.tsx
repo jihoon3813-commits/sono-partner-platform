@@ -180,9 +180,20 @@ export default function CustomerManagement({ applications, onRefresh, partners =
 
         // Admin's Partner Filter (Robust comparison)
         if (isAdmin && partnersFilter !== "all") {
-            const filterId = String(partnersFilter).trim();
-            const appPartnerId = String(app.partnerId || "").trim();
-            if (appPartnerId !== filterId) return false;
+            const selectedPartner = partners.find(p => p.partnerId === partnersFilter);
+            if (selectedPartner) {
+                const appPartnerId = String(app.partnerId || "").trim();
+                const appPartnerName = String(app.partnerName || "").trim();
+                
+                const matchesId = appPartnerId === selectedPartner.partnerId;
+                const matchesLoginId = appPartnerId === selectedPartner.loginId;
+                const matchesName = appPartnerName === selectedPartner.companyName;
+                
+                if (!matchesId && !matchesLoginId && !matchesName) return false;
+            } else {
+                // Fallback for ID only if partner not found in list (shouldn't happen)
+                if (String(app.partnerId || "").trim() !== String(partnersFilter).trim()) return false;
+            }
         }
 
         return true;
