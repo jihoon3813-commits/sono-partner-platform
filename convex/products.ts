@@ -159,30 +159,46 @@ export const syncFromBilligo = action({
             const brand = brandMatch ? brandMatch[1] : "기타";
             
             // Map categories based on primary_category_code or keywords in model_name
-            let category = "기타";
+            let category = "생활가전"; // Default category
             const code = item.primary_category_code || "";
             const rawModel = String(item.model || "").toUpperCase().replace(/\s/g, "");
             const cleanName = String(item.model_name || "").toLowerCase().replace(/\s/g, "");
             
-            // 1. Model Number Rule (The Most Accurate)
-            if (rawModel.match(/^[0-9]/) || rawModel.startsWith("KU") || rawModel.startsWith("KQ") || rawModel.startsWith("QN") || rawModel.startsWith("UN") || rawModel.startsWith("OLED") || rawModel.startsWith("QNED")) {
+            // 1. TV Rule
+            if (rawModel.match(/^[0-9]/) || rawModel.startsWith("KU") || rawModel.startsWith("KQ") || rawModel.startsWith("QN") || rawModel.startsWith("UN") || rawModel.startsWith("OLED") || rawModel.startsWith("QNED") ||
+                cleanName.includes("tv") || cleanName.includes("인치") || cleanName.includes("oled") || cleanName.includes("qled") || cleanName.includes("uhd") || cleanName.includes("나노셀") || cleanName.includes("모니터") || cleanName.includes("스탠바이미")) {
                 category = "TV";
             } 
-            // 2. Name Keyword Rule (Strict)
-            else if (cleanName.includes("tv") || cleanName.includes("인치") || cleanName.includes("oled") || cleanName.includes("qled") || cleanName.includes("uhd") || cleanName.includes("나노셀") || cleanName.includes("모니터")) {
-                category = "TV";
+            // 2. 냉장가전 (Refrigerators)
+            else if (rawModel.startsWith("RF") || rawModel.startsWith("RS") || rawModel.startsWith("RQ") || rawModel.startsWith("RH") || rawModel.startsWith("M8") || rawModel.startsWith("J8") ||
+                     cleanName.includes("냉장고") || cleanName.includes("김치냉장고") || cleanName.includes("냉동고") || cleanName.includes("와인셀러") || cleanName.includes("비스포크") || cleanName.includes("오브제")) {
+                category = "냉장가전";
             }
-            // 3. Air Conditioner Specific Rules (Strict)
+            // 3. 에어컨 (Air Conditioners)
             else if (rawModel.startsWith("FQ") || rawModel.startsWith("AF") || cleanName.includes("에어컨") || cleanName.includes("평형") || cleanName.includes("휘센") || cleanName.includes("에어로") || cleanName.includes("풍클래식")) {
                 category = "에어컨";
             }
-            // 4. Fallback by Category Codes (Excluding 008001 which is problematic)
+            // 4. 주방가전 (Kitchen Appliances)
+            else if (cleanName.includes("인덕션") || cleanName.includes("정수기") || cleanName.includes("식기세척기") || cleanName.includes("오븐") || cleanName.includes("전자레인지") || 
+                     cleanName.includes("전기레인지") || cleanName.includes("밥솥") || cleanName.includes("에어프라이어") || cleanName.includes("쿠쿠") || cleanName.includes("쿠첸") || cleanName.includes("큐커")) {
+                category = "주방가전";
+            }
+            // 5. 생활가전 (Living/Laundry)
+            else if (rawModel.startsWith("WF") || rawModel.startsWith("DV") || rawModel.startsWith("RD") || rawModel.startsWith("W20") || rawModel.startsWith("F2") || rawModel.startsWith("W1") ||
+                     cleanName.includes("세탁기") || cleanName.includes("건조기") || cleanName.includes("워시타워") || cleanName.includes("스타일러") || cleanName.includes("에어드레서") || 
+                     cleanName.includes("청소기") || cleanName.includes("공기청정기") || cleanName.includes("가습기") || cleanName.includes("제습기") || cleanName.includes("코드제로") || cleanName.includes("로보락")) {
+                category = "생활가전";
+            }
+            // 6. Fallback by Category Codes
             else if (code.startsWith("008002")) category = "냉장가전";
             else if (code.startsWith("008003")) category = "주방가전";
             else if (code.startsWith("008004")) category = "생활가전";
             else if (code.startsWith("008006")) category = "캠핑/레저";
             else if (code.startsWith("008007")) category = "가전패키지";
             else if (code.startsWith("008005")) category = "TV";
+            else {
+                category = "기타";
+            }
             
             return {
                 brand: brand,

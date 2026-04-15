@@ -1294,15 +1294,15 @@ export default function SmartCareContent({
                                         <div className="grid grid-cols-2 divide-x divide-gray-100">
                                             <div className="px-4 py-4 md:px-6 md:py-6">
                                                 <p className="text-[10px] md:text-xs font-bold text-sono-dark mb-2">총 고객환급의무액</p>
-                                                <p className="font-bold text-sono-primary text-sm md:text-lg">1,068,990,831천원</p>
+                                                <p className="font-bold text-sono-primary text-sm md:text-lg">1,129,868,124원</p>
                                             </div>
                                             <div className="px-4 py-4 md:px-6 md:py-6 text-right md:text-left">
                                                 <p className="text-[10px] md:text-xs font-bold text-sono-dark mb-2">상조 관련 자산</p>
-                                                <p className="font-bold text-sono-primary text-sm md:text-lg">1,221,786,713천원</p>
+                                                <p className="font-bold text-sono-primary text-sm md:text-lg">1,230,275,029원</p>
                                             </div>
                                         </div>
                                     </div>
-                                    <p className="text-[10px] md:text-xs text-[#8b95a1] font-bold">* 2024년 12월말 기준, 공인회계사 회계감사를 완료하였습니다.</p>
+                                    <p className="text-[10px] md:text-xs text-[#8b95a1] font-bold">(주)소노스테이션은 성지회계법인의 공인회계사를 통해 회계감사를 받고 있습니다.</p>
                                 </div>
 
                                 <div className="card bg-white !p-6 md:!p-10">
