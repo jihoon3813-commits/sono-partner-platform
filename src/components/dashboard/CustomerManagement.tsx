@@ -139,8 +139,21 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         const name = (app.customerName || "").toLowerCase();
         const phone = (app.customerPhone || "");
         const pName = (app.partnerName || "").toLowerCase();
-        const sTerm = (searchTerm || "").toLowerCase();
-        const searchMatch = name.includes(sTerm) || phone.includes(searchTerm) || pName.includes(sTerm);
+        const pId = (app.partnerId || "").toLowerCase();
+        const sTerm = (searchTerm || "").toLowerCase().trim();
+        
+        // Wildcard search support (e.g., 김*훈)
+        let nameMatch = name.includes(sTerm);
+        if (sTerm.includes('*') && sTerm.length >= 2) {
+            const parts = sTerm.split('*');
+            if (parts.length === 2) {
+                const start = parts[0];
+                const end = parts[1];
+                nameMatch = name.startsWith(start) && name.endsWith(end);
+            }
+        }
+
+        const searchMatch = nameMatch || phone.includes(searchTerm) || pName.includes(sTerm) || pId.includes(sTerm);
         if (!searchMatch) return false;
 
         // Date Filter
@@ -165,8 +178,12 @@ export default function CustomerManagement({ applications, onRefresh, partners =
             }
         }
 
-        // Admin's Partner Filter
-        if (isAdmin && partnersFilter !== "all" && app.partnerId !== partnersFilter) return false;
+        // Admin's Partner Filter (Robust comparison)
+        if (isAdmin && partnersFilter !== "all") {
+            const filterId = String(partnersFilter).trim();
+            const appPartnerId = String(app.partnerId || "").trim();
+            if (appPartnerId !== filterId) return false;
+        }
 
         return true;
     });
