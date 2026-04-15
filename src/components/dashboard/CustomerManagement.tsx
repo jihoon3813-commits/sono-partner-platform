@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useMutation } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Application, Partner, ApplicationStatus } from "@/lib/types";
 import CustomerDetailModal from "./CustomerDetailModal";
@@ -99,7 +99,18 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         setCurrentPage(1);
     }, [searchTerm, statusFilter, productFilter, partnersFilter, dateFilter, customStartDate, customEndDate, itemsPerPage, sortBy]);
 
-    const statusOptions = ['전체', '접수대기', '접수완료', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '배송완료', '청약철회', '해약', '정산완료'];
+    // Fetch dynamic statuses
+    const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
+    
+    // Default fallback statuses
+    const defaultStatuses = ['접수대기', '접수완료', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '배송완료', '청약철회', '해약', '정산완료'];
+    
+    // Combine dynamic and default statuses (ensure unique)
+    const availableStatuses = dbStatuses 
+        ? dbStatuses.map(s => s.label) 
+        : defaultStatuses;
+
+    const statusOptions = ['전체', ...availableStatuses];
 
     // 상품 종류 추출 (전체 고객 데이터 기반)
     const productOptions = ['전체', ...Array.from(new Set(applications.map(app => getProductTypeLabel(app.productType)).filter(Boolean)))];

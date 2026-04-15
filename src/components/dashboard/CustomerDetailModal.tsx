@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { Application, ApplicationStatus } from "@/lib/types";
 
 interface CustomerDetailModalProps {
@@ -177,9 +178,11 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
         }
     };
 
-    const statusOptions: ApplicationStatus[] = [
+    const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
+    const defaultStatusOptions: string[] = [
         '접수대기', '접수완료', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '배송완료', '청약철회', '해약', '정산완료'
     ];
+    const statusOptions = dbStatuses ? dbStatuses.map(s => s.label) : defaultStatusOptions;
 
     return (
         <div

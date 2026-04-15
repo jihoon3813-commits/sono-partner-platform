@@ -64,8 +64,9 @@ export interface Application {
     statusUpdatedAt?: string;
 }
 
-// 계약 상태
-export type ApplicationStatus =
+// 계약 상태 (진행상태 설정에서 동적으로 관리됨)
+export type ApplicationStatus = string;
+/* 이전 하드코딩된 값들:
     | '접수대기'
     | '접수완료'
     | '부재'
@@ -79,6 +80,7 @@ export type ApplicationStatus =
     | '불가'
     | '녹취완료(출금확인중)'
     | '정산완료';
+*/
 
 // 상태 변경 이력
 export interface StatusHistory {

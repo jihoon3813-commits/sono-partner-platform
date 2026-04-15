@@ -11,11 +11,12 @@ import ResourceCenter from "@/components/dashboard/ResourceCenter";
 import PartnerFormModal from "@/components/dashboard/PartnerFormModal";
 import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
 import PromotionManagement from "@/components/dashboard/PromotionManagement";
+import StatusManagement from "@/components/dashboard/StatusManagement";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { PartnerRequest } from "@/lib/types";
 
-type Tab = "overview" | "partners" | "products" | "promotions" | "customers" | "requests" | "library" | "stats";
+type Tab = "overview" | "partners" | "products" | "promotions" | "customers" | "requests" | "library" | "stats" | "settings";
 
 export default function PartnerDashboard() {
     const router = useRouter();
@@ -98,7 +99,10 @@ export default function PartnerDashboard() {
         return acc;
     }, {});
 
-    const statusList = ['접수', '대기', '상담중', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '1회출금', '청약철회', '해약', '정산완료'];
+    // Fetch dynamic statuses for overview
+    const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
+    const defaultStatusList = ['접수', '대기', '상담중', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '1회출금', '청약철회', '해약', '정산완료'];
+    const statusList = dbStatuses ? dbStatuses.map(s => s.label) : defaultStatusList;
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -178,7 +182,8 @@ export default function PartnerDashboard() {
                                 { id: "library", label: "자료실" },
                                 ...(isAdmin ? [
                                     { id: "requests", label: "입점 신청", count: dashboardData.pendingRequests.length },
-                                    { id: "stats", label: "통계분석" }
+                                    { id: "stats", label: "통계분석" },
+                                    { id: "settings", label: "설정" }
                                 ] : [])
                             ].map((tab) => (
                                 <button
@@ -408,6 +413,10 @@ export default function PartnerDashboard() {
 
                 {activeTab === "stats" && isAdmin && (
                     <AnalyticsDashboard />
+                )}
+
+                {activeTab === "settings" && isAdmin && (
+                    <StatusManagement />
                 )}
 
                 {selectedRequest && (

@@ -244,4 +244,13 @@ export default defineSchema({
         isActive: v.boolean(),
         createdAt: v.string(),
     }).index("by_isActive", ["isActive"]),
+
+    // 진행 상태 설정 테이블
+    applicationStatuses: defineTable({
+        label: v.string(), // 표시 명칭 (예: 접수, 대기 등)
+        color: v.optional(v.string()), // 테마 색상 (hex or tailwind class)
+        order: v.number(), // 정렬 순서
+        isActive: v.boolean(), // 활성화 여부
+        isSystem: v.optional(v.boolean()), // 시스템 기본값 여부 (삭제 방지용)
+    }).index("by_order", ["order"]),
 });
