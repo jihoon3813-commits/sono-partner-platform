@@ -179,8 +179,10 @@ export const updateApplicationDetails = mutation({
             updatedAt: nowKST(),
         };
 
+        const { memo, ...actualUpdates } = args.updates;
+
         let statusChanged = false;
-        Object.entries(args.updates).forEach(([key, value]) => {
+        Object.entries(actualUpdates).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
                 patchData[key] = value;
                 if (key === 'status' && String(value) !== previousStatus) {
@@ -202,13 +204,14 @@ export const updateApplicationDetails = mutation({
                 newStatus: patchData.status,
                 changedBy: args.changedBy || "system",
                 changedAt: nowKST(),
-                memo: args.updates.memo || "",
+                memo: memo || "",
             });
         }
 
         return true;
     },
 });
+
 
 
 export const createApplications = mutation({
