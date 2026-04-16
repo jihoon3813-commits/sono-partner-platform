@@ -164,6 +164,7 @@ export const updateApplicationDetails = mutation({
     args: {
         applicationNo: v.string(),
         updates: v.any(),
+        changedBy: v.optional(v.string()), // Who made the change
     },
     handler: async (ctx, args) => {
         const app = await ctx.db
@@ -173,26 +174,42 @@ export const updateApplicationDetails = mutation({
 
         if (!app) return false;
 
-        // Filter out undefined values to avoid Convex patch errors
+        const previousStatus = app.status;
         const patchData: any = {
             updatedAt: nowKST(),
         };
 
+        let statusChanged = false;
         Object.entries(args.updates).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
                 patchData[key] = value;
-                // If status is updated, also update statusUpdatedAt
-                if (key === 'status') {
+                if (key === 'status' && String(value) !== previousStatus) {
+                    statusChanged = true;
                     patchData.statusUpdatedAt = nowKST();
+                    if (value === "정상가입") patchData.contractDate = nowKST();
                 }
             }
         });
 
         await ctx.db.patch(app._id, patchData);
 
+        // status가 변경된 경우 이력 기록
+        if (statusChanged) {
+            await ctx.db.insert("statusHistory", {
+                historyId: `H-${Date.now()}`,
+                applicationNo: args.applicationNo,
+                previousStatus,
+                newStatus: patchData.status,
+                changedBy: args.changedBy || "system",
+                changedAt: nowKST(),
+                memo: args.updates.memo || "",
+            });
+        }
+
         return true;
     },
 });
+
 
 export const createApplications = mutation({
     args: {

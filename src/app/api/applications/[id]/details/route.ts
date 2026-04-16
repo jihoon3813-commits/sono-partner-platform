@@ -7,9 +7,13 @@ export async function PATCH(
 ) {
     try {
         const { id } = await params;
-        const updates = await request.json();
+        const body = await request.json();
+        
+        // 실제로는 세션에서 관리자 정보를 가져와야 함
+        const changedBy = body.changedBy || 'admin';
+        const { changedBy: _, ...updates } = body;
 
-        const success = await updateApplicationDetails(id, updates);
+        const success = await updateApplicationDetails(id, updates, changedBy);
 
         if (success) {
             return NextResponse.json({
@@ -22,6 +26,7 @@ export async function PATCH(
                 { status: 404 }
             );
         }
+
     } catch (error: any) {
         console.error('Details update error:', error);
         return NextResponse.json(

@@ -117,7 +117,8 @@ export async function updateApplicationAssignee(
 
 export async function updateApplicationDetails(
     applicationNo: string,
-    updates: Partial<Application>
+    updates: Partial<Application>,
+    changedBy?: string
 ): Promise<boolean> {
     // Only send fields that are actually provided to avoid Convex validation errors with undefined values
     const sanitizedUpdates: any = {};
@@ -127,7 +128,7 @@ export async function updateApplicationDetails(
         'customerName', 'customerPhone', 'customerBirth', 'customerGender',
         'customerAddress', 'customerZipcode', 'productType', 'products',
         'planType', 'inquiry', 'preferredContactTime', 'partnerMemberId',
-        'statusUpdatedAt'
+        'statusUpdatedAt', 'memo'
     ];
 
     keys.forEach(key => {
@@ -138,10 +139,12 @@ export async function updateApplicationDetails(
 
     await getClient().mutation("applications:updateApplicationDetails" as any, {
         applicationNo,
-        updates: sanitizedUpdates
+        updates: sanitizedUpdates,
+        changedBy
     });
     return true;
 }
+
 
 export async function bulkSyncApplications(
     applications: any[]

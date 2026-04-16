@@ -84,42 +84,15 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
 
     const [isSavingDetails, setIsSavingDetails] = useState(false);
 
-    const handleStatusChange = async () => {
+    const handleSaveAll = async () => {
         setIsLoading(true);
-        try {
-            const response = await fetch(`/api/applications/${application.applicationNo}/status`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    status, 
-                    memo,
-                    statusUpdatedAt: new Date().toISOString()
-                }),
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                alert("상태가 변경되었습니다.");
-                onUpdate();
-                onClose();
-            } else {
-                alert(data.message || "오류가 발생했습니다.");
-            }
-        } catch (error) {
-            console.error(error);
-            alert("서버 통신 오류가 발생했습니다.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleSaveDetails = async () => {
-        setIsSavingDetails(true);
         try {
             const response = await fetch(`/api/applications/${application.applicationNo}/details`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
+                    status,
+                    memo,
                     firstPaymentDate,
                     registrationDate,
                     paymentMethod,
@@ -136,14 +109,16 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                     products,
                     planType,
                     inquiry,
-                    preferredContactTime
+                    preferredContactTime,
+                    changedBy: partnerLoginId || "admin",
                 }),
             });
 
             const data = await response.json();
             if (data.success) {
-                alert("정보가 저장되었습니다.");
+                alert("수정사항이 저장되었습니다.");
                 onUpdate();
+                onClose();
             } else {
                 alert(data.message || "오류가 발생했습니다.");
             }
@@ -151,9 +126,10 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
             console.error(error);
             alert("서버 통신 오류가 발생했습니다.");
         } finally {
-            setIsSavingDetails(false);
+            setIsLoading(false);
         }
     };
+
 
 
     const defaultStatusOptions: string[] = [
@@ -179,29 +155,27 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                     </button>
                 </div>
 
-                <div className="p-6 space-y-6 flex-1 overflow-y-auto">
-                    {/* Status Update Section - Only visible to Admins */}
+                <div className="p-6 space-y-6 flex-1 overflow-y-auto pb-24">
                     {/* Status Update/View Section */}
                     <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
                         <label className="text-xs font-bold text-gray-500 mb-2 block">진행 상태 {isAdmin ? '변경' : ''}</label>
                         {isAdmin ? (
-                            <div className="flex gap-2">
+                            <div className="space-y-3">
                                 <select
                                     value={status}
                                     onChange={(e) => setStatus(e.target.value as ApplicationStatus)}
-                                    className="flex-1 bg-white border border-gray-200 text-sono-dark text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none font-bold"
+                                    className="w-full bg-white border border-gray-200 text-sono-dark text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none font-bold"
                                 >
                                     {statusOptions.map((opt) => (
                                         <option key={opt} value={opt}>{opt}</option>
                                     ))}
                                 </select>
-                                <button
-                                    onClick={handleStatusChange}
-                                    disabled={isLoading || status === application.status}
-                                    className="bg-sono-dark text-white text-sm font-bold px-4 py-2 rounded-xl hover:bg-black transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {isLoading ? "..." : "변경"}
-                                </button>
+                                <textarea
+                                    value={memo}
+                                    onChange={(e) => setMemo(e.target.value)}
+                                    placeholder="상태 변경 메모 (선택 사항)"
+                                    className="w-full bg-white border border-gray-200 text-sono-dark text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none min-h-[60px]"
+                                />
                             </div>
                         ) : (
                             <div className="flex items-center">
@@ -216,15 +190,6 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                     <div className="border-t border-gray-100 pt-4">
                         <div className="flex justify-between items-center mb-3">
                             <h3 className="text-sm font-bold text-sono-primary">결제/상담 정보</h3>
-                            {isAdmin && (
-                                <button
-                                    onClick={handleSaveDetails}
-                                    disabled={isSavingDetails}
-                                    className="text-xs font-bold bg-sono-primary text-white px-2 py-1 rounded-lg hover:bg-sono-secondary disabled:opacity-50"
-                                >
-                                    {isSavingDetails ? "저장 중..." : "정보 저장"}
-                                </button>
-                            )}
                         </div>
                         <div className="space-y-3">
                             {isAdmin ? (
@@ -335,8 +300,32 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                         </div>
                     </div>
                 </div>
+
+                {/* Sticky Bottom Save Bar */}
+                {isAdmin && (
+                    <div className="p-4 border-t border-gray-100 bg-white sticky bottom-0 rounded-b-[24px]">
+                        <button
+                            onClick={handleSaveAll}
+                            disabled={isLoading}
+                            className="w-full bg-sono-primary text-white text-base font-bold py-3.5 rounded-2xl shadow-lg shadow-sono-primary/20 hover:bg-sono-secondary transition-all flex items-center justify-center gap-2"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>처리 중...</span>
+                                </>
+                            ) : (
+                                "수정사항 저장하기"
+                            )}
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
+
     );
 }
 
