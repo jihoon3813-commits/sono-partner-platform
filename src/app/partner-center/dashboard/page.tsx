@@ -50,6 +50,8 @@ export default function PartnerDashboard() {
         }
     }, [router]);
 
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
     // Convex 실시간 데이터 쿼리 연결
     const realTimeData = useQuery(api.dashboard.getDashboardData,
         partner ? { partnerId: partner.partnerId } : "skip" as any
@@ -65,11 +67,13 @@ export default function PartnerDashboard() {
 
     const currentPartner = dashboardData.partners.find((p: any) => p.partnerId === partner?.partnerId) || partner;
 
-    const isLoading = !realTimeData || !partner;
+    const isLoading = !realTimeData || !partner || isRefreshing;
 
     const fetchData = useCallback(() => {
-        // useQuery를 사용하므로 더 이상 수동 fetch는 필요 없으나, 
-        // 기존 버튼 이벤트를 위해 빈 함수로 둡니다.
+        setIsRefreshing(true);
+        setTimeout(() => {
+            setIsRefreshing(false);
+        }, 800);
         console.log("Data is automatically synced in real-time by Convex.");
     }, []);
 

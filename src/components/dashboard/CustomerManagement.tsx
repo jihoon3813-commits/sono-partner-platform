@@ -5,6 +5,7 @@ import { Application, Partner, ApplicationStatus } from "@/lib/types";
 import CustomerDetailModal from "./CustomerDetailModal";
 import CustomerRegistrationModal from "./CustomerRegistrationModal";
 import BulkUploadModal from "./BulkUploadModal";
+import { getStatusStyles as getDynamicStatusStyles } from "@/lib/statusUtils";
 
 interface CustomerManagementProps {
     applications: Application[];
@@ -17,39 +18,12 @@ interface CustomerManagementProps {
 }
 
 export default function CustomerManagement({ applications, onRefresh, partners = [], isWidget = false, isAdmin = false, initialStatusFilter = "all", currentUser = null }: CustomerManagementProps) {
+    const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
+
     const getStatusStyles = (status: string) => {
-        switch (status) {
-            case '접수대기':
-                return 'bg-slate-50 text-slate-600 border border-slate-100';
-            case '접수완료':
-                return 'bg-blue-50 text-blue-600 border border-blue-100';
-            case '부재':
-                return 'bg-gray-50 text-gray-500 border border-gray-100';
-            case '보류':
-                return 'bg-orange-50 text-orange-600 border border-orange-100';
-            case '거부':
-            case '불가':
-            case '수신거부':
-                return 'bg-red-50 text-red-600 border border-red-100';
-            case '녹취완료(출금확인중)':
-                return 'bg-cyan-50 text-cyan-600 border border-cyan-100';
-            case '접수취소':
-            case '가입취소':
-                return 'bg-rose-50 text-rose-600 border border-rose-100';
-            case '정상가입':
-                return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
-            case '배송완료':
-                return 'bg-purple-50 text-purple-600 border border-purple-100';
-            case '청약철회':
-                return 'bg-pink-50 text-pink-600 border border-pink-100';
-            case '해약':
-                return 'bg-stone-50 text-stone-600 border border-stone-100';
-            case '정산완료':
-                return 'bg-amber-50 text-amber-600 border border-amber-100';
-            default:
-                return 'bg-gray-50 text-gray-400 border border-gray-200';
-        }
+        return getDynamicStatusStyles(status, dbStatuses);
     };
+
 
     // 상품 유형 한글 표시
     const getProductTypeLabel = (productType: string) => {
@@ -100,7 +74,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
     }, [searchTerm, statusFilter, productFilter, partnersFilter, dateFilter, customStartDate, customEndDate, itemsPerPage, sortBy]);
 
     // Fetch dynamic statuses
-    const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
+
     
     // Default fallback statuses
     const defaultStatuses = ['접수대기', '접수완료', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '배송완료', '청약철회', '해약', '정산완료'];

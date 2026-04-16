@@ -60,14 +60,30 @@ export const updateStatus = mutation({
 export const deleteStatus = mutation({
     args: { id: v.id("applicationStatuses") },
     handler: async (ctx, args) => {
-        const status = await ctx.db.get(args.id);
-        if (status?.isSystem) {
-            throw new Error("System default statuses cannot be deleted.");
-        }
+        // Remove isSystem check as requested by user
         await ctx.db.delete(args.id);
         return true;
     },
 });
+
+// 상태 순서 업데이트
+export const reorderStatuses = mutation({
+    args: {
+        statuses: v.array(
+            v.object({
+                id: v.id("applicationStatuses"),
+                order: v.number(),
+            })
+        ),
+    },
+    handler: async (ctx, args) => {
+        for (const s of args.statuses) {
+            await ctx.db.patch(s.id, { order: s.order });
+        }
+        return true;
+    },
+});
+
 
 // 초기 데이터 시딩 (기존 하드코딩된 값들)
 export const seedStatuses = mutation({
