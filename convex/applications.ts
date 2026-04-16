@@ -30,6 +30,18 @@ export const getApplicationByNo = query({
     },
 });
 
+export const getStatusHistory = query({
+    args: { applicationNo: v.string() },
+    handler: async (ctx, args) => {
+        return await ctx.db
+            .query("statusHistory")
+            .withIndex("by_applicationNo", (q) => q.eq("applicationNo", args.applicationNo))
+            .order("desc")
+            .collect();
+    },
+});
+
+
 export const createApplication = mutation({
     args: {
         applicationNo: v.optional(v.string()), // 명시적으로 번호를 줄 경우 사용
@@ -195,13 +207,13 @@ export const updateApplicationDetails = mutation({
 
         await ctx.db.patch(app._id, patchData);
 
-        // status가 변경된 경우 이력 기록
-        if (statusChanged) {
+        // status가 변경되었거나 메모가 있는 경우 이력 기록
+        if (statusChanged || (memo && memo.trim() !== "")) {
             await ctx.db.insert("statusHistory", {
                 historyId: `H-${Date.now()}`,
                 applicationNo: args.applicationNo,
                 previousStatus,
-                newStatus: patchData.status,
+                newStatus: patchData.status || app.status,
                 changedBy: args.changedBy || "system",
                 changedAt: nowKST(),
                 memo: memo || "",
@@ -211,6 +223,7 @@ export const updateApplicationDetails = mutation({
         return true;
     },
 });
+
 
 
 

@@ -16,6 +16,8 @@ interface CustomerDetailModalProps {
 
 export default function CustomerDetailModal({ application, onClose, onUpdate, isAdmin = false, partnerLoginId }: CustomerDetailModalProps) {
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
+    const statusHistory = useQuery(api.applications.getStatusHistory, { applicationNo: application.applicationNo });
+
 
     const getStatusStyles = (status: string) => {
         return getDynamicStatusStyles(status, dbStatuses);
@@ -54,6 +56,19 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
         }
         return productType || "-";
     };
+
+    const formatHistoryDate = (dateStr: string) => {
+        if (!dateStr) return "";
+        const d = new Date(dateStr);
+        return d.toLocaleString('ko-KR', { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+    };
+
 
     const [status, setStatus] = useState<ApplicationStatus>(application.status);
     const [memo, setMemo] = useState("");
@@ -299,7 +314,46 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             <InfoRow label="신청일시" value={formatDate(application.registrationDate || application.createdAt) || '-'} />
                         </div>
                     </div>
+
+                    {/* Status History Section */}
+                    <div className="border-t border-gray-100 pt-4">
+                        <h3 className="text-sm font-bold text-sono-primary mb-3">상태 변경 이력</h3>
+                        <div className="space-y-4">
+                            {statusHistory === undefined ? (
+                                <div className="text-xs text-gray-400 py-2">이력을 불러오는 중...</div>
+                            ) : statusHistory.length === 0 ? (
+                                <div className="text-xs text-gray-400 py-2">변경 이력이 없습니다.</div>
+                            ) : (
+                                <div className="relative pl-4 space-y-4 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gray-100">
+                                    {statusHistory.map((history: any, idx: number) => (
+                                        <div key={history.historyId} className="relative">
+                                            <div className="absolute -left-[9px] top-1.5 w-3 h-3 rounded-full bg-gray-200 border-2 border-white" />
+                                            <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                                                <div className="flex justify-between items-start mb-1">
+                                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${getDynamicStatusStyles(history.newStatus, dbStatuses)}`}>
+                                                        {history.newStatus}
+                                                    </span>
+                                                    <span className="text-[10px] text-gray-400 font-medium">
+                                                        {formatHistoryDate(history.changedAt)}
+                                                    </span>
+                                                </div>
+                                                {history.memo && (
+                                                    <p className="text-xs text-sono-dark mt-1 font-medium bg-white p-2 rounded-lg border border-gray-100/50">
+                                                        {history.memo}
+                                                    </p>
+                                                )}
+                                                <div className="mt-1 flex justify-end">
+                                                    <span className="text-[9px] text-gray-400">작업자: {history.changedBy}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
+
 
                 {/* Sticky Bottom Save Bar */}
                 {isAdmin && (
