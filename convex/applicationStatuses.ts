@@ -12,6 +12,22 @@ export const getStatuses = query({
     },
 });
 
+// 파트너(지사/대리점) 노출용 상태 조회
+export const getPartnerStatuses = query({
+    handler: async (ctx) => {
+        return await ctx.db
+            .query("applicationStatuses")
+            .withIndex("by_order")
+            .filter((q) => 
+                q.and(
+                    q.eq(q.field("isActive"), true),
+                    q.eq(q.field("isPartnerVisible"), true)
+                )
+            )
+            .collect();
+    },
+});
+
 // 모든 상태 조회 (관리자 설정 페이지용)
 export const getAllStatuses = query({
     handler: async (ctx) => {
@@ -30,6 +46,7 @@ export const createStatus = mutation({
         order: v.number(),
         isActive: v.boolean(),
         isSystem: v.optional(v.boolean()),
+        isPartnerVisible: v.optional(v.boolean()),
     },
     handler: async (ctx, args) => {
         const id = await ctx.db.insert("applicationStatuses", {
@@ -48,6 +65,7 @@ export const updateStatus = mutation({
         color: v.optional(v.string()),
         order: v.optional(v.number()),
         isActive: v.optional(v.boolean()),
+        isPartnerVisible: v.optional(v.boolean()),
     },
     handler: async (ctx, args) => {
         const { id, ...updates } = args;

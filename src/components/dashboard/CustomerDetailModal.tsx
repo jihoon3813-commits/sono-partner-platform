@@ -150,7 +150,15 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     const defaultStatusOptions: string[] = [
         '접수대기', '접수완료', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '배송완료', '청약철회', '해약', '정산완료'
     ];
-    const statusOptions = dbStatuses ? dbStatuses.map(s => s.label) : defaultStatusOptions;
+    
+    // Filter statuses based on isAdmin and isPartnerVisible flag
+    const statusOptions = dbStatuses 
+        ? dbStatuses
+            .filter(s => isAdmin || s.isPartnerVisible)
+            .map(s => s.label) 
+        : defaultStatusOptions;
+
+    const canPartnerEditStatus = !isAdmin && statusOptions.length > 0;
 
     return (
         <div
@@ -173,14 +181,18 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                 <div className="p-6 space-y-6 flex-1 overflow-y-auto pb-24">
                     {/* Status Update/View Section */}
                     <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                        <label className="text-xs font-bold text-gray-500 mb-2 block">진행 상태 {isAdmin ? '변경' : ''}</label>
-                        {isAdmin ? (
+                        <label className="text-xs font-bold text-gray-500 mb-2 block">진행 상태 {(isAdmin || canPartnerEditStatus) ? '변경' : ''}</label>
+                        {(isAdmin || canPartnerEditStatus) ? (
                             <div className="space-y-3">
                                 <select
                                     value={status}
                                     onChange={(e) => setStatus(e.target.value as ApplicationStatus)}
                                     className="w-full bg-white border border-gray-200 text-sono-dark text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none font-bold"
                                 >
+                                    {/* 현재 상태가 목록에 없더라도 표시될 수 있게 함 (이미 설정된 상태가 파트너 비노출인 경우 등) */}
+                                    {!statusOptions.includes(status) && (
+                                        <option value={status}>{status} (변경불가)</option>
+                                    )}
                                     {statusOptions.map((opt) => (
                                         <option key={opt} value={opt}>{opt}</option>
                                     ))}
@@ -209,9 +221,20 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                         <div className="space-y-3">
                             {isAdmin ? (
                                 <>
-                                    <InputRow label="초회납입일" value={firstPaymentDate} onChange={setFirstPaymentDate} type="date" />
                                     <InputRow label="신규등록일" value={registrationDate} onChange={setRegistrationDate} type="date" />
-                                    <InputRow label="납입방법" value={paymentMethod} onChange={setPaymentMethod} placeholder="ex) 신용카드, 계좌이체" />
+                                    <InputRow label="초회납입일" value={firstPaymentDate} onChange={setFirstPaymentDate} type="date" />
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <span className="w-24 text-gray-400 font-medium shrink-0">납입방법</span>
+                                        <select
+                                            value={paymentMethod}
+                                            onChange={(e) => setPaymentMethod(e.target.value)}
+                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                        >
+                                            <option value="">선택하세요</option>
+                                            <option value="신용카드">신용카드</option>
+                                            <option value="계좌이체">계좌이체</option>
+                                        </select>
+                                    </div>
                                     <InputRow label="해약처리" value={cancellationProcessing} onChange={setCancellationProcessing} type="date" />
                                     <InputRow label="청약철회" value={withdrawalProcessing} onChange={setWithdrawalProcessing} type="date" />
                                     <div className="flex flex-col gap-1.5">
@@ -226,8 +249,8 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                 </>
                             ) : (
                                 <>
-                                    <InfoRow label="초회납입일" value={formatDate(application.firstPaymentDate) || '-'} />
                                     <InfoRow label="신규등록일" value={formatDate(application.registrationDate) || '-'} />
+                                    <InfoRow label="초회납입일" value={formatDate(application.firstPaymentDate) || '-'} />
                                     <InfoRow label="납입방법" value={application.paymentMethod || '-'} />
                                     <InfoRow label="해약처리" value={formatDate(application.cancellationProcessing) || '-'} />
                                     <InfoRow label="청약철회" value={formatDate(application.withdrawalProcessing) || '-'} />
@@ -356,7 +379,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
 
 
                 {/* Sticky Bottom Save Bar */}
-                {isAdmin && (
+                {(isAdmin || canPartnerEditStatus) && (
                     <div className="p-4 border-t border-gray-100 bg-white sticky bottom-0 rounded-b-[24px]">
                         <button
                             onClick={handleSaveAll}

@@ -252,5 +252,6 @@ export default defineSchema({
         order: v.number(), // 정렬 순서
         isActive: v.boolean(), // 활성화 여부
         isSystem: v.optional(v.boolean()), // 시스템 기본값 여부 (삭제 방지용)
+        isPartnerVisible: v.optional(v.boolean()), // 파트너에게 노출 및 변경 허용 여부
     }).index("by_order", ["order"]),
 });

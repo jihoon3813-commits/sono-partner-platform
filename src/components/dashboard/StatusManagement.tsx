@@ -18,6 +18,7 @@ export default function StatusManagement() {
     const [isAdding, setIsAdding] = useState(false);
     const [newLabel, setNewLabel] = useState("");
     const [newColor, setNewColor] = useState("text-slate-500");
+    const [newIsPartnerVisible, setNewIsPartnerVisible] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
     const handleAdd = async () => {
@@ -31,9 +32,11 @@ export default function StatusManagement() {
                 order: maxOrder + 1,
                 isActive: true,
                 isSystem: false,
+                isPartnerVisible: newIsPartnerVisible,
             });
             setNewLabel("");
             setNewColor("text-slate-500");
+            setNewIsPartnerVisible(false);
             setIsAdding(false);
         } catch (err) {
             alert("상태 추가 중 오류가 발생했습니다.");
@@ -47,6 +50,14 @@ export default function StatusManagement() {
             await updateStatus({ id, isActive: !isActive });
         } catch (err) {
             alert("상태 변경 중 오류가 발생했습니다.");
+        }
+    };
+
+    const handleTogglePartnerVisible = async (id: Id<"applicationStatuses">, isPartnerVisible: boolean) => {
+        try {
+            await updateStatus({ id, isPartnerVisible: !isPartnerVisible });
+        } catch (err) {
+            alert("파트너 권한 변경 중 오류가 발생했습니다.");
         }
     };
 
@@ -139,6 +150,7 @@ export default function StatusManagement() {
                             <th className="px-6 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider">상태 명칭 & 미리보기</th>
                             <th className="px-6 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[180px]">색상 설정</th>
                             <th className="px-6 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[100px]">활성 여부</th>
+                            <th className="px-6 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[100px]">파트너 노출</th>
                             <th className="px-6 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-right px-10 w-[120px]">작업</th>
                         </tr>
                     </thead>
@@ -179,6 +191,14 @@ export default function StatusManagement() {
                                 </td>
                                 <td className="px-6 py-4 text-center">
                                     <span className="text-sono-primary text-xs font-bold">활성</span>
+                                </td>
+                                <td className="px-6 py-4 text-center">
+                                    <button
+                                        onClick={() => setNewIsPartnerVisible(!newIsPartnerVisible)}
+                                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${newIsPartnerVisible ? 'bg-indigo-500' : 'bg-gray-200'}`}
+                                    >
+                                        <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${newIsPartnerVisible ? 'translate-x-5' : 'translate-x-1'}`} />
+                                    </button>
                                 </td>
                                 <td className="px-6 py-4 text-right px-10">
                                     <div className="flex items-center justify-end gap-2">
@@ -261,6 +281,14 @@ export default function StatusManagement() {
                                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${status.isActive ? 'bg-sono-primary' : 'bg-gray-200'}`}
                                     >
                                         <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${status.isActive ? 'translate-x-6' : 'translate-x-1'}`} />
+                                    </button>
+                                </td>
+                                <td className="px-6 py-4 text-center">
+                                    <button
+                                        onClick={() => handleTogglePartnerVisible(status._id, !!status.isPartnerVisible)}
+                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${status.isPartnerVisible ? 'bg-indigo-500' : 'bg-gray-200'}`}
+                                    >
+                                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${status.isPartnerVisible ? 'translate-x-6' : 'translate-x-1'}`} />
                                     </button>
                                 </td>
                                 <td className="px-6 py-4 text-right px-10">
