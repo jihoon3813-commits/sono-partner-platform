@@ -555,7 +555,22 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                 </div>
             )}
 
+            {!isWidget && (
+                <div className="flex items-center gap-2 px-6 py-4 bg-indigo-50 border border-indigo-100 rounded-2xl">
+                    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        </svg>
+                    </div>
+                    <span className="text-sm font-bold text-indigo-700">
+                        가입센터 발신번호 안내 : <span className="text-lg tracking-tight ml-1">1833-8434</span>
+                    </span>
+                    <span className="text-xs text-indigo-400 font-medium ml-2">고객님께 안내 시 활용해 주세요.</span>
+                </div>
+            )}
+
             <div className={`bg-white rounded-2xl shadow-sm overflow-hidden ${isWidget ? 'shadow-none' : ''}`}>
+
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>

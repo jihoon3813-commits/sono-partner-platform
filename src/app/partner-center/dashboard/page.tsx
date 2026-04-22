@@ -15,6 +15,8 @@ import StatusManagement from "@/components/dashboard/StatusManagement";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { PartnerRequest } from "@/lib/types";
+import { Footer } from "@/components/layout";
+
 
 type Tab = "overview" | "partners" | "products" | "promotions" | "customers" | "requests" | "library" | "stats" | "settings";
 
@@ -466,6 +468,8 @@ export default function PartnerDashboard() {
                     </a>
                 </div>
             </main>
+            <Footer />
         </div>
+
     );
 }

@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Footer } from "@/components/layout";
+
 
 function LoginForm() {
     const router = useRouter();
@@ -145,43 +147,47 @@ function LoginForm() {
 
 export default function PartnerCenterLoginPage() {
     return (
-        <div className="min-h-screen bg-[#f2f4f6] flex items-center justify-center p-6">
-            <div className="w-full max-w-[440px] animate-fade-in">
-                {/* 로고 및 제목 */}
-                <div className="text-center mb-12">
-                    <Link href="/partner-center/dashboard" className="inline-block group">
-                        <img
-                            src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png"
-                            alt="SONO Partner Center"
-                            className="h-16 w-auto object-contain mx-auto mb-6 transition-transform group-hover:scale-105 brightness-0"
-                        />
-                        <h1 className="text-3xl font-bold text-sono-dark tracking-tighter mb-2">파트너 센터</h1>
-                        <p className="text-[#6b7684] font-medium">소노아임레디 비즈니스 파트너 전용</p>
-                    </Link>
-                </div>
-
-                <Suspense fallback={<div>Loading...</div>}>
-                    <LoginForm />
-                </Suspense>
-
-                {/* 하단 링크 */}
-                <div className="mt-12 text-center space-y-4">
-                    <p className="text-[#adb5bd] text-sm font-medium">
-                        테스트 계정: <span className="text-[#6b7684]">demo</span> / <span className="text-[#6b7684]">demo1234</span>
-                    </p>
-                    <div>
-                        <Link href="/admin" className="text-[#adb5bd] hover:text-[#4e5968] font-bold text-sm transition-colors block mb-4">
-                            관리자 전용 로그인
+        <div className="min-h-screen bg-[#f2f4f6] flex flex-col">
+            <div className="flex-1 flex items-center justify-center p-6">
+                <div className="w-full max-w-[440px] animate-fade-in">
+                    {/* 로고 및 제목 */}
+                    <div className="text-center mb-12">
+                        <Link href="/partner-center/dashboard" className="inline-block group">
+                            <img
+                                src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png"
+                                alt="SONO Partner Center"
+                                className="h-16 w-auto object-contain mx-auto mb-6 transition-transform group-hover:scale-105 brightness-0"
+                            />
+                            <h1 className="text-3xl font-bold text-sono-dark tracking-tighter mb-2">파트너 센터</h1>
+                            <p className="text-[#6b7684] font-medium">소노아임레디 비즈니스 파트너 전용</p>
                         </Link>
-                        <Link href="/" className="text-[#8b95a1] hover:text-[#4e5968] font-bold text-sm transition-colors flex items-center justify-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
-                            메인 페이지로 돌아가기
-                        </Link>
+                    </div>
+
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <LoginForm />
+                    </Suspense>
+
+                    {/* 하단 링크 */}
+                    <div className="mt-12 text-center space-y-4">
+                        <p className="text-[#adb5bd] text-sm font-medium">
+                            테스트 계정: <span className="text-[#6b7684]">demo</span> / <span className="text-[#6b7684]">demo1234</span>
+                        </p>
+                        <div>
+                            <Link href="/admin" className="text-[#adb5bd] hover:text-[#4e5968] font-bold text-sm transition-colors block mb-4">
+                                관리자 전용 로그인
+                            </Link>
+                            <Link href="/" className="text-[#8b95a1] hover:text-[#4e5968] font-bold text-sm transition-colors flex items-center justify-center gap-2">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                                메인 페이지로 돌아가기
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
+            <Footer />
         </div>
     );
+
 }
