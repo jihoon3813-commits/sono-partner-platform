@@ -669,11 +669,11 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                 <div className="bg-blue-50/50 rounded-xl p-5 mb-3 grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     <div className="sm:border-r sm:border-blue-100 sm:pr-6">
                                         <p className="text-xs font-bold text-gray-500 mb-1">총 고객환급의무액</p>
-                                        <p className="text-xl md:text-2xl font-black text-blue-600 tracking-tight">1,129,868,124원</p>
+                                        <p className="text-xl md:text-2xl font-black text-blue-600 tracking-tight">1,129,868,124천원</p>
                                     </div>
                                     <div>
                                         <p className="text-xs font-bold text-gray-500 mb-1">상조 관련 자산</p>
-                                        <p className="text-xl md:text-2xl font-black text-blue-600 tracking-tight">1,230,275,029원</p>
+                                        <p className="text-xl md:text-2xl font-black text-blue-600 tracking-tight">1,230,275,029천원</p>
                                     </div>
                                 </div>
                                 <p className="text-xs text-gray-400 font-medium">(주)소노스테이션은 성지회계법인의 공인회계사를 통해 회계감사를 받고 있습니다.</p>

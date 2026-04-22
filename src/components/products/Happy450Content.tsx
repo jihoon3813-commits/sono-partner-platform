@@ -670,11 +670,11 @@ export default function Happy450Content({
                                         <div className="grid grid-cols-2 divide-x divide-gray-100">
                                             <div className="px-4 py-4 md:px-6 md:py-6">
                                                 <p className="text-[10px] md:text-xs font-bold text-sono-dark mb-2">총 고객환급의무액</p>
-                                                <p className="font-bold text-sono-primary text-sm md:text-lg">1,129,868,124원</p>
+                                                <p className="font-bold text-sono-primary text-sm md:text-lg">1,129,868,124천원</p>
                                             </div>
                                             <div className="px-4 py-4 md:px-6 md:py-6 text-right md:text-left">
                                                 <p className="text-[10px] md:text-xs font-bold text-sono-dark mb-2">상조 관련 자산</p>
-                                                <p className="font-bold text-sono-primary text-sm md:text-lg">1,230,275,029원</p>
+                                                <p className="font-bold text-sono-primary text-sm md:text-lg">1,230,275,029천원</p>
                                             </div>
                                         </div>
                                     </div>
