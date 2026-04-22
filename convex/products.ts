@@ -102,6 +102,30 @@ export const remove = mutation({
     },
 });
 
+// 구좌별 제휴카드 금액 일괄 설정
+export const bulkUpdateCardDiscount = mutation({
+    args: {
+        updates: v.array(v.object({
+            slotCount: v.number(),
+            cardDiscountPayment: v.number(),
+        })),
+    },
+    handler: async (ctx, args) => {
+        const now = new Date().toISOString();
+        const allProducts = await ctx.db.query("products").collect();
+        
+        for (const update of args.updates) {
+            const targets = allProducts.filter(p => p.slotCount === update.slotCount);
+            for (const p of targets) {
+                await ctx.db.patch(p._id, {
+                    cardDiscountPayment: update.cardDiscountPayment,
+                    updatedAt: now,
+                });
+            }
+        }
+    },
+});
+
 // 상품 데이터 초기화 (Seed/Import)
 export const seed = mutation({
     args: {

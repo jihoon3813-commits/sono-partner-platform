@@ -32,14 +32,19 @@ export default function ProductManagement() {
     const removeProduct = useMutation(api.products.remove);
     const syncFromBilligo = useAction(api.products.syncFromBilligo);
     const updateOrder = useMutation(api.products.updateOrder);
+    const bulkUpdateCardDiscount = useMutation(api.products.bulkUpdateCardDiscount);
     const promotions = useQuery(api.promotions.get);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("all");
     const [slotFilter, setSlotFilter] = useState("all");
     const [isSyncing, setIsSyncing] = useState(false);
+    const [bulkDiscounts, setBulkDiscounts] = useState<Record<number, number>>({
+        1: 0, 2: 0, 3: 0, 4: 0, 6: 0
+    });
 
     const categories = ["에어컨", "냉장가전", "주방가전", "생활가전", "TV", "캠핑/레저", "가전패키지", "기타"];
     const slots = [1, 2, 3, 4, 6];
@@ -77,6 +82,22 @@ export default function ProductManagement() {
         } catch (error) {
             console.error(error);
             alert("저장 중 오류가 발생했습니다.");
+        }
+    };
+
+    const handleBulkSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const updates = Object.entries(bulkDiscounts).map(([slotCount, amount]) => ({
+                slotCount: Number(slotCount),
+                cardDiscountPayment: amount
+            }));
+            await bulkUpdateCardDiscount({ updates });
+            setIsBulkModalOpen(false);
+            alert("구좌별 제휴카드 금액이 일괄 변경되었습니다.");
+        } catch (error) {
+            console.error(error);
+            alert("일괄 변경 중 오류가 발생했습니다.");
         }
     };
 
@@ -134,6 +155,12 @@ export default function ProductManagement() {
                         className={`bg-sono-gold text-white font-bold px-6 py-3 rounded-2xl transition-all shadow-lg ${isSyncing ? 'opacity-50 cursor-not-allowed' : 'hover:bg-sono-dark'}`}
                     >
                         {isSyncing ? "동기화 중..." : "실시간 동기화"}
+                    </button>
+                    <button
+                        onClick={() => setIsBulkModalOpen(true)}
+                        className="bg-white border border-sono-primary text-sono-primary font-bold px-6 py-3 rounded-2xl hover:bg-sono-primary/10 transition-all shadow-lg"
+                    >
+                        제휴카드 일괄 설정
                     </button>
                     <button
                         onClick={() => {
@@ -421,6 +448,59 @@ export default function ProductManagement() {
                                     className="px-10 py-4 rounded-2xl font-bold bg-sono-primary text-white hover:bg-sono-dark transition-all shadow-xl shadow-sono-primary/20"
                                 >
                                     저장하기
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* 제휴카드 일괄 설정 모달 */}
+            {isBulkModalOpen && (
+                <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
+                    <div className="bg-white rounded-[32px] w-full max-w-lg overflow-hidden shadow-2xl animate-scale-in">
+                        <div className="bg-sono-dark px-8 py-6 text-white flex justify-between items-center">
+                            <h3 className="text-xl font-black tracking-tight">구좌별 제휴카드 금액 일괄 설정</h3>
+                            <button onClick={() => setIsBulkModalOpen(false)} className="opacity-60 hover:opacity-100 transition-opacity">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="p-8 pb-4">
+                            <p className="text-sm font-bold text-gray-500 mb-6 bg-sono-primary/5 p-4 rounded-xl border border-sono-primary/10">
+                                💡 여기에 설정된 금액은 동일한 구좌를 가진 <b>모든 제품</b>의 제휴카드 할인시 납입금으로 즉시 일괄 적용됩니다.
+                            </p>
+                        </div>
+                        <form onSubmit={handleBulkSave} className="px-8 pb-8 space-y-4">
+                            {slots.map(slot => (
+                                <div key={slot} className="flex items-center justify-between p-4 bg-[#f9fafb] rounded-2xl">
+                                    <label className="text-sm font-black text-sono-dark min-w-[80px]">{slot}구좌</label>
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="number"
+                                            value={bulkDiscounts[slot] || 0}
+                                            onChange={(e) => setBulkDiscounts(prev => ({ ...prev, [slot]: Number(e.target.value) }))}
+                                            className="w-40 bg-white border border-gray-200 rounded-xl py-2.5 px-4 text-sm font-bold text-right focus:ring-2 focus:ring-sono-primary"
+                                        />
+                                        <span className="text-sm font-bold text-gray-500">원</span>
+                                    </div>
+                                </div>
+                            ))}
+
+                            <div className="flex justify-end gap-3 mt-8">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsBulkModalOpen(false)}
+                                    className="px-6 py-3.5 rounded-2xl font-bold text-gray-500 hover:bg-gray-100 transition-all"
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-8 py-3.5 rounded-2xl font-bold bg-sono-primary text-white hover:bg-sono-dark transition-all shadow-xl shadow-sono-primary/20"
+                                >
+                                    일괄 변경하기
                                 </button>
                             </div>
                         </form>
