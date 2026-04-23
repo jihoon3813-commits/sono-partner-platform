@@ -125,7 +125,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                     planType,
                     inquiry,
                     preferredContactTime,
-                    changedBy: partnerLoginId || "admin",
+                    changedBy: isAdmin ? "admin" : (partnerLoginId || "unknown"),
                 }),
             });
 
