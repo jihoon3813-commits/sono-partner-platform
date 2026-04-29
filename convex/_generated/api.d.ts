@@ -18,6 +18,7 @@ import type * as products from "../products.js";
 import type * as promotions from "../promotions.js";
 import type * as requests from "../requests.js";
 import type * as resources from "../resources.js";
+import type * as retention from "../retention.js";
 import type * as settings from "../settings.js";
 import type * as telegram from "../telegram.js";
 import type * as utils from "../utils.js";
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   promotions: typeof promotions;
   requests: typeof requests;
   resources: typeof resources;
+  retention: typeof retention;
   settings: typeof settings;
   telegram: typeof telegram;
   utils: typeof utils;
