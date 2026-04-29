@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Application, ApplicationStatus } from "@/lib/types";
@@ -88,20 +88,59 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     const [customerBirth, setCustomerBirth] = useState(application.customerBirth || "");
     const [customerGender, setCustomerGender] = useState(application.customerGender || "");
     const [customerAddress, setCustomerAddress] = useState(application.customerAddress || "");
-    const [customerZipcode, setCustomerZipcode] = useState(application.customerZipcode || "");
+    const [detailAddress, setDetailAddress] = useState(""); // 상세주소 분리
 
     // 신청 상품 정보
     const [productType, setProductType] = useState(application.productType || "happy450");
     const [products, setProducts] = useState(application.products || "");
-    const [planType, setPlanType] = useState(application.planType || "");
+    const [planType, setPlanType] = useState(application.planType || "1구좌");
     const [inquiry, setInquiry] = useState(application.inquiry || "");
     const [preferredContactTime, setPreferredContactTime] = useState(application.preferredContactTime || "");
 
     const [isSavingDetails, setIsSavingDetails] = useState(false);
 
+    // 주소 검색 스크립트 로드
+    useEffect(() => {
+        const script = document.createElement("script");
+        script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+        script.async = true;
+        document.body.appendChild(script);
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
+
+    const handleAddressSearch = () => {
+        // @ts-ignore
+        new window.daum.Postcode({
+            oncomplete: function (data: any) {
+                let addr = data.roadAddress;
+                let extraAddr = '';
+
+                if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                    extraAddr += data.bname;
+                }
+                if (data.buildingName !== '' && data.apartment === 'Y') {
+                    extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                }
+                if (extraAddr !== '') {
+                    extraAddr = ' (' + extraAddr + ')';
+                }
+
+                setCustomerAddress(addr + extraAddr);
+                setDetailAddress(""); // 주소 검색 시 상세주소 초기화
+            },
+        }).open();
+    };
+
     const handleSaveAll = async () => {
         setIsLoading(true);
         try {
+            // 상세주소가 있으면 기본 주소 뒤에 붙여서 저장
+            const fullAddress = detailAddress.trim() 
+                ? `${customerAddress.trim()} ${detailAddress.trim()}` 
+                : customerAddress.trim();
+
             const response = await fetch(`/api/applications/${application.applicationNo}/details`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
@@ -118,8 +157,8 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                     customerPhone,
                     customerBirth,
                     customerGender,
-                    customerAddress,
-                    customerZipcode,
+                    customerAddress: fullAddress,
+                    customerZipcode: "", // 우편번호 삭제
                     productType,
                     products,
                     planType,
@@ -280,8 +319,36 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                             <option value="여성">여성</option>
                                         </select>
                                     </div>
-                                    <InputRow label="우편번호" value={customerZipcode} onChange={setCustomerZipcode} />
-                                    <InputRow label="주소" value={customerAddress} onChange={setCustomerAddress} />
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex items-center gap-2 text-sm">
+                                            <span className="w-24 text-gray-400 font-medium shrink-0">주소</span>
+                                            <div className="flex-1 flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={customerAddress}
+                                                    readOnly
+                                                    placeholder="주소 검색을 이용하세요"
+                                                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 outline-none h-[34px]"
+                                                />
+                                                <button
+                                                    onClick={handleAddressSearch}
+                                                    className="px-3 py-1.5 bg-sono-primary text-white text-[11px] font-bold rounded-lg hover:bg-sono-secondary transition-colors shrink-0"
+                                                >
+                                                    주소 검색
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm">
+                                            <span className="w-24 text-gray-400 font-medium shrink-0">상세주소</span>
+                                            <input
+                                                type="text"
+                                                value={detailAddress}
+                                                onChange={(e) => setDetailAddress(e.target.value)}
+                                                placeholder="상세주소를 입력하세요"
+                                                className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                            />
+                                        </div>
+                                    </div>
                                 </>
                             ) : (
                                 <>
@@ -289,7 +356,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                     <InfoRow label="연락처" value={application.customerPhone} showCopy showCopyNoHyphen />
                                     <InfoRow label="생년월일" value={application.customerBirth} />
                                     <InfoRow label="성별" value={application.customerGender} />
-                                    <InfoRow label="주소" value={`${application.customerAddress} ${application.customerZipcode}`} />
+                                    <InfoRow label="주소" value={application.customerAddress} />
                                 </>
                             )}
                         </div>
@@ -312,15 +379,47 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                         </select>
                                     </div>
                                     <InputRow label="가전제품" value={products} onChange={setProducts} />
-                                    <InputRow label="플랜" value={planType} onChange={setPlanType} />
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <span className="w-24 text-gray-400 font-medium shrink-0">구좌</span>
+                                        <select
+                                            value={planType}
+                                            onChange={(e) => setPlanType(e.target.value)}
+                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                        >
+                                            {!["1구좌", "2구좌", "3구좌"].includes(planType) && planType && (
+                                                <option value={planType}>{planType}</option>
+                                            )}
+                                            <option value="1구좌">1구좌</option>
+                                            <option value="2구좌">2구좌</option>
+                                            <option value="3구좌">3구좌</option>
+                                        </select>
+                                    </div>
                                     <InputRow label="문의사항" value={inquiry} onChange={setInquiry} />
-                                    <InputRow label="선호 시간" value={preferredContactTime} onChange={setPreferredContactTime} />
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <span className="w-24 text-gray-400 font-medium shrink-0">선호 시간</span>
+                                        <select
+                                            value={preferredContactTime}
+                                            onChange={(e) => setPreferredContactTime(e.target.value)}
+                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                        >
+                                            <option value="">선택하세요</option>
+                                            {preferredContactTime && !["10시~11시", "11시~12시", "14시~15시", "15시~16시", "16시~17시", "17시~18시"].includes(preferredContactTime) && (
+                                                <option value={preferredContactTime}>{preferredContactTime}</option>
+                                            )}
+                                            <option value="10시~11시">10시~11시</option>
+                                            <option value="11시~12시">11시~12시</option>
+                                            <option value="14시~15시">14시~15시</option>
+                                            <option value="15시~16시">15시~16시</option>
+                                            <option value="16시~17시">16시~17시</option>
+                                            <option value="17시~18시">17시~18시</option>
+                                        </select>
+                                    </div>
                                 </>
                             ) : (
                                 <>
                                     <InfoRow label="상품 유형" value={getProductTypeLabel(application.productType)} />
                                     <InfoRow label="가전제품" value={application.products || '-'} />
-                                    <InfoRow label="플랜" value={application.planType ? (application.planType.includes("구좌") ? application.planType : `${application.planType}구좌`) : '-'} />
+                                    <InfoRow label="구좌" value={application.planType ? (application.planType.includes("구좌") ? application.planType : `${application.planType}구좌`) : '-'} />
                                     <InfoRow label="문의사항" value={application.inquiry || '-'} />
                                     <InfoRow label="선호 시간" value={application.preferredContactTime || '-'} />
                                 </>

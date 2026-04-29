@@ -38,7 +38,8 @@ function LoginForm() {
             const data = await response.json();
 
             if (response.ok) {
-                localStorage.setItem("partnerSession", JSON.stringify(data.partner));
+                // 관리자 바로가기(자동 로그인) 시에는 기존 세션과 충돌하지 않도록 sessionStorage 사용
+                sessionStorage.setItem("partnerSession", JSON.stringify(data.partner));
                 router.push("/partner-center/dashboard");
             } else {
                 setError(data.message || "자동 로그인에 실패했습니다.");

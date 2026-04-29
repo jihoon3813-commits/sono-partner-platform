@@ -255,4 +255,35 @@ export default defineSchema({
         isSystem: v.optional(v.boolean()), // 시스템 기본값 여부 (삭제 방지용)
         isPartnerVisible: v.optional(v.boolean()), // 파트너에게 노출 및 변경 허용 여부
     }).index("by_order", ["order"]),
+
+    // 유지율 관리 데이터 테이블
+    retentionRecords: defineTable({
+        certNo: v.string(), // 증권번호
+        memberNo: v.string(), // 회원번호
+        joinDate: v.string(), // 가입일자
+        customerName: v.string(), // 고객명
+        birth: v.string(), // 생년월일
+        phone: v.string(), // 휴대전화
+        productName: v.string(), // 가입상품
+        joinStatus: v.string(), // 가입상태
+        b2bCompany: v.string(), // B2B회사명
+        paymentStatus: v.string(), // 납입상태
+        modelName: v.optional(v.string()), // 모델분류명
+        transferDate: v.optional(v.string()), // 이체일자
+        paymentMethod: v.string(), // 납입방법
+        cancelStatus: v.optional(v.string()), // 해약처리
+        approvalStatus: v.string(), // 승인상태
+        b2bId: v.optional(v.string()), // B2B사번
+        idNo: v.string(), // ID_NO (R열 - 매핑 기준)
+        discountCount: v.number(), // 특별할인회차
+        actualPaymentCount: v.number(), // 실납입회차
+        uploadedAt: v.string(),
+    }).index("by_idNo", ["idNo"]),
+
+    // 파트너별 유지율 ID_NO 매핑 테이블
+    partnerRetentionMappings: defineTable({
+        partnerId: v.string(),
+        idNos: v.array(v.string()), // ['김지훈', '김현진' 등]
+        updatedAt: v.string(),
+    }).index("by_partnerId", ["partnerId"]),
 });

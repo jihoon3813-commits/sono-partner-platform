@@ -12,32 +12,65 @@ import PartnerFormModal from "@/components/dashboard/PartnerFormModal";
 import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
 import PromotionManagement from "@/components/dashboard/PromotionManagement";
 import StatusManagement from "@/components/dashboard/StatusManagement";
+import RetentionManagement from "@/components/dashboard/RetentionManagement";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { PartnerRequest } from "@/lib/types";
 import { Footer } from "@/components/layout";
 
 
-type Tab = "overview" | "partners" | "products" | "promotions" | "customers" | "requests" | "library" | "stats" | "settings";
+type Tab = "overview" | "partners" | "products" | "promotions" | "customers" | "requests" | "library" | "stats" | "settings" | "retention";
 
 export default function PartnerDashboard() {
     const router = useRouter();
     const [partner, setPartner] = useState<any>(null);
     const [activeTab, setActiveTab] = useState<Tab>("overview");
-    const [copySuccess, setCopySuccess] = useState(false);
     const [baseUrl, setBaseUrl] = useState("");
+    const [copySuccess, setCopySuccess] = useState(false);
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
     const [selectedRequest, setSelectedRequest] = useState<PartnerRequest | null>(null);
 
+    // 네비게이션 헬퍼 컴포넌트
+    const NavButton = ({ id, label, icon, count }: { id: string; label: string; icon: string; count?: number }) => (
+        <button
+            onClick={() => {
+                setActiveTab(id as Tab);
+                fetchData();
+            }}
+            className={`px-3 py-2 rounded-xl text-[13px] font-black transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === id
+                ? "bg-white text-sono-primary shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
+                : "text-gray-400 hover:text-gray-600 hover:bg-white/50"
+                }`}
+        >
+            <svg className={`w-3.5 h-3.5 ${activeTab === id ? "text-sono-primary" : "text-gray-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d={icon} />
+            </svg>
+            {label}
+            {count !== undefined && count > 0 && (
+                <span className="bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
+                    {count}
+                </span>
+            )}
+        </button>
+    );
+
     // 세션 로드 (컴포넌트 마운트 시 한 번만 실행)
     useEffect(() => {
-        const session = localStorage.getItem("partnerSession");
+        // sessionStorage 우선 확인 (관리자 바로가기 등 탭 격리 세션)
+        let session = sessionStorage.getItem("partnerSession");
+        
+        // sessionStorage에 없으면 localStorage 확인
+        if (!session) {
+            session = localStorage.getItem("partnerSession");
+        }
+
         if (!session) {
             router.push("/partner-center");
             return;
         }
         try {
             if (session === "undefined" || session === "null") {
+                sessionStorage.removeItem("partnerSession");
                 localStorage.removeItem("partnerSession");
                 router.push("/partner-center");
                 return;
@@ -47,6 +80,7 @@ export default function PartnerDashboard() {
             setBaseUrl(window.location.origin);
         } catch (e) {
             console.error("Session parse error:", e);
+            sessionStorage.removeItem("partnerSession");
             localStorage.removeItem("partnerSession");
             router.push("/partner-center");
         }
@@ -96,14 +130,12 @@ export default function PartnerDashboard() {
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
 
     // Only show the initial loading screen when we have NO data at all
-    const isInitialLoading = !realTimeData && !partner;
-
-    if (isInitialLoading || !partner) {
+    if (!partner || !dashboardData) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#f2f4f6]">
+            <div className="min-h-screen bg-[#f2f4f6] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-sono-primary/20 border-t-sono-primary rounded-full animate-spin"></div>
-                    <p className="text-sono-dark font-black animate-pulse">데이터를 불러오는 중...</p>
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-sono-primary border-t-transparent"></div>
+                    <p className="text-gray-500 font-bold">데이터를 불러오는 중...</p>
                 </div>
             </div>
         );
@@ -144,122 +176,129 @@ export default function PartnerDashboard() {
     return (
         <div className="min-h-screen bg-[#f2f4f6]">
             {/* Header */}
-            <header className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 md:px-8 py-4">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
-                    <div className="flex flex-col md:flex-row items-center gap-4 md:gap-4 w-full md:w-auto">
-                        <div className="flex justify-between w-full md:w-auto items-center">
-                            <a href="/partner-center/dashboard" className="flex items-center gap-1.5 flex-shrink-0">
-                                <img
-                                    src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png"
-                                    alt="SONO Logo"
-                                    className="h-6 w-auto brightness-0"
-                                />
-                                <span className="font-extrabold text-base tracking-tighter text-sono-dark">DASHBOARD</span>
-                            </a>
-
-                            {/* Mobile Actions (Refresh & Home & Logout) */}
-                            <div className="flex items-center gap-2 md:hidden">
+            <header className="relative z-50 bg-white border-b border-gray-100 px-4 md:px-8 py-3 md:py-4">
+                {isAdmin ? (
+                    /* HQ Admin Header: 2-Row Centered Layout */
+                    <div className="max-w-7xl mx-auto space-y-4">
+                        {/* Top Row: Utilities + Logo + User */}
+                        <div className="flex items-center justify-between">
+                            <div className="w-[100px] md:w-[240px]">
                                 <button
                                     onClick={() => fetchData()}
-                                    className="p-1.5 bg-sono-primary/10 text-sono-primary rounded-lg border border-sono-primary/20"
+                                    className="p-1.5 bg-gray-50 text-gray-400 rounded-lg border border-gray-100 hover:bg-sono-primary/10 hover:text-sono-primary transition-all"
                                     title="새로고침"
                                 >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                     </svg>
                                 </button>
-                                <Link
-                                    href={partner?.customUrl && partner.customUrl !== "admin" ? `/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/products/smartcare" : ""}` : "/"}
-                                    target="_blank"
-                                    className="p-1.5 bg-gray-100 text-gray-500 rounded-lg border border-gray-200"
-                                    title="홈페이지 바로가기"
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                    </svg>
-                                </Link>
+                            </div>
+
+                            <div className="flex-1 flex justify-center">
+                                <a href="/partner-center/dashboard" className="flex items-center gap-1.5 group">
+                                    <img
+                                        src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png"
+                                        alt="SONO Logo"
+                                        className="h-5 md:h-7 w-auto brightness-0 transition-transform group-hover:scale-105"
+                                    />
+                                    <div className="h-3 w-px bg-gray-200 mx-1 md:mx-2"></div>
+                                    <span className="font-black text-sm md:text-lg tracking-tighter text-sono-dark uppercase">HQ ADMIN</span>
+                                </a>
+                            </div>
+
+                            <div className="flex items-center justify-end gap-2 w-[100px] md:w-[240px]">
+                                <span className="hidden md:inline text-xs font-black text-sono-dark whitespace-nowrap">{partner.name}님</span>
                                 <button
-                                    onClick={() => { localStorage.removeItem("partnerSession"); router.push("/partner-center"); }}
-                                    className="bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap"
+                                    onClick={() => { 
+                                        sessionStorage.removeItem("partnerSession");
+                                        localStorage.removeItem("partnerSession"); 
+                                        router.push("/partner-center"); 
+                                    }}
+                                    className="bg-gray-100 text-gray-500 px-2 py-1.5 md:px-3 rounded-lg text-[10px] font-black hover:bg-red-50 hover:text-red-500 transition-all whitespace-nowrap"
                                 >
                                     로그아웃
                                 </button>
                             </div>
                         </div>
 
-                        <nav className="flex gap-0.5 bg-gray-50/80 p-1 rounded-[14px] w-full md:w-auto justify-center overflow-hidden">
-                            {[
-                                { id: "overview", label: "대시보드" },
-                                { id: "partners", label: "파트너 관리" },
-                                ...(isAdmin ? [
-                                    { id: "products", label: "제품 관리" },
-                                    { id: "promotions", label: "프로모션 관리" },
-                                ] : []),
-                                { id: "customers", label: "고객 관리" },
-                                { id: "library", label: "자료실" },
-                                ...(isAdmin ? [
-                                    { id: "requests", label: "입점 신청", count: dashboardData.pendingRequests.length },
-                                    { id: "stats", label: "통계분석" },
-                                    { id: "settings", label: "설정" }
-                                ] : [])
-                            ].map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => {
-                                        setActiveTab(tab.id as Tab);
-                                        fetchData();
-                                    }}
-                                    className={`px-3 py-2 rounded-[10px] text-[13px] font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${activeTab === tab.id
-                                        ? "bg-white text-sono-primary shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
-                                        : "text-gray-400 hover:text-gray-600 hover:bg-white/50"
-                                        }`}
-                                >
-                                    {tab.label}
-                                    {tab.count !== undefined && tab.count > 0 && (
-                                        <span className="bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-                                            {tab.count}
-                                        </span>
-                                    )}
-                                </button>
-                            ))}
-                        </nav>
-                    </div>
-
-                    <div className="hidden lg:flex items-center gap-3">
-                        <Link
-                            href={partner?.customUrl && partner.customUrl !== "admin" ? `/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/products/smartcare" : ""}` : "/"}
-                            target="_blank"
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 text-gray-500 rounded-xl text-xs font-bold hover:bg-gray-50 transition-all"
-                        >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
-                            홈페이지
-                        </Link>
-                        <button
-                            onClick={() => fetchData()}
-                            className="p-2 bg-gray-50 text-gray-400 rounded-xl border border-gray-100 hover:bg-gray-100 transition-all"
-                            title="새로고침"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                        </button>
-                        <div className="h-6 w-px bg-gray-200 mx-1"></div>
-                        <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-black text-sono-dark whitespace-nowrap">{partner.name}님</span>
-                            <button
-                                onClick={() => {
-                                    localStorage.removeItem("partnerSession");
-                                    router.push("/partner-center");
-                                }}
-                                className="bg-gray-100 text-gray-500 px-3 py-1.5 rounded-xl text-[11px] font-black hover:bg-gray-200 transition-all"
-                            >
-                                로그아웃
-                            </button>
+                        {/* Bottom Row: Centered Menu Bar (Width fits content) */}
+                        <div className="flex justify-center">
+                            <div className="overflow-x-auto no-scrollbar max-w-full">
+                                <nav className="inline-flex items-center gap-1 bg-gray-100/50 p-1 rounded-2xl border border-gray-200/30">
+                                    <NavButton id="overview" label="대시보드" icon="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    <NavButton id="partners" label="파트너 관리" icon="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    <NavButton id="requests" label="입점 신청" icon="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" count={dashboardData.pendingRequests.length} />
+                                    <NavButton id="products" label="제품" icon="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    <NavButton id="promotions" label="프로모션" icon="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                                    <NavButton id="customers" label="고객 관리" icon="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    <NavButton id="retention" label="유지율" icon="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    <NavButton id="stats" label="통계" icon="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                                    <NavButton id="library" label="자료실" icon="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.247 18.477 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    <NavButton id="settings" label="환경설정" icon="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </nav>
+                            </div>
                         </div>
                     </div>
-                </div>
+                ) : (
+                    /* Partner Header: Compact Side-by-Side Layout */
+                    <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+                        {/* Logo Left */}
+                        <div className="flex items-center gap-6 shrink-0">
+                            <a href="/partner-center/dashboard" className="flex items-center gap-1.5 group">
+                                <img
+                                    src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png"
+                                    alt="SONO Logo"
+                                    className="h-5 md:h-6 w-auto brightness-0 transition-transform group-hover:scale-105"
+                                />
+                                <div className="h-3 w-px bg-gray-200 mx-1 md:mx-2"></div>
+                                <span className="font-black text-sm md:text-base tracking-tighter text-sono-dark">DASHBOARD</span>
+                            </a>
+
+                            {/* Menu Bar Alongside (Desktop) */}
+                            <nav className="hidden lg:flex items-center gap-1 bg-gray-100/50 p-1 rounded-2xl border border-gray-200/30">
+                                <NavButton id="overview" label="대시보드" icon="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                <NavButton id="customers" label="고객 관리" icon="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                <NavButton id="retention" label="유지율 관리" icon="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                <NavButton id="library" label="자료실" icon="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.247 18.477 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </nav>
+                        </div>
+
+                        {/* Right Utilities + Mobile Menu Toggle */}
+                        <div className="flex items-center gap-2 md:gap-4 ml-auto">
+                            {/* Mobile Menu Bar (visible only on small screens) */}
+                            <nav className="lg:hidden flex items-center gap-1 bg-gray-100/50 p-1 rounded-2xl border border-gray-200/30 overflow-x-auto no-scrollbar max-w-[200px] md:max-w-md">
+                                <NavButton id="overview" label="대시보드" icon="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                <NavButton id="customers" label="고객 관리" icon="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                <NavButton id="retention" label="유지율 관리" icon="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                <NavButton id="library" label="자료실" icon="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.247 18.477 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </nav>
+
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => fetchData()}
+                                    className="p-1.5 bg-gray-50 text-gray-400 rounded-lg border border-gray-100 hover:bg-sono-primary/10 hover:text-sono-primary transition-all hidden sm:block"
+                                    title="새로고침"
+                                >
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                </button>
+                                <div className="h-4 w-px bg-gray-200 hidden sm:block"></div>
+                                <span className="hidden xl:inline text-xs font-black text-sono-dark whitespace-nowrap">{partner.name}님</span>
+                                <button
+                                    onClick={() => { 
+                                        sessionStorage.removeItem("partnerSession");
+                                        localStorage.removeItem("partnerSession"); 
+                                        router.push("/partner-center"); 
+                                    }}
+                                    className="bg-gray-100 text-gray-500 px-2 py-1.5 rounded-lg text-[10px] font-black hover:bg-red-50 hover:text-red-500 transition-all whitespace-nowrap"
+                                >
+                                    로그아웃
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </header>
 
             <main className="max-w-7xl mx-auto p-4 md:p-8">
@@ -434,6 +473,14 @@ export default function PartnerDashboard() {
 
                 {activeTab === "settings" && isAdmin && (
                     <StatusManagement />
+                )}
+
+                {activeTab === "retention" && (
+                    <RetentionManagement 
+                        isAdmin={isAdmin} 
+                        partnerId={partner?.partnerId} 
+                        partners={dashboardData.partners as any} 
+                    />
                 )}
 
                 {selectedRequest && (

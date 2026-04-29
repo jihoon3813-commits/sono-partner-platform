@@ -116,11 +116,24 @@ export default function InquiryModal({
         const daum = (window as any).daum;
         if (daum && daum.Postcode) {
             new daum.Postcode({
-                oncomplete: (data: DaumPostcodeData) => {
+                oncomplete: (data: any) => {
+                    let addr = data.roadAddress || data.address;
+                    let extraAddr = '';
+
+                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if (data.buildingName !== '' && data.apartment === 'Y') {
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    if (extraAddr !== '') {
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+
                     setFormData(prev => ({
                         ...prev,
                         zonecode: data.zonecode,
-                        address: data.address,
+                        address: addr + extraAddr,
                     }));
                 },
             }).open();
