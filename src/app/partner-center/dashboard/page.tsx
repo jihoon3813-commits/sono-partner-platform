@@ -95,8 +95,18 @@ export default function PartnerDashboard() {
     // Fetch dynamic statuses for overview
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
 
-    if (isLoading || !partner) {
-        return <div className="p-20 text-center font-bold">데이터를 불러오는 중...</div>;
+    // Only show the initial loading screen when we have NO data at all
+    const isInitialLoading = !realTimeData && !partner;
+
+    if (isInitialLoading || !partner) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[#f2f4f6]">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-sono-primary/20 border-t-sono-primary rounded-full animate-spin"></div>
+                    <p className="text-sono-dark font-black animate-pulse">데이터를 불러오는 중...</p>
+                </div>
+            </div>
+        );
     }
 
     const isAdmin = dashboardData.isAdmin;
