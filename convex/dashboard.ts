@@ -1,5 +1,6 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
+import { attachDuplicateFlags } from "./applications";
 
 export const getDashboardData = query({
     args: { partnerId: v.optional(v.string()) },
@@ -20,7 +21,7 @@ export const getDashboardData = query({
             return {
                 isAdmin,
                 partners,
-                customers: applications,
+                customers: attachDuplicateFlags(applications, applications),
                 pendingRequests
             };
         }
@@ -70,7 +71,7 @@ export const getDashboardData = query({
         return {
             isAdmin: false,
             partners: partnerList,
-            customers: filteredApps,
+            customers: attachDuplicateFlags(filteredApps, allApplications),
             pendingRequests: []
         };
     },

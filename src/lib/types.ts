@@ -62,6 +62,8 @@ export interface Application {
     withdrawalProcessing?: string;
     remarks?: string;
     statusUpdatedAt?: string;
+    duplicateConfirmed?: boolean;
+    hasDuplicate?: boolean;
 }
 
 // 계약 상태 (진행상태 설정에서 동적으로 관리됨)

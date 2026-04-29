@@ -44,6 +44,8 @@ export default function CustomerManagement({ applications, onRefresh, partners =
     const [selectedAppIds, setSelectedAppIds] = useState<string[]>([]);
     const [isDeleting, setIsDeleting] = useState(false);
     const [showStatusHelp, setShowStatusHelp] = useState(false);
+    const [checkingApp, setCheckingApp] = useState<Application | null>(null);
+    const confirmDuplicate = useMutation(api.applications.confirmDuplicate);
 
     const deleteApplications = useMutation(api.applications.deleteApplications);
 
@@ -670,8 +672,25 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                                 <div className="text-sm font-bold text-sono-dark">{app.partnerName}</div>
                                                 {partners.length > 0 && <div className="text-[10px] text-gray-400 font-bold">{getPartnerLoginId(app.partnerId, app.partnerName)}</div>}
                                             </td>
-                                            <td className="px-2 py-4 text-center whitespace-nowrap min-w-[60px]">
-                                                <div className="text-sm font-medium text-sono-dark">{app.customerName}</div>
+                                            <td className="px-2 py-4 text-center whitespace-nowrap min-w-[80px]">
+                                                <div className="flex flex-col items-center gap-1.5">
+                                                    <div className="text-sm font-bold text-sono-dark">{app.customerName}</div>
+                                                    {app.hasDuplicate && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setCheckingApp(app);
+                                                            }}
+                                                            className={`text-[10px] px-2 py-0.5 rounded-md transition-all font-black shadow-sm border ${
+                                                                app.duplicateConfirmed 
+                                                                ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+                                                                : "bg-red-50 text-red-600 border-red-100 animate-pulse"
+                                                            }`}
+                                                        >
+                                                            {app.duplicateConfirmed ? "중복 확인 완료" : "중복 접수"}
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="px-2 py-4 text-xs text-center text-gray-500 whitespace-nowrap">
                                                 {app.customerPhone}
@@ -866,6 +885,133 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                     </div>
                 </div>
             )}
+            {/* 중복 확인 모달 */}
+            {checkingApp && (
+                <DuplicateCheckModal 
+                    app={checkingApp} 
+                    onClose={() => setCheckingApp(null)} 
+                    onConfirm={async (appNo) => {
+                        try {
+                            await confirmDuplicate({ applicationNo: appNo });
+                            setCheckingApp(null);
+                            onRefresh();
+                        } catch (err) {
+                            console.error("Confirm failed", err);
+                            alert("확인 처리 중 오류가 발생했습니다.");
+                        }
+                    }}
+                />
+            )}
+        </div>
+    );
+}
+
+// 중복 확인 모달 컴포넌트
+function DuplicateCheckModal({ app, onClose, onConfirm }: { app: Application, onClose: () => void, onConfirm: (appNo: string) => void }) {
+    const duplicates = useQuery(api.applications.checkDuplicateCustomer, {
+        customerName: app.customerName || "",
+        customerPhone: app.customerPhone || "",
+        excludeApplicationNo: app.applicationNo
+    });
+
+    return (
+        <div 
+            className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200"
+            onClick={onClose}
+        >
+            <div 
+                className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100 animate-in zoom-in duration-300"
+                onClick={e => e.stopPropagation()}
+            >
+                <div className="p-6 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
+                    <div>
+                        <h3 className="text-lg font-black text-sono-dark tracking-tight">중복 가입 확인</h3>
+                        <p className="text-xs text-gray-400 font-bold mt-0.5">{app.customerName}님 / {app.customerPhone}</p>
+                    </div>
+                    <button onClick={onClose} className="p-2 text-gray-400 hover:text-sono-dark transition-colors bg-white rounded-xl shadow-sm border border-gray-100">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div className="p-6">
+                    {duplicates === undefined ? (
+                        <div className="flex flex-col items-center py-10 gap-3">
+                            <div className="w-8 h-8 border-4 border-sono-primary/20 border-t-sono-primary rounded-full animate-spin"></div>
+                            <p className="text-sm text-gray-500 font-bold italic">데이터 조회 중...</p>
+                        </div>
+                    ) : duplicates.length === 0 ? (
+                        <div className="flex flex-col items-center py-10 gap-4">
+                            <div className="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center shadow-inner">
+                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <div className="text-center">
+                                <p className="text-lg font-black text-emerald-600 tracking-tight">중복 없음</p>
+                                <p className="text-sm text-gray-400 font-bold mt-1">해당 고객으로 등록된 다른 내역이 없습니다.</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 p-4 bg-red-50 rounded-2xl border border-red-100">
+                                <div className="w-10 h-10 bg-red-100 text-red-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-black text-red-600 tracking-tight">중복 내역 발견</p>
+                                    <p className="text-xs text-red-400 font-bold mt-0.5">이미 등록된 {duplicates.length}건의 내역이 있습니다.</p>
+                                </div>
+                            </div>
+
+                            <div className="max-h-[300px] overflow-y-auto pr-1 space-y-3 custom-scrollbar">
+                                {duplicates.map((dup: any) => (
+                                    <div key={dup.applicationNo} className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-sono-primary/30 transition-all group">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className="text-sm font-black text-sono-dark group-hover:text-sono-primary transition-colors">{dup.partnerName}</span>
+                                            <span className="px-2 py-0.5 bg-gray-100 text-[10px] font-black text-gray-500 rounded-md">
+                                                {dup.status}
+                                            </span>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-y-1 mt-3">
+                                            <div className="text-[11px] text-gray-400 font-bold">신청번호</div>
+                                            <div className="text-[11px] text-sono-dark font-bold text-right">{dup.applicationNo}</div>
+                                            <div className="text-[11px] text-gray-400 font-bold">등록일시</div>
+                                            <div className="text-[11px] text-sono-dark font-bold text-right">{new Date(dup.createdAt).toLocaleDateString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit' })}</div>
+                                            {dup.productType && (
+                                                <>
+                                                    <div className="text-[11px] text-gray-400 font-bold">상품명</div>
+                                                    <div className="text-[11px] text-sono-dark font-bold text-right truncate">{dup.productType}</div>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    
+                    <div className="flex gap-3 mt-8">
+                        {!app.duplicateConfirmed && (
+                            <button 
+                                onClick={() => onConfirm(app.applicationNo)} 
+                                className="flex-1 py-4 bg-emerald-500 text-white rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all shadow-lg active:scale-95"
+                            >
+                                확인 완료
+                            </button>
+                        )}
+                        <button 
+                            onClick={onClose} 
+                            className={`py-4 bg-sono-dark text-white rounded-2xl font-black text-sm hover:bg-black transition-all shadow-lg active:scale-95 ${app.duplicateConfirmed ? 'w-full' : 'flex-1 bg-gray-100 text-gray-500 hover:bg-gray-200 shadow-none'}`}
+                        >
+                            닫기
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

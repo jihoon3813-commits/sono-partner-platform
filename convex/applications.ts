@@ -3,20 +3,53 @@ import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { nowKST, todayKSTStr } from "./utils";
 
+// 중복 체크 로직을 공통으로 처리하는 헬퍼 함수
+export const attachDuplicateFlags = (apps: any[], allApps: any[]) => {
+    const counts = new Map<string, number>();
+    allApps.forEach(a => {
+        const name = (a.customerName || "").trim();
+        const phone = (a.customerPhone || "").replace(/[^0-9]/g, "");
+        if (name && phone) {
+            const key = `${name}|${phone}`;
+            counts.set(key, (counts.get(key) || 0) + 1);
+        }
+    });
+
+    return apps.map(a => {
+        const name = (a.customerName || "").trim();
+        const phone = (a.customerPhone || "").replace(/[^0-9]/g, "");
+        const key = `${name}|${phone}`;
+        return {
+            ...a,
+            hasDuplicate: name && phone ? (counts.get(key) || 0) > 1 : false
+        };
+    });
+};
+
 export const getAllApplications = query({
     handler: async (ctx) => {
-        return await ctx.db.query("applications").order("desc").collect();
+        const apps = await ctx.db.query("applications").order("desc").collect();
+        return attachDuplicateFlags(apps, apps);
     },
 });
+
+
 
 export const getApplicationsByPartnerId = query({
     args: { partnerId: v.string() },
     handler: async (ctx, args) => {
-        return await ctx.db
+        // 1. 파트너의 신청 내역 조회
+        const partnerApps = await ctx.db
             .query("applications")
             .withIndex("by_partnerId", (q) => q.eq("partnerId", args.partnerId))
             .order("desc")
             .collect();
+
+        if (partnerApps.length === 0) return [];
+
+        // 3. 중복 체크 플래그 부착 (전체 DB 데이터 기준)
+        const allApps = await ctx.db.query("applications").collect();
+        return attachDuplicateFlags(partnerApps, allApps);
     },
 });
 
@@ -145,6 +178,19 @@ export const updateApplicationStatus = mutation({
             memo: args.memo,
         });
 
+        return true;
+    },
+});
+
+export const confirmDuplicate = mutation({
+    args: { applicationNo: v.string() },
+    handler: async (ctx, args) => {
+        const app = await ctx.db
+            .query("applications")
+            .withIndex("by_applicationNo", (q) => q.eq("applicationNo", args.applicationNo))
+            .unique();
+        if (!app) return false;
+        await ctx.db.patch(app._id, { duplicateConfirmed: true });
         return true;
     },
 });
@@ -655,4 +701,53 @@ export const fixLegacyData = mutation({
 
         return { fixedCount, deletedCount };
     }
+});
+
+/**
+ * 고객 중복 가입 여부를 확인하는 쿼리
+ */
+export const checkDuplicateCustomer = query({
+    args: {
+        customerName: v.string(),
+        customerPhone: v.string(),
+        excludeApplicationNo: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const { customerName, customerPhone, excludeApplicationNo } = args;
+        if (!customerName || !customerPhone) return [];
+
+        const normalizedPhone = customerPhone.replace(/[^0-9]/g, "");
+
+        // 인덱스를 활용하여 효율적으로 조회 (customerName, customerPhone)
+        const apps = await ctx.db
+            .query("applications")
+            .withIndex("by_customer_sync", (q) =>
+                q.eq("customerName", customerName)
+                 .eq("customerPhone", customerPhone)
+            )
+            .collect();
+
+        // 번호 형식이 다를 수 있으므로(하이픈 유무 등) normalized 번호로도 추가 조회
+        let allApps = apps;
+        if (normalizedPhone !== customerPhone) {
+            const appsAlt = await ctx.db
+                .query("applications")
+                .withIndex("by_customer_sync", (q) =>
+                    q.eq("customerName", customerName)
+                     .eq("customerPhone", normalizedPhone)
+                )
+                .collect();
+            
+            // _id를 기준으로 중복 제거하며 병합
+            const ids = new Set(apps.map(a => a._id));
+            for (const app of appsAlt) {
+                if (!ids.has(app._id)) {
+                    allApps.push(app);
+                }
+            }
+        }
+
+        // 현재 확인 중인 신청서(신규 등록 시에는 없음)는 제외하고 반환
+        return allApps.filter(app => app.applicationNo !== excludeApplicationNo);
+    },
 });
