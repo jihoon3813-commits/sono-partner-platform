@@ -99,16 +99,28 @@ export default function RetentionManagement({ isAdmin = false, partnerId, partne
         const filtered = periodFilteredRecords;
         const stats = {
             total: filtered.length,
-            normalPayment: filtered.filter(r => r.paymentStatus === "정상").length,
-            delinquent: filtered.filter(r => r.paymentStatus.includes("연체")).length,
+            normalPayment: filtered.filter(r => 
+                !r.joinStatus.includes("해약") && 
+                !r.joinStatus.includes("철회") && 
+                r.paymentStatus === "정상"
+            ).length,
+            delinquent: filtered.filter(r => 
+                !r.joinStatus.includes("해약") && 
+                !r.joinStatus.includes("철회") && 
+                r.paymentStatus.includes("연체")
+            ).length,
             delinquentCounts: {} as Record<string, number>,
-            cancelCount: filtered.filter(r => r.cancelStatus && r.cancelStatus !== "").length,
+            cancelCount: filtered.filter(r => 
+                r.joinStatus.includes("해약") || 
+                r.joinStatus.includes("철회") || 
+                (r.cancelStatus && r.cancelStatus !== "")
+            ).length,
             cardCount: filtered.filter(r => r.paymentMethod === "카드").length,
             cmsCount: filtered.filter(r => r.paymentMethod === "CMS").length,
         };
 
         filtered.forEach(r => {
-            if (r.paymentStatus.includes("연체")) {
+            if (r.paymentStatus.includes("연체") && !r.joinStatus.includes("해약") && !r.joinStatus.includes("철회")) {
                 stats.delinquentCounts[r.paymentStatus] = (stats.delinquentCounts[r.paymentStatus] || 0) + 1;
             }
         });
@@ -120,9 +132,47 @@ export default function RetentionManagement({ isAdmin = false, partnerId, partne
         return periodFilteredRecords.filter(r => 
             r.customerName.toLowerCase().includes(searchTerm.toLowerCase()) || 
             r.certNo.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            r.memberNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
             r.idNo.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [periodFilteredRecords, searchTerm]);
+
+    // 엑셀 다운로드
+    const handleDownloadExcel = () => {
+        const dataToExport = filteredRecords.map(r => ({
+            "회원번호": r.memberNo,
+            "가입일자": r.joinDate,
+            "고객명": r.customerName,
+            "휴대전화": r.phone,
+            "가입상품": r.productName,
+            "가입상태": r.joinStatus,
+            "납입방법": r.paymentMethod,
+            "해약처리": r.cancelStatus,
+            "실납입회차": r.actualPaymentCount,
+            "ID_NO": r.idNo
+        }));
+        
+        const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "유지율현황");
+        
+        // 열 너비 설정
+        const wscols = [
+            { wch: 15 }, // 회원번호
+            { wch: 12 }, // 가입일자
+            { wch: 10 }, // 고객명
+            { wch: 15 }, // 휴대전화
+            { wch: 20 }, // 가입상품
+            { wch: 10 }, // 가입상태
+            { wch: 10 }, // 납입방법
+            { wch: 15 }, // 해약처리
+            { wch: 10 }, // 실납입회차
+            { wch: 15 }, // ID_NO
+        ];
+        worksheet['!cols'] = wscols;
+
+        XLSX.writeFile(workbook, `유지율현황_${new Date().toISOString().split('T')[0]}.xlsx`);
+    };
 
     if (!records) return <div className="p-8 text-center font-bold">데이터를 불러오는 중...</div>;
 
@@ -205,82 +255,99 @@ export default function RetentionManagement({ isAdmin = false, partnerId, partne
                 </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* 파트너 매핑 설정 (Admin 전용) */}
+            <div className="flex flex-col gap-6">
+                {/* 파트너 매핑 설정 (Admin 전용) - 가로 확장 위해 상단으로 이동하거나 더 넓게 배치 */}
                 {isAdmin && (
-                    <div className="lg:col-span-1 space-y-4">
-                        <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 h-full">
-                            <h3 className="text-lg font-black text-sono-dark tracking-tighter mb-4">파트너 권한 설정</h3>
-                            <div className="space-y-3">
-                                {partners.map(p => {
-                                    const mapping = mappings?.find(m => m.partnerId === p.partnerId);
-                                    const isSelected = selectedPartnerForMapping === p.partnerId;
-                                    
-                                    return (
-                                        <div 
-                                            key={p.partnerId} 
-                                            onClick={() => setSelectedPartnerForMapping(p.partnerId)}
-                                            className={`p-4 rounded-2xl border transition-all cursor-pointer ${
-                                                isSelected 
-                                                ? "border-sono-primary bg-sono-primary/5 ring-1 ring-sono-primary" 
-                                                : "border-gray-100 bg-white hover:border-sono-primary/30"
-                                            }`}
-                                        >
-                                            <div className="text-sm font-black text-sono-dark">{p.companyName}</div>
-                                            <div className="text-[10px] text-gray-400 mt-1">
-                                                ID_NO: {mapping?.idNos.length ? mapping.idNos.join(', ') : '없음'}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            {selectedPartnerForMapping && (
-                                <div className="mt-8 pt-8 border-t border-gray-100 animate-slide-up">
-                                    <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">
-                                        {partners.find(p => p.partnerId === selectedPartnerForMapping)?.companyName} 매핑 선택
-                                    </h4>
-                                    <div className="max-h-[300px] overflow-y-auto pr-2 space-y-2 custom-scrollbar">
-                                        {availableIdNos?.map(idNo => {
-                                            const currentMapping = mappings?.find(m => m.partnerId === selectedPartnerForMapping);
-                                            const isMapped = currentMapping?.idNos.includes(idNo);
+                    <div className="w-full animate-slide-up">
+                        <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
+                            <div className="flex flex-col md:flex-row gap-6">
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-black text-sono-dark tracking-tighter mb-4 flex items-center gap-2">
+                                        <div className="w-2 h-6 bg-sono-primary rounded-full"></div>
+                                        파트너 권한 설정
+                                    </h3>
+                                    <div className="flex flex-wrap gap-3">
+                                        {partners.map(p => {
+                                            const mapping = mappings?.find(m => m.partnerId === p.partnerId);
+                                            const isSelected = selectedPartnerForMapping === p.partnerId;
                                             
                                             return (
-                                                <label key={idNo} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
-                                                    <input 
-                                                        type="checkbox" 
-                                                        checked={isMapped}
-                                                        onChange={async (e) => {
-                                                            const newIdNos = isMapped 
-                                                                ? currentMapping!.idNos.filter(n => n !== idNo)
-                                                                : [...(currentMapping?.idNos || []), idNo];
-                                                            
-                                                            await updateMapping({
-                                                                partnerId: selectedPartnerForMapping,
-                                                                idNos: newIdNos
-                                                            });
-                                                        }}
-                                                        className="w-4 h-4 rounded border-gray-300 text-sono-primary focus:ring-sono-primary"
-                                                    />
-                                                    <span className="text-sm font-bold text-sono-dark">{idNo}</span>
-                                                </label>
+                                                <div 
+                                                    key={p.partnerId} 
+                                                    onClick={() => setSelectedPartnerForMapping(p.partnerId)}
+                                                    className={`px-4 py-3 rounded-2xl border transition-all cursor-pointer min-w-[150px] ${
+                                                        isSelected 
+                                                        ? "border-sono-primary bg-sono-primary/5 ring-1 ring-sono-primary" 
+                                                        : "border-gray-100 bg-white hover:border-sono-primary/30"
+                                                    }`}
+                                                >
+                                                    <div className="text-sm font-black text-sono-dark">{p.companyName}</div>
+                                                    <div className="text-[10px] text-gray-400 mt-1">
+                                                        ID_NO: {mapping?.idNos.length ? mapping.idNos.join(', ') : '없음'}
+                                                    </div>
+                                                </div>
                                             );
                                         })}
                                     </div>
                                 </div>
-                            )}
+
+                                {selectedPartnerForMapping && (
+                                    <div className="flex-1 bg-gray-50/50 p-6 rounded-3xl border border-gray-100 animate-slide-right">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                                                {partners.find(p => p.partnerId === selectedPartnerForMapping)?.companyName} 매핑 선택
+                                            </h4>
+                                            <button 
+                                                onClick={() => setSelectedPartnerForMapping(null)}
+                                                className="text-gray-400 hover:text-gray-600"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div className="max-h-[150px] overflow-y-auto pr-2 flex flex-wrap gap-2 custom-scrollbar">
+                                            {availableIdNos?.map(idNo => {
+                                                const currentMapping = mappings?.find(m => m.partnerId === selectedPartnerForMapping);
+                                                const isMapped = currentMapping?.idNos.includes(idNo);
+                                                
+                                                return (
+                                                    <label key={idNo} className="flex items-center gap-3 p-3 bg-white rounded-xl cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100 min-w-[120px]">
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={!!isMapped}
+                                                            onChange={async (e) => {
+                                                                const newIdNos = isMapped 
+                                                                    ? currentMapping!.idNos.filter(n => n !== idNo)
+                                                                    : [...(currentMapping?.idNos || []), idNo];
+                                                                
+                                                                await updateMapping({
+                                                                    partnerId: selectedPartnerForMapping,
+                                                                    idNos: newIdNos
+                                                                });
+                                                            }}
+                                                            className="w-4 h-4 rounded border-gray-300 text-sono-primary focus:ring-sono-primary"
+                                                        />
+                                                        <span className="text-sm font-bold text-sono-dark">{idNo}</span>
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}
 
                 {/* 데이터 테이블 */}
-                <div className={`${isAdmin ? 'lg:col-span-3' : 'lg:col-span-4'}`}>
+                <div className="w-full">
                     <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
-                        <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-white">
-                            <div className="relative flex-1 max-w-md">
+                        <div className="p-6 border-b border-gray-50 flex flex-col md:flex-row justify-between items-center gap-4 bg-white">
+                            <div className="relative flex-1 max-w-md w-full">
                                 <input
                                     type="text"
-                                    placeholder="고객명, 증권번호, ID_NO 검색..."
+                                    placeholder="고객명, 증권번호, 회원번호, ID_NO 검색..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full pl-10 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-sono-primary/20 transition-all font-bold"
@@ -289,19 +356,31 @@ export default function RetentionManagement({ isAdmin = false, partnerId, partne
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
+                            <button
+                                onClick={handleDownloadExcel}
+                                className="flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all shadow-lg active:scale-95"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                엑셀 다운로드
+                            </button>
                         </div>
 
                         <div className="overflow-x-auto">
                             <table className="w-full border-collapse">
                                 <thead>
                                     <tr className="bg-gray-50/50">
-                                        <th className="px-4 py-4 text-[11px] font-black text-gray-400 text-center uppercase tracking-widest border-b border-gray-100">증권번호</th>
-                                        <th className="px-4 py-4 text-[11px] font-black text-gray-400 text-center uppercase tracking-widest border-b border-gray-100">고객명</th>
-                                        <th className="px-4 py-4 text-[11px] font-black text-gray-400 text-center uppercase tracking-widest border-b border-gray-100">가입상품</th>
-                                        <th className="px-4 py-4 text-[11px] font-black text-gray-400 text-center uppercase tracking-widest border-b border-gray-100">납입상태</th>
-                                        <th className="px-4 py-4 text-[11px] font-black text-gray-400 text-center uppercase tracking-widest border-b border-gray-100">납입방법</th>
-                                        <th className="px-4 py-4 text-[11px] font-black text-gray-400 text-center uppercase tracking-widest border-b border-gray-100">회차</th>
-                                        <th className="px-4 py-4 text-[11px] font-black text-gray-400 text-center uppercase tracking-widest border-b border-gray-100">ID_NO</th>
+                                        <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">회원번호</th>
+                                        <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">가입일자</th>
+                                        <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">고객명</th>
+                                        <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">휴대전화</th>
+                                        <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">가입상품</th>
+                                        <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">가입상태</th>
+                                        <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">납입방법</th>
+                                        <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">해약처리</th>
+                                        <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">실납입회차</th>
+                                        <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">ID_NO</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -312,21 +391,26 @@ export default function RetentionManagement({ isAdmin = false, partnerId, partne
                                     ) : (
                                         filteredRecords.map((r, i) => (
                                             <tr key={i} className="hover:bg-gray-50/80 transition-colors group">
-                                                <td className="px-4 py-4 text-xs font-mono text-gray-500 text-center border-b border-gray-50">{r.certNo}</td>
-                                                <td className="px-4 py-4 text-sm font-black text-sono-dark text-center border-b border-gray-50">{r.customerName}</td>
-                                                <td className="px-4 py-4 text-xs font-bold text-sono-primary text-center border-b border-gray-50">{r.productName}</td>
-                                                <td className="px-4 py-4 text-center border-b border-gray-50">
-                                                    <span className={`px-2 py-1 rounded-md text-[10px] font-black shadow-sm ${
-                                                        r.paymentStatus === "정상" 
+                                                <td className="px-3 py-4 text-[11px] font-mono text-gray-500 text-center border-b border-gray-50">{r.memberNo}</td>
+                                                <td className="px-3 py-4 text-[11px] text-gray-500 text-center border-b border-gray-50">{r.joinDate}</td>
+                                                <td className="px-3 py-4 text-sm font-black text-sono-dark text-center border-b border-gray-50">{r.customerName}</td>
+                                                <td className="px-3 py-4 text-[11px] text-gray-400 text-center border-b border-gray-50">{r.phone}</td>
+                                                <td className="px-3 py-4 text-[11px] font-bold text-sono-primary text-center border-b border-gray-50">{r.productName}</td>
+                                                <td className="px-3 py-4 text-center border-b border-gray-50">
+                                                    <span className={`px-2 py-0.5 rounded-md text-[9px] font-black shadow-sm ${
+                                                        r.joinStatus.includes("정상") 
                                                         ? "bg-emerald-50 text-emerald-600 border border-emerald-100" 
-                                                        : "bg-red-50 text-red-600 border border-red-100"
+                                                        : r.joinStatus.includes("해약") || r.joinStatus.includes("철회")
+                                                        ? "bg-gray-100 text-gray-500 border border-gray-200"
+                                                        : "bg-blue-50 text-blue-600 border border-blue-100"
                                                     }`}>
-                                                        {r.paymentStatus}
+                                                        {r.joinStatus}
                                                     </span>
                                                 </td>
-                                                <td className="px-4 py-4 text-xs font-bold text-gray-500 text-center border-b border-gray-50">{r.paymentMethod}</td>
-                                                <td className="px-4 py-4 text-xs font-black text-sono-dark text-center border-b border-gray-50">{r.actualPaymentCount}회</td>
-                                                <td className="px-4 py-4 text-xs font-bold text-gray-400 text-center border-b border-gray-50 group-hover:text-sono-primary transition-colors">{r.idNo}</td>
+                                                <td className="px-3 py-4 text-[11px] font-bold text-gray-500 text-center border-b border-gray-50">{r.paymentMethod}</td>
+                                                <td className="px-3 py-4 text-[11px] text-red-400 text-center border-b border-gray-50">{r.cancelStatus}</td>
+                                                <td className="px-3 py-4 text-xs font-black text-sono-dark text-center border-b border-gray-50">{r.actualPaymentCount}회</td>
+                                                <td className="px-3 py-4 text-[11px] font-bold text-gray-400 text-center border-b border-gray-50 group-hover:text-sono-primary transition-colors">{r.idNo}</td>
                                             </tr>
                                         ))
                                     )}

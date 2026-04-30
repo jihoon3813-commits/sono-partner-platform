@@ -303,127 +303,105 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                     <div className="border-t border-gray-100 pt-4">
                         <h3 className="text-sm font-bold text-sono-primary mb-3">고객 정보</h3>
                         <div className="space-y-3">
-                            {isAdmin ? (
-                                <>
-                                    <InputRow label="고객명" value={customerName} onChange={setCustomerName} showCopy />
-                                    <InputRow label="연락처" value={customerPhone} onChange={setCustomerPhone} placeholder="010-0000-0000" showCopy showCopyNoHyphen />
-                                    <InputRow label="생년월일" value={customerBirth} onChange={setCustomerBirth} placeholder="YYMMDD" />
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <span className="w-24 text-gray-400 font-medium shrink-0">성별</span>
-                                        <select
-                                            value={customerGender}
-                                            onChange={(e) => setCustomerGender(e.target.value)}
-                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none"
+                            {/* Customer Info - Now editable by both Admin and Partners */}
+                            <InputRow label="고객명" value={customerName} onChange={setCustomerName} showCopy />
+                            <InputRow label="연락처" value={customerPhone} onChange={setCustomerPhone} placeholder="010-0000-0000" showCopy showCopyNoHyphen />
+                            <InputRow label="생년월일" value={customerBirth} onChange={setCustomerBirth} placeholder="YYMMDD" />
+                            <div className="flex items-center gap-2 text-sm">
+                                <span className="w-24 text-gray-400 font-medium shrink-0">성별</span>
+                                <select
+                                    value={customerGender}
+                                    onChange={(e) => setCustomerGender(e.target.value)}
+                                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                >
+                                    <option value="남성">남성</option>
+                                    <option value="여성">여성</option>
+                                </select>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <div className="flex items-center gap-2 text-sm">
+                                    <span className="w-24 text-gray-400 font-medium shrink-0">주소</span>
+                                    <div className="flex-1 flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={customerAddress}
+                                            readOnly
+                                            placeholder="주소 검색을 이용하세요"
+                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 outline-none h-[34px]"
+                                        />
+                                        <button
+                                            onClick={handleAddressSearch}
+                                            className="px-3 py-1.5 bg-sono-primary text-white text-[11px] font-bold rounded-lg hover:bg-sono-secondary transition-colors shrink-0"
                                         >
-                                            <option value="남성">남성</option>
-                                            <option value="여성">여성</option>
-                                        </select>
+                                            주소 검색
+                                        </button>
                                     </div>
-                                    <div className="flex flex-col gap-2">
-                                        <div className="flex items-center gap-2 text-sm">
-                                            <span className="w-24 text-gray-400 font-medium shrink-0">주소</span>
-                                            <div className="flex-1 flex gap-2">
-                                                <input
-                                                    type="text"
-                                                    value={customerAddress}
-                                                    readOnly
-                                                    placeholder="주소 검색을 이용하세요"
-                                                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 outline-none h-[34px]"
-                                                />
-                                                <button
-                                                    onClick={handleAddressSearch}
-                                                    className="px-3 py-1.5 bg-sono-primary text-white text-[11px] font-bold rounded-lg hover:bg-sono-secondary transition-colors shrink-0"
-                                                >
-                                                    주소 검색
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-sm">
-                                            <span className="w-24 text-gray-400 font-medium shrink-0">상세주소</span>
-                                            <input
-                                                type="text"
-                                                value={detailAddress}
-                                                onChange={(e) => setDetailAddress(e.target.value)}
-                                                placeholder="상세주소를 입력하세요"
-                                                className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
-                                            />
-                                        </div>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <InfoRow label="고객명" value={application.customerName} showCopy />
-                                    <InfoRow label="연락처" value={application.customerPhone} showCopy showCopyNoHyphen />
-                                    <InfoRow label="생년월일" value={application.customerBirth} />
-                                    <InfoRow label="성별" value={application.customerGender} />
-                                    <InfoRow label="주소" value={application.customerAddress} />
-                                </>
-                            )}
+                                </div>
+                                <div className="flex items-center gap-2 text-sm">
+                                    <span className="w-24 text-gray-400 font-medium shrink-0">상세주소</span>
+                                    <input
+                                        type="text"
+                                        value={detailAddress}
+                                        onChange={(e) => setDetailAddress(e.target.value)}
+                                        placeholder="상세주소를 입력하세요"
+                                        className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div className="border-t border-gray-100 pt-4">
                         <h3 className="text-sm font-bold text-sono-primary mb-3">신청 상품 정보</h3>
                         <div className="space-y-3">
-                            {isAdmin ? (
-                                <>
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <span className="w-24 text-gray-400 font-medium shrink-0">상품 유형</span>
-                                        <select
-                                            value={productType}
-                                            onChange={(e) => setProductType(e.target.value as any)}
-                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none"
-                                        >
-                                            <option value="happy450">더 해피 450 ONE</option>
-                                            <option value="smartcare">스마트케어</option>
-                                        </select>
-                                    </div>
-                                    <InputRow label="가전제품" value={products} onChange={setProducts} />
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <span className="w-24 text-gray-400 font-medium shrink-0">구좌</span>
-                                        <select
-                                            value={planType}
-                                            onChange={(e) => setPlanType(e.target.value)}
-                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
-                                        >
-                                            {!["1구좌", "2구좌", "3구좌"].includes(planType) && planType && (
-                                                <option value={planType}>{planType}</option>
-                                            )}
-                                            <option value="1구좌">1구좌</option>
-                                            <option value="2구좌">2구좌</option>
-                                            <option value="3구좌">3구좌</option>
-                                        </select>
-                                    </div>
-                                    <InputRow label="문의사항" value={inquiry} onChange={setInquiry} />
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <span className="w-24 text-gray-400 font-medium shrink-0">선호 시간</span>
-                                        <select
-                                            value={preferredContactTime}
-                                            onChange={(e) => setPreferredContactTime(e.target.value)}
-                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
-                                        >
-                                            <option value="">선택하세요</option>
-                                            {preferredContactTime && !["10시~11시", "11시~12시", "14시~15시", "15시~16시", "16시~17시", "17시~18시"].includes(preferredContactTime) && (
-                                                <option value={preferredContactTime}>{preferredContactTime}</option>
-                                            )}
-                                            <option value="10시~11시">10시~11시</option>
-                                            <option value="11시~12시">11시~12시</option>
-                                            <option value="14시~15시">14시~15시</option>
-                                            <option value="15시~16시">15시~16시</option>
-                                            <option value="16시~17시">16시~17시</option>
-                                            <option value="17시~18시">17시~18시</option>
-                                        </select>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <InfoRow label="상품 유형" value={getProductTypeLabel(application.productType)} />
-                                    <InfoRow label="가전제품" value={application.products || '-'} />
-                                    <InfoRow label="구좌" value={application.planType ? (application.planType.includes("구좌") ? application.planType : `${application.planType}구좌`) : '-'} />
-                                    <InfoRow label="문의사항" value={application.inquiry || '-'} />
-                                    <InfoRow label="선호 시간" value={application.preferredContactTime || '-'} />
-                                </>
-                            )}
+                            {/* Application Product Info - Now editable by both Admin and Partners */}
+                            <div className="flex items-center gap-2 text-sm">
+                                <span className="w-24 text-gray-400 font-medium shrink-0">상품 유형</span>
+                                <select
+                                    value={productType}
+                                    onChange={(e) => setProductType(e.target.value as any)}
+                                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                >
+                                    <option value="happy450">더 해피 450 ONE</option>
+                                    <option value="smartcare">스마트케어</option>
+                                </select>
+                            </div>
+                            <InputRow label="가전제품" value={products} onChange={setProducts} />
+                            <div className="flex items-center gap-2 text-sm">
+                                <span className="w-24 text-gray-400 font-medium shrink-0">구좌</span>
+                                <select
+                                    value={planType}
+                                    onChange={(e) => setPlanType(e.target.value)}
+                                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                >
+                                    {!["1구좌", "2구좌", "3구좌"].includes(planType) && planType && (
+                                        <option value={planType}>{planType}</option>
+                                    )}
+                                    <option value="1구좌">1구좌</option>
+                                    <option value="2구좌">2구좌</option>
+                                    <option value="3구좌">3구좌</option>
+                                </select>
+                            </div>
+                            <InputRow label="문의사항" value={inquiry} onChange={setInquiry} />
+                            <div className="flex items-center gap-2 text-sm">
+                                <span className="w-24 text-gray-400 font-medium shrink-0">선호 시간</span>
+                                <select
+                                    value={preferredContactTime}
+                                    onChange={(e) => setPreferredContactTime(e.target.value)}
+                                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                >
+                                    <option value="">선택하세요</option>
+                                    {preferredContactTime && !["10시~11시", "11시~12시", "14시~15시", "15시~16시", "16시~17시", "17시~18시"].includes(preferredContactTime) && (
+                                        <option value={preferredContactTime}>{preferredContactTime}</option>
+                                    )}
+                                    <option value="10시~11시">10시~11시</option>
+                                    <option value="11시~12시">11시~12시</option>
+                                    <option value="14시~15시">14시~15시</option>
+                                    <option value="15시~16시">15시~16시</option>
+                                    <option value="16시~17시">16시~17시</option>
+                                    <option value="17시~18시">17시~18시</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -477,14 +455,13 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                 </div>
 
 
-                {/* Sticky Bottom Save Bar */}
-                {(isAdmin || canPartnerEditStatus) && (
-                    <div className="p-4 border-t border-gray-100 bg-white sticky bottom-0 rounded-b-[24px]">
-                        <button
-                            onClick={handleSaveAll}
-                            disabled={isLoading}
-                            className="w-full bg-sono-primary text-white text-base font-bold py-3.5 rounded-2xl shadow-lg shadow-sono-primary/20 hover:bg-sono-secondary transition-all flex items-center justify-center gap-2"
-                        >
+                {/* Sticky Bottom Save Bar - Always visible if anything is editable */}
+                <div className="p-4 border-t border-gray-100 bg-white sticky bottom-0 rounded-b-[24px]">
+                    <button
+                        onClick={handleSaveAll}
+                        disabled={isLoading}
+                        className="w-full bg-sono-primary text-white text-base font-bold py-3.5 rounded-2xl shadow-lg shadow-sono-primary/20 hover:bg-sono-secondary transition-all flex items-center justify-center gap-2"
+                    >
                             {isLoading ? (
                                 <>
                                     <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
@@ -496,9 +473,8 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             ) : (
                                 "수정사항 저장하기"
                             )}
-                        </button>
-                    </div>
-                )}
+                    </button>
+                </div>
             </div>
         </div>
 

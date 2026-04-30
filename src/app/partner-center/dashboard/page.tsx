@@ -301,7 +301,7 @@ export default function PartnerDashboard() {
                 )}
             </header>
 
-            <main className="max-w-7xl mx-auto p-4 md:p-8">
+            <main className={`${activeTab === 'retention' ? 'max-w-[1600px]' : 'max-w-7xl'} mx-auto p-4 md:p-8`}>
                 {/* URL Display - Only visible on Dashboard (overview) tab */}
                 {activeTab === "overview" && partner.customUrl && partner.customUrl !== "admin" && (
                     <div className="flex flex-col gap-4 mb-6">
