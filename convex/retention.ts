@@ -129,12 +129,24 @@ export const getRetentionStats = query({
         // 통계 계산
         const stats = {
             total: filtered.length,
-            normalPayment: filtered.filter(r => r.paymentStatus === "정상").length,
-            delinquent: filtered.filter(r => r.paymentStatus.includes("연체")).length,
+            normalPayment: filtered.filter(r => 
+                !r.joinStatus.includes("해약") && 
+                !r.joinStatus.includes("철회") && 
+                (r.paymentStatus.includes("정상") || r.paymentStatus === "" || r.paymentStatus === "정상납입")
+            ).length,
+            delinquent: filtered.filter(r => 
+                !r.joinStatus.includes("해약") && 
+                !r.joinStatus.includes("철회") && 
+                r.paymentStatus.includes("연체")
+            ).length,
             delinquentCounts: {} as Record<string, number>,
-            cancelCount: filtered.filter(r => r.cancelStatus && r.cancelStatus !== "").length,
-            cardCount: filtered.filter(r => r.paymentMethod === "카드").length,
-            cmsCount: filtered.filter(r => r.paymentMethod === "CMS").length,
+            cancelCount: filtered.filter(r => 
+                r.joinStatus.includes("해약") || 
+                r.joinStatus.includes("철회") ||
+                (r.cancelStatus && r.cancelStatus !== "" && r.cancelStatus !== "-")
+            ).length,
+            cardCount: filtered.filter(r => r.paymentMethod.includes("카드")).length,
+            cmsCount: filtered.filter(r => r.paymentMethod.toUpperCase().includes("CMS") || r.paymentMethod.includes("이체")).length,
         };
 
         // 연체 회차별 카운트
@@ -154,5 +166,34 @@ export const getAllAvailableIdNos = query({
         const records = await ctx.db.query("retentionRecords").collect();
         const idNos = new Set(records.map(r => r.idNo));
         return Array.from(idNos).sort();
+    }
+});
+
+// 유지율 관리 메모 추가
+export const addRetentionMemo = mutation({
+    args: {
+        customerKey: v.string(),
+        content: v.string(),
+        createdBy: v.string(),
+    },
+    handler: async (ctx, args) => {
+        await ctx.db.insert("retentionMemos", {
+            customerKey: args.customerKey,
+            content: args.content,
+            createdBy: args.createdBy,
+            createdAt: nowKST(),
+        });
+    }
+});
+
+// 유지율 관리 메모 조회
+export const getRetentionMemos = query({
+    args: { customerKey: v.string() },
+    handler: async (ctx, args) => {
+        return await ctx.db
+            .query("retentionMemos")
+            .withIndex("by_customerKey", (q) => q.eq("customerKey", args.customerKey))
+            .order("desc")
+            .collect();
     }
 });

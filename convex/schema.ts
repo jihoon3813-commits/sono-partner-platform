@@ -286,4 +286,12 @@ export default defineSchema({
         idNos: v.array(v.string()), // ['김지훈', '김현진' 등]
         updatedAt: v.string(),
     }).index("by_partnerId", ["partnerId"]),
+
+    // 유지율 관리 메모/이력 테이블
+    retentionMemos: defineTable({
+        customerKey: v.string(), // 고객명 + 생년월일 + 휴대전화 (고유 식별자)
+        content: v.string(),
+        createdBy: v.string(),
+        createdAt: v.string(),
+    }).index("by_customerKey", ["customerKey"]),
 });
