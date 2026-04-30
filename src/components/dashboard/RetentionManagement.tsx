@@ -196,26 +196,39 @@ export default function RetentionManagement({ isAdmin = false, partnerId, partne
     // 필터링된 데이터 기반 통계 재계산
     const displayStats = useMemo(() => {
         const filtered = periodFilteredRecords;
+        
+        // 고유 인원 계산 함수 (이름+생일+전화번호)
+        const getUniqueCount = (data: typeof filtered) => {
+            const keys = new Set(data.map(r => `${r.customerName}_${r.birth}_${r.phone}`));
+            return keys.size;
+        };
+
+        const normalRecords = filtered.filter(r => {
+            const isCancel = r.joinStatus.includes("해약") || r.joinStatus.includes("철회") || (r.cancelStatus && r.cancelStatus !== "" && r.cancelStatus !== "-");
+            if (isCancel) return false;
+            const isDelinquent = r.paymentStatus.includes("연체") || r.paymentStatus.includes("미납");
+            if (isDelinquent) return false;
+            return true;
+        });
+
+        const delinquentRecords = filtered.filter(r => {
+            const isCancel = r.joinStatus.includes("해약") || r.joinStatus.includes("철회") || (r.cancelStatus && r.cancelStatus !== "" && r.cancelStatus !== "-");
+            if (isCancel) return false;
+            return r.paymentStatus.includes("연체") || r.paymentStatus.includes("미납");
+        });
+
+        const cancelRecords = filtered.filter(r => 
+            r.joinStatus.includes("해약") || 
+            r.joinStatus.includes("철회") ||
+            (r.cancelStatus && r.cancelStatus !== "" && r.cancelStatus !== "-")
+        );
+
         const stats = {
-            total: filtered.length,
-            normalPayment: filtered.filter(r => {
-                const isCancel = r.joinStatus.includes("해약") || r.joinStatus.includes("철회") || (r.cancelStatus && r.cancelStatus !== "" && r.cancelStatus !== "-");
-                if (isCancel) return false;
-                const isDelinquent = r.paymentStatus.includes("연체") || r.paymentStatus.includes("미납");
-                if (isDelinquent) return false;
-                return true; // Everything else (Normal, Normal Payment, Empty) is Normal
-            }).length,
-            delinquent: filtered.filter(r => {
-                const isCancel = r.joinStatus.includes("해약") || r.joinStatus.includes("철회") || (r.cancelStatus && r.cancelStatus !== "" && r.cancelStatus !== "-");
-                if (isCancel) return false;
-                return r.paymentStatus.includes("연체") || r.paymentStatus.includes("미납");
-            }).length,
-            delinquentCounts: {} as Record<string, number>,
-            cancelCount: filtered.filter(r => 
-                r.joinStatus.includes("해약") || 
-                r.joinStatus.includes("철회") ||
-                (r.cancelStatus && r.cancelStatus !== "" && r.cancelStatus !== "-")
-            ).length,
+            total: { count: filtered.length, unique: getUniqueCount(filtered) },
+            normalPayment: { count: normalRecords.length, unique: getUniqueCount(normalRecords) },
+            delinquent: { count: delinquentRecords.length, unique: getUniqueCount(delinquentRecords) },
+            cancel: { count: cancelRecords.length, unique: getUniqueCount(cancelRecords) },
+            delinquentCounts: {} as Record<string, { count: number, unique: number }>,
             cardCount: filtered.filter(r => r.paymentMethod.includes("카드")).length,
             cmsCount: filtered.filter(r => r.paymentMethod.toUpperCase().includes("CMS") || r.paymentMethod.includes("이체")).length,
         };
@@ -224,9 +237,19 @@ export default function RetentionManagement({ isAdmin = false, partnerId, partne
             const isCancel = r.joinStatus.includes("해약") || r.joinStatus.includes("철회") || (r.cancelStatus && r.cancelStatus !== "" && r.cancelStatus !== "-");
             if (!isCancel && (r.paymentStatus.includes("연체") || r.paymentStatus.includes("미납"))) {
                 const status = r.paymentStatus || "미납";
-                stats.delinquentCounts[status] = (stats.delinquentCounts[status] || 0) + 1;
+                if (!stats.delinquentCounts[status]) {
+                    stats.delinquentCounts[status] = { count: 0, unique: 0 };
+                }
+                stats.delinquentCounts[status].count++;
             }
         });
+
+        // 각 연체 회차별 고유 인원 보정
+        Object.keys(stats.delinquentCounts).forEach(status => {
+            const statusRecords = filtered.filter(r => (r.paymentStatus || "미납") === status);
+            stats.delinquentCounts[status].unique = getUniqueCount(statusRecords);
+        });
+
         return stats;
     }, [periodFilteredRecords]);
 
@@ -385,28 +408,36 @@ export default function RetentionManagement({ isAdmin = false, partnerId, partne
                     className={`text-left transition-all bg-white p-5 rounded-[24px] shadow-sm border ${activeStatFilter === "all" ? "border-sono-primary ring-2 ring-sono-primary/20" : "border-gray-100"}`}
                 >
                     <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">전체 회원</div>
-                    <div className="text-2xl font-black text-sono-dark tracking-tighter">{displayStats.total.toLocaleString()}명</div>
+                    <div className="text-2xl font-black text-sono-dark tracking-tighter">
+                        {displayStats.total.unique.toLocaleString()}명 / {displayStats.total.count.toLocaleString()}구좌
+                    </div>
                 </button>
                 <button 
                     onClick={() => setActiveStatFilter("normal")}
                     className={`text-left transition-all bg-white p-5 rounded-[24px] shadow-sm border ${activeStatFilter === "normal" ? "border-emerald-100 ring-2 ring-emerald-500/20" : "border-gray-100"} bg-emerald-50/10`}
                 >
                     <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">정상 납입</div>
-                    <div className="text-2xl font-black text-emerald-600 tracking-tighter">{displayStats.normalPayment.toLocaleString()}명</div>
+                    <div className="text-2xl font-black text-emerald-600 tracking-tighter">
+                        {displayStats.normalPayment.unique.toLocaleString()}명 / {displayStats.normalPayment.count.toLocaleString()}구좌
+                    </div>
                 </button>
                 <button 
                     onClick={() => setActiveStatFilter("delinquent")}
                     className={`text-left transition-all bg-white p-5 rounded-[24px] shadow-sm border ${activeStatFilter === "delinquent" ? "border-red-100 ring-2 ring-red-500/20" : "border-gray-100"} bg-red-50/10`}
                 >
                     <div className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">연체 회원</div>
-                    <div className="text-2xl font-black text-red-600 tracking-tighter">{displayStats.delinquent.toLocaleString()}명</div>
+                    <div className="text-2xl font-black text-red-600 tracking-tighter">
+                        {displayStats.delinquent.unique.toLocaleString()}명 / {displayStats.delinquent.count.toLocaleString()}구좌
+                    </div>
                 </button>
                 <button 
                     onClick={() => setActiveStatFilter("cancel")}
                     className={`text-left transition-all bg-white p-5 rounded-[24px] shadow-sm border ${activeStatFilter === "cancel" ? "border-orange-100 ring-2 ring-orange-500/20" : "border-gray-100"} bg-orange-50/10`}
                 >
                     <div className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">해약/철회</div>
-                    <div className="text-2xl font-black text-orange-600 tracking-tighter">{displayStats.cancelCount.toLocaleString()}건</div>
+                    <div className="text-2xl font-black text-orange-600 tracking-tighter">
+                        {displayStats.cancel.unique.toLocaleString()}명 / {displayStats.cancel.count.toLocaleString()}구좌
+                    </div>
                 </button>
                 <div className="bg-white p-5 rounded-[24px] shadow-sm border border-sono-primary/10 bg-sono-primary/5">
                     <div className="text-[10px] font-black text-sono-primary uppercase tracking-widest mb-1">납입 방법</div>
@@ -439,7 +470,9 @@ export default function RetentionManagement({ isAdmin = false, partnerId, partne
                                 }`}
                             >
                                 <span className="text-xs font-bold text-gray-500 mr-2">{status}</span>
-                                <span className="text-sm font-black text-sono-dark">{count}명</span>
+                                <span className="text-sm font-black text-sono-dark">
+                                    {count.unique}명 / {count.count}구좌
+                                </span>
                             </button>
                         ))}
                     </div>

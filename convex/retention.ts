@@ -110,7 +110,7 @@ export const updatePartnerMapping = mutation({
 export const getRetentionStats = query({
     args: { partnerId: v.optional(v.string()) },
     handler: async (ctx, args) => {
-        // 데이터 필터링 (getRetentionRecords 로직 재사용)
+        // 데이터 필터링
         const records = await ctx.db.query("retentionRecords").collect();
         let filtered = records;
 
@@ -126,25 +126,37 @@ export const getRetentionStats = query({
             }
         }
 
+        // 고유 인원 계산 함수 (이름+생일+전화번호)
+        const getUniqueCount = (data: typeof filtered) => {
+            const keys = new Set(data.map(r => `${r.customerName}_${r.birth}_${r.phone}`));
+            return keys.size;
+        };
+
+        const normalRecords = filtered.filter(r => 
+            !r.joinStatus.includes("해약") && 
+            !r.joinStatus.includes("철회") && 
+            (r.paymentStatus.includes("정상") || r.paymentStatus === "" || r.paymentStatus === "정상납입")
+        );
+
+        const delinquentRecords = filtered.filter(r => 
+            !r.joinStatus.includes("해약") && 
+            !r.joinStatus.includes("철회") && 
+            r.paymentStatus.includes("연체")
+        );
+
+        const cancelRecords = filtered.filter(r => 
+            r.joinStatus.includes("해약") || 
+            r.joinStatus.includes("철회") ||
+            (r.cancelStatus && r.cancelStatus !== "" && r.cancelStatus !== "-")
+        );
+
         // 통계 계산
         const stats = {
-            total: filtered.length,
-            normalPayment: filtered.filter(r => 
-                !r.joinStatus.includes("해약") && 
-                !r.joinStatus.includes("철회") && 
-                (r.paymentStatus.includes("정상") || r.paymentStatus === "" || r.paymentStatus === "정상납입")
-            ).length,
-            delinquent: filtered.filter(r => 
-                !r.joinStatus.includes("해약") && 
-                !r.joinStatus.includes("철회") && 
-                r.paymentStatus.includes("연체")
-            ).length,
-            delinquentCounts: {} as Record<string, number>,
-            cancelCount: filtered.filter(r => 
-                r.joinStatus.includes("해약") || 
-                r.joinStatus.includes("철회") ||
-                (r.cancelStatus && r.cancelStatus !== "" && r.cancelStatus !== "-")
-            ).length,
+            total: { count: filtered.length, unique: getUniqueCount(filtered) },
+            normalPayment: { count: normalRecords.length, unique: getUniqueCount(normalRecords) },
+            delinquent: { count: delinquentRecords.length, unique: getUniqueCount(delinquentRecords) },
+            cancel: { count: cancelRecords.length, unique: getUniqueCount(cancelRecords) },
+            delinquentCounts: {} as Record<string, { count: number, unique: number }>,
             cardCount: filtered.filter(r => r.paymentMethod.includes("카드")).length,
             cmsCount: filtered.filter(r => r.paymentMethod.toUpperCase().includes("CMS") || r.paymentMethod.includes("이체")).length,
         };
@@ -152,8 +164,21 @@ export const getRetentionStats = query({
         // 연체 회차별 카운트
         filtered.forEach(r => {
             if (r.paymentStatus.includes("연체")) {
-                stats.delinquentCounts[r.paymentStatus] = (stats.delinquentCounts[r.paymentStatus] || 0) + 1;
+                const status = r.paymentStatus;
+                if (!stats.delinquentCounts[status]) {
+                    stats.delinquentCounts[status] = { count: 0, unique: 0 };
+                }
+                stats.delinquentCounts[status].count++;
+                
+                // 해당 회차의 유니크 인원은 나중에 일괄 계산하거나 루프 내에서 처리 가능하지만
+                // 여기서는 전체를 순회하므로 필터링해서 계산하는 게 정확함
             }
+        });
+
+        // 각 연체 회차별 고유 인원 보정
+        Object.keys(stats.delinquentCounts).forEach(status => {
+            const statusRecords = filtered.filter(r => r.paymentStatus === status);
+            stats.delinquentCounts[status].unique = getUniqueCount(statusRecords);
         });
 
         return stats;
