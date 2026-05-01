@@ -53,7 +53,10 @@ export const getStatsSummary = query({
         const dailyStats: Record<string, { pv: number, uv: Set<string> }> = {};
         const partnerStats: Record<string, { pv: number, uv: Set<string> }> = {};
         const pathStats: Record<string, { pv: number, uv: Set<string> }> = {};
+        const applicationStats: Record<string, number> = {}; // daily app count
+        const partnerAppStats: Record<string, number> = {}; // partner total app count
         let totalPv = 0;
+        let totalApps = 0;
         const totalUvSet = new Set<string>();
 
         // 시작일/종료일 기준 모든 날짜 초기화 (데이터가 없어도 차트에 표시되도록)
@@ -104,17 +107,35 @@ export const getStatsSummary = query({
             pathStats[path].uv.add(log.visitorId);
         });
 
+        // 4. 신청 통계 수집
+        const allApps = await ctx.db.query("applications").collect();
+        allApps.forEach(app => {
+            const appDate = app.createdAt.substring(0, 10);
+            if (args.startDate && appDate < args.startDate) return;
+            if (args.endDate && appDate > args.endDate) return;
+            
+            // 파트너 필터 확인
+            const appPartnerId = app.partnerId.trim(); // In applications, this is always the normalized ID (loginId)
+            if (args.partnerId && appPartnerId !== args.partnerId) return;
+
+            totalApps++;
+            applicationStats[appDate] = (applicationStats[appDate] || 0) + 1;
+            partnerAppStats[appPartnerId] = (partnerAppStats[appPartnerId] || 0) + 1;
+        });
+
         // 3. 결과 포맷팅
         const daily = Object.entries(dailyStats).map(([date, stats]) => ({
             date,
             pv: stats.pv,
-            uv: stats.uv.size
+            uv: stats.uv.size,
+            apps: applicationStats[date] || 0
         })).sort((a, b) => a.date.localeCompare(b.date));
 
         const partner = Object.entries(partnerStats).map(([pid, stats]) => ({
             partnerId: pid,
             pv: stats.pv,
-            uv: stats.uv.size
+            uv: stats.uv.size,
+            apps: partnerAppStats[pid] || 0
         })).sort((a, b) => b.pv - a.pv);
 
         const paths = Object.entries(pathStats).map(([path, stats]) => ({
@@ -126,6 +147,7 @@ export const getStatsSummary = query({
         return {
             totalPv,
             totalUv: totalUvSet.size,
+            totalApps,
             daily,
             partner,
             paths
