@@ -95,6 +95,7 @@ export const createApplication = mutation({
         inquiry: v.optional(v.string()),
         status: v.optional(v.string()),
         assignedTo: v.optional(v.string()),
+        accessPath: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         console.log(`[Convex] createApplication called with: ${JSON.stringify(args)}`);
@@ -118,6 +119,7 @@ export const createApplication = mutation({
             applicationNo,
             status: status || "접수",
             assignedTo: assignedTo || "",
+            accessPath: args.accessPath || "D",
             createdAt: now,
             updatedAt: now,
         });
@@ -293,6 +295,7 @@ export const createApplications = mutation({
             inquiry: v.optional(v.string()),
             status: v.optional(v.string()),
             assignedTo: v.optional(v.string()),
+            accessPath: v.optional(v.string()),
         })),
     },
     handler: async (ctx, args) => {
@@ -317,6 +320,7 @@ export const createApplications = mutation({
                 applicationNo,
                 status: status || "접수",
                 assignedTo: assignedTo || "",
+                accessPath: appData.accessPath || "D",
                 createdAt: now,
                 updatedAt: now,
             });
@@ -749,5 +753,25 @@ export const checkDuplicateCustomer = query({
 
         // 현재 확인 중인 신청서(신규 등록 시에는 없음)는 제외하고 반환
         return allApps.filter(app => app.applicationNo !== excludeApplicationNo);
+    },
+});
+
+// Migration mutation to backfill accessPath for existing records
+export const migrateAccessPath = mutation({
+    args: {
+        defaultPath: v.string(), // 'H' or 'D'
+    },
+    handler: async (ctx, args) => {
+        const applications = await ctx.db.query("applications").collect();
+        let count = 0;
+        for (const app of applications) {
+            if (!app.accessPath) {
+                await ctx.db.patch(app._id, {
+                    accessPath: args.defaultPath,
+                });
+                count++;
+            }
+        }
+        return { updated: count };
     },
 });

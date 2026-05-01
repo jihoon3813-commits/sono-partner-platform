@@ -410,6 +410,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                         <div className="space-y-3">
                             <InfoRow label="파트너사" value={application.partnerName} />
                             <InfoRow label="파트너 ID" value={partnerLoginId || application.partnerId} />
+                            <InfoRow label="접속경로" value={application.accessPath === 'H' ? '홈페이지 (H)' : '직접등록 (D)'} />
                             <InfoRow label="회원번호" value={application.partnerMemberId || '-'} />
                             <InfoRow label="신청일시" value={formatDate(application.registrationDate || application.createdAt) || '-'} />
                         </div>

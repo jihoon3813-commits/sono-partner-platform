@@ -53,7 +53,8 @@ export default defineSchema({
         partnerMemberId: v.optional(v.string()),
         preferredContactTime: v.optional(v.string()),
         inquiry: v.optional(v.string()),
-        status: v.string(), // '접수', '계약완료' 등
+        accessPath: v.optional(v.string()), // 'H' for Homepage, 'D' for Direct
+        status: v.string(), // '접수', '상담중', '가입완료', '취소' 등
         assignedTo: v.optional(v.string()),
         createdAt: v.string(),
         updatedAt: v.string(),

@@ -593,6 +593,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                         />
                                     </th>
                                 )}
+                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[50px]">경로</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">No.</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[120px]">일시</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">파트너사</th>
@@ -659,6 +660,15 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                                     />
                                                 </td>
                                             )}
+                                            <td className="px-2 py-4 text-center">
+                                                <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-black ${
+                                                    app.accessPath === 'H' 
+                                                    ? "bg-blue-100 text-blue-600 border border-blue-200" 
+                                                    : "bg-gray-100 text-gray-600 border border-gray-200"
+                                                }`} title={app.accessPath === 'H' ? "홈페이지" : "직접등록"}>
+                                                    {app.accessPath || 'D'}
+                                                </span>
+                                            </td>
                                             <td className={`px-2 py-4 text-center text-xs text-gray-400 font-bold relative ${!isAdmin ? 'pl-4' : ''}`}>
                                                 {!isAdmin && isUpdated && (
                                                     <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-red-500 rounded-full shadow-[0_0_4px_rgba(239,68,68,0.5)]" title="업데이트됨" />

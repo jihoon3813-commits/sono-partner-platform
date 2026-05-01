@@ -29,6 +29,7 @@ export async function POST(request: Request) {
             preferredTime,
             inquiry,
             products,
+            accessPath,
         } = body;
 
         // 필수 필드 검증
@@ -92,7 +93,8 @@ export async function POST(request: Request) {
             customerZipcode: zipcode || '',
             partnerMemberId: partnerId !== readablePartnerId ? partnerId : '',
             preferredContactTime: preferredTime || '',
-            inquiry: inquiry || '',
+            inquiry,
+            accessPath,
             status: '접수대기',
             assignedTo: '',
         };

@@ -194,6 +194,7 @@ export default function InquiryModal({
                     addressDetail: formData.addressDetail,
                     preferredTime: formData.preferredTime,
                     inquiry: formData.inquiry,
+                    accessPath: "H",
                 }),
             });
 
