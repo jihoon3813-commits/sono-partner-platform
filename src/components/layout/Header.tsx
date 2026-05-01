@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import InquiryModal from "@/components/InquiryModal";
+import FAQModal from "@/components/FAQModal";
 
 interface HeaderProps {
     partnerMode?: boolean;
@@ -23,6 +24,7 @@ export default function Header({
 }: HeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -47,6 +49,12 @@ export default function Header({
         setIsMenuOpen(false);
         setIsModalOpen(true);
     };
+
+    const handleFaqClick = () => {
+        setIsMenuOpen(false);
+        setIsFaqModalOpen(true);
+    };
+
     return (
         <>
             <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "bg-white/80 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-5"} border-b ${scrolled ? "border-gray-100/50" : "border-transparent"}`}>
@@ -86,6 +94,14 @@ export default function Header({
 
                     {/* 우측 버튼 */}
                     <div className="hidden md:flex items-center gap-3 relative z-10">
+                        {/* 자주하는질문 버튼 */}
+                        <button
+                            onClick={handleFaqClick}
+                            className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80"} font-bold text-sm px-4 transition-colors cursor-pointer`}
+                        >
+                            자주하는질문
+                        </button>
+
                         {partnerMode ? (
                             <button
                                 onClick={handleInquiryClick}
@@ -127,6 +143,12 @@ export default function Header({
                 {isMenuOpen && (
                     <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-xl p-8 animate-fade-in">
                         <div className="flex flex-col gap-6 font-bold">
+                            <button
+                                onClick={handleFaqClick}
+                                className="text-xl text-sono-dark text-left"
+                            >
+                                자주하는질문
+                            </button>
                             {partnerMode ? (
                                 <>
                                     {/* <Link href={happy450Href} onClick={() => setIsMenuOpen(false)} className="text-xl text-sono-dark text-left" >더 해피 450 ONE</Link>
@@ -175,6 +197,12 @@ export default function Header({
                 partnerId={partnerId}
                 productType={productType}
                 showProductSelect={!productType}
+            />
+
+            {/* FAQ 모달 */}
+            <FAQModal
+                isOpen={isFaqModalOpen}
+                onClose={() => setIsFaqModalOpen(false)}
             />
         </>
     );
