@@ -48,6 +48,7 @@ export interface Application {
     partnerMemberId: string;
     preferredContactTime: string;
     inquiry: string;
+    accessPath?: string;
     status: ApplicationStatus;
     assignedTo: string;
     createdAt: string;
