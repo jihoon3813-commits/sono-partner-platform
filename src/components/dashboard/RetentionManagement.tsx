@@ -110,6 +110,7 @@ import { nowKST } from "../../../convex/utils";
         const updateMapping = useMutation(api.retention.updatePartnerMapping);
 
         const [isUploading, setIsUploading] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
         const [searchTerm, setSearchTerm] = useState("");
         const [selectedPartnerForMapping, setSelectedPartnerForMapping] = useState<string | null>(null);
         const [periodFilter, setPeriodFilter] = useState<string>("cumulative"); // cumulative, current, previous, year
@@ -341,44 +342,61 @@ import { nowKST } from "../../../convex/utils";
         }, [filteredRecords]);
 
         // 엑셀 다운로드
-        const handleDownloadExcel = () => {
-            const dataToExport = filteredRecords.map(r => ({
-                "회원번호": r.memberNo,
-                "가입일자": r.joinDate,
-                "고객명": r.customerName,
-                "생년월일": r.birth,
-                "휴대전화": r.phone,
-                "가입상품": r.productName,
-                "가입상태": r.joinStatus,
-                "납입상태": r.paymentStatus,
-                "납입방법": r.paymentMethod,
-                "해약처리": r.cancelStatus,
-                "실납입회차": r.actualPaymentCount,
-                "ID_NO": r.idNo
-            }));
+        const handleDownloadExcel = async () => {
+            if (filteredRecords.length === 0) {
+                alert("다운로드할 데이터가 없습니다.");
+                return;
+            }
+            if (isDownloading) return;
 
-            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "유지율현황");
+            setIsDownloading(true);
+            try {
+                // Give UI time to update
+                await new Promise(resolve => setTimeout(resolve, 100));
 
-            // 열 너비 설정
-            const wscols = [
-                { wch: 15 }, // 회원번호
-                { wch: 12 }, // 가입일자
-                { wch: 10 }, // 고객명
-                { wch: 12 }, // 생년월일
-                { wch: 15 }, // 휴대전화
-                { wch: 20 }, // 가입상품
-                { wch: 10 }, // 가입상태
-                { wch: 10 }, // 납입상태
-                { wch: 10 }, // 납입방법
-                { wch: 15 }, // 해약처리
-                { wch: 10 }, // 실납입회차
-                { wch: 15 }, // ID_NO
-            ];
-            worksheet['!cols'] = wscols;
+                const dataToExport = filteredRecords.map(r => ({
+                    "회원번호": r.memberNo,
+                    "가입일자": r.joinDate,
+                    "고객명": r.customerName,
+                    "생년월일": r.birth,
+                    "휴대전화": r.phone,
+                    "가입상품": r.productName,
+                    "가입상태": r.joinStatus,
+                    "납입상태": r.paymentStatus,
+                    "납입방법": r.paymentMethod,
+                    "해약처리": r.cancelStatus,
+                    "실납입회차": r.actualPaymentCount,
+                    "ID_NO": r.idNo
+                }));
 
-            XLSX.writeFile(workbook, `유지율현황_${new Date().toISOString().split('T')[0]}.xlsx`);
+                const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "유지율현황");
+
+                // 열 너비 설정
+                const wscols = [
+                    { wch: 15 }, // 회원번호
+                    { wch: 12 }, // 가입일자
+                    { wch: 10 }, // 고객명
+                    { wch: 12 }, // 생년월일
+                    { wch: 15 }, // 휴대전화
+                    { wch: 20 }, // 가입상품
+                    { wch: 10 }, // 가입상태
+                    { wch: 10 }, // 납입상태
+                    { wch: 10 }, // 납입방법
+                    { wch: 15 }, // 해약처리
+                    { wch: 10 }, // 실납입회차
+                    { wch: 15 }, // ID_NO
+                ];
+                worksheet['!cols'] = wscols;
+
+                XLSX.writeFile(workbook, `유지율현황_${new Date().toISOString().split('T')[0]}.xlsx`);
+            } catch (error) {
+                console.error("Excel download error:", error);
+                alert("다운로드 중 오류가 발생했습니다.");
+            } finally {
+                setIsDownloading(false);
+            }
         };
 
         if (!records) return <div className="p-8 text-center font-bold">데이터를 불러오는 중...</div>;
@@ -581,12 +599,17 @@ import { nowKST } from "../../../convex/utils";
                                     </div>
                                     <button
                                         onClick={handleDownloadExcel}
-                                        className="flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all shadow-lg active:scale-95"
+                                        disabled={isDownloading}
+                                        className={`flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all shadow-lg active:scale-95 ${isDownloading ? 'opacity-70 cursor-wait' : ''}`}
                                     >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg>
-                                        엑셀 다운로드
+                                        {isDownloading ? (
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        ) : (
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                        )}
+                                        {isDownloading ? '준비 중...' : '엑셀 다운로드'}
                                     </button>
                                 </div>
 

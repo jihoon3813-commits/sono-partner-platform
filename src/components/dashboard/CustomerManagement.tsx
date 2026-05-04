@@ -41,6 +41,7 @@ export default function CustomerManagement({ applications, onRefresh, partners =
     const [selectedApp, setSelectedApp] = useState<Application | null>(null);
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
     const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
     const [selectedAppIds, setSelectedAppIds] = useState<string[]>([]);
     const [isDeleting, setIsDeleting] = useState(false);
     const [showStatusHelp, setShowStatusHelp] = useState(false);
@@ -325,71 +326,87 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                             )}
 
                             <button
-                                onClick={() => {
-                                    if (filteredApplications.length === 0) {
+                                onClick={async () => {
+                                    if (!filteredApplications || filteredApplications.length === 0) {
                                         alert("다운로드할 데이터가 없습니다.");
                                         return;
                                     }
+                                    if (isDownloading) return;
 
-                                    const headers = [
-                                        "No.", "신청번호", "신청일시", "파트너사", "시스템ID", "로그인ID", "고객명", "연락처",
-                                        "상품명", "결합제품(가전)", "신청구좌", "주소", "우편번호", "생년월일",
-                                        "성별", "이메일", "회원번호", "선호시간", "문의사항", "상태",
-                                        "초회납입일", "신규등록일", "납입방법", "해약처리", "청약철회", "비고(사유)"
-                                    ];
+                                    setIsDownloading(true);
+                                    try {
+                                        // Give UI time to show loading state
+                                        await new Promise(resolve => setTimeout(resolve, 100));
 
-                                    const rows = filteredApplications.map((app, index) => [
-                                        filteredApplications.length - index,
-                                        app.applicationNo,
-                                        new Date(app.createdAt).toLocaleString(),
-                                        app.partnerName,
-                                        app.partnerId,
-                                        getPartnerLoginId(app.partnerId),
-                                        app.customerName,
-                                        app.customerPhone,
-                                        app.productType,
-                                        app.products || "-",
-                                        app.planType,
-                                        app.customerAddress,
-                                        app.customerZipcode,
-                                        app.customerBirth || "-",
-                                        app.customerGender || "-",
-                                        app.customerEmail || "-",
-                                        app.partnerMemberId || "-",
-                                        app.preferredContactTime || "-",
-                                        app.inquiry?.replace(/\n/g, " ") || "-",
-                                        app.status,
-                                        app.firstPaymentDate || "-",
-                                        app.registrationDate || "-",
-                                        app.paymentMethod || "-",
-                                        app.cancellationProcessing || "-",
-                                        app.withdrawalProcessing || "-",
-                                        app.remarks?.replace(/\n/g, " ") || "-"
-                                    ]);
+                                        const headers = [
+                                            "No.", "신청번호", "신청일시", "파트너사", "시스템ID", "로그인ID", "고객명", "연락처",
+                                            "상품명", "결합제품(가전)", "신청구좌", "주소", "우편번호", "생년월일",
+                                            "성별", "이메일", "회원번호", "선호시간", "문의사항", "상태",
+                                            "초회납입일", "신규등록일", "납입방법", "해약처리", "청약철회", "비고(사유)"
+                                        ];
 
-                                    const csvContent = [
-                                        headers.join(","),
-                                        ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
-                                    ].join("\n");
+                                        const rows = filteredApplications.map((app, index) => [
+                                            filteredApplications.length - index,
+                                            app.applicationNo,
+                                            new Date(app.createdAt).toLocaleString(),
+                                            app.partnerName,
+                                            app.partnerId,
+                                            getPartnerLoginId(app.partnerId),
+                                            app.customerName,
+                                            app.customerPhone,
+                                            app.productType,
+                                            app.products || "-",
+                                            app.planType,
+                                            app.customerAddress,
+                                            app.customerZipcode,
+                                            app.customerBirth || "-",
+                                            app.customerGender || "-",
+                                            app.customerEmail || "-",
+                                            app.partnerMemberId || "-",
+                                            app.preferredContactTime || "-",
+                                            app.inquiry?.replace(/\n/g, " ") || "-",
+                                            app.status,
+                                            app.firstPaymentDate || "-",
+                                            app.registrationDate || "-",
+                                            app.paymentMethod || "-",
+                                            app.cancellationProcessing || "-",
+                                            app.withdrawalProcessing || "-",
+                                            app.remarks?.replace(/\n/g, " ") || "-"
+                                        ]);
 
-                                    const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
-                                    const link = document.createElement("a");
-                                    const url = URL.createObjectURL(blob);
-                                    link.setAttribute("href", url);
-                                    link.setAttribute("download", `고객상담내역_${new Date().toISOString().slice(0, 10)}.csv`);
-                                    link.style.visibility = "hidden";
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    document.body.removeChild(link);
-                                    link.click(); // Some browsers need this
-                                    document.body.removeChild(link);
+                                        const csvContent = [
+                                            headers.join(","),
+                                            ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+                                        ].join("\n");
+
+                                        const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
+                                        const link = document.createElement("a");
+                                        const url = URL.createObjectURL(blob);
+                                        link.setAttribute("href", url);
+                                        link.setAttribute("download", `고객상담내역_${new Date().toISOString().slice(0, 10)}.csv`);
+                                        link.style.visibility = "hidden";
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                        URL.revokeObjectURL(url);
+                                    } catch (error) {
+                                        console.error("Excel download error:", error);
+                                        alert("다운로드 중 오류가 발생했습니다.");
+                                    } finally {
+                                        setIsDownloading(false);
+                                    }
                                 }}
-                                className="flex items-center gap-2 px-4 py-2.5 bg-sono-primary/10 text-sono-primary border border-sono-primary/20 rounded-xl text-sm font-bold hover:bg-sono-primary/20 transition-all active:scale-95"
+                                disabled={isDownloading}
+                                className={`flex items-center gap-2 px-4 py-2.5 bg-sono-primary/10 text-sono-primary border border-sono-primary/20 rounded-xl text-sm font-bold hover:bg-sono-primary/20 transition-all active:scale-95 ${isDownloading ? 'opacity-70 cursor-wait' : ''}`}
                             >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                엑셀 다운로드
+                                {isDownloading ? (
+                                    <div className="w-4 h-4 border-2 border-sono-primary/30 border-t-sono-primary rounded-full animate-spin" />
+                                ) : (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                )}
+                                <span>{isDownloading ? '준비 중...' : '엑셀 다운로드'}</span>
                             </button>
                         </div>
                     </div>
