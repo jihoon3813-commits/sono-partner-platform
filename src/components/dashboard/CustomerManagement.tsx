@@ -24,7 +24,21 @@ interface CustomerManagementProps {
     setCustomEndDate?: (val: string) => void;
 }
 
-export default function CustomerManagement({ applications, onRefresh, partners = [], isWidget = false, isAdmin = false, initialStatusFilter = "all", currentUser = null }: CustomerManagementProps) {
+export default function CustomerManagement({ 
+    applications, 
+    onRefresh, 
+    partners = [], 
+    isWidget = false, 
+    isAdmin = false, 
+    initialStatusFilter = "all", 
+    currentUser = null,
+    dateFilter: liftedDateFilter,
+    setDateFilter: liftedSetDateFilter,
+    customStartDate: liftedCustomStartDate,
+    setCustomStartDate: liftedSetCustomStartDate,
+    customEndDate: liftedCustomEndDate,
+    setCustomEndDate: liftedSetCustomEndDate
+}: CustomerManagementProps) {
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
 
     const getStatusStyles = (status: string) => {
@@ -66,12 +80,12 @@ export default function CustomerManagement({ applications, onRefresh, partners =
     const [_internalCustomStartDate, _setInternalCustomStartDate] = useState("");
     const [_internalCustomEndDate, _setInternalCustomEndDate] = useState("");
 
-    const dateFilter = props.dateFilter || _internalDateFilter;
-    const setDateFilter = props.setDateFilter || _setInternalDateFilter;
-    const customStartDate = props.customStartDate || _internalCustomStartDate;
-    const setCustomStartDate = props.setCustomStartDate || _setInternalCustomStartDate;
-    const customEndDate = props.customEndDate || _internalCustomEndDate;
-    const setCustomEndDate = props.setCustomEndDate || _setInternalCustomEndDate;
+    const dateFilter = liftedDateFilter || _internalDateFilter;
+    const setDateFilter = liftedSetDateFilter || _setInternalDateFilter;
+    const customStartDate = liftedCustomStartDate || _internalCustomStartDate;
+    const setCustomStartDate = liftedSetCustomStartDate || _setInternalCustomStartDate;
+    const customEndDate = liftedCustomEndDate || _internalCustomEndDate;
+    const setCustomEndDate = liftedSetCustomEndDate || _setInternalCustomEndDate;
 
     // Sorting
     const [sortBy, setSortBy] = useState<"updatedAt" | "createdAtAsc" | "createdAtDesc">("updatedAt");
