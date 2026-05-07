@@ -192,7 +192,23 @@ export const confirmDuplicate = mutation({
             .withIndex("by_applicationNo", (q) => q.eq("applicationNo", args.applicationNo))
             .unique();
         if (!app) return false;
-        await ctx.db.patch(app._id, { duplicateConfirmed: true });
+        await ctx.db.patch(app._id, { duplicateConfirmed: true, isAdditionalRegistration: false });
+        return true;
+    },
+});
+
+export const confirmAdditional = mutation({
+    args: { applicationNo: v.string() },
+    handler: async (ctx, args) => {
+        const app = await ctx.db
+            .query("applications")
+            .withIndex("by_applicationNo", (q) => q.eq("applicationNo", args.applicationNo))
+            .unique();
+        if (!app) return false;
+        await ctx.db.patch(app._id, { 
+            duplicateConfirmed: true, 
+            isAdditionalRegistration: true 
+        });
         return true;
     },
 });

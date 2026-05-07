@@ -64,6 +64,7 @@ export interface Application {
     remarks?: string;
     statusUpdatedAt?: string;
     duplicateConfirmed?: boolean;
+    isAdditionalRegistration?: boolean;
     hasDuplicate?: boolean;
 }
 

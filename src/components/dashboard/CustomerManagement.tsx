@@ -68,6 +68,7 @@ export default function CustomerManagement({
     const [showStatusHelp, setShowStatusHelp] = useState(false);
     const [checkingApp, setCheckingApp] = useState<Application | null>(null);
     const confirmDuplicate = useMutation(api.applications.confirmDuplicate);
+    const confirmAdditional = useMutation(api.applications.confirmAdditional);
 
     const deleteApplications = useMutation(api.applications.deleteApplications);
 
@@ -766,11 +767,15 @@ export default function CustomerManagement({
                                                             }}
                                                             className={`text-[10px] px-2 py-0.5 rounded-md transition-all font-black shadow-sm border ${
                                                                 app.duplicateConfirmed 
-                                                                ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+                                                                ? (app.isAdditionalRegistration 
+                                                                    ? "bg-blue-50 text-blue-600 border-blue-100" 
+                                                                    : "bg-emerald-50 text-emerald-600 border-emerald-100")
                                                                 : "bg-red-50 text-red-600 border-red-100 animate-pulse"
                                                             }`}
                                                         >
-                                                            {app.duplicateConfirmed ? "중복 확인 완료" : "중복 접수"}
+                                                            {app.duplicateConfirmed 
+                                                                ? (app.isAdditionalRegistration ? "추가 접수" : "중복 확인 완료")
+                                                                : "중복 접수"}
                                                         </button>
                                                     )}
                                                 </div>
@@ -973,9 +978,13 @@ export default function CustomerManagement({
                 <DuplicateCheckModal 
                     app={checkingApp} 
                     onClose={() => setCheckingApp(null)} 
-                    onConfirm={async (appNo) => {
+                    onConfirm={async (appNo, type) => {
                         try {
-                            await confirmDuplicate({ applicationNo: appNo });
+                            if (type === 'additional') {
+                                await confirmAdditional({ applicationNo: appNo });
+                            } else {
+                                await confirmDuplicate({ applicationNo: appNo });
+                            }
                             setCheckingApp(null);
                             onRefresh();
                         } catch (err) {
@@ -990,7 +999,7 @@ export default function CustomerManagement({
 }
 
 // 중복 확인 모달 컴포넌트
-function DuplicateCheckModal({ app, onClose, onConfirm }: { app: Application, onClose: () => void, onConfirm: (appNo: string) => void }) {
+function DuplicateCheckModal({ app, onClose, onConfirm }: { app: Application, onClose: () => void, onConfirm: (appNo: string, type: 'confirmed' | 'additional') => void }) {
     const duplicates = useQuery(api.applications.checkDuplicateCustomer, {
         customerName: app.customerName || "",
         customerPhone: app.customerPhone || "",
@@ -1079,12 +1088,20 @@ function DuplicateCheckModal({ app, onClose, onConfirm }: { app: Application, on
                     
                     <div className="flex gap-3 mt-8">
                         {!app.duplicateConfirmed && (
-                            <button 
-                                onClick={() => onConfirm(app.applicationNo)} 
-                                className="flex-1 py-4 bg-emerald-500 text-white rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all shadow-lg active:scale-95"
-                            >
-                                확인 완료
-                            </button>
+                            <>
+                                <button 
+                                    onClick={() => onConfirm(app.applicationNo, 'confirmed')} 
+                                    className="flex-1 py-4 bg-emerald-500 text-white rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all shadow-lg active:scale-95"
+                                >
+                                    중복 확인
+                                </button>
+                                <button 
+                                    onClick={() => onConfirm(app.applicationNo, 'additional')} 
+                                    className="flex-1 py-4 bg-blue-500 text-white rounded-2xl font-black text-sm hover:bg-blue-600 transition-all shadow-lg active:scale-95"
+                                >
+                                    추가 접수
+                                </button>
+                            </>
                         )}
                         <button 
                             onClick={onClose} 

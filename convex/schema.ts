@@ -71,6 +71,7 @@ export default defineSchema({
         remarks: v.optional(v.string()), // 비고(사유)
         statusUpdatedAt: v.optional(v.string()), // 상태값 변경일시
         duplicateConfirmed: v.optional(v.boolean()), // 중복 확인 완료 여부
+        isAdditionalRegistration: v.optional(v.boolean()), // 추가 접수 여부
     })
         .index("by_applicationNo", ["applicationNo"])
         .index("by_partnerId", ["partnerId"])
