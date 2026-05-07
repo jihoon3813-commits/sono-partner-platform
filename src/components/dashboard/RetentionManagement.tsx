@@ -174,10 +174,10 @@ import { nowKST } from "../../../convex/utils";
         // 가입일자(YYYYMMDD)를 기반으로 기간 필터링
         const periodFilteredRecords = useMemo(() => {
             if (!records) return [];
-            const now = new Date();
-            const currentYearMonth = now.getFullYear().toString() + (now.getMonth() + 1).toString().padStart(2, '0');
+            const kstNow = new Date(new Date().getTime() + (new Date().getTimezoneOffset() + 540) * 60000);
+            const currentYearMonth = kstNow.getFullYear().toString() + (kstNow.getMonth() + 1).toString().padStart(2, '0');
 
-            const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            const prevDate = new Date(kstNow.getFullYear(), kstNow.getMonth() - 1, 1);
             const prevYearMonth = prevDate.getFullYear().toString() + (prevDate.getMonth() + 1).toString().padStart(2, '0');
 
             return records.filter(r => {
@@ -185,8 +185,8 @@ import { nowKST } from "../../../convex/utils";
                 if (periodFilter === "current") return joinYM === currentYearMonth;
                 if (periodFilter === "previous") return joinYM === prevYearMonth;
                 if (periodFilter === "year") {
-                    const oneYearAgo = new Date();
-                    oneYearAgo.setFullYear(now.getFullYear() - 1);
+                    const oneYearAgo = new Date(kstNow);
+                    oneYearAgo.setFullYear(kstNow.getFullYear() - 1);
                     const oneYearAgoYM = oneYearAgo.getFullYear().toString() + (oneYearAgo.getMonth() + 1).toString().padStart(2, '0');
                     return joinYM >= oneYearAgoYM;
                 }

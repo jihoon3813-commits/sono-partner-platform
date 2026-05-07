@@ -30,6 +30,11 @@ export default function PartnerDashboard() {
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
     const [selectedRequest, setSelectedRequest] = useState<PartnerRequest | null>(null);
 
+    // Filter States (Lifted from CustomerManagement)
+    const [dateFilter, setDateFilter] = useState("all");
+    const [customStartDate, setCustomStartDate] = useState("");
+    const [customEndDate, setCustomEndDate] = useState("");
+
     // 네비게이션 헬퍼 컴포넌트
     const NavButton = ({ id, label, icon, count }: { id: string; label: string; icon: string; count?: number }) => (
         <button
@@ -143,8 +148,54 @@ export default function PartnerDashboard() {
 
     const isAdmin = dashboardData.isAdmin;
 
-    // Calculate Status Counts (dashboardData.customers가 항상 배열임을 보장)
-    const statusCounts = (dashboardData.customers || []).reduce((acc: Record<string, number>, curr: any) => {
+    // Calculate Date Filtered Customers for Status Counts
+    const dateFilteredCustomers = (dashboardData.customers || []).filter(app => {
+        if (!app) return false;
+        if (dateFilter === "all") return true;
+
+        const kstNow = new Date(new Date().getTime() + (new Date().getTimezoneOffset() + 540) * 60000);
+        const today = kstNow.toISOString().slice(0, 10);
+        const thisMonth = kstNow.toISOString().slice(0, 7);
+
+        // 기준 날짜: 가입일(registrationDate)이 있으면 우선 사용, 없으면 신청일(createdAt) 사용
+        let refDateStr = app.registrationDate || app.createdAt || "";
+        
+        if (app.registrationDate && !app.registrationDate.includes('-')) {
+            const serial = parseFloat(String(app.registrationDate));
+            if (!isNaN(serial) && serial > 30000 && serial < 60000) {
+                const d = new Date((serial - 25569) * 86400 * 1000);
+                refDateStr = d.toISOString().slice(0, 10);
+            }
+        }
+
+        const kstDatePart = refDateStr.includes('T') 
+            ? refDateStr.slice(0, 10) 
+            : refDateStr.split(' ')[0].replace(/\./g, '-').trim();
+
+        if (dateFilter === "today") {
+            return kstDatePart === today;
+        } else if (dateFilter === "month") {
+            return kstDatePart.slice(0, 7) === thisMonth;
+        } else if (dateFilter === 'custom') {
+            if (customStartDate && kstDatePart < customStartDate) return false;
+            if (customEndDate && kstDatePart > customEndDate) return false;
+            return true;
+        } else {
+            const getStartDateStr = (filter: string) => {
+                const d = new Date(kstNow);
+                if (filter === '3months') d.setMonth(kstNow.getMonth() - 3);
+                else if (filter === '6months') d.setMonth(kstNow.getMonth() - 6);
+                else if (filter === '1year') d.setFullYear(kstNow.getFullYear() - 1);
+                else return "";
+                return d.toISOString().slice(0, 10);
+            };
+            const startDateStr = getStartDateStr(dateFilter);
+            return !startDateStr || kstDatePart >= startDateStr;
+        }
+    });
+
+    // Calculate Status Counts based on DATE FILTERED data
+    const statusCounts = dateFilteredCustomers.reduce((acc: Record<string, number>, curr: any) => {
         const status = curr.status || "접수";
         acc[status] = (acc[status] || 0) + 1;
         return acc;
@@ -401,13 +452,58 @@ export default function PartnerDashboard() {
                 )}
                 {activeTab === "overview" && (
                     <div className="space-y-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                                {[
+                                    { label: '전체', value: 'all' },
+                                    { label: '당월', value: 'month' },
+                                    { label: '3개월', value: '3months' },
+                                    { label: '6개월', value: '6months' },
+                                    { label: '1년', value: '1year' },
+                                    { label: '기간선택', value: 'custom' },
+                                ].map((opt) => (
+                                    <button
+                                        key={opt.value}
+                                        onClick={() => setDateFilter(opt.value)}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${dateFilter === opt.value
+                                            ? "bg-sono-dark text-white"
+                                            : "bg-white text-gray-500 border border-gray-100 hover:bg-gray-50 shadow-sm"
+                                            }`}
+                                    >
+                                        {opt.label}
+                                    </button>
+                                ))}
+
+                                {dateFilter === 'custom' && (
+                                    <div className="flex items-center gap-2 ml-2 animate-slide-right">
+                                        <input
+                                            type="date"
+                                            value={customStartDate}
+                                            onChange={(e) => setCustomStartDate(e.target.value)}
+                                            className="border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-sono-primary bg-white font-bold"
+                                        />
+                                        <span className="text-gray-400 text-xs">~</span>
+                                        <input
+                                            type="date"
+                                            value={customEndDate}
+                                            onChange={(e) => setCustomEndDate(e.target.value)}
+                                            className="border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-sono-primary bg-white font-bold"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="text-[10px] text-gray-400 font-bold bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
+                                * 선택한 기간의 고객 현황입니다.
+                            </div>
+                        </div>
+
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 animate-slide-up">
                             {/* Status Stats */}
                             {statusList.map((status) => (
                                 <div
                                     key={status}
                                     onClick={() => setSelectedOverviewStatus(status)}
-                                    className={`bg-white p-4 rounded-2xl shadow-sm border border-gray-100 transition-all cursor-pointer hover:shadow-md hover:-translate-y-1 ${selectedOverviewStatus === status ? "ring-2 ring-sono-primary ring-offset-2" : ""}`}
+                                    className={`bg-white p-4 rounded-2xl shadow-sm border border-gray-100 transition-all cursor-pointer hover:shadow-md hover:-translate-y-1 ${selectedOverviewStatus === status ? "ring-2 ring-sono-primary ring-offset-2 bg-sono-primary/[0.02]" : ""}`}
                                 >
                                     <div className="flex justify-between items-start mb-2">
                                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-50 ${getStatusColor(status).replace('text-', 'bg-').replace('-500', '-50')} ${getStatusColor(status)}`}>
@@ -439,6 +535,12 @@ export default function PartnerDashboard() {
                                 initialStatusFilter={selectedOverviewStatus}
                                 isWidget={true}
                                 currentUser={partner}
+                                dateFilter={dateFilter}
+                                setDateFilter={setDateFilter}
+                                customStartDate={customStartDate}
+                                setCustomStartDate={setCustomStartDate}
+                                customEndDate={customEndDate}
+                                setCustomEndDate={setCustomEndDate}
                             />
                         </div>
                     </div>
@@ -467,6 +569,12 @@ export default function PartnerDashboard() {
                         partners={dashboardData.partners as any}
                         isAdmin={isAdmin}
                         currentUser={partner}
+                        dateFilter={dateFilter}
+                        setDateFilter={setDateFilter}
+                        customStartDate={customStartDate}
+                        setCustomStartDate={setCustomStartDate}
+                        customEndDate={customEndDate}
+                        setCustomEndDate={setCustomEndDate}
                     />
                 )}
 

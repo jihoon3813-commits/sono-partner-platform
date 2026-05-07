@@ -14,7 +14,14 @@ interface CustomerManagementProps {
     isWidget?: boolean;
     isAdmin?: boolean;
     initialStatusFilter?: string;
-    currentUser?: Partner | null; // Added
+    currentUser?: Partner | null;
+    // Added props for state lifting
+    dateFilter?: string;
+    setDateFilter?: (val: string) => void;
+    customStartDate?: string;
+    setCustomStartDate?: (val: string) => void;
+    customEndDate?: string;
+    setCustomEndDate?: (val: string) => void;
 }
 
 export default function CustomerManagement({ applications, onRefresh, partners = [], isWidget = false, isAdmin = false, initialStatusFilter = "all", currentUser = null }: CustomerManagementProps) {
@@ -54,9 +61,17 @@ export default function CustomerManagement({ applications, onRefresh, partners =
     const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter);
     const [productFilter, setProductFilter] = useState<string>("all");
     const [partnersFilter, setPartnersFilter] = useState<string>("all");
-    const [dateFilter, setDateFilter] = useState<string>("all");
-    const [customStartDate, setCustomStartDate] = useState("");
-    const [customEndDate, setCustomEndDate] = useState("");
+    // Filters (Internal state fallback if not provided as props)
+    const [_internalDateFilter, _setInternalDateFilter] = useState<string>("all");
+    const [_internalCustomStartDate, _setInternalCustomStartDate] = useState("");
+    const [_internalCustomEndDate, _setInternalCustomEndDate] = useState("");
+
+    const dateFilter = props.dateFilter || _internalDateFilter;
+    const setDateFilter = props.setDateFilter || _setInternalDateFilter;
+    const customStartDate = props.customStartDate || _internalCustomStartDate;
+    const setCustomStartDate = props.setCustomStartDate || _setInternalCustomStartDate;
+    const customEndDate = props.customEndDate || _internalCustomEndDate;
+    const setCustomEndDate = props.setCustomEndDate || _setInternalCustomEndDate;
 
     // Sorting
     const [sortBy, setSortBy] = useState<"updatedAt" | "createdAtAsc" | "createdAtDesc">("updatedAt");
@@ -101,23 +116,21 @@ export default function CustomerManagement({ applications, onRefresh, partners =
         { label: '기간선택', value: 'custom' },
     ];
 
-    const getStartDate = (filter: string) => {
-        const now = new Date();
-        const d = new Date(now);
-        switch (filter) {
-            case 'month': d.setDate(1); break;
-            case '3months': d.setMonth(now.getMonth() - 3); break;
-            case '6months': d.setMonth(now.getMonth() - 6); break;
-            case '1year': d.setFullYear(now.getFullYear() - 1); break;
-            default: return null;
-        }
-        d.setHours(0, 0, 0, 0);
-        return d;
-    };
+    // KST 기준 오늘 및 이번 달 계산
+    const kstNow = new Date(new Date().getTime() + (new Date().getTimezoneOffset() + 540) * 60000);
+    const today = kstNow.toISOString().slice(0, 10);
+    const thisMonth = kstNow.toISOString().slice(0, 7);
 
-    const now = new Date();
-    const today = now.toISOString().slice(0, 10);
-    const thisMonth = now.toISOString().slice(0, 7);
+    const getStartDateStr = (filter: string) => {
+        const d = new Date(kstNow);
+        switch (filter) {
+            case '3months': d.setMonth(kstNow.getMonth() - 3); break;
+            case '6months': d.setMonth(kstNow.getMonth() - 6); break;
+            case '1year': d.setFullYear(kstNow.getFullYear() - 1); break;
+            default: return "";
+        }
+        return d.toISOString().slice(0, 10);
+    };
 
     // 1. Initial filtered applications based on search, date, and basic criteria
     const initialFiltered = (applications || []).filter(app => {
@@ -146,23 +159,34 @@ export default function CustomerManagement({ applications, onRefresh, partners =
 
         // Date Filter
         if (dateFilter && dateFilter !== "all") {
-            const createdAt = app.createdAt || "";
-            const appDate = new Date(createdAt);
+            // 기준 날짜: 가입일(registrationDate)이 있으면 우선 사용, 없으면 신청일(createdAt) 사용
+            let refDateStr = app.registrationDate || app.createdAt || "";
+            
+            // Excel 시리얼 번호 등 비표준 형식 처리 (formatDate 헬퍼와 유사한 로직)
+            if (app.registrationDate && !app.registrationDate.includes('-')) {
+                const serial = parseFloat(String(app.registrationDate));
+                if (!isNaN(serial) && serial > 30000 && serial < 60000) {
+                    const d = new Date((serial - 25569) * 86400 * 1000);
+                    refDateStr = d.toISOString().slice(0, 10);
+                }
+            }
+
+            // KST 날짜 부분 추출 (YYYY-MM-DD)
+            const kstDatePart = refDateStr.includes('T') 
+                ? refDateStr.slice(0, 10) 
+                : refDateStr.split(' ')[0].replace(/\./g, '-').trim();
 
             if (dateFilter === "today") {
-                if (createdAt.slice(0, 10) !== today) return false;
+                if (kstDatePart !== today) return false;
             } else if (dateFilter === "month") {
-                if (createdAt.slice(0, 7) !== thisMonth) return false;
+                if (kstDatePart.slice(0, 7) !== thisMonth) return false;
             } else if (dateFilter === 'custom') {
-                if (customStartDate && new Date(customStartDate) > appDate) return false;
-                if (customEndDate) {
-                    const end = new Date(customEndDate);
-                    end.setHours(23, 59, 59, 999);
-                    if (end < appDate) return false;
-                }
+                // 기간 선택 시에도 표시되는 날짜(기준일)를 기준으로 비교
+                if (customStartDate && kstDatePart < customStartDate) return false;
+                if (customEndDate && kstDatePart > customEndDate) return false;
             } else {
-                const startDate = getStartDate(dateFilter);
-                if (startDate && appDate < startDate) return false;
+                const startDateStr = getStartDateStr(dateFilter);
+                if (startDateStr && kstDatePart < startDateStr) return false;
             }
         }
 
@@ -477,6 +501,24 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                                         {opt.label}
                                     </button>
                                 ))}
+                                
+                                {dateFilter === 'custom' && (
+                                    <div className="flex items-center gap-2 ml-2 animate-slide-right">
+                                        <input
+                                            type="date"
+                                            value={customStartDate}
+                                            onChange={(e) => setCustomStartDate(e.target.value)}
+                                            className="border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-sono-primary bg-white font-bold"
+                                        />
+                                        <span className="text-gray-400 text-xs">~</span>
+                                        <input
+                                            type="date"
+                                            value={customEndDate}
+                                            onChange={(e) => setCustomEndDate(e.target.value)}
+                                            className="border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-sono-primary bg-white font-bold"
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex flex-wrap gap-2 items-center border-b border-gray-100 pb-4">
@@ -552,21 +594,21 @@ export default function CustomerManagement({ applications, onRefresh, partners =
                             </div>
                         </div>
 
-                        {/* Custom Date Input (Common) */}
+                        {/* Custom Date Input (Mobile Only - kept separate for layout) */}
                         {dateFilter === 'custom' && (
-                            <div className="flex items-center gap-2 pt-2 md:pt-0">
+                            <div className="flex md:hidden items-center gap-2 pt-2">
                                 <input
                                     type="date"
                                     value={customStartDate}
                                     onChange={(e) => setCustomStartDate(e.target.value)}
-                                    className="border border-gray-200 rounded-lg px-2 py-1 text-xs outline-none focus:border-sono-primary"
+                                    className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-sono-primary"
                                 />
                                 <span className="text-gray-400">~</span>
                                 <input
                                     type="date"
                                     value={customEndDate}
                                     onChange={(e) => setCustomEndDate(e.target.value)}
-                                    className="border border-gray-200 rounded-lg px-2 py-1 text-xs outline-none focus:border-sono-primary"
+                                    className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-sono-primary"
                                 />
                             </div>
                         )}
