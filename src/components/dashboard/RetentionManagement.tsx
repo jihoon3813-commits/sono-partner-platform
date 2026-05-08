@@ -175,20 +175,36 @@ import { nowKST } from "../../../convex/utils";
         const periodFilteredRecords = useMemo(() => {
             if (!records) return [];
             const kstNow = new Date(new Date().getTime() + (new Date().getTimezoneOffset() + 540) * 60000);
-            const currentYearMonth = kstNow.getFullYear().toString() + (kstNow.getMonth() + 1).toString().padStart(2, '0');
+            const formatYM = (d: Date) => d.getFullYear().toString() + (d.getMonth() + 1).toString().padStart(2, '0');
+            const formatYMD = (d: Date) => formatYM(d) + d.getDate().toString().padStart(2, '0');
+
+            const currentYearMonth = formatYM(kstNow);
+            const todayYMD = formatYMD(kstNow);
+
+            const yesterday = new Date(kstNow);
+            yesterday.setDate(kstNow.getDate() - 1);
+            const yesterdayYMD = formatYMD(yesterday);
 
             const prevDate = new Date(kstNow.getFullYear(), kstNow.getMonth() - 1, 1);
-            const prevYearMonth = prevDate.getFullYear().toString() + (prevDate.getMonth() + 1).toString().padStart(2, '0');
+            const prevYearMonth = formatYM(prevDate);
 
             return records.filter(r => {
                 const joinYM = r.joinDate.substring(0, 6);
+                const joinYMD = r.joinDate.substring(0, 8);
+                
+                if (periodFilter === "today") return joinYMD === todayYMD;
+                if (periodFilter === "yesterday") return joinYMD === yesterdayYMD;
                 if (periodFilter === "current") return joinYM === currentYearMonth;
                 if (periodFilter === "previous") return joinYM === prevYearMonth;
+                if (periodFilter === "3months") {
+                    const d = new Date(kstNow);
+                    d.setMonth(kstNow.getMonth() - 3);
+                    return joinYM >= formatYM(d);
+                }
                 if (periodFilter === "year") {
                     const oneYearAgo = new Date(kstNow);
                     oneYearAgo.setFullYear(kstNow.getFullYear() - 1);
-                    const oneYearAgoYM = oneYearAgo.getFullYear().toString() + (oneYearAgo.getMonth() + 1).toString().padStart(2, '0');
-                    return joinYM >= oneYearAgoYM;
+                    return joinYM >= formatYM(oneYearAgo);
                 }
                 return true; // cumulative
             });
@@ -618,8 +634,11 @@ import { nowKST } from "../../../convex/utils";
                                     <div className="flex flex-wrap items-center gap-3">
                                         <div className="flex bg-gray-100 p-1 rounded-xl mr-2">
                                             {[
+                                                { id: "today", label: "당일" },
+                                                { id: "yesterday", label: "전일" },
                                                 { id: "current", label: "당월" },
                                                 { id: "previous", label: "전월" },
+                                                { id: "3months", label: "3개월" },
                                                 { id: "year", label: "1년" },
                                                 { id: "cumulative", label: "누적" },
                                             ].map(p => (

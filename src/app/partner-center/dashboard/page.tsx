@@ -174,8 +174,17 @@ export default function PartnerDashboard() {
 
         if (dateFilter === "today") {
             return kstDatePart === today;
+        } else if (dateFilter === "yesterday") {
+            const d = new Date(kstNow);
+            d.setDate(d.getDate() - 1);
+            return kstDatePart === d.toISOString().slice(0, 10);
         } else if (dateFilter === "month") {
             return kstDatePart.slice(0, 7) === thisMonth;
+        } else if (dateFilter === "lastMonth") {
+            const d = new Date(kstNow);
+            d.setMonth(d.getMonth() - 1);
+            const lastMonth = d.toISOString().slice(0, 7);
+            return kstDatePart.slice(0, 7) === lastMonth;
         } else if (dateFilter === 'custom') {
             if (customStartDate && kstDatePart < customStartDate) return false;
             if (customEndDate && kstDatePart > customEndDate) return false;
@@ -456,7 +465,10 @@ export default function PartnerDashboard() {
                             <div className="flex flex-wrap items-center gap-2">
                                 {[
                                     { label: '전체', value: 'all' },
+                                    { label: '당일', value: 'today' },
+                                    { label: '전일', value: 'yesterday' },
                                     { label: '당월', value: 'month' },
+                                    { label: '전월', value: 'lastMonth' },
                                     { label: '3개월', value: '3months' },
                                     { label: '6개월', value: '6months' },
                                     { label: '1년', value: '1year' },

@@ -30,9 +30,54 @@ export default function AnalyticsDashboard() {
         <div className="space-y-8 animate-slide-up pb-20">
             {/* Filters */}
             <div className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex flex-wrap gap-4 items-end">
-                <div className="flex-1 min-w-[300px] flex gap-4">
                     <div className="flex-1">
                         <label className="block text-[11px] font-bold text-gray-400 mb-1 ml-1">기간 설정</label>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                            {[
+                                { label: "당일", range: "today" },
+                                { label: "전일", range: "yesterday" },
+                                { label: "당월", range: "thisMonth" },
+                                { label: "전월", range: "lastMonth" },
+                                { label: "3개월", range: "3months" },
+                            ].map((btn) => (
+                                <button
+                                    key={btn.range}
+                                    onClick={() => {
+                                        const now = new Date();
+                                        const kstNow = new Date(now.getTime() + (now.getTimezoneOffset() + 540) * 60000);
+                                        const format = (d: Date) => d.toISOString().split('T')[0];
+                                        
+                                        let start = format(kstNow);
+                                        let end = format(kstNow);
+                                        
+                                        if (btn.range === 'yesterday') {
+                                            const d = new Date(kstNow);
+                                            d.setDate(d.getDate() - 1);
+                                            start = format(d);
+                                            end = format(d);
+                                        } else if (btn.range === 'thisMonth') {
+                                            const d = new Date(kstNow.getFullYear(), kstNow.getMonth(), 1, 12);
+                                            start = format(d);
+                                        } else if (btn.range === 'lastMonth') {
+                                            const s = new Date(kstNow.getFullYear(), kstNow.getMonth() - 1, 1, 12);
+                                            const e = new Date(kstNow.getFullYear(), kstNow.getMonth(), 0, 12);
+                                            start = format(s);
+                                            end = format(e);
+                                        } else if (btn.range === '3months') {
+                                            const d = new Date(kstNow);
+                                            d.setMonth(d.getMonth() - 3);
+                                            start = format(d);
+                                        }
+                                        
+                                        setStartDate(start);
+                                        setEndDate(end);
+                                    }}
+                                    className="px-2.5 py-1.5 bg-white border border-gray-100 hover:border-sono-primary hover:text-sono-primary text-gray-400 rounded-xl text-[10px] font-black transition-all shadow-sm active:scale-95"
+                                >
+                                    {btn.label}
+                                </button>
+                            ))}
+                        </div>
                         <div className="flex items-center gap-2">
                             <input 
                                 type="date" 
@@ -49,7 +94,6 @@ export default function AnalyticsDashboard() {
                             />
                         </div>
                     </div>
-                </div>
                 <div className="w-full md:w-64">
                     <label className="block text-[11px] font-bold text-gray-400 mb-1 ml-1">파트너사 필터</label>
                     <select 

@@ -124,7 +124,10 @@ export default function CustomerManagement({
 
     const dateOptions = [
         { label: '전체', value: 'all' },
+        { label: '당일', value: 'today' },
+        { label: '전일', value: 'yesterday' },
         { label: '당월', value: 'month' },
+        { label: '전월', value: 'lastMonth' },
         { label: '3개월', value: '3months' },
         { label: '6개월', value: '6months' },
         { label: '1년', value: '1year' },
@@ -193,8 +196,18 @@ export default function CustomerManagement({
 
             if (dateFilter === "today") {
                 if (kstDatePart !== today) return false;
+            } else if (dateFilter === "yesterday") {
+                const d = new Date(kstNow);
+                d.setDate(d.getDate() - 1);
+                const yesterday = d.toISOString().slice(0, 10);
+                if (kstDatePart !== yesterday) return false;
             } else if (dateFilter === "month") {
                 if (kstDatePart.slice(0, 7) !== thisMonth) return false;
+            } else if (dateFilter === "lastMonth") {
+                const d = new Date(kstNow);
+                d.setMonth(d.getMonth() - 1);
+                const lastMonth = d.toISOString().slice(0, 7);
+                if (kstDatePart.slice(0, 7) !== lastMonth) return false;
             } else if (dateFilter === 'custom') {
                 // 기간 선택 시에도 표시되는 날짜(기준일)를 기준으로 비교
                 if (customStartDate && kstDatePart < customStartDate) return false;
