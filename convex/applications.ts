@@ -791,3 +791,33 @@ export const migrateAccessPath = mutation({
         return { updated: count };
     },
 });
+
+export const fixGenderData = mutation({
+    args: {
+        resetToUnspecified: v.optional(v.boolean()), // true면 '남성'/'여성'을 모두 '-'로 변경 (초기화용)
+    },
+    handler: async (ctx, args) => {
+        const apps = await ctx.db.query("applications").collect();
+        let updatedCount = 0;
+        for (const app of apps) {
+            let newGender = app.customerGender;
+            
+            if (args.resetToUnspecified) {
+                if (newGender === "남" || newGender === "남성" || newGender === "여" || newGender === "여성") {
+                    newGender = "-";
+                }
+            } else {
+                // 표준화
+                if (newGender === "남") newGender = "남성";
+                if (newGender === "여") newGender = "여성";
+                if (!newGender || newGender === "") newGender = "-";
+            }
+
+            if (newGender !== app.customerGender) {
+                await ctx.db.patch(app._id, { customerGender: newGender });
+                updatedCount++;
+            }
+        }
+        return { updated: updatedCount };
+    },
+});

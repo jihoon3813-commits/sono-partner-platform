@@ -71,6 +71,7 @@ export default function CustomerManagement({
     const confirmAdditional = useMutation(api.applications.confirmAdditional);
 
     const deleteApplications = useMutation(api.applications.deleteApplications);
+    const fixGenderData = useMutation(api.applications.fixGenderData);
 
     // Filters
     const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter);
@@ -374,6 +375,30 @@ export default function CustomerManagement({
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                     </svg>
                                     본사 엑셀 업로드
+                                </button>
+                            )}
+
+                            {isAdmin && (
+                                <button
+                                    onClick={async () => {
+                                        const mode = confirm("기존 데이터를 표준화(남/여 -> 남성/여성)하시겠습니까?\n\n'취소'를 누르면 기존 모든 성별 데이터를 '미지정(-)'으로 초기화할 수 있는 옵션이 나타납니다.");
+                                        if (mode) {
+                                            const res = await fixGenderData({ resetToUnspecified: false });
+                                            alert(`${res.updated}건의 데이터가 표준화되었습니다.`);
+                                        } else {
+                                            if (confirm("모든 기존 성별 데이터를 '미지정(-)'으로 초기화하시겠습니까?\n(잘못 입력된 '남성' 데이터를 정리할 때 사용합니다)")) {
+                                                const res = await fixGenderData({ resetToUnspecified: true });
+                                                alert(`${res.updated}건의 데이터가 초기화되었습니다.`);
+                                            }
+                                        }
+                                        onRefresh();
+                                    }}
+                                    className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-xl text-sm font-bold hover:bg-amber-100 transition-all shadow-sm active:scale-95"
+                                >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    성별 데이터 보정
                                 </button>
                             )}
 

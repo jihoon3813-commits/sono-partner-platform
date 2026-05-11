@@ -58,7 +58,7 @@ export default function InquiryModal({
         name: "",
         phone: "",
         birthdate: "",
-        gender: "남",
+        gender: "-",
         zonecode: "",
         address: "",
         addressDetail: "",
@@ -187,7 +187,7 @@ export default function InquiryModal({
                     name: formData.name,
                     phone: formData.phone,
                     birthdate: formData.birthdate,
-                    gender: formData.gender,
+                    gender: formData.gender || "-",
                     email: "",
                     zipcode: formData.zonecode,
                     address: formData.address,
@@ -218,7 +218,7 @@ export default function InquiryModal({
             name: "",
             phone: "",
             birthdate: "",
-            gender: "남",
+            gender: "-",
             zonecode: "",
             address: "",
             addressDetail: "",
@@ -352,8 +352,8 @@ export default function InquiryModal({
                                                 <button
                                                     key={g}
                                                     type="button"
-                                                    onClick={() => setFormData(prev => ({ ...prev, gender: g }))}
-                                                    className={`flex-1 rounded-xl text-sm font-bold transition-all ${formData.gender === g ? "bg-white text-sono-primary shadow-sm" : "text-gray-400"}`}
+                                                    onClick={() => setFormData(prev => ({ ...prev, gender: g === "남" ? "남성" : "여성" }))}
+                                                    className={`flex-1 rounded-xl text-sm font-bold transition-all ${formData.gender === (g === "남" ? "남성" : "여성") ? "bg-white text-sono-primary shadow-sm" : "text-gray-400"}`}
                                                 >
                                                     {g}
                                                 </button>

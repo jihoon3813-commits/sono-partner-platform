@@ -53,7 +53,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
         customerName: "",
         customerPhone: "",
         customerBirth: "",
-        customerGender: "남",
+        customerGender: "-",
         customerAddress: "",
         customerAddressDetail: "",
         productType: "더 해피 450 ONE",
@@ -157,7 +157,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
             customerName: "",
             customerPhone: "",
             customerBirth: "",
-            customerGender: "남",
+            customerGender: "-",
             customerAddress: "",
             customerAddressDetail: "",
             productType: "더 해피 450 ONE",
@@ -236,7 +236,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                     customerName: String(customerName),
                     customerPhone: String(customerPhone),
                     customerBirth: row[2 + offset] ? String(row[2 + offset]) : "",
-                    customerGender: row[3 + offset] ? String(row[3 + offset]) : "남",
+                    customerGender: row[3 + offset] ? (String(row[3 + offset]).includes("여") ? "여성" : "남성") : "-",
                     customerAddress: row[4 + offset] ? String(row[4 + offset]) : "",
                     customerAddressDetail: row[5 + offset] ? String(row[5 + offset]) : "",
                     productType: row[6 + offset] ? (String(row[6 + offset]).toLowerCase().includes("smart") || String(row[6 + offset]).includes("스마트") ? "스마트케어" : "더 해피 450 ONE") : "더 해피 450 ONE",
@@ -467,8 +467,9 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     onChange={handleManualChange}
                                     className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary"
                                 >
-                                    <option value="남">남</option>
-                                    <option value="여">여</option>
+                                    <option value="-">선택안함</option>
+                                    <option value="남성">남성</option>
+                                    <option value="여성">여성</option>
                                 </select>
                             </div>
                             <div className="col-span-4 grid grid-cols-4 gap-3">

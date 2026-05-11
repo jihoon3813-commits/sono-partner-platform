@@ -314,6 +314,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                     onChange={(e) => setCustomerGender(e.target.value)}
                                     className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
                                 >
+                                    <option value="-">미지정</option>
                                     <option value="남성">남성</option>
                                     <option value="여성">여성</option>
                                 </select>
