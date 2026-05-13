@@ -10,24 +10,28 @@ interface Happy450ContentProps {
     partnerUrl?: string;
     partnerName?: string;
     partnerId?: string;
+    isPremiumMallMode?: boolean;
 }
 
 export default function Happy450Content({
     partnerMode = false,
     partnerUrl = "",
     partnerName = "",
-    partnerId = ""
+    partnerId = "",
+    isPremiumMallMode = false
 }: Happy450ContentProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
 
     // 파트너 페이지에서는 제휴신청 대신 가입신청으로 표시됨 (Header에서 처리)
     // 페이지 내 버튼 문구 처리
-    const ctaText = partnerMode ? "가입 신청하기" : "제휴 파트너 신청하기";
+    const ctaText = isPremiumMallMode 
+        ? "프리미엄몰 접수 바로가기" 
+        : (partnerMode ? "가입 신청하기" : "제휴 파트너 신청하기");
 
     return (
         <>
-            {!isModalOpen && <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} productType="happy450" />}
+            {!isModalOpen && <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} productType="happy450" isPremiumMallMode={isPremiumMallMode} />}
             <main>
                 {/* 히어로 섹션 */}
                 <section
@@ -1006,6 +1010,7 @@ export default function Happy450Content({
                 partnerId={partnerId}
                 productType="happy450"
                 showProductSelect={false}
+                isPremiumMallMode={isPremiumMallMode}
             />
 
             {/* 자동이체 변경 안내 모달 */}

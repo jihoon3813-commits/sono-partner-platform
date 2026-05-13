@@ -22,6 +22,7 @@ interface InquiryModalProps {
     showProductSelect?: boolean;
     initialAppliance?: string;
     initialUnit?: string;
+    isPremiumMallMode?: boolean;
 }
 
 export default function InquiryModal({
@@ -33,7 +34,8 @@ export default function InquiryModal({
     planType = "",
     showProductSelect = false,
     initialAppliance = "",
-    initialUnit = "4"
+    initialUnit = "4",
+    isPremiumMallMode = false
 }: InquiryModalProps) {
     // Convex 실시간 제품 정보 쿼리
     const rawProductsData = useQuery(api.products.get);
@@ -77,14 +79,14 @@ export default function InquiryModal({
     }, [productType]);
 
     useEffect(() => {
-        if (isOpen && !document.getElementById("daum-postcode-script")) {
+        if (isOpen && !document.getElementById("daum-postcode-script") && !isPremiumMallMode) {
             const script = document.createElement("script");
             script.id = "daum-postcode-script";
             script.src = "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
             script.async = true;
             document.body.appendChild(script);
         }
-    }, [isOpen]);
+    }, [isOpen, isPremiumMallMode]);
 
     const formatPhone = (value: string) => {
         const numbers = value.replace(/[^0-9]/g, "");
@@ -145,12 +147,47 @@ export default function InquiryModal({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Determine product type
         const currentProduct = formData.selectedProduct || productType;
-        const isSmartCareProduct = ["smartcare", "스마트케어", "스마트 케어"].includes(currentProduct);
+        const isSmartCare = ["smartcare", "스마트케어", "스마트 케어"].includes(currentProduct);
+        const isHappy450 = ["happy450", "더 해피 450", "더 해피 450 ONE"].includes(currentProduct);
+
+        if (isPremiumMallMode) {
+            // Validation for premium mall mode
+            if (!selectedUnit) {
+                alert("가입 구좌를 선택해주세요.");
+                return;
+            }
+
+            // Redirect logic
+            let redirectUrl = "";
+            if (isHappy450) {
+                const happy450Mapping: Record<string, string> = {
+                    "1": "https://www.premiummall.co.kr/rental/list-view.html?uid=1447",
+                    "2": "https://www.premiummall.co.kr/rental/list-view.html?uid=1448",
+                    "3": "https://www.premiummall.co.kr/rental/list-view.html?uid=1449"
+                };
+                redirectUrl = happy450Mapping[selectedUnit];
+            } else if (isSmartCare) {
+                const smartcareMapping: Record<string, string> = {
+                    "2": "https://www.premiummall.co.kr/rental/list-view.html?uid=1456",
+                    "3": "https://www.premiummall.co.kr/rental/list-view.html?uid=1459",
+                    "4": "https://www.premiummall.co.kr/rental/list-view.html?uid=1458",
+                    "6": "https://www.premiummall.co.kr/rental/list-view.html?uid=1457"
+                };
+                redirectUrl = smartcareMapping[selectedUnit];
+            }
+
+            if (redirectUrl) {
+                window.open(redirectUrl, "_blank");
+                onClose();
+            } else {
+                alert("상품 정보가 올바르지 않습니다.");
+            }
+            return;
+        }
 
         // Validation for Birthdate (only for 스마트케어)
-        if (isSmartCareProduct && formData.birthdate.length !== 8) {
+        if (isSmartCare && formData.birthdate.length !== 8) {
             alert("생년월일은 8자리 숫자로 입력해주세요 (예: 19800101)");
             return;
         }
@@ -165,13 +202,13 @@ export default function InquiryModal({
 
             let calculatedPlanType = planType || "-";
             let productsInfo = "";
-            const isSmartCare = ["smartcare", "스마트케어", "스마트 케어"].includes(selectedProd);
-            const isHappy450 = ["happy450", "더 해피 450", "더 해피 450 ONE"].includes(selectedProd);
+            const isSmartCareProduct = ["smartcare", "스마트케어", "스마트 케어"].includes(selectedProd);
+            const isHappy450Product = ["happy450", "더 해피 450", "더 해피 450 ONE"].includes(selectedProd);
 
-            if (isSmartCare) {
+            if (isSmartCareProduct) {
                 calculatedPlanType = `${selectedUnit}구좌`;
                 productsInfo = selectedAppliance;
-            } else if (isHappy450) {
+            } else if (isHappy450Product) {
                 calculatedPlanType = `${selectedUnit}구좌`;
             }
 
@@ -239,7 +276,9 @@ export default function InquiryModal({
 
             <div className="relative bg-white rounded-[32px] shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-slide-up no-scrollbar">
                 <div className="sticky top-0 bg-white/80 backdrop-blur-md px-6 md:px-8 py-5 md:py-6 flex items-center justify-between border-b border-gray-50 z-10">
-                    <h2 className="text-xl md:text-2xl font-bold text-sono-dark tracking-tight">상담 신청</h2>
+                    <h2 className="text-xl md:text-2xl font-bold text-sono-dark tracking-tight">
+                        {isPremiumMallMode ? "프리미엄몰 접수" : "상담 신청"}
+                    </h2>
                     <button onClick={handleClose} className="p-2 hover:bg-[#f2f4f6] rounded-full transition-colors">
                         <svg className="w-6 h-6 text-[#adb5bd]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -305,6 +344,21 @@ export default function InquiryModal({
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6 md:space-y-8">
+                        {isPremiumMallMode && (
+                            <div className="text-center space-y-4 mb-4">
+                                <img 
+                                    src="https://res.cloudinary.com/dx7l09wwu/image/upload/v1778639752/KakaoTalk_20230718_144359973_gnyomv.png" 
+                                    alt="Promotional Logo" 
+                                    className="mx-auto max-w-[200px] h-auto"
+                                />
+                                <div className="bg-sono-primary/5 py-4 px-6 rounded-2xl border border-sono-primary/10">
+                                    <p className="text-sono-dark font-black text-lg break-keep">
+                                        본 상품은 <span className="text-sono-primary">&lt;프리미엄몰&gt;</span>을 통해서 접수 가능합니다.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
                         {showProductSelect && (
                             <div>
                                 <label className="input-label !text-[#4e5968] !font-bold mb-3 block">상품 선택</label>
@@ -330,39 +384,41 @@ export default function InquiryModal({
                             </div>
                         )}
 
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="input-label !text-[#4e5968] !font-bold mb-2 block">성함 <span className="text-sono-primary">*</span></label>
-                                <input type="text" name="name" value={formData.name} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="홍길동" required />
-                            </div>
-                            <div>
-                                <label className="input-label !text-[#4e5968] !font-bold mb-2 block">연락처 <span className="text-sono-primary">*</span></label>
-                                <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="010-1234-5678" required />
-                            </div>
-                            {["smartcare", "스마트케어", "스마트 케어"].includes(formData.selectedProduct || productType) && (
-                                <>
-                                    <div>
-                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">생년월일 (8자리) <span className="text-sono-primary">*</span></label>
-                                        <input type="tel" name="birthdate" value={formData.birthdate} onChange={handleBirthdateChange} inputMode="numeric" maxLength={8} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="19800101" required />
-                                    </div>
-                                    <div>
-                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">성별 <span className="text-sono-primary">*</span></label>
-                                        <div className="flex bg-[#f9fafb] p-1 rounded-2xl h-[56px]">
-                                            {["남", "여"].map((g) => (
-                                                <button
-                                                    key={g}
-                                                    type="button"
-                                                    onClick={() => setFormData(prev => ({ ...prev, gender: g === "남" ? "남성" : "여성" }))}
-                                                    className={`flex-1 rounded-xl text-sm font-bold transition-all ${formData.gender === (g === "남" ? "남성" : "여성") ? "bg-white text-sono-primary shadow-sm" : "text-gray-400"}`}
-                                                >
-                                                    {g}
-                                                </button>
-                                            ))}
+                        {!isPremiumMallMode && (
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="input-label !text-[#4e5968] !font-bold mb-2 block">성함 <span className="text-sono-primary">*</span></label>
+                                    <input type="text" name="name" value={formData.name} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="홍길동" required />
+                                </div>
+                                <div>
+                                    <label className="input-label !text-[#4e5968] !font-bold mb-2 block">연락처 <span className="text-sono-primary">*</span></label>
+                                    <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="010-1234-5678" required />
+                                </div>
+                                {["smartcare", "스마트케어", "스마트 케어"].includes(formData.selectedProduct || productType) && (
+                                    <>
+                                        <div>
+                                            <label className="input-label !text-[#4e5968] !font-bold mb-2 block">생년월일 (8자리) <span className="text-sono-primary">*</span></label>
+                                            <input type="tel" name="birthdate" value={formData.birthdate} onChange={handleBirthdateChange} inputMode="numeric" maxLength={8} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="19800101" required />
                                         </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
+                                        <div>
+                                            <label className="input-label !text-[#4e5968] !font-bold mb-2 block">성별 <span className="text-sono-primary">*</span></label>
+                                            <div className="flex bg-[#f9fafb] p-1 rounded-2xl h-[56px]">
+                                                {["남", "여"].map((g) => (
+                                                    <button
+                                                        key={g}
+                                                        type="button"
+                                                        onClick={() => setFormData(prev => ({ ...prev, gender: g === "남" ? "남성" : "여성" }))}
+                                                        className={`flex-1 rounded-xl text-sm font-bold transition-all ${formData.gender === (g === "남" ? "남성" : "여성") ? "bg-white text-sono-primary shadow-sm" : "text-gray-400"}`}
+                                                    >
+                                                        {g}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        )}
 
                         {["smartcare", "스마트케어"].includes(formData.selectedProduct || productType) && (
                             <div className="space-y-4 animate-fade-in">
@@ -375,7 +431,7 @@ export default function InquiryModal({
                                                 type="button"
                                                 onClick={() => {
                                                     setSelectedUnit(u);
-                                                    setSelectedAppliance("상담 시 결정");
+                                                    setSelectedAppliance(isPremiumMallMode ? "" : "상담 시 결정");
                                                     if (productListRef.current) {
                                                         productListRef.current.scrollTop = 0;
                                                     }
@@ -464,7 +520,7 @@ export default function InquiryModal({
                             </div>
                         )}
 
-                        {["smartcare", "스마트케어", "스마트 케어"].includes(formData.selectedProduct || productType) && (
+                        {["smartcare", "스마트케어", "스마트 케어"].includes(formData.selectedProduct || productType) && !isPremiumMallMode && (
                             <div>
                                 <label className="input-label !text-[#4e5968] !font-bold mb-2 block">주소</label>
                                 <div className="flex gap-2 mb-2">
@@ -476,38 +532,40 @@ export default function InquiryModal({
                             </div>
                         )}
 
-                        <div className="space-y-4">
-                            <div className="bg-[#f9fafb] border border-gray-100 rounded-2xl p-4 text-[11px] text-[#8b95a1] leading-relaxed max-h-[160px] overflow-y-auto no-scrollbar">
-                                <p className="font-bold text-[#4e5968] mb-2">[더해피450 one 상품 가입을 위한 개인정보 수집, 이용 및 위탁 안내]</p>
-                                <p className="mb-4">㈜소노스테이션은 더해피450 one 상품 가입을 위하여 회원님의 개인정보를 아래와 같이 수집, 이용 및 위탁하고자 합니다.</p>
-                                
-                                <p className="font-bold text-[#6b7684] mb-1">1. 개인정보 수집 및 이용 동의 (필수사항)</p>
-                                <ul className="space-y-0.5 mb-4 list-none pl-0">
-                                    <li>▷ 수집, 이용하는 자 : ㈜소노스테이션</li>
-                                    <li>▷ 수집, 이용하려는 개인정보 항목: 성명, 연락처(이동전화 | 유선전화)</li>
-                                    <li>▷ 개인정보 수집, 이용 및 위탁 목적 : 더해피450 one 상품 소개, 계약상담, 계약체결</li>
-                                    <li>▷ 개인정보 보유 기간 : 개인정보 수집 및 이용 동의일로부터 30일 또는 수집/이용 목적 달성 시까지</li>
-                                </ul>
-                                
-                                <p className="mb-4">* 고객님은 위의 개인정보 수집, 이용 및 위탁 대한 동의를 거부하실 수 있습니다. 그러나 동의를 거부할 경우 상품 가입 등 서비스 제공에 제한을 받을 수 있습니다.</p>
-                                
-                                <p className="font-bold text-[#6b7684] mb-1">2. 개인정보 취급업무 위탁 안내</p>
-                                <ul className="space-y-0.5 list-none pl-0">
-                                    <li>▷ 취급을 위탁받는 자(수탁업체) : {partnerName || "파트너사"}</li>
-                                    <li>▷ 업무내용 : 더해피450 one 상품 소개, 상담접수</li>
-                                </ul>
-                            </div>
+                        {!isPremiumMallMode && (
+                            <div className="space-y-4">
+                                <div className="bg-[#f9fafb] border border-gray-100 rounded-2xl p-4 text-[11px] text-[#8b95a1] leading-relaxed max-h-[160px] overflow-y-auto no-scrollbar">
+                                    <p className="font-bold text-[#4e5968] mb-2">[더해피450 one 상품 가입을 위한 개인정보 수집, 이용 및 위탁 안내]</p>
+                                    <p className="mb-4">㈜소노스테이션은 더해피450 one 상품 가입을 위하여 회원님의 개인정보를 아래와 같이 수집, 이용 및 위탁하고자 합니다.</p>
+                                    
+                                    <p className="font-bold text-[#6b7684] mb-1">1. 개인정보 수집 및 이용 동의 (필수사항)</p>
+                                    <ul className="space-y-0.5 mb-4 list-none pl-0">
+                                        <li>▷ 수집, 이용하는 자 : ㈜소노스테이션</li>
+                                        <li>▷ 수집, 이용하려는 개인정보 항목: 성명, 연락처(이동전화 | 유선전화)</li>
+                                        <li>▷ 개인정보 수집, 이용 및 위탁 목적 : 더해피450 one 상품 소개, 계약상담, 계약체결</li>
+                                        <li>▷ 개인정보 보유 기간 : 개인정보 수집 및 이용 동의일로부터 30일 또는 수집/이용 목적 달성 시까지</li>
+                                    </ul>
+                                    
+                                    <p className="mb-4">* 고객님은 위의 개인정보 수집, 이용 및 위탁 대한 동의를 거부하실 수 있습니다. 그러나 동의를 거부할 경우 상품 가입 등 서비스 제공에 제한을 받을 수 있습니다.</p>
+                                    
+                                    <p className="font-bold text-[#6b7684] mb-1">2. 개인정보 취급업무 위탁 안내</p>
+                                    <ul className="space-y-0.5 list-none pl-0">
+                                        <li>▷ 취급을 위탁받는 자(수탁업체) : {partnerName || "파트너사"}</li>
+                                        <li>▷ 업무내용 : 더해피450 one 상품 소개, 상담접수</li>
+                                    </ul>
+                                </div>
 
-                            <div className="bg-[#f2f4f6] rounded-[22px] p-6">
-                                <label className="flex items-center gap-3 cursor-pointer">
-                                    <input type="checkbox" checked={formData.privacyAgreed} onChange={handleChange} name="privacyAgreed" className="w-5 h-5 rounded-lg border-gray-300 text-sono-primary focus:ring-sono-primary" required />
-                                    <span className="text-sm font-bold text-[#4e5968]">개인정보 활용 동의 <span className="text-sono-primary">(필수)</span></span>
-                                </label>
+                                <div className="bg-[#f2f4f6] rounded-[22px] p-6">
+                                    <label className="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" checked={formData.privacyAgreed} onChange={handleChange} name="privacyAgreed" className="w-5 h-5 rounded-lg border-gray-300 text-sono-primary focus:ring-sono-primary" required />
+                                        <span className="text-sm font-bold text-[#4e5968]">개인정보 활용 동의 <span className="text-sono-primary">(필수)</span></span>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         <button type="submit" disabled={isSubmitting} className="btn-primary w-full py-5 text-xl shadow-xl shadow-sono-primary/20 disabled:opacity-50">
-                            {isSubmitting ? "데이터 저장 중..." : "상담 신청하기"}
+                            {isSubmitting ? "데이터 저장 중..." : (isPremiumMallMode ? "프리미엄몰 접수 바로가기" : "상담 신청하기")}
                         </button>
                     </form>
                 )}

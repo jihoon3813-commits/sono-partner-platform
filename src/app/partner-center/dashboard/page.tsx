@@ -12,6 +12,7 @@ import PartnerFormModal from "@/components/dashboard/PartnerFormModal";
 import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
 import PromotionManagement from "@/components/dashboard/PromotionManagement";
 import StatusManagement from "@/components/dashboard/StatusManagement";
+import IndividualPageManagement from "@/components/dashboard/IndividualPageManagement";
 import RetentionManagement from "@/components/dashboard/RetentionManagement";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
@@ -29,6 +30,7 @@ export default function PartnerDashboard() {
     const [copySuccess, setCopySuccess] = useState(false);
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
     const [selectedRequest, setSelectedRequest] = useState<PartnerRequest | null>(null);
+    const [settingsSubTab, setSettingsSubTab] = useState<"status" | "individual">("status");
 
     // Filter States (Lifted from CustomerManagement)
     const [dateFilter, setDateFilter] = useState("all");
@@ -603,7 +605,37 @@ export default function PartnerDashboard() {
                 )}
 
                 {activeTab === "settings" && isAdmin && (
-                    <StatusManagement />
+                    <div className="space-y-8">
+                        {/* Sub Navigation */}
+                        <div className="flex items-center gap-1 bg-white/50 p-1.5 rounded-2xl border border-gray-100 w-fit mb-4">
+                            <button
+                                onClick={() => setSettingsSubTab("status")}
+                                className={`px-6 py-2 rounded-xl text-sm font-black transition-all ${
+                                    settingsSubTab === "status"
+                                        ? "bg-white text-sono-primary shadow-sm border border-gray-100"
+                                        : "text-gray-400 hover:text-sono-dark"
+                                }`}
+                            >
+                                진행상태 설정
+                            </button>
+                            <button
+                                onClick={() => setSettingsSubTab("individual")}
+                                className={`px-6 py-2 rounded-xl text-sm font-black transition-all ${
+                                    settingsSubTab === "individual"
+                                        ? "bg-white text-sono-primary shadow-sm border border-gray-100"
+                                        : "text-gray-400 hover:text-sono-dark"
+                                }`}
+                            >
+                                개별페이지 관리
+                            </button>
+                        </div>
+
+                        {settingsSubTab === "status" ? (
+                            <StatusManagement />
+                        ) : (
+                            <IndividualPageManagement />
+                        )}
+                    </div>
                 )}
 
                 {activeTab === "retention" && (

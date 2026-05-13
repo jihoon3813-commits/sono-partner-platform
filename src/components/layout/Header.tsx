@@ -12,6 +12,7 @@ interface HeaderProps {
     partnerId?: string;
     partnerLogo?: string;
     productType?: string;
+    isPremiumMallMode?: boolean;
 }
 
 export default function Header({
@@ -20,7 +21,8 @@ export default function Header({
     partnerName = "",
     partnerId = "",
     partnerLogo = "",
-    productType = ""
+    productType = "",
+    isPremiumMallMode = false
 }: HeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -107,7 +109,7 @@ export default function Header({
                                 onClick={handleInquiryClick}
                                 className={`${scrolled ? "btn-primary" : "bg-white text-sono-primary hover:bg-gray-100"} px-8 py-2.5 !rounded-2xl text-sm font-bold transition-all duration-200 shadow-sm cursor-pointer`}
                             >
-                                가입신청
+                                {isPremiumMallMode ? "프리미엄몰 접수" : "가입신청"}
                             </button>
                         ) : (
                             <>
@@ -157,7 +159,7 @@ export default function Header({
                                         onClick={handleInquiryClick}
                                         className="btn-primary w-full py-4 text-lg mt-4"
                                     >
-                                        가입신청
+                                        {isPremiumMallMode ? "프리미엄몰 접수" : "가입신청"}
                                     </button>
                                 </>
                             ) : (
@@ -197,6 +199,7 @@ export default function Header({
                 partnerId={partnerId}
                 productType={productType}
                 showProductSelect={!productType}
+                isPremiumMallMode={isPremiumMallMode}
             />
 
             {/* FAQ 모달 */}

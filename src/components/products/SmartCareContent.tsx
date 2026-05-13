@@ -27,13 +27,15 @@ interface SmartCareContentProps {
     partnerUrl?: string;
     partnerName?: string;
     partnerId?: string;
+    isPremiumMallMode?: boolean;
 }
 
 export default function SmartCareContent({
     partnerMode = false,
     partnerUrl = "",
     partnerName = "",
-    partnerId = ""
+    partnerId = "",
+    isPremiumMallMode = false
 }: SmartCareContentProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [pickedAppliance, setPickedAppliance] = useState<Appliance | null>(null);
@@ -72,7 +74,9 @@ export default function SmartCareContent({
     const [selectedCategory, setSelectedCategory] = useState<string>("전체");
 
     // 페이지 내 버튼 문구 처리
-    const ctaText = partnerMode ? "가입 신청하기" : "제휴 파트너 신청하기";
+    const ctaText = isPremiumMallMode 
+        ? "프리미엄몰 접수 바로가기" 
+        : (partnerMode ? "가입 신청하기" : "제휴 파트너 신청하기");
 
     // 현재 구좌 및 카테고리에 맞는 가전 필터링
     const filteredAppliances = allAppliances.filter(item => {
@@ -233,7 +237,7 @@ export default function SmartCareContent({
 
     return (
         <>
-            {!isModalOpen && <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} productType="smartcare" />}
+            {!isModalOpen && <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} productType="smartcare" isPremiumMallMode={isPremiumMallMode} />}
             <main className="pb-32"> {/* Add padding for fixed bottom bar */}
                 {/* 히어로 섹션 */}
                 <section
@@ -1369,6 +1373,7 @@ export default function SmartCareContent({
                     ? (pickedAppliance.model ? `${pickedAppliance.brand} ${pickedAppliance.name} (${pickedAppliance.model})` : `${pickedAppliance.brand} ${pickedAppliance.name}`)
                     : undefined}
                 initialUnit={pickedAppliance ? (pickedAppliance.slotCount || 4).toString() : selectedUnit}
+                isPremiumMallMode={isPremiumMallMode}
             />
         </>
     );
