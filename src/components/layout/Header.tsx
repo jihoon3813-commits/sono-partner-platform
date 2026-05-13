@@ -80,8 +80,8 @@ export default function Header({
                     <nav className="hidden md:flex items-center gap-10 relative z-10">
                         {partnerMode ? (
                             <>
-                                {/* <Link href={happy450Href} className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>더 해피 450 ONE</Link>
-                                <Link href={smartcareHref} className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>스마트케어</Link> */}
+                                <Link href={happy450Href} className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>더 해피 450 ONE</Link>
+                                <Link href={smartcareHref} className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>스마트케어</Link>
                             </>
                         ) : (
                             <>
@@ -151,8 +151,8 @@ export default function Header({
                             </button>
                             {partnerMode ? (
                                 <>
-                                    {/* <Link href={happy450Href} onClick={() => setIsMenuOpen(false)} className="text-xl text-sono-dark text-left" >더 해피 450 ONE</Link>
-                                    <Link href={smartcareHref} className="text-xl text-sono-dark" onClick={() => setIsMenuOpen(false)}>스마트케어</Link> */}
+                                    <Link href={happy450Href} onClick={() => setIsMenuOpen(false)} className="text-xl text-sono-dark text-left" >더 해피 450 ONE</Link>
+                                    <Link href={smartcareHref} className="text-xl text-sono-dark" onClick={() => setIsMenuOpen(false)}>스마트케어</Link>
                                     <button
                                         onClick={handleInquiryClick}
                                         className="btn-primary w-full py-4 text-lg mt-4"

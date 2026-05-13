@@ -385,6 +385,45 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                         </div>
                     </div>
                 </section>
+                
+                {/* 상품 카테고리 퀵링크 */}
+                <section className="bg-white py-12 md:py-20 border-b border-gray-100">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <div className="grid grid-cols-2 gap-4 md:gap-8">
+                            <a href="#happy450" className="group p-8 rounded-[32px] bg-[#f9fafb] border border-gray-100 hover:border-sono-primary/30 hover:bg-white hover:shadow-xl transition-all duration-500 flex flex-col items-center text-center">
+                                <div className="w-16 h-16 rounded-[22px] bg-sono-primary/10 text-sono-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-xl md:text-2xl font-black text-sono-dark mb-2 tracking-tight">더 해피 450 ONE</h3>
+                                <p className="text-[#8b95a1] text-sm md:text-base font-bold">실속형 라이프케어 솔루션</p>
+                                <div className="mt-6 flex items-center gap-1.5 text-sono-primary font-bold text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                                    상품보기
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </a>
+                            <a href="#smartcare" className="group p-8 rounded-[32px] bg-[#f9fafb] border border-gray-100 hover:border-sono-gold/30 hover:bg-white hover:shadow-xl transition-all duration-500 flex flex-col items-center text-center">
+                                <div className="w-16 h-16 rounded-[22px] bg-sono-gold/10 text-sono-gold flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-xl md:text-2xl font-black text-sono-dark mb-2 tracking-tight">스마트케어</h3>
+                                <p className="text-[#8b95a1] text-sm md:text-base font-bold">프리미엄 가전 결합 솔루션</p>
+                                <div className="mt-6 flex items-center gap-1.5 text-sono-gold font-bold text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                                    상품보기
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
 
                 {/* 회사소개 섹션 */}
                 <section className="py-16 md:py-32 bg-[#f2f4f6] relative overflow-hidden">
@@ -500,7 +539,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
 
                         <div className="grid lg:grid-cols-2 gap-10 md:gap-16 max-w-6xl mx-auto">
                             {/* 더 해피 450 ONE */}
-                            <div className="group relative card !p-0 transition-all duration-500 overflow-hidden border-2 border-transparent bg-white/80 backdrop-blur-sm hover:shadow-2xl hover:scale-[1.01] hover:border-gray-200">
+                            <div id="happy450" className="group relative card !p-0 transition-all duration-500 overflow-hidden border-2 border-transparent bg-white/80 backdrop-blur-sm hover:shadow-2xl hover:scale-[1.01] hover:border-gray-200 scroll-mt-32">
                                 <div className="p-6 md:p-14">
                                     <div className="flex items-start justify-between mb-10">
                                         <div>
@@ -564,7 +603,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                             </div>
 
                             {/* 스마트케어 */}
-                            <div className="group relative card !p-0 transition-all duration-500 overflow-hidden border-2 border-transparent bg-white/80 backdrop-blur-sm hover:shadow-2xl hover:scale-[1.01] hover:border-gray-200">
+                            <div id="smartcare" className="group relative card !p-0 transition-all duration-500 overflow-hidden border-2 border-transparent bg-white/80 backdrop-blur-sm hover:shadow-2xl hover:scale-[1.01] hover:border-gray-200 scroll-mt-32">
                                 <div className="absolute top-8 -right-12 bg-sono-gold text-white font-black text-xs py-2 w-48 text-center rotate-45 shadow-lg z-20">
                                     RECOMMENDED
                                 </div>
