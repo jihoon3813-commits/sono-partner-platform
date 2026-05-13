@@ -1359,7 +1359,7 @@ export default function SmartCareContent({
                     </div>
                 </section>
             </main >
-            {!isModalOpen && <Footer />
+            {!isModalOpen && <Footer partnerMode={partnerMode} />
             }
 
             <InquiryModal

@@ -1,6 +1,10 @@
 import Link from "next/link";
 
-export default function Footer() {
+interface FooterProps {
+    partnerMode?: boolean;
+}
+
+export default function Footer({ partnerMode = false }: FooterProps) {
     return (
         <footer className="bg-white border-t border-gray-100 py-20">
             <div className="max-w-[1200px] mx-auto px-6">
@@ -43,14 +47,16 @@ export default function Footer() {
                             <li><Link href="/partner-center" className="text-sm font-bold text-[#8b95a1] hover:text-sono-primary transition-colors">파트너 센터</Link></li>
                         </ul>
                     </div>
-                    <div className="md:col-span-4">
-                        <h4 className="font-bold text-sono-dark mb-6">고객지원</h4>
-                        <div className="p-6 bg-[#f9fafb] rounded-[24px]">
-                            <p className="text-xs font-bold text-[#8b95a1] mb-2">파트너 제휴 문의</p>
-                            <p className="text-2xl font-bold text-sono-primary mb-1">1588-0883</p>
-                            <p className="text-xs font-medium text-[#adb5bd]">평일 09:00 - 18:00 (주말/공휴일 휴무)</p>
+                    {!partnerMode && (
+                        <div className="md:col-span-4">
+                            <h4 className="font-bold text-sono-dark mb-6">고객지원</h4>
+                            <div className="p-6 bg-[#f9fafb] rounded-[24px]">
+                                <p className="text-xs font-bold text-[#8b95a1] mb-2">파트너 제휴 문의</p>
+                                <p className="text-2xl font-bold text-sono-primary mb-1">1588-0883</p>
+                                <p className="text-xs font-medium text-[#adb5bd]">평일 09:00 - 18:00 (주말/공휴일 휴무)</p>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 <div className="mb-12 text-[11px] text-[#8b95a1] leading-relaxed space-y-1">

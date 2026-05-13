@@ -190,7 +190,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                 <main className="pt-24 min-h-screen bg-white flex items-center justify-center">
                     <div className="animate-spin w-10 h-10 border-4 border-sono-primary border-t-transparent rounded-full"></div>
                 </main>
-                <Footer />
+                <Footer partnerMode={true} />
             </>
         );
     }
@@ -211,7 +211,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                         <Link href="/" className="btn-primary inline-block">홈으로 돌아가기</Link>
                     </div>
                 </main>
-                <Footer />
+                <Footer partnerMode={true} />
             </>
         );
     }
@@ -316,7 +316,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                         </div>
                     </div>
                 </main>
-                <Footer />
+                <Footer partnerMode={true} />
             </>
         );
     }
@@ -757,7 +757,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                     </div>
                 </section>
             </main >
-            {!isInquiryModalOpen && <Footer />
+            {!isInquiryModalOpen && <Footer partnerMode={true} />
             }
 
             <InquiryModal
