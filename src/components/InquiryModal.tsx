@@ -535,24 +535,36 @@ export default function InquiryModal({
                         {!isPremiumMallMode && (
                             <div className="space-y-4">
                                 <div className="bg-[#f9fafb] border border-gray-100 rounded-2xl p-4 text-[11px] text-[#8b95a1] leading-relaxed max-h-[160px] overflow-y-auto no-scrollbar">
-                                    <p className="font-bold text-[#4e5968] mb-2">[더해피450 one 상품 가입을 위한 개인정보 수집, 이용 및 위탁 안내]</p>
-                                    <p className="mb-4">㈜소노스테이션은 더해피450 one 상품 가입을 위하여 회원님의 개인정보를 아래와 같이 수집, 이용 및 위탁하고자 합니다.</p>
-                                    
-                                    <p className="font-bold text-[#6b7684] mb-1">1. 개인정보 수집 및 이용 동의 (필수사항)</p>
-                                    <ul className="space-y-0.5 mb-4 list-none pl-0">
-                                        <li>▷ 수집, 이용하는 자 : ㈜소노스테이션</li>
-                                        <li>▷ 수집, 이용하려는 개인정보 항목: 성명, 연락처(이동전화 | 유선전화)</li>
-                                        <li>▷ 개인정보 수집, 이용 및 위탁 목적 : 더해피450 one 상품 소개, 계약상담, 계약체결</li>
-                                        <li>▷ 개인정보 보유 기간 : 개인정보 수집 및 이용 동의일로부터 30일 또는 수집/이용 목적 달성 시까지</li>
-                                    </ul>
-                                    
-                                    <p className="mb-4">* 고객님은 위의 개인정보 수집, 이용 및 위탁 대한 동의를 거부하실 수 있습니다. 그러나 동의를 거부할 경우 상품 가입 등 서비스 제공에 제한을 받을 수 있습니다.</p>
-                                    
-                                    <p className="font-bold text-[#6b7684] mb-1">2. 개인정보 취급업무 위탁 안내</p>
-                                    <ul className="space-y-0.5 list-none pl-0">
-                                        <li>▷ 취급을 위탁받는 자(수탁업체) : {partnerName || "파트너사"}</li>
-                                        <li>▷ 업무내용 : 더해피450 one 상품 소개, 상담접수</li>
-                                    </ul>
+                                    {(() => {
+                                        const currentProd = formData.selectedProduct || productType;
+                                        const isSmartCare = ["smartcare", "스마트케어", "스마트 케어"].includes(currentProd);
+                                        const displayProductName = isSmartCare ? "스마트케어" : "더해피450 one";
+                                        const displayPurpose = isSmartCare ? "스마트케어 상품 소개, 계약상담, 계약체결" : "더해피450 one 상품 소개, 계약상담, 계약체결";
+                                        const displayWorkContent = isSmartCare ? "스마트케어" : "더해피450 one";
+                                        
+                                        return (
+                                            <>
+                                                <p className="font-bold text-[#4e5968] mb-2">[{displayProductName} 상품 가입을 위한 개인정보 수집, 이용 및 위탁 안내]</p>
+                                                <p className="mb-4">㈜소노스테이션은 {displayProductName} 상품 가입을 위하여 회원님의 개인정보를 아래와 같이 수집, 이용 및 위탁하고자 합니다.</p>
+                                                
+                                                <p className="font-bold text-[#6b7684] mb-1">1. 개인정보 수집 및 이용 동의 (필수사항)</p>
+                                                <ul className="space-y-0.5 mb-4 list-none pl-0">
+                                                    <li>▷ 수집, 이용하는 자 : ㈜소노스테이션</li>
+                                                    <li>▷ 수집, 이용하려는 개인정보 항목: 성명, 연락처(이동전화 | 유선전화)</li>
+                                                    <li>▷ 개인정보 수집, 이용 및 위탁 목적 : {displayPurpose}</li>
+                                                    <li>▷ 개인정보 보유 기간 : 개인정보 수집 및 이용 동의일로부터 30일 또는 수집/이용 목적 달성 시까지</li>
+                                                </ul>
+                                                
+                                                <p className="mb-4">* 고객님은 위의 개인정보 수집, 이용 및 위탁 대한 동의를 거부하실 수 있습니다. 그러나 동의를 거부할 경우 상품 가입 등 서비스 제공에 제한을 받을 수 있습니다.</p>
+                                                
+                                                <p className="font-bold text-[#6b7684] mb-1">2. 개인정보 취급업무 위탁 안내</p>
+                                                <ul className="space-y-0.5 list-none pl-0">
+                                                    <li>▷ 취급을 위탁받는 자(수탁업체) : 라이프앤조이, {partnerName || "파트너사"}</li>
+                                                    <li>▷ 업무내용 : {displayWorkContent} 상품 소개, 상담접수</li>
+                                                </ul>
+                                            </>
+                                        );
+                                    })()}
                                 </div>
 
                                 <div className="bg-[#f2f4f6] rounded-[22px] p-6">

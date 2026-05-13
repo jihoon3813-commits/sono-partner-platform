@@ -136,7 +136,7 @@ export default function Happy450Content({
                                 {
                                     title: "SPECIAL",
                                     name: "납입금 100% 환급",
-                                    desc: "만기 납입 후 익월 해약 또는 라이프 서비스 사용 조건",
+                                    desc: "만기 납입 후 익월 해약 시",
                                     icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />,
                                 },
                             ].map((benefit, index) => (
@@ -258,7 +258,7 @@ export default function Happy450Content({
 
                         <div className="mt-8 md:mt-12 text-center space-y-1 md:space-y-2">
                             <p className="text-[#8b95a1] font-bold text-xs md:text-sm italic">
-                                *100% 환급 조건 : 만기 납입 후 익월 해약 또는 라이프 서비스 사용 시*
+                                *100% 환급 조건 : 만기 납입 후 익월 해약 시*
                             </p>
                             <p className="text-[#8b95a1] font-bold text-xs md:text-sm italic">
                                 *레디캐시 사용 조건 : 가입 상품의 해약환급금 80% 사용 가능*
