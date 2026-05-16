@@ -38,11 +38,11 @@ export default function Happy450LecturePage() {
             id: "benefits-grid",
             content: (
                 <div className="h-full bg-white p-12 flex flex-col justify-center">
-                    <div className="mb-8 text-center">
-                        <span className="badge-primary mb-3">CORE BENEFITS</span>
-                        <h2 className="text-4xl font-black text-sono-dark tracking-tighter leading-tight">3가지 핵심 혜택</h2>
+                    <div className="mb-12 text-center">
+                        <span className="badge-primary mb-4">CORE BENEFITS</span>
+                        <h2 className="text-5xl font-black text-sono-dark tracking-tighter leading-tight">3가지 핵심 혜택</h2>
                     </div>
-                    <div className="grid grid-cols-3 gap-8 w-full max-w-[1200px] mx-auto px-4">
+                    <div className="grid grid-cols-3 gap-10 w-full max-w-[1300px] mx-auto px-4">
                         {[
                             { 
                                 title: "BENEFIT 01", 
@@ -63,11 +63,11 @@ export default function Happy450LecturePage() {
                                 icon: "💰"
                             }
                         ].map((b, i) => (
-                            <div key={i} className="bg-gray-50 p-10 rounded-[48px] flex flex-col items-center text-center group hover:bg-white hover:shadow-2xl transition-all border border-gray-100">
-                                <div className="text-6xl mb-8 group-hover:scale-110 transition-transform">{b.icon}</div>
-                                <div className="text-sono-primary text-xs font-black tracking-widest mb-3">{b.title}</div>
-                                <h3 className="text-2xl font-black text-sono-dark mb-6 break-keep">{b.name}</h3>
-                                <p className="text-base text-gray-400 font-bold leading-relaxed break-keep">{b.desc}</p>
+                            <div key={i} className="bg-gray-50 p-14 rounded-[56px] flex flex-col items-center text-center group hover:bg-white hover:shadow-2xl transition-all border border-gray-100">
+                                <div className="text-8xl mb-10 group-hover:scale-110 transition-transform">{b.icon}</div>
+                                <div className="text-sono-primary text-sm font-black tracking-widest mb-4">{b.title}</div>
+                                <h3 className="text-3xl font-black text-sono-dark mb-8 break-keep">{b.name}</h3>
+                                <p className="text-xl text-gray-400 font-bold leading-relaxed break-keep">{b.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -78,35 +78,35 @@ export default function Happy450LecturePage() {
             id: "payment-plans-detail",
             content: (
                 <div className="h-full bg-white p-12 flex flex-col justify-center">
-                    <div className="mb-8 text-center">
-                        <span className="badge-primary mb-3">PAYMENT PLAN</span>
-                        <h2 className="text-4xl font-black text-sono-dark tracking-tighter">합리적인 월 납입 플랜</h2>
+                    <div className="mb-12 text-center">
+                        <span className="badge-primary mb-4">PAYMENT PLAN</span>
+                        <h2 className="text-5xl font-black text-sono-dark tracking-tighter">합리적인 월 납입 플랜</h2>
                     </div>
-                    <div className="grid grid-cols-3 gap-8 w-full max-w-[1200px] mx-auto px-4">
+                    <div className="grid grid-cols-3 gap-10 w-full max-w-[1300px] mx-auto px-4">
                         {[
                             { name: "실속형", unit: "1구좌", price: "18,000", card: "6,000" },
                             { name: "인기형", unit: "2구좌", price: "36,000", card: "24,000", popular: true },
                             { name: "베스트", unit: "3구좌", price: "54,000", card: "42,000" }
                         ].map((p, i) => (
-                            <div key={i} className={`p-10 rounded-[56px] border-2 transition-all ${p.popular ? 'bg-sono-primary text-white border-sono-primary shadow-2xl scale-105 z-10' : 'bg-white border-gray-100 text-sono-dark'}`}>
-                                <div className="text-center mb-8">
-                                    <h3 className="text-2xl font-black mb-2">{p.name}</h3>
-                                    <p className={`text-xs font-bold ${p.popular ? 'text-white/60' : 'text-gray-400'}`}>더 해피 450 ONE {p.unit}</p>
+                            <div key={i} className={`p-14 rounded-[56px] border-2 transition-all ${p.popular ? 'bg-sono-primary text-white border-sono-primary shadow-2xl scale-105 z-10' : 'bg-white border-gray-100 text-sono-dark'}`}>
+                                <div className="text-center mb-10">
+                                    <h3 className="text-3xl font-black mb-3">{p.name}</h3>
+                                    <p className={`text-sm font-bold ${p.popular ? 'text-white/60' : 'text-gray-400'}`}>더 해피 450 ONE {p.unit}</p>
                                 </div>
-                                <div className="text-center space-y-6">
-                                    <div className="pb-6 border-b border-white/10">
-                                        <p className="text-xs font-bold opacity-60 mb-2">기본 월 납입금</p>
-                                        <div className="text-4xl font-black">{p.price}<span className="text-lg ml-0.5">원</span></div>
+                                <div className="text-center space-y-8">
+                                    <div className="pb-8 border-b border-white/10">
+                                        <p className="text-sm font-bold opacity-60 mb-3">기본 월 납입금</p>
+                                        <div className="text-5xl font-black">{p.price}<span className="text-xl ml-0.5">원</span></div>
                                     </div>
-                                    <div className="pt-4">
-                                        <p className={`text-xs font-black mb-2 ${p.popular ? 'text-sono-gold' : 'text-sono-primary'}`}>제휴카드 할인 적용 시 (30만)</p>
-                                        <div className={`text-3xl font-black ${p.popular ? 'text-white' : 'text-sono-primary'}`}>{p.card}<span className="text-lg ml-0.5">원</span></div>
+                                    <div className="pt-6">
+                                        <p className={`text-sm font-black mb-3 ${p.popular ? 'text-sono-gold' : 'text-sono-primary'}`}>제휴카드 할인 적용 시 (30만)</p>
+                                        <div className={`text-4xl font-black ${p.popular ? 'text-white' : 'text-sono-primary'}`}>{p.card}<span className="text-xl ml-0.5">원</span></div>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                    <p className="mt-8 text-center text-[10px] text-gray-400 font-bold">※ 제휴카드 최대 2.5만원 할인 시 월 부담액은 더 낮아집니다.</p>
+                    <p className="mt-12 text-center text-xs text-gray-400 font-bold italic">※ 제휴카드 최대 2.5만원 할인 시 월 부담액은 더 낮아집니다.</p>
                 </div>
             )
         },
@@ -338,8 +338,20 @@ export default function Happy450LecturePage() {
         {
             id: "funeral-service-combined",
             content: (
-                <div className="h-full bg-white p-12 flex flex-col justify-center">
-                    <div className="max-w-[1100px] mx-auto w-full space-y-10">
+                <div className="h-full bg-white p-10 flex flex-col justify-center">
+                    <div className="max-w-[1250px] mx-auto w-full space-y-8">
+                        {/* Header Section (from Image 2) */}
+                        <div className="text-center space-y-4 mb-4">
+                            <div className="inline-block bg-[#eef2ff] text-[#3b82f6] px-5 py-1.5 rounded-xl text-xs font-black tracking-widest uppercase">FUNERAL SERVICE</div>
+                            <h2 className="text-5xl font-black text-sono-dark tracking-tighter leading-tight">
+                                품격 있는 마지막 인사, 대명소노가 함께합니다
+                            </h2>
+                            <p className="text-lg text-gray-400 font-bold max-w-3xl mx-auto leading-relaxed break-keep">
+                                국가공인 장례지도사와 전문 도우미가 정성을 다해 고인의 명복을 빌며, <br />
+                                유가족의 슬픔을 함께 나누는 신뢰의 서비스를 약속드립니다.
+                            </p>
+                        </div>
+
                         {/* Top: Service Intro Cards */}
                         <div className="grid grid-cols-3 gap-6">
                             {[
@@ -499,8 +511,8 @@ export default function Happy450LecturePage() {
         {
             id: "hybrid-conversion-combined",
             content: (
-                <div className="h-full bg-white px-10 pb-10 pt-24 flex flex-col">
-                    <div className="max-w-[1250px] mx-auto w-full flex-grow flex flex-col gap-10">
+                <div className="h-full bg-white p-10 flex flex-col justify-center">
+                    <div className="max-w-[1250px] mx-auto w-full space-y-10">
                         {/* Top Section */}
                         <div className="space-y-5 text-center">
                             <div className="space-y-1">
@@ -559,8 +571,8 @@ export default function Happy450LecturePage() {
         {
             id: "ready-cash-and-mall",
             content: (
-                <div className="h-full bg-white px-10 pb-10 pt-24 flex flex-col">
-                    <div className="max-w-[1250px] mx-auto w-full flex-grow flex flex-col gap-10">
+                <div className="h-full bg-white p-10 flex flex-col justify-center">
+                    <div className="max-w-[1250px] mx-auto w-full space-y-8">
                         {/* Top Title Section */}
                         <div className="space-y-4 text-center">
                             <div className="space-y-2">
@@ -574,7 +586,7 @@ export default function Happy450LecturePage() {
                             </div>
 
                             {/* Ready Cash Info Cards */}
-                            <div className="grid grid-cols-2 gap-6 pt-4">
+                            <div className="grid grid-cols-2 gap-6 pt-2">
                                 <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex items-center gap-6">
                                     <div className="w-16 h-16 bg-[#f8f9fb] rounded-2xl flex items-center justify-center text-3xl">🏪</div>
                                     <div className="text-left">
@@ -593,7 +605,7 @@ export default function Happy450LecturePage() {
                         </div>
 
                         {/* Sono I'm Ready Mall Section */}
-                        <div className="bg-[#f8f9fb] rounded-[48px] p-10 flex-grow flex flex-col justify-center relative overflow-hidden">
+                        <div className="bg-[#f8f9fb] rounded-[48px] p-8 flex flex-col justify-center relative overflow-hidden">
                             <div className="absolute top-8 right-12">
                                 <a 
                                     href="https://www.imreadymall.com/login?moveURL=%2F" 
@@ -606,12 +618,12 @@ export default function Happy450LecturePage() {
                                 </a>
                             </div>
 
-                            <div className="space-y-1 mb-8">
+                            <div className="space-y-1 mb-6">
                                 <h3 className="text-3xl font-black text-sono-dark">소노아임레디몰</h3>
                                 <p className="text-lg font-bold text-gray-400">소노아임레디 회원을 위한 특별 혜택이 가득한 쇼핑몰!</p>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-12 items-center">
+                            <div className="grid grid-cols-2 gap-10 items-center">
                                 <div className="relative">
                                     <img 
                                         src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product07.jpg" 
@@ -619,7 +631,7 @@ export default function Happy450LecturePage() {
                                         alt="Mall Preview"
                                     />
                                 </div>
-                                <div className="space-y-8">
+                                <div className="space-y-6">
                                     {[
                                         { icon: "🏷️", title: "매일 기다려지는 특가 상품과 이벤트", desc: "타임딜, 릴레이딜부터 룰렛 이벤트! 매일 새로운 상품과 이벤트가 쏟아집니다!" },
                                         { icon: "👥", title: "초청 회원 가능", desc: "소중한 지인들과 함께 특가를 즐기고, 나에게는 포인트가 쌓이는 즐거움을 경험해보세요!" },
@@ -637,8 +649,8 @@ export default function Happy450LecturePage() {
                             </div>
 
                             {/* Ready Cash Policy Notes */}
-                            <div className="mt-8 pt-6 border-t border-gray-100">
-                                <h4 className="text-sm font-black text-sono-dark mb-3">레디캐시 안내</h4>
+                            <div className="mt-6 pt-4 border-t border-gray-100">
+                                <h4 className="text-sm font-black text-sono-dark mb-2">레디캐시 안내</h4>
                                 <div className="grid grid-cols-1 gap-1 px-2 text-[10px] font-bold text-gray-400 leading-snug">
                                     <p>• 레디캐시는 회원님이 가입한 상품의 해약환급금 내에서 당사가 정한 기준 금액에 한 해 1원당 1캐시로 전환하여 사용 가능합니다.</p>
                                     <p>• 레디캐시는 납입한 상품 금액에서 사용한 레디캐시 금액만큼 차감되며 상품 이용(장례 또는 전환 서비스) 시, 사용한 레디캐시 금액만큼 추가 금액이 발생합니다.</p>
@@ -655,17 +667,17 @@ export default function Happy450LecturePage() {
         {
             id: "membership-benefits",
             content: (
-                <div className="h-full bg-[#191f28] text-white px-10 pb-10 pt-20 flex flex-col">
-                    <div className="max-w-[1300px] mx-auto w-full flex-grow flex flex-col gap-6">
+                <div className="h-full bg-[#191f28] text-white p-10 flex flex-col justify-center">
+                    <div className="max-w-[1300px] mx-auto w-full space-y-6">
                         <div className="text-center space-y-1">
                             <span className="text-sono-gold font-black tracking-[0.3em] text-xs uppercase">VIP MEMBERSHIP</span>
                             <h2 className="text-5xl font-black tracking-tighter leading-tight">대명 소노그룹 멤버십</h2>
                             <p className="text-lg font-bold text-white/40">소노아임레디 회원님만을 위한 프리미엄 멤버십 혜택</p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-8 flex-grow">
+                        <div className="grid grid-cols-2 gap-8">
                             {/* Hotel & Resort Card */}
-                            <div className="bg-white/5 border border-white/10 rounded-[48px] p-8 flex flex-col gap-6 backdrop-blur-xl">
+                            <div className="bg-white/5 border border-white/10 rounded-[48px] p-8 flex flex-col gap-4 backdrop-blur-xl">
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 bg-sono-gold/20 rounded-xl flex items-center justify-center text-xl">🏨</div>
@@ -673,7 +685,7 @@ export default function Happy450LecturePage() {
                                     </div>
                                     <p className="text-sono-gold font-black text-lg">전국 17개 직영 리조트 객실 우대</p>
                                 </div>
-                                <div className="grid grid-cols-2 gap-3 flex-grow">
+                                <div className="grid grid-cols-2 gap-3">
                                     {[
                                         "https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914664/sono-img-1_nf9jij.jpg",
                                         "https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914672/sono-img-2_wuo9ty.jpg",
@@ -688,7 +700,7 @@ export default function Happy450LecturePage() {
                             </div>
 
                             {/* Leisure & Waterpark Card */}
-                            <div className="bg-white/5 border border-white/10 rounded-[48px] p-8 flex flex-col gap-6 backdrop-blur-xl">
+                            <div className="bg-white/5 border border-white/10 rounded-[48px] p-8 flex flex-col gap-4 backdrop-blur-xl">
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 bg-sono-gold/20 rounded-xl flex items-center justify-center text-xl">🏊</div>
@@ -696,7 +708,7 @@ export default function Happy450LecturePage() {
                                     </div>
                                     <p className="text-sono-gold font-black text-lg">오션월드, 비발디파크 등 최대 35% 할인</p>
                                 </div>
-                                <div className="grid grid-cols-1 gap-3 flex-grow">
+                                <div className="grid grid-cols-1 gap-3">
                                     <div className="h-56 rounded-2xl overflow-hidden">
                                         <img src="https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914705/benefit_list_bg02_nqr8hr.jpg" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" alt="Leisure 1" />
                                     </div>
@@ -732,8 +744,8 @@ export default function Happy450LecturePage() {
         {
             id: "disclosure-info",
             content: (
-                <div className="h-full bg-[#f8f9fb] px-10 pb-10 pt-20 flex flex-col">
-                    <div className="max-w-[1250px] mx-auto w-full flex-grow flex flex-col gap-10">
+                <div className="h-full bg-[#f8f9fb] p-10 flex flex-col justify-center">
+                    <div className="max-w-[1250px] mx-auto w-full space-y-10">
                         <div className="text-center">
                             <h2 className="text-5xl font-black text-sono-dark tracking-tighter">중요정보 고지사항</h2>
                         </div>
