@@ -1359,8 +1359,7 @@ export default function SmartCareContent({
                     </div>
                 </section>
             </main >
-            {!isModalOpen && <Footer partnerMode={partnerMode} />
-            }
+            {!isModalOpen && <Footer partnerMode={partnerMode} productType="smartcare" />}
 
             <InquiryModal
                 isOpen={isModalOpen}

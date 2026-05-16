@@ -1001,7 +1001,7 @@ export default function Happy450Content({
                     </div>
                 </section>
             </main>
-            {!isModalOpen && <Footer partnerMode={partnerMode} />}
+            {!isModalOpen && <Footer partnerMode={partnerMode} productType="happy450" />}
 
             <InquiryModal
                 isOpen={isModalOpen}

@@ -2,9 +2,10 @@ import Link from "next/link";
 
 interface FooterProps {
     partnerMode?: boolean;
+    productType?: 'happy450' | 'smartcare';
 }
 
-export default function Footer({ partnerMode = false }: FooterProps) {
+export default function Footer({ partnerMode = false, productType }: FooterProps) {
     return (
         <footer className="bg-white border-t border-gray-100 py-20">
             <div className="max-w-[1200px] mx-auto px-6">
@@ -72,6 +73,12 @@ export default function Footer({ partnerMode = false }: FooterProps) {
                         <p className="text-xs font-bold text-[#adb5bd]">COPYRIGHT © SINCE 2025 LIFE&JOY CO., LTD. ALL RIGHTS RESERVED.</p>
                     </div>
                     <div className="flex gap-8">
+                        {productType === 'happy450' && (
+                            <Link href="/lecture/happy450" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-sono-primary hover:underline">강의안 바로가기</Link>
+                        )}
+                        {productType === 'smartcare' && (
+                            <Link href="/lecture/smartcare" target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-sono-primary hover:underline">강의안 바로가기</Link>
+                        )}
                         <Link href="/privacy" className="text-xs font-bold text-[#adb5bd] hover:text-[#6b7684]">개인정보처리방침</Link>
                         <Link href="/terms" className="text-xs font-bold text-[#adb5bd] hover:text-[#6b7684]">이용약관</Link>
                     </div>
