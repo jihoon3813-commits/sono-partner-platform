@@ -20,45 +20,64 @@ interface Appliance {
     promotionId?: string;
 }
 
-const ApplianceGridSlide = ({ unit, monthly, total, service, appliances }: { unit: number, monthly: string, total: string, service: string, appliances: Appliance[] }) => (
-    <div className="h-full bg-[#f8fafc] p-10 flex flex-col items-center">
-        <div className="text-center mb-8 shrink-0">
-            <span className="bg-[#3b82f6] text-white px-5 py-1.5 rounded-full text-sm font-black tracking-widest mb-4 inline-block">SMART CARE 330</span>
-            <h2 className="text-5xl font-black text-sono-dark tracking-tighter mb-4">스마트케어 330 - {unit}구좌</h2>
-            <p className="text-xl font-bold text-gray-500">
-                월 {monthly}x200회, 총 {total} / 상조서비스 {service}
-            </p>
-        </div>
-        <div className="w-full max-w-[1300px] overflow-y-auto pr-4 pb-10 flex-grow scrollbar-hide">
-            <div className="grid grid-cols-4 gap-6">
-                {appliances.map((app, idx) => (
-                    <div key={idx} className="bg-white rounded-[24px] p-5 border border-gray-100 shadow-sm flex flex-col h-[320px] hover:shadow-md transition-shadow">
-                        <div className="h-40 w-full mb-4 flex items-center justify-center p-2 shrink-0">
-                            {app.image ? (
-                                <img src={app.image} alt={app.name} className="max-h-full max-w-full object-contain" />
-                            ) : (
-                                <div className="w-full h-full bg-gray-50 rounded-xl flex items-center justify-center text-gray-300">No Image</div>
-                            )}
-                        </div>
-                        <div className="flex flex-col flex-grow">
-                            <span className="text-xs font-black text-gray-400 mb-1 line-clamp-1">{app.brand}</span>
-                            <h3 className="text-sm font-bold text-gray-800 line-clamp-2 leading-snug mb-2 flex-grow">{app.name}</h3>
-                            <div className="bg-gray-50 rounded-lg p-2 shrink-0">
-                                <p className="text-[10px] text-gray-500 mb-0.5">모델명</p>
-                                <p className="text-[11px] font-bold text-gray-700 truncate">{app.model}</p>
-                            </div>
-                        </div>
+const ApplianceGridSlide = ({ unit, monthly, total, service, appliances }: { unit: number, monthly: string, total: string, service: string, appliances: Appliance[] }) => {
+    // 6 columns x 3 rows = 18 items per chunk/page
+    const ITEMS_PER_PAGE = 18;
+    const chunks = [];
+    if (appliances.length === 0) {
+        chunks.push([]);
+    } else {
+        for (let i = 0; i < appliances.length; i += ITEMS_PER_PAGE) {
+            chunks.push(appliances.slice(i, i + ITEMS_PER_PAGE));
+        }
+    }
+
+    return (
+        <div className="w-full h-full overflow-y-auto scrollbar-hide bg-[#f8fafc] flex flex-col">
+            {chunks.map((chunk, chunkIdx) => (
+                <div key={chunkIdx} className="w-full min-h-full shrink-0 p-8 flex flex-col items-center bg-[#f8fafc] pdf-export-page relative">
+                    <div className="text-center mb-6 shrink-0">
+                        <span className="bg-[#3b82f6] text-white px-5 py-1.5 rounded-full text-sm font-black tracking-widest mb-3 inline-block">
+                            SMART CARE 330 {chunks.length > 1 ? `(${chunkIdx + 1}/${chunks.length})` : ''}
+                        </span>
+                        <h2 className="text-4xl font-black text-sono-dark tracking-tighter mb-3">스마트케어 330 - {unit}구좌</h2>
+                        <p className="text-lg font-bold text-gray-500">
+                            월 {monthly}x200회, 총 {total} / 상조서비스 {service}
+                        </p>
                     </div>
-                ))}
-            </div>
-            {appliances.length === 0 && (
-                <div className="text-center py-20 text-gray-400 font-bold">
-                    등록된 {unit}구좌 상품이 없습니다.
+                    <div className="w-full max-w-[1300px] flex-grow flex flex-col justify-center">
+                        <div className="grid grid-cols-6 gap-3">
+                            {chunk.map((app, idx) => (
+                                <div key={idx} className="bg-white rounded-[16px] p-3 border border-gray-100 shadow-sm flex flex-col h-[230px] hover:shadow-md transition-shadow">
+                                    <div className="h-24 w-full mb-3 flex items-center justify-center p-1 shrink-0">
+                                        {app.image ? (
+                                            <img src={app.image} alt={app.name} className="max-h-full max-w-full object-contain" />
+                                        ) : (
+                                            <div className="w-full h-full bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 text-xs font-bold">No Image</div>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col flex-grow">
+                                        <span className="text-[10px] font-black text-gray-400 mb-1 line-clamp-1">{app.brand}</span>
+                                        <h3 className="text-xs font-bold text-gray-800 line-clamp-2 leading-snug mb-1.5 flex-grow">{app.name}</h3>
+                                        <div className="bg-gray-50 rounded-md p-1.5 shrink-0 mt-auto">
+                                            <p className="text-[9px] text-gray-500 mb-0.5">모델명</p>
+                                            <p className="text-[10px] font-bold text-gray-700 truncate">{app.model}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        {chunk.length === 0 && (
+                            <div className="text-center py-20 text-gray-400 font-bold">
+                                등록된 {unit}구좌 상품이 없습니다.
+                            </div>
+                        )}
+                    </div>
                 </div>
-            )}
+            ))}
         </div>
-    </div>
-);
+    );
+};
 export default function SmartCareLecturePage() {
     const [modalUrl, setModalUrl] = useState<string | null>(null);
     const [showPromoModal, setShowPromoModal] = useState<boolean>(false);

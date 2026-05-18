@@ -41,6 +41,7 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
     const [laserPos, setLaserPos] = useState({ x: -100, y: -100 });
     
     const [isToolsVisible, setIsToolsVisible] = useState(true);
+    const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
     
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -87,6 +88,41 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [paths, shapes]);
+
+    const handlePdfDownload = async () => {
+        setIsDownloadingPdf(true);
+        try {
+            if (!(window as any).html2pdf) {
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+            }
+            
+            const element = document.getElementById('lecture-pdf-container');
+            if (!element) return;
+            
+            // Generate PDF using landscape A4 parameters matching our 1440x1080 chunking exactly
+            const opt = {
+                margin:       0,
+                filename:     `${productType}_lecture.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 1.5, useCORS: true, letterRendering: true, logging: false },
+                jsPDF:        { unit: 'px', format: [1440, 1080], orientation: 'landscape' },
+                pagebreak:    { mode: 'legacy' }
+            };
+            
+            await (window as any).html2pdf().set(opt).from(element).save();
+        } catch (e) {
+            console.error("PDF generation failed", e);
+            alert("PDF 다운로드 중 오류가 발생했습니다.");
+        } finally {
+            setIsDownloadingPdf(false);
+        }
+    };
 
     const redraw = useCallback(() => {
         const canvas = canvasRef.current;
@@ -290,13 +326,21 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                     {/* PDF Download Button (Top Right) */}
                     {(currentSlide === 0 || currentSlide === slides.length - 1) && (
                         <button
-                            onClick={() => window.print()}
-                            className="absolute top-6 right-6 z-40 px-5 py-2.5 bg-[#e11d48] text-white rounded-full font-black text-sm shadow-xl hover:bg-[#be123c] transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                            onClick={handlePdfDownload}
+                            disabled={isDownloadingPdf}
+                            className={`absolute top-6 right-6 z-40 px-5 py-2.5 bg-[#e11d48] text-white rounded-full font-black text-sm shadow-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${isDownloadingPdf ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#be123c] cursor-pointer'}`}
                         >
-                            <svg className="w-[14px] h-[14px] flex-shrink-0 align-middle" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            <span className="whitespace-nowrap leading-none">PDF 다운로드</span>
+                            {isDownloadingPdf ? (
+                                <svg className="animate-spin w-[14px] h-[14px] flex-shrink-0 align-middle text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            ) : (
+                                <svg className="w-[14px] h-[14px] flex-shrink-0 align-middle" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                            )}
+                            <span className="whitespace-nowrap leading-none">{isDownloadingPdf ? '생성 중...' : 'PDF 다운로드'}</span>
                         </button>
                     )}
 
@@ -401,16 +445,24 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                 </div>
             </div>
 
-             {/* Print Container */}
-             <div id="lecture-print-container" className="hidden print:block bg-white text-black w-full">
-                 {slides.map((slide) => {
-                     const isScrollable = slide.id.includes("products");
+             {/* PDF Export Container */}
+             <div 
+                 id="lecture-pdf-container" 
+                 className="fixed top-0 left-[-9999px] w-[1440px] flex flex-col pointer-events-none z-[-9999] bg-white opacity-0"
+                 style={{ visibility: isDownloadingPdf ? 'visible' : 'hidden' }}
+             >
+                 {slides.map((slide, index) => {
+                     const isAppliance = slide.id.includes("products");
+                     
+                     // Need to use React from global scope if we clone elements, but wait, we can just pass props if it's our ApplianceGridSlide.
+                     // Actually, we don't even need to clone if the element is already structured, because we refactored ApplianceGridSlide to output exact .pdf-export-page chunks!
+                     // Since ApplianceGridSlide returns multiple chunks formatted correctly, we just wrap it!
                      return (
-                         <div 
-                             key={slide.id} 
-                             className={isScrollable ? "print-slide-scrollable bg-white" : "print-slide bg-white"}
-                         >
-                             {slide.content}
+                         <div key={slide.id}>
+                             <div className={isAppliance ? 'w-[1440px] h-auto flex flex-col bg-[#f8fafc]' : 'w-[1440px] h-[1080px] pdf-export-page shrink-0 relative bg-white overflow-hidden'}>
+                                 {slide.content}
+                             </div>
+                             {index < slides.length - 1 && <div className="html2pdf__page-break"></div>}
                          </div>
                      );
                  })}
@@ -418,6 +470,14 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
  
              {/* Global Print Styles */}
              <style>{`
+                 #lecture-pdf-container .pdf-export-page {
+                     height: 1080px !important;
+                     min-height: 1080px !important;
+                     max-height: 1080px !important;
+                     box-sizing: border-box !important;
+                     overflow: hidden !important;
+                 }
+                 
                  @media print {
                      body {
                          background: white !important;
