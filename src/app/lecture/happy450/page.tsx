@@ -723,14 +723,14 @@ export default function Happy450LecturePage() {
                         {/* CTA Buttons */}
                         <div className="flex justify-center gap-4 pt-2">
                             <button 
-                                onClick={() => setModalUrl("https://www.sonoimready.com/front/sc/membershipInfo?key=sonoresort")}
+                                onClick={() => window.open("https://www.sonoimready.com/front/sc/membershipInfo?key=sonoresort", "_blank")}
                                 className="relative z-20 bg-sono-gold text-sono-dark px-10 py-4 rounded-full font-black text-lg shadow-2xl hover:bg-white hover:scale-105 transition-all flex items-center gap-3 group"
                             >
                                 <span>멤버십 혜택 자세히 보기</span>
                                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
                             </button>
                             <button 
-                                onClick={() => setModalUrl("https://www.sonohotelsresorts.com/")}
+                                onClick={() => window.open("https://www.sonohotelsresorts.com/", "_blank")}
                                 className="relative z-20 bg-white/10 border border-white/20 text-white px-10 py-4 rounded-full font-black text-lg shadow-2xl hover:bg-white hover:text-sono-dark hover:scale-105 transition-all flex items-center gap-3 group"
                             >
                                 <span>소노 호텔&리조트 바로가기</span>
