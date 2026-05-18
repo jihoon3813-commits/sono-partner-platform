@@ -291,12 +291,12 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                     {(currentSlide === 0 || currentSlide === slides.length - 1) && (
                         <button
                             onClick={() => window.print()}
-                            className="absolute top-6 right-6 z-40 px-6 py-3 bg-[#e11d48] text-white rounded-full font-black text-sm shadow-xl hover:bg-[#be123c] transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap"
+                            className="absolute top-6 right-6 z-40 px-5 py-2.5 bg-[#e11d48] text-white rounded-full font-black text-sm shadow-xl hover:bg-[#be123c] transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                         >
-                            <svg className="w-4.5 h-4.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                            <svg className="w-[14px] h-[14px] flex-shrink-0 align-middle" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3.5}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
-                            <span className="whitespace-nowrap">PDF 다운로드</span>
+                            <span className="whitespace-nowrap leading-none">PDF 다운로드</span>
                         </button>
                     )}
 
@@ -401,107 +401,108 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                 </div>
             </div>
 
-            {/* Print Container */}
-            <div id="lecture-print-container" className="hidden print:block bg-white text-black w-full">
-                {slides.map((slide) => {
-                    const isScrollable = 
-                        slide.id.includes("product") || 
-                        slide.id.includes("benefit") || 
-                        slide.id.includes("detail") || 
-                        slide.id.includes("table") || 
-                        slide.id.includes("disclosure");
-                    return (
-                        <div 
-                            key={slide.id} 
-                            className={isScrollable ? "print-slide-scrollable bg-white" : "print-slide bg-white"}
-                        >
-                            {slide.content}
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* Global Print Styles */}
-            <style>{`
-                @media print {
-                    body {
-                        background: white !important;
-                        color: black !important;
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
-                    }
-                    
-                    /* Hide interactive screen viewer */
-                    .print\\:hidden {
-                        display: none !important;
-                    }
-                    
-                    /* Reset root / parent containers to display natural block flow */
-                    html, body, #__next, body > div {
-                        height: auto !important;
-                        min-height: 0 !important;
-                        overflow: visible !important;
-                        position: static !important;
-                        background: white !important;
-                    }
-                    
-                    #lecture-print-container {
-                        display: block !important;
-                        width: 100% !important;
-                        height: auto !important;
-                        background: white !important;
-                        position: absolute !important;
-                        top: 0 !important;
-                        left: 0 !important;
-                        z-index: 99999 !important;
-                    }
-                    
-                    .print-slide {
-                        width: 297mm !important;
-                        height: 210mm !important;
-                        overflow: hidden !important;
-                        box-sizing: border-box !important;
-                        page-break-after: always !important;
-                        break-after: page !important;
-                        background: white !important;
-                        position: relative !important;
-                        display: flex !important;
-                        flex-direction: column !important;
-                    }
-                    
-                    .print-slide-scrollable {
-                        width: 297mm !important;
-                        height: auto !important;
-                        min-height: 210mm !important;
-                        overflow: visible !important;
-                        box-sizing: border-box !important;
-                        page-break-after: always !important;
-                        break-after: page !important;
-                        background: white !important;
-                        position: relative !important;
-                        display: block !important;
-                    }
-
-                    /* Override scrollable classes to expand full contents */
-                    .print-slide-scrollable * {
-                        overflow: visible !important;
-                        max-height: none !important;
-                        height: auto !important;
-                    }
-                    
-                    .print-slide-scrollable p,
-                    .print-slide-scrollable span,
-                    .print-slide-scrollable table {
-                        page-break-inside: avoid !important;
-                        break-inside: avoid !important;
-                    }
-
-                    @page {
-                        size: A4 landscape;
-                        margin: 0;
-                    }
-                }
-            `}</style>
+             {/* Print Container */}
+             <div id="lecture-print-container" className="hidden print:block bg-white text-black w-full">
+                 {slides.map((slide) => {
+                     const isScrollable = slide.id.includes("products");
+                     return (
+                         <div 
+                             key={slide.id} 
+                             className={isScrollable ? "print-slide-scrollable bg-white" : "print-slide bg-white"}
+                         >
+                             {slide.content}
+                         </div>
+                     );
+                 })}
+             </div>
+ 
+             {/* Global Print Styles */}
+             <style>{`
+                 @media print {
+                     body {
+                         background: white !important;
+                         color: black !important;
+                         -webkit-print-color-adjust: exact !important;
+                         print-color-adjust: exact !important;
+                     }
+                     
+                     /* Hide interactive screen viewer */
+                     .print\\:hidden {
+                         display: none !important;
+                     }
+                     
+                     /* Reset root / parent containers to display natural block flow */
+                     html, body, #__next, body > div {
+                         height: auto !important;
+                         min-height: 0 !important;
+                         overflow: visible !important;
+                         position: static !important;
+                         background: white !important;
+                     }
+                     
+                     #lecture-print-container {
+                         display: block !important;
+                         width: 100% !important;
+                         height: auto !important;
+                         background: white !important;
+                         position: absolute !important;
+                         top: 0 !important;
+                         left: 0 !important;
+                         z-index: 99999 !important;
+                     }
+                     
+                     .print-slide {
+                         width: 297mm !important;
+                         height: 210mm !important;
+                         overflow: hidden !important;
+                         box-sizing: border-box !important;
+                         page-break-after: always !important;
+                         break-after: page !important;
+                         background: white !important;
+                         position: relative !important;
+                         display: flex !important;
+                         flex-direction: column !important;
+                     }
+                     
+                     .print-slide-scrollable {
+                         width: 297mm !important;
+                         height: auto !important;
+                         min-height: 210mm !important;
+                         overflow: visible !important;
+                         box-sizing: border-box !important;
+                         page-break-after: always !important;
+                         break-after: page !important;
+                         background: white !important;
+                         position: relative !important;
+                         display: block !important;
+                     }
+ 
+                     /* Override scrollable classes to expand full contents */
+                     .print-slide-scrollable * {
+                         overflow: visible !important;
+                         max-height: none !important;
+                         height: auto !important;
+                     }
+                     
+                     /* Prevent product grid items from being cut in half horizontally */
+                     .print-slide-scrollable .grid > div {
+                         page-break-inside: avoid !important;
+                         break-inside: avoid !important;
+                     }
+                     
+                     .print-slide-scrollable p,
+                     .print-slide-scrollable span,
+                     .print-slide-scrollable table {
+                         page-break-inside: avoid !important;
+                         break-inside: avoid !important;
+                     }
+ 
+                     @page {
+                         size: A4 landscape;
+                         margin: 0;
+                     }
+                 }
+             `}</style>
         </>
     );
 }
