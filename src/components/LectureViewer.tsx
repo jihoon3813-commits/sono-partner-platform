@@ -273,8 +273,9 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
         }
 
         if (activeTool === 'magnifier') {
+            const isOverControls = pos.x < 480 && containerRef.current && pos.y > containerRef.current.clientHeight - 180;
             setMagnifierPos(pos);
-            setShowMagnifier(true);
+            setShowMagnifier(!isOverControls);
             return;
         }
 
