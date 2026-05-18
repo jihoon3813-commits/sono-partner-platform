@@ -291,12 +291,12 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                     {(currentSlide === 0 || currentSlide === slides.length - 1) && (
                         <button
                             onClick={() => window.print()}
-                            className="absolute top-6 right-6 z-40 px-6 py-3 bg-[#e11d48] text-white rounded-full font-black text-sm shadow-xl hover:bg-[#be123c] transition-all flex items-center gap-2 cursor-pointer"
+                            className="absolute top-6 right-6 z-40 px-6 py-3 bg-[#e11d48] text-white rounded-full font-black text-sm shadow-xl hover:bg-[#be123c] transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap"
                         >
-                            <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                            <svg className="w-4.5 h-4.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
-                            PDF 다운로드
+                            <span className="whitespace-nowrap">PDF 다운로드</span>
                         </button>
                     )}
 
@@ -431,9 +431,18 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                         print-color-adjust: exact !important;
                     }
                     
-                    /* Hide everything in root except print container */
-                    body > div:first-of-type {
+                    /* Hide interactive screen viewer */
+                    .print\\:hidden {
                         display: none !important;
+                    }
+                    
+                    /* Reset root / parent containers to display natural block flow */
+                    html, body, #__next, body > div {
+                        height: auto !important;
+                        min-height: 0 !important;
+                        overflow: visible !important;
+                        position: static !important;
+                        background: white !important;
                     }
                     
                     #lecture-print-container {
@@ -444,6 +453,7 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                         position: absolute !important;
                         top: 0 !important;
                         left: 0 !important;
+                        z-index: 99999 !important;
                     }
                     
                     .print-slide {
