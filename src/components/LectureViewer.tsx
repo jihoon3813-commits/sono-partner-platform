@@ -41,12 +41,13 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
     const [laserPos, setLaserPos] = useState({ x: -100, y: -100 });
     
     const [isToolsVisible, setIsToolsVisible] = useState(true);
-    const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
     
     const [magnifierPos, setMagnifierPos] = useState({ x: -1000, y: -1000 });
     const [magnifierRadius, setMagnifierRadius] = useState(150);
     const [magnifierZoom, setMagnifierZoom] = useState(2);
     const [showMagnifier, setShowMagnifier] = useState(false);
+    const [isHoveringControls, setIsHoveringControls] = useState(false);
+    const [slideHtml, setSlideHtml] = useState('');
     
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -79,6 +80,16 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
         }
     }, [currentSlide]);
 
+    // Capture Slide HTML for magnifier duplication
+    useEffect(() => {
+        if (activeTool === 'magnifier') {
+            const captureArea = document.getElementById('lecture-slide-capture-area');
+            if (captureArea) {
+                setSlideHtml(captureArea.innerHTML);
+            }
+        }
+    }, [activeTool, currentSlide]);
+
     // Handle canvas sizing
     useEffect(() => {
         const handleResize = () => {
@@ -94,90 +105,6 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
         return () => window.removeEventListener('resize', handleResize);
     }, [paths, shapes]);
 
-    const handlePdfDownload = async () => {
-        setIsDownloadingPdf(true);
-        try {
-            // Load html2canvas dynamically
-            if (!(window as any).html2canvas) {
-                await new Promise((resolve, reject) => {
-                    const script = document.createElement('script');
-                    script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-                    script.onload = resolve;
-                    script.onerror = reject;
-                    document.head.appendChild(script);
-                });
-            }
-            
-            // Load jsPDF dynamically
-            if (!(window as any).jspdf) {
-                await new Promise((resolve, reject) => {
-                    const script = document.createElement('script');
-                    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
-                    script.onload = resolve;
-                    script.onerror = reject;
-                    document.head.appendChild(script);
-                });
-            }
-
-            const html2canvasLib = (window as any).html2canvas;
-            const { jsPDF } = (window as any).jspdf;
-
-            const element = document.getElementById('lecture-pdf-container');
-            if (!element) return;
-            
-            // Ensure container is briefly styled to be captured cleanly
-            element.style.visibility = 'visible';
-            element.style.opacity = '1';
-            element.style.display = 'block';
-
-            // Find all pages to convert
-            const pages = element.querySelectorAll('.pdf-export-page');
-            if (pages.length === 0) {
-                alert("인쇄할 페이지를 찾을 수 없습니다.");
-                return;
-            }
-
-            const pdf = new jsPDF({
-                orientation: 'landscape',
-                unit: 'px',
-                format: [1440, 1080],
-                hotfixes: ["px_gstate"]
-            });
-
-            for (let i = 0; i < pages.length; i++) {
-                const pageEl = pages[i] as HTMLElement;
-                
-                const canvas = await html2canvasLib(pageEl, {
-                    scale: 2, // 2x scale for sharp text
-                    useCORS: true,
-                    allowTaint: true,
-                    logging: false,
-                    backgroundColor: '#ffffff'
-                });
-
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                
-                if (i > 0) {
-                    pdf.addPage([1440, 1080], 'landscape');
-                }
-                
-                pdf.addImage(imgData, 'JPEG', 0, 0, 1440, 1080);
-            }
-
-            pdf.save(`${productType}_lecture.pdf`);
-        } catch (e) {
-            console.error("PDF generation failed", e);
-            alert("PDF 다운로드 중 오류가 발생했습니다.");
-        } finally {
-            setIsDownloadingPdf(false);
-            
-            const element = document.getElementById('lecture-pdf-container');
-            if (element) {
-                element.style.visibility = 'hidden';
-                element.style.opacity = '0';
-            }
-        }
-    };
 
     const redraw = useCallback(() => {
         const canvas = canvasRef.current;
@@ -273,9 +200,8 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
         }
 
         if (activeTool === 'magnifier') {
-            const isOverControls = pos.x < 480 && containerRef.current && pos.y > containerRef.current.clientHeight - 180;
             setMagnifierPos(pos);
-            setShowMagnifier(!isOverControls);
+            setShowMagnifier(true);
             return;
         }
 
@@ -345,7 +271,10 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                     onTouchEnd={stopDrawing}
                 >
                     {/* Content Layer */}
-                    <div className={`absolute inset-0 ${activeTool !== 'laser' ? 'pointer-events-none select-none' : ''}`}>
+                    <div 
+                        id="lecture-slide-capture-area"
+                        className={`absolute inset-0 ${activeTool !== 'laser' ? 'pointer-events-none select-none' : ''}`}
+                    >
                         {slides[currentSlide]?.content}
                     </div>
 
@@ -371,9 +300,9 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                     )}
 
                     {/* Magnifier Lens */}
-                    {activeTool === 'magnifier' && showMagnifier && containerRef.current && (
+                    {activeTool === 'magnifier' && showMagnifier && !isHoveringControls && containerRef.current && !(magnifierPos.x < 660 && magnifierPos.y > containerRef.current.clientHeight - 75) && (
                         <div 
-                            className="absolute pointer-events-none z-50 border-[6px] border-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden rounded-full bg-white"
+                            className="absolute pointer-events-none z-20 border-[6px] border-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden rounded-full bg-white"
                             style={{
                                 left: magnifierPos.x - magnifierRadius,
                                 top: magnifierPos.y - magnifierRadius,
@@ -393,9 +322,8 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                                     pointerEvents: 'none',
                                     userSelect: 'none',
                                 }}
-                            >
-                                {slides[currentSlide]?.content}
-                            </div>
+                                dangerouslySetInnerHTML={{ __html: slideHtml }}
+                            />
                         </div>
                     )}
 
@@ -415,29 +343,13 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                         </Link>
                     </div>
 
-                    {/* PDF Download Button (Top Right) */}
-                    {(currentSlide === 0 || currentSlide === slides.length - 1) && (
-                        <button
-                            onClick={handlePdfDownload}
-                            disabled={isDownloadingPdf}
-                            className={`absolute top-6 right-6 z-40 px-5 py-2.5 bg-[#e11d48] text-white rounded-full font-black text-sm shadow-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${isDownloadingPdf ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#be123c] cursor-pointer'}`}
-                        >
-                            {isDownloadingPdf ? (
-                                <svg className="animate-spin w-[14px] h-[14px] flex-shrink-0 align-middle text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                            ) : (
-                                <svg className="w-[14px] h-[14px] flex-shrink-0 align-middle" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3.5}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                            )}
-                            <span className="whitespace-nowrap leading-none">{isDownloadingPdf ? '생성 중...' : 'PDF 다운로드'}</span>
-                        </button>
-                    )}
 
                     {/* Drawing Tools (Bottom Left) */}
-                    <div className="absolute bottom-6 left-6 z-30 flex items-center gap-2">
+                    <div 
+                        onMouseEnter={() => setIsHoveringControls(true)}
+                        onMouseLeave={() => setIsHoveringControls(false)}
+                        className="absolute bottom-6 left-6 z-30 flex items-center gap-2"
+                    >
                         {/* Toggle Button (Far Left) */}
                         <button
                             onClick={() => setIsToolsVisible(prev => !prev)}
@@ -574,124 +486,7 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                 </div>
             </div>
 
-             {/* PDF Export Container */}
-             <div 
-                 id="lecture-pdf-container" 
-                 className="fixed top-0 left-[-9999px] w-[1440px] flex flex-col pointer-events-none z-[-9999] bg-white opacity-0"
-                 style={{ visibility: isDownloadingPdf ? 'visible' : 'hidden' }}
-             >
-                 {slides.map((slide, index) => {
-                     const isAppliance = slide.id.includes("products");
-                     
-                     // Need to use React from global scope if we clone elements, but wait, we can just pass props if it's our ApplianceGridSlide.
-                     // Actually, we don't even need to clone if the element is already structured, because we refactored ApplianceGridSlide to output exact .pdf-export-page chunks!
-                     // Since ApplianceGridSlide returns multiple chunks formatted correctly, we just wrap it!
-                     return (
-                         <div key={slide.id}>
-                             <div className={isAppliance ? 'w-[1440px] h-auto flex flex-col bg-[#f8fafc]' : 'w-[1440px] h-[1080px] pdf-export-page shrink-0 relative bg-white overflow-hidden'}>
-                                 {slide.content}
-                             </div>
-                             {index < slides.length - 1 && <div className="html2pdf__page-break"></div>}
-                         </div>
-                     );
-                 })}
-             </div>
- 
-             {/* Global Print Styles */}
-             <style>{`
-                 #lecture-pdf-container .pdf-export-page {
-                     height: 1080px !important;
-                     min-height: 1080px !important;
-                     max-height: 1080px !important;
-                     box-sizing: border-box !important;
-                     overflow: hidden !important;
-                 }
-                 
-                 @media print {
-                     body {
-                         background: white !important;
-                         color: black !important;
-                         -webkit-print-color-adjust: exact !important;
-                         print-color-adjust: exact !important;
-                     }
-                     
-                     /* Hide interactive screen viewer */
-                     .print\\:hidden {
-                         display: none !important;
-                     }
-                     
-                     /* Reset root / parent containers to display natural block flow */
-                     html, body, #__next, body > div {
-                         height: auto !important;
-                         min-height: 0 !important;
-                         overflow: visible !important;
-                         position: static !important;
-                         background: white !important;
-                     }
-                     
-                     #lecture-print-container {
-                         display: block !important;
-                         width: 100% !important;
-                         height: auto !important;
-                         background: white !important;
-                         position: absolute !important;
-                         top: 0 !important;
-                         left: 0 !important;
-                         z-index: 99999 !important;
-                     }
-                     
-                     .print-slide {
-                         width: 100% !important;
-                         height: 180mm !important;
-                         overflow: hidden !important;
-                         box-sizing: border-box !important;
-                         page-break-after: always !important;
-                         break-after: page !important;
-                         background: white !important;
-                         position: relative !important;
-                         display: flex !important;
-                         flex-direction: column !important;
-                     }
-                     
-                     .print-slide-scrollable {
-                         width: 100% !important;
-                         height: auto !important;
-                         min-height: 180mm !important;
-                         overflow: visible !important;
-                         box-sizing: border-box !important;
-                         page-break-after: always !important;
-                         break-after: page !important;
-                         background: white !important;
-                         position: relative !important;
-                         display: block !important;
-                     }
- 
-                     /* Override scrollable classes to expand full contents */
-                     .print-slide-scrollable * {
-                         overflow: visible !important;
-                         max-height: none !important;
-                         height: auto !important;
-                     }
-                     
-                     /* Prevent product grid items from being cut in half horizontally */
-                     .print-slide-scrollable .grid > div {
-                         page-break-inside: avoid !important;
-                         break-inside: avoid !important;
-                     }
-                     
-                     .print-slide-scrollable p,
-                     .print-slide-scrollable span,
-                     .print-slide-scrollable table {
-                         page-break-inside: avoid !important;
-                         break-inside: avoid !important;
-                     }
- 
-                     @page {
-                         size: A4 landscape;
-                         margin: 15mm !important;
-                     }
-                 }
-             `}</style>
+
         </>
     );
 }
