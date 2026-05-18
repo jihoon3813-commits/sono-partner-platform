@@ -257,25 +257,25 @@ export default function SmartCareContent({
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-20 relative z-10 w-full">
                         <div className="grid lg:grid-cols-2 gap-16 items-center">
                             <div className="animate-fade-in">
-                                <span className="inline-block bg-sono-primary text-white border border-white/20 mb-8 px-4 py-2 rounded-lg text-sm font-bold shadow-xl">PREMIUM HYBRID</span>
-                                <h1 className="leading-[1.15] mb-8 tracking-tighter filter drop-shadow-2xl">
-                                    <span className="block text-4xl md:text-6xl lg:text-7xl font-black text-white drop-shadow-md">스마트케어</span>
+                                <span className="inline-block bg-[#3b82f6] text-white mb-6 px-4 py-1.5 rounded-md text-sm font-bold shadow-lg">PREMIUM HYBRID</span>
+                                <h1 className="leading-[1.15] mb-6 tracking-tighter filter drop-shadow-2xl">
+                                    <span className="block text-4xl md:text-6xl lg:text-[72px] font-black text-white drop-shadow-md">스마트케어</span>
                                 </h1>
-                                <p className="text-xl md:text-2xl text-white mb-12 leading-relaxed max-w-2xl break-keep font-semibold drop-shadow-sm">
-                                    최신가전 렌탈금 전액 지원으로,<br className="hidden md:block" />
-                                    오늘의 생활은 편리하게, 미래의 안심까지!<br className="hidden md:block" />
+                                <p className="text-xl md:text-2xl text-white mb-12 leading-[1.6] max-w-2xl break-keep font-semibold drop-shadow-sm">
+                                    최신가전 렌탈금 전액 지원으로,<br />
+                                    오늘의 생활은 편리하게, 미래의 안심까지!<br />
                                     대한민국 No.1 토탈 라이프케어 서비스
                                 </p>
-                                <div className="flex flex-col sm:flex-row gap-5">
+                                <div className="flex flex-col sm:flex-row gap-4">
                                     {partnerMode ? (
                                         <button
                                             onClick={() => setIsModalOpen(true)}
-                                            className="bg-white text-sono-primary hover:bg-sono-gold hover:text-white px-10 py-5 rounded-2xl font-bold text-xl active:scale-[0.98] transition-all duration-300 shadow-2xl shadow-black/20 text-center"
+                                            className="bg-white text-[#3b82f6] hover:bg-gray-50 px-10 py-4 rounded-[16px] font-bold text-lg md:text-xl active:scale-[0.98] transition-all duration-300 shadow-xl shadow-black/10 text-center min-w-[200px]"
                                         >
                                             {ctaText}
                                         </button>
                                     ) : (
-                                        <Link href="/partner/apply" className="bg-white text-sono-primary hover:bg-sono-gold hover:text-white px-10 py-5 rounded-2xl font-bold text-xl active:scale-[0.98] transition-all duration-300 shadow-2xl shadow-black/20 text-center">
+                                        <Link href="/partner/apply" className="bg-white text-[#3b82f6] hover:bg-gray-50 px-10 py-4 rounded-[16px] font-bold text-lg md:text-xl active:scale-[0.98] transition-all duration-300 shadow-xl shadow-black/10 text-center min-w-[200px] flex items-center justify-center">
                                             {ctaText}
                                         </Link>
                                     )}
@@ -283,22 +283,22 @@ export default function SmartCareContent({
                                         onClick={() => {
                                             document.getElementById("appliance-section")?.scrollIntoView({ behavior: "smooth" });
                                         }}
-                                        className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 px-10 py-5 rounded-2xl font-bold text-xl active:scale-[0.98] transition-all duration-300 text-center"
+                                        className="bg-black/40 backdrop-blur-md text-white border border-white/10 hover:bg-black/50 px-10 py-4 rounded-[16px] font-bold text-lg md:text-xl active:scale-[0.98] transition-all duration-300 text-center min-w-[200px]"
                                     >
                                         가전 라인업 보기
                                     </button>
                                 </div>
 
                                 {/* 스마트한 선택 박스 - 이미지 1번의 '합리적 선택' 박스 스타일 구현 */}
-                                <div className="mt-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                                    <div className="inline-flex items-center gap-5 bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-[24px] shadow-xl max-w-sm">
-                                        <div className="w-12 h-12 rounded-2xl bg-white text-sono-primary flex items-center justify-center font-bold text-2xl shadow-lg flex-shrink-0">
+                                <div className="mt-16 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                                    <div className="inline-flex items-center gap-5 bg-black/40 backdrop-blur-md border border-white/10 p-5 pr-12 rounded-[24px] shadow-2xl">
+                                        <div className="w-14 h-14 rounded-full bg-white text-[#3b82f6] flex items-center justify-center font-black text-2xl shadow-lg flex-shrink-0">
                                             ★
                                         </div>
                                         <div>
-                                            <h3 className="text-white text-lg font-bold tracking-tight">스마트한 선택</h3>
-                                            <p className="text-white/70 font-medium text-sm leading-tight break-keep mt-0.5">
-                                                최신가전 렌탈금 전액 지원!! 지금은 편리하게, 미래는 든든하게
+                                            <h3 className="text-white text-lg font-bold tracking-tight mb-1">스마트한 선택</h3>
+                                            <p className="text-gray-300 font-medium text-sm leading-snug break-keep">
+                                                최신가전 렌탈금 전액 지원!! 지금은 편리하게,<br />미래는 든든하게
                                             </p>
                                         </div>
                                     </div>

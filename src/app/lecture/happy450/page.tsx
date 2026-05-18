@@ -460,7 +460,7 @@ export default function Happy450LecturePage() {
                                 {
                                     title: "의전 및 제단",
                                     items: [
-                                        { label: "현대식 상복", value: "검정 양복 / 개량 한복 각 5벌 (남녀 무관)", highlight: true },
+                                        { label: "현대식 상복", value: "검정 양복 / 개량 한복 각 3벌 (남녀 무관)", highlight: true },
                                         { label: "꽃장식", value: "헌화용 국화 30송이, 꽃바구니 2개 (제단 꽃장식 제외)", highlight: true, red: true }
                                     ]
                                 },
@@ -468,14 +468,14 @@ export default function Happy450LecturePage() {
                                     title: "차량지원",
                                     items: [
                                         { label: "이송차량", value: "관내 (시, 군내) 무료 제공", highlight: false },
-                                        { label: "유족버스/리무진", value: "왕복 300km 제공 택 1 (초과시 별도)", highlight: true }
+                                        { label: "유족버스/리무진", value: "왕복 200km 제공 택 1 (초과시 별도)", highlight: true }
                                     ]
                                 },
                                 {
                                     title: "인력지원",
                                     items: [
                                         { label: "장례지도사", value: "국가공인 지도사 1명 (입관 및 행사 진행)", highlight: true },
-                                        { label: "의전도우미", value: "전문 도우미 5명 (접객 및 빈소 관리)", highlight: true }
+                                        { label: "의전도우미", value: "전문 도우미 3명 (접객 및 빈소 관리)", highlight: true }
                                     ]
                                 }
                             ].map((card, idx) => (
@@ -490,7 +490,7 @@ export default function Happy450LecturePage() {
                                                 <div className="text-right">
                                                     <p className={`text-[14px] font-bold leading-snug break-keep ${item.red ? 'text-red-500' : item.highlight ? 'text-[#007aff]' : 'text-sono-dark'}`}>
                                                         {item.value.split(' ').map((word, wi) => (
-                                                            <span key={wi} className={word.includes('1명') || word.includes('5명') || word.includes('5벌') || word.includes('300km') ? 'text-2xl font-black mx-1 underline underline-offset-4' : ''}>
+                                                            <span key={wi} className={word.includes('1명') || word.includes('3명') || word.includes('3벌') || word.includes('200km') ? 'text-2xl font-black mx-1 underline underline-offset-4' : ''}>
                                                                 {word}{' '}
                                                             </span>
                                                         ))}

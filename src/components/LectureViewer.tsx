@@ -229,30 +229,30 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
             {/* 4:3 Aspect Ratio Container */}
             <div 
                 ref={containerRef}
-                className="relative bg-white shadow-2xl overflow-hidden"
+                className={`relative bg-white shadow-2xl overflow-hidden ${activeTool === 'laser' ? 'cursor-none' : 'cursor-crosshair touch-none'}`}
                 style={{
                     aspectRatio: '4 / 3',
                     width: 'min(100vw, (100vh * 4 / 3))',
                     height: 'min(100vh, (100vw * 3 / 4))'
                 }}
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
+                onContextMenu={handleContextMenu}
+                onTouchStart={startDrawing}
+                onTouchMove={draw}
+                onTouchEnd={stopDrawing}
             >
                 {/* Content Layer */}
-                <div className="absolute inset-0">
+                <div className={`absolute inset-0 ${activeTool !== 'laser' ? 'pointer-events-none select-none' : ''}`}>
                     {slides[currentSlide]?.content}
                 </div>
 
                 {/* Canvas Layer */}
                 <canvas
                     ref={canvasRef}
-                    className={`absolute inset-0 z-10 touch-none ${activeTool === 'laser' ? 'cursor-none' : 'cursor-crosshair'}`}
-                    onMouseDown={startDrawing}
-                    onMouseMove={draw}
-                    onMouseUp={stopDrawing}
-                    onMouseLeave={stopDrawing}
-                    onContextMenu={handleContextMenu}
-                    onTouchStart={startDrawing}
-                    onTouchMove={draw}
-                    onTouchEnd={stopDrawing}
+                    className="absolute inset-0 z-10 pointer-events-none touch-none"
                 />
 
                 {/* Laser Pointer */}
