@@ -92,35 +92,85 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
     const handlePdfDownload = async () => {
         setIsDownloadingPdf(true);
         try {
-            if (!(window as any).html2pdf) {
+            // Load html2canvas dynamically
+            if (!(window as any).html2canvas) {
                 await new Promise((resolve, reject) => {
                     const script = document.createElement('script');
-                    script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+                    script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
                     script.onload = resolve;
                     script.onerror = reject;
                     document.head.appendChild(script);
                 });
             }
             
+            // Load jsPDF dynamically
+            if (!(window as any).jspdf) {
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+            }
+
+            const html2canvasLib = (window as any).html2canvas;
+            const { jsPDF } = (window as any).jspdf;
+
             const element = document.getElementById('lecture-pdf-container');
             if (!element) return;
             
-            // Generate PDF using landscape A4 parameters matching our 1440x1080 chunking exactly
-            const opt = {
-                margin:       0,
-                filename:     `${productType}_lecture.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 1.5, useCORS: true, letterRendering: true, logging: false },
-                jsPDF:        { unit: 'px', format: [1440, 1080], orientation: 'landscape' },
-                pagebreak:    { mode: 'legacy' }
-            };
-            
-            await (window as any).html2pdf().set(opt).from(element).save();
+            // Ensure container is briefly styled to be captured cleanly
+            element.style.visibility = 'visible';
+            element.style.opacity = '1';
+            element.style.display = 'block';
+
+            // Find all pages to convert
+            const pages = element.querySelectorAll('.pdf-export-page');
+            if (pages.length === 0) {
+                alert("인쇄할 페이지를 찾을 수 없습니다.");
+                return;
+            }
+
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'px',
+                format: [1440, 1080],
+                hotfixes: ["px_gstate"]
+            });
+
+            for (let i = 0; i < pages.length; i++) {
+                const pageEl = pages[i] as HTMLElement;
+                
+                const canvas = await html2canvasLib(pageEl, {
+                    scale: 2, // 2x scale for sharp text
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                
+                if (i > 0) {
+                    pdf.addPage([1440, 1080], 'landscape');
+                }
+                
+                pdf.addImage(imgData, 'JPEG', 0, 0, 1440, 1080);
+            }
+
+            pdf.save(`${productType}_lecture.pdf`);
         } catch (e) {
             console.error("PDF generation failed", e);
             alert("PDF 다운로드 중 오류가 발생했습니다.");
         } finally {
             setIsDownloadingPdf(false);
+            
+            const element = document.getElementById('lecture-pdf-container');
+            if (element) {
+                element.style.visibility = 'hidden';
+                element.style.opacity = '0';
+            }
         }
     };
 
