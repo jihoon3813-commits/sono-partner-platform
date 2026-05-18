@@ -14,7 +14,7 @@ interface LectureViewerProps {
     productType: 'happy450' | 'smartcare';
 }
 
-type Tool = 'laser' | 'pen' | 'highlighter' | 'rect' | 'circle' | 'eraser';
+type Tool = 'laser' | 'pen' | 'highlighter' | 'rect' | 'magnifier' | 'eraser';
 
 interface DrawingPath {
     tool: Tool;
@@ -42,6 +42,11 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
     
     const [isToolsVisible, setIsToolsVisible] = useState(true);
     const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+    
+    const [magnifierPos, setMagnifierPos] = useState({ x: -1000, y: -1000 });
+    const [magnifierRadius, setMagnifierRadius] = useState(150);
+    const [magnifierZoom, setMagnifierZoom] = useState(2);
+    const [showMagnifier, setShowMagnifier] = useState(false);
     
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -238,11 +243,11 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
     };
 
     const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
-        if (activeTool === 'laser') return;
+        if (activeTool === 'laser' || activeTool === 'magnifier') return;
         setIsDrawing(true);
         const pos = getPos(e);
         
-        if (activeTool === 'rect' || activeTool === 'circle') {
+        if (activeTool === 'rect') {
             setShapes(prev => [...prev, {
                 tool: activeTool,
                 start: pos,
@@ -267,9 +272,15 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
             return;
         }
 
+        if (activeTool === 'magnifier') {
+            setMagnifierPos(pos);
+            setShowMagnifier(true);
+            return;
+        }
+
         if (!isDrawing) return;
 
-        if (activeTool === 'rect' || activeTool === 'circle') {
+        if (activeTool === 'rect') {
             setShapes(prev => {
                 const newShapes = [...prev];
                 newShapes[newShapes.length - 1].end = pos;
@@ -288,6 +299,7 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
 
     const stopDrawing = () => {
         setIsDrawing(false);
+        setShowMagnifier(false);
     };
 
     const handleContextMenu = (e: React.MouseEvent) => {
@@ -354,6 +366,35 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                             }}
                         >
                             <div className="absolute inset-0 bg-white rounded-full scale-50 opacity-40"></div>
+                        </div>
+                    )}
+
+                    {/* Magnifier Lens */}
+                    {activeTool === 'magnifier' && showMagnifier && containerRef.current && (
+                        <div 
+                            className="absolute pointer-events-none z-50 border-[6px] border-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden rounded-full bg-white"
+                            style={{
+                                left: magnifierPos.x - magnifierRadius,
+                                top: magnifierPos.y - magnifierRadius,
+                                width: magnifierRadius * 2,
+                                height: magnifierRadius * 2,
+                            }}
+                        >
+                            <div 
+                                style={{
+                                    position: 'absolute',
+                                    left: -magnifierPos.x * magnifierZoom + magnifierRadius,
+                                    top: -magnifierPos.y * magnifierZoom + magnifierRadius,
+                                    width: containerRef.current.getBoundingClientRect().width,
+                                    height: containerRef.current.getBoundingClientRect().height,
+                                    transform: `scale(${magnifierZoom})`,
+                                    transformOrigin: 'top left',
+                                    pointerEvents: 'none',
+                                    userSelect: 'none',
+                                }}
+                            >
+                                {slides[currentSlide]?.content}
+                            </div>
                         </div>
                     )}
 
@@ -435,9 +476,16 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                                     label: '사각형' 
                                 },
                                 { 
-                                    id: 'circle', 
-                                    icon: <circle cx="12" cy="12" r="10" />, 
-                                    label: '원' 
+                                    id: 'magnifier', 
+                                    icon: (
+                                        <>
+                                            <circle cx="11" cy="11" r="8" />
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                            <line x1="11" y1="8" x2="11" y2="14" />
+                                            <line x1="8" y1="11" x2="14" y2="11" />
+                                        </>
+                                    ), 
+                                    label: '돋보기' 
                                 },
                                 { 
                                     id: 'eraser', 
@@ -465,6 +513,36 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                             </button>
                         </div>
+
+                        {/* Magnifier Sub-Toolbar (Adjust size & zoom on the fly) */}
+                        {activeTool === 'magnifier' && isToolsVisible && (
+                            <div className="flex items-center gap-3 bg-white/95 backdrop-blur-md px-5 py-2 rounded-2xl shadow-2xl border border-gray-100 animate-in fade-in slide-in-from-left-5 duration-300">
+                                <span className="text-xs font-black text-gray-500 whitespace-nowrap">돋보기 크기</span>
+                                <input 
+                                    type="range" 
+                                    min="60" 
+                                    max="350" 
+                                    value={magnifierRadius} 
+                                    onChange={(e) => setMagnifierRadius(Number(e.target.value))}
+                                    className="w-28 accent-sono-primary cursor-pointer h-1.5 bg-gray-100 rounded-lg appearance-none"
+                                />
+                                <span className="text-xs font-black text-sono-primary min-w-[36px] text-center tabular-nums">{magnifierRadius * 2}px</span>
+                                
+                                <div className="w-px h-4 bg-gray-200 mx-1"></div>
+                                
+                                <span className="text-xs font-black text-gray-500 whitespace-nowrap font-sans">배율</span>
+                                <select 
+                                    value={magnifierZoom} 
+                                    onChange={(e) => setMagnifierZoom(Number(e.target.value))}
+                                    className="text-xs font-black text-sono-dark bg-gray-50 border border-gray-100 rounded-xl px-2.5 py-1 outline-none cursor-pointer hover:bg-gray-100 transition-colors"
+                                >
+                                    <option value={1.5}>1.5배</option>
+                                    <option value={2}>2배</option>
+                                    <option value={2.5}>2.5배</option>
+                                    <option value={3}>3배</option>
+                                </select>
+                            </div>
+                        )}
                     </div>
 
                     {/* Slide Info (Bottom Right) */}
