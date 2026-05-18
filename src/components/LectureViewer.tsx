@@ -452,8 +452,8 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                      }
                      
                      .print-slide {
-                         width: 297mm !important;
-                         height: 210mm !important;
+                         width: 100% !important;
+                         height: 180mm !important;
                          overflow: hidden !important;
                          box-sizing: border-box !important;
                          page-break-after: always !important;
@@ -465,9 +465,9 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
                      }
                      
                      .print-slide-scrollable {
-                         width: 297mm !important;
+                         width: 100% !important;
                          height: auto !important;
-                         min-height: 210mm !important;
+                         min-height: 180mm !important;
                          overflow: visible !important;
                          box-sizing: border-box !important;
                          page-break-after: always !important;
@@ -499,7 +499,7 @@ export default function LectureViewer({ slides, productType }: LectureViewerProp
  
                      @page {
                          size: A4 landscape;
-                         margin: 0;
+                         margin: 15mm !important;
                      }
                  }
              `}</style>
