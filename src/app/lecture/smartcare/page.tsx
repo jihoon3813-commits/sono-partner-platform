@@ -919,6 +919,50 @@ export default function SmartCareLecturePage() {
             )
         },
         {
+            id: "comparison-happy-vs-smart",
+            content: (
+                <div className="h-full bg-gray-50 p-10 flex flex-col justify-center items-center relative">
+                    <div className="max-w-[1250px] w-full relative z-10">
+                        <div className="text-center mb-10">
+                            <span className="bg-[#2e3b5e] text-white px-5 py-1.5 rounded-full text-sm font-black tracking-widest mb-4 inline-block">PRODUCT COMPARISON</span>
+                            <h2 className="text-5xl font-black text-sono-dark tracking-tighter mb-4">
+                                더해피450 <span className="text-gray-300 mx-2">vs</span> 스마트케어
+                            </h2>
+                            <p className="text-lg font-bold text-gray-500">고객님의 라이프스타일과 니즈에 맞는 최적의 상품을 제안해 드립니다.</p>
+                        </div>
+                        
+                        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-200">
+                            <table className="w-full text-center">
+                                <thead>
+                                    <tr className="bg-[#2e3b5e] text-white">
+                                        <th className="py-5 px-6 font-black text-xl w-1/5 border-r border-white/20">구분</th>
+                                        <th className="py-5 px-6 font-black text-2xl w-2/5 border-r border-white/20">더해피 450 ONE</th>
+                                        <th className="py-5 px-6 font-black text-2xl w-2/5 bg-[#3b82f6]">스마트케어 330</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[
+                                        { title: "납입 구조", happy: "월 18,000원 × 250회\n(총 450만원 / 1구좌)", smart: "월 33,000원 × 200회\n(총 660만원 / 1구좌)", highlight: false },
+                                        { title: "가입 단위", happy: "1 ~ 3구좌 선택 가능", smart: "2, 4, 6구좌 다구좌 결합", highlight: false },
+                                        { title: "핵심 혜택", happy: "소노호텔앤리조트 멤버십 제공\n(객실/부대시설 특별 할인가)", smart: "최신 프리미엄 가전제품\n렌탈 비용 전액 지원", highlight: true },
+                                        { title: "라이프 서비스", happy: "고품격 상조 및 전환 서비스\n(크루즈/골프/여행 등 자유 전환)", smart: "고품격 상조 및 전환 서비스\n(크루즈/골프/여행 등 자유 전환)", highlight: false },
+                                        { title: "만기 혜택", happy: "만기 시 100% 전액 환급\n(서비스 미이용 시)", smart: "만기 시 100% 전액 환급\n(서비스 미이용 시)", highlight: false },
+                                        { title: "제휴카드 할인", happy: "소노아임레디 제휴카드\n(상조회비 청구할인)", smart: "가전렌탈료 + 상조회비\n2가지 제휴카드 동시 혜택", highlight: true }
+                                    ].map((row, idx) => (
+                                        <tr key={idx} className={`border-b border-gray-200 last:border-0 ${row.highlight ? 'bg-blue-50/40' : ''}`}>
+                                            <td className="py-6 px-6 font-black text-gray-600 bg-gray-50 border-r border-gray-200">{row.title}</td>
+                                            <td className="py-6 px-6 font-bold text-gray-800 border-r border-gray-200 whitespace-pre-line leading-relaxed">{row.happy}</td>
+                                            <td className={`py-6 px-6 font-black whitespace-pre-line leading-relaxed ${row.highlight ? 'text-[#3b82f6] text-xl' : 'text-gray-900 text-lg'}`}>{row.smart}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            )
+        },
+        {
             id: "closing",
             content: (
                 <div className="h-full bg-white flex flex-col items-center justify-center p-16 text-center">
