@@ -1,6 +1,6 @@
 "use client";
 
-import SmartCareContent from "@/components/products/SmartCareContent";
+import Happy450Content from "@/components/products/Happy450Content";
 import { useState, useEffect } from "react";
 
 interface PartnerData {
@@ -9,13 +9,13 @@ interface PartnerData {
     partnerId: string;
 }
 
-export default function Niora2SmartCarePage() {
-    const partnerId = "niora2";
+export default function NeoraHappy450Page() {
+    const partnerId = "neora";
     const [isLoading, setIsLoading] = useState(true);
     const [partner, setPartner] = useState<PartnerData | null>(null);
 
     useEffect(() => {
-        // niora2 파트너 정보 조회
+        // neora 파트너 정보 조회
         async function fetchPartner() {
             try {
                 setIsLoading(true);
@@ -26,7 +26,7 @@ export default function Niora2SmartCarePage() {
                 } else {
                     setPartner({
                         customUrl: partnerId,
-                        name: "니오라2",
+                        name: "니오라",
                         partnerId: `P-${partnerId.toUpperCase()}`
                     });
                 }
@@ -34,7 +34,7 @@ export default function Niora2SmartCarePage() {
                 console.error("Partner fetch error:", error);
                 setPartner({
                     customUrl: partnerId,
-                    name: "니오라2",
+                    name: "니오라",
                     partnerId: `P-${partnerId.toUpperCase()}`
                 });
             } finally {
@@ -53,10 +53,10 @@ export default function Niora2SmartCarePage() {
     }
 
     return (
-        <SmartCareContent
+        <Happy450Content
             partnerMode={true}
             partnerUrl={partner?.customUrl || partnerId}
-            partnerName={partner?.name || "니오라2"}
+            partnerName={partner?.name || "니오라"}
             partnerId={partner?.partnerId || partnerId}
             isPremiumMallMode={true}
         />
