@@ -323,7 +323,15 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
 
     return (
         <>
-            {!isInquiryModalOpen && <Header partnerMode={true} partnerUrl={partner?.customUrl} partnerName={partner?.name} partnerId={partner?.partnerId} />}
+            {!isInquiryModalOpen && (
+                <Header 
+                    partnerMode={true} 
+                    partnerUrl={partner?.customUrl} 
+                    partnerName={partner?.name} 
+                    partnerId={partner?.partnerId} 
+                    isPremiumMallMode={resolvedParams.partnerId?.toLowerCase() === "neora"}
+                />
+            )}
             <main className="min-h-screen bg-[#f2f4f6]">
                 {/* 히어로 */}
                 <section
@@ -767,6 +775,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                 partnerId={partner?.partnerId}
                 productType={modalProduct}
                 showProductSelect={!modalProduct}
+                isPremiumMallMode={resolvedParams.partnerId?.toLowerCase() === "neora"}
             />
         </>
     );
