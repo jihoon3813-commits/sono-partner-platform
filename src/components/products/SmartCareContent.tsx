@@ -359,8 +359,11 @@ export default function SmartCareContent({
                 </section>
 
                 {/* 상품 구성 섹션 */}
-                <section className="py-16 md:py-32 bg-[#191f28] text-white">
-                    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+                <section className="py-20 md:py-32 bg-gradient-to-b from-[#11161d] to-[#1a212c] text-white relative overflow-hidden">
+                    {/* Background glow ornament */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sono-primary/10 rounded-full blur-[150px] pointer-events-none z-0"></div>
+                    
+                    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
                         <div className="text-center mb-16 md:mb-24">
                             <h2 className="text-3xl md:text-5xl font-black tracking-tighter mb-6">다양한 라이프스타일에<br className="md:hidden" /> 맞춘 구성</h2>
                             <p className="text-white/50 text-lg md:text-xl font-medium">원하는 구좌 수를 선택하고<br className="md:hidden" /> 최신 가전을 골라보세요.</p>
@@ -375,43 +378,82 @@ export default function SmartCareContent({
                             ]).map((plan: any, i) => {
                                 const isBest = plan.slotCount === 4 || (careProductsData && careProductsData.length > 0 ? i === 2 : i === 2);
                                 return (
-                                    <div key={i} className={`p-5 md:p-10 rounded-[32px] border transition-all ${isBest ? "bg-sono-primary border-sono-primary shadow-2xl md:scale-105" : "bg-white/5 border-white/10 hover:bg-white/10"}`}>
-                                        {isBest && <span className="bg-white text-sono-primary text-[10px] font-black px-3 py-1 rounded-full mb-3 md:mb-6 inline-block">BEST CHOICE</span>}
-                                        <h3 className="font-black mb-1 md:mb-2 tracking-tighter">
-                                            <span className="text-sm md:text-base opacity-70 block mb-1">{plan.name}</span>
-                                            <span className="text-2xl md:text-3xl">{plan.slotCount}구좌</span>
-                                        </h3>
-                                        <p className="text-white/50 text-sm font-bold mb-4 md:mb-8">{plan.target}</p>
-                                        <div className="mb-6 md:mb-10">
-                                            <span className="text-4xl font-black">{plan.monthlyPayment.toLocaleString()}</span>
-                                            <span className="text-lg opacity-60 ml-1">원~</span>
+                                    <div 
+                                        key={i} 
+                                        className={`relative p-6 md:p-8 rounded-[28px] border transition-all duration-500 flex flex-col justify-between ${
+                                            isBest 
+                                                ? "bg-[#1d2736]/90 border-sono-primary/60 shadow-[0_25px_60px_rgba(46,78,162,0.25)] md:scale-105 hover:-translate-y-2 z-10" 
+                                                : "bg-[#141920]/60 border-white/5 hover:border-white/15 hover:bg-[#1a212b]/60 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:-translate-y-1"
+                                        }`}
+                                    >
+                                        {/* Tag/Badge at the Top */}
+                                        <div className="flex justify-between items-start mb-6">
+                                            <span className={`text-[10px] font-black tracking-wider px-3 py-1 rounded-lg border ${
+                                                isBest 
+                                                    ? "bg-sono-primary/10 border-sono-primary/30 text-sono-primary" 
+                                                    : "bg-white/5 border-white/5 text-gray-400"
+                                            }`}>
+                                                {plan.name}
+                                            </span>
+                                            {isBest && (
+                                                <span className="bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-md tracking-wider">
+                                                    ★ BEST
+                                                </span>
+                                            )}
                                         </div>
+
+                                        {/* Plan Title & Price */}
+                                        <div className="mb-6">
+                                            <h3 className="text-3xl font-black text-white tracking-tight leading-none mb-2">
+                                                {plan.slotCount}
+                                                <span className="text-lg font-bold ml-1 opacity-70">구좌</span>
+                                            </h3>
+                                            <p className="text-white/45 text-xs font-bold mb-4">{plan.target}</p>
+                                            <div className={`pt-4 border-t ${isBest ? "border-sono-primary/20" : "border-white/5"}`}>
+                                                <span className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+                                                    {plan.monthlyPayment.toLocaleString()}
+                                                </span>
+                                                <span className="text-sm font-bold ml-1 opacity-60">원 ~</span>
+                                            </div>
+                                        </div>
+
                                         {/* 납입/거치/만기 정보 표시 */}
                                         {(plan.paymentCount || plan.defermentPeriod || plan.maturityCount) && (
-                                            <div className={`mb-6 p-4 rounded-2xl text-xs font-bold ${isBest ? "bg-white/15 text-white" : "bg-black/20 text-white/90"} flex flex-col gap-1.5`}>
+                                            <div className={`mb-6 p-4.5 rounded-2xl text-[11px] font-bold flex flex-col gap-2.5 ${
+                                                isBest 
+                                                    ? "bg-[#3b82f6]/5 border border-[#3b82f6]/10 text-white/90" 
+                                                    : "bg-white/[0.02] border border-white/5 text-white/85"
+                                            }`}>
                                                 {plan.paymentCount && (
                                                     <div className="flex justify-between items-center">
-                                                        <span className="opacity-70">납입회차</span>
+                                                        <span className="opacity-40">납입회차</span>
                                                         <span>{plan.paymentCount}</span>
                                                     </div>
                                                 )}
                                                 {plan.defermentPeriod && (
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="opacity-70">거치기간</span>
+                                                    <div className={`flex justify-between items-center border-t pt-2.5 ${isBest ? "border-[#3b82f6]/10" : "border-white/5"}`}>
+                                                        <span className="opacity-40">거치기간</span>
                                                         <span>{plan.defermentPeriod}</span>
                                                     </div>
                                                 )}
                                                 {plan.maturityCount && (
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="opacity-70">만기회차</span>
-                                                        <span>{plan.maturityCount}</span>
+                                                    <div className={`flex justify-between items-center border-t pt-2.5 ${isBest ? "border-[#3b82f6]/10" : "border-white/5"}`}>
+                                                        <span className="opacity-40">만기회차</span>
+                                                        <span className={isBest ? "text-[#60a5fa]" : "text-sono-primary"}>{plan.maturityCount}</span>
                                                     </div>
                                                 )}
                                             </div>
                                         )}
-                                        <ul className="space-y-2 md:space-y-4 mb-2 md:mb-4 opacity-80 text-sm font-bold">
+
+                                        {/* Features List */}
+                                        <ul className="space-y-3 opacity-90 text-xs font-bold mt-auto pt-2">
                                             {(plan.features || []).map((feat: any, fidx: number) => (
-                                                <li key={fidx} className="flex items-center gap-2">✓ {feat}</li>
+                                                <li key={fidx} className="flex items-center gap-2.5">
+                                                    <svg className={`w-4 h-4 flex-shrink-0 ${isBest ? "text-[#60a5fa]" : "text-[#3b82f6]"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                    <span className={isBest ? "text-white/85" : "text-white/65"}>{feat}</span>
+                                                </li>
                                             ))}
                                         </ul>
                                     </div>
