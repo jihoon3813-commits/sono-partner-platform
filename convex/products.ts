@@ -145,6 +145,7 @@ export const upsert = mutation({
         image: v.string(),
         isVisible: v.boolean(),
         hasGift: v.boolean(),
+        isBest: v.optional(v.boolean()),
         order: v.optional(v.number()),
         promotionId: v.optional(v.union(v.id("promotions"), v.null())),
     },
@@ -177,6 +178,14 @@ export const toggleGift = mutation({
     args: { id: v.id("products"), hasGift: v.boolean() },
     handler: async (ctx, args) => {
         await ctx.db.patch(args.id, { hasGift: args.hasGift, updatedAt: new Date().toISOString() });
+    },
+});
+
+// 베스트 여부 토글
+export const toggleBest = mutation({
+    args: { id: v.id("products"), isBest: v.boolean() },
+    handler: async (ctx, args) => {
+        await ctx.db.patch(args.id, { isBest: args.isBest, updatedAt: new Date().toISOString() });
     },
 });
 
@@ -265,6 +274,7 @@ export const seed = mutation({
                 image: v.string(),
                 isVisible: v.boolean(),
                 hasGift: v.boolean(),
+                isBest: v.optional(v.boolean()),
             })
         ),
     },
@@ -348,6 +358,7 @@ export const replaceProducts = internalMutation({
                 image: v.string(),
                 isVisible: v.boolean(),
                 hasGift: v.boolean(),
+                isBest: v.optional(v.boolean()),
                 order: v.optional(v.number()),
             })
         ),
@@ -484,6 +495,7 @@ export const replaceProductsForSlot = internalMutation({
                 image: v.string(),
                 isVisible: v.boolean(),
                 hasGift: v.boolean(),
+                isBest: v.optional(v.boolean()),
                 order: v.optional(v.number()),
             })
         ),

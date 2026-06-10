@@ -18,6 +18,7 @@ interface Product {
     image: string;
     isVisible?: boolean;
     hasGift?: boolean;
+    isBest?: boolean;
     order?: number;
     createdAt?: string;
     updatedAt?: string;
@@ -48,6 +49,7 @@ export default function ProductManagement() {
     const upsertProduct = useMutation(api.products.upsert);
     const toggleVisibility = useMutation(api.products.toggleVisibility);
     const toggleGift = useMutation(api.products.toggleGift);
+    const toggleBest = useMutation(api.products.toggleBest);
     const removeProduct = useMutation(api.products.remove);
     const removeProducts = useMutation(api.products.removeMany);
     const syncFromBilligo = useAction(api.products.syncFromBilligo);
@@ -132,6 +134,7 @@ export default function ProductManagement() {
                 image: editingProduct.image || "",
                 isVisible: editingProduct.isVisible ?? true,
                 hasGift: editingProduct.hasGift ?? false,
+                isBest: editingProduct.isBest ?? false,
                 promotionId: editingProduct.promotionId,
             });
             setIsModalOpen(false);
@@ -431,6 +434,7 @@ export default function ProductManagement() {
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-40">상품명</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-right w-32">월 납입금</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-20">노출</th>
+                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-20">베스트</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-24">프로모션</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-24">순서</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-24">관리</th>
@@ -475,12 +479,20 @@ export default function ProductManagement() {
                                                     <span className="text-[10px] font-bold text-red-500">카드할인: {(product.cardDiscountPayment ?? 0).toLocaleString()}원</span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-center text-center">
+                                            <td className="px-6 py-4 text-center">
                                                 <button
                                                     onClick={() => toggleVisibility({ id: product._id, isVisible: !product.isVisible })}
                                                     className={`w-12 h-6 rounded-full p-1 transition-all ${product.isVisible ? "bg-sono-primary" : "bg-gray-200"}`}
                                                 >
                                                     <div className={`w-4 h-4 bg-white rounded-full transition-all ${product.isVisible ? "ml-6" : "ml-0"}`}></div>
+                                                </button>
+                                            </td>
+                                            <td className="px-6 py-4 text-center">
+                                                <button
+                                                    onClick={() => toggleBest({ id: product._id, isBest: !product.isBest })}
+                                                    className={`w-12 h-6 rounded-full p-1 transition-all ${product.isBest ? "bg-sono-gold" : "bg-gray-200"}`}
+                                                >
+                                                    <div className={`w-4 h-4 bg-white rounded-full transition-all ${product.isBest ? "ml-6" : "ml-0"}`}></div>
                                                 </button>
                                             </td>
                                             <td className="px-6 py-4 text-center whitespace-nowrap">
@@ -535,7 +547,7 @@ export default function ProductManagement() {
                                     ))}
                                     {filteredProducts.length === 0 && (
                                         <tr>
-                                            <td colSpan={10} className="px-6 py-20 text-center text-gray-400 font-bold">
+                                            <td colSpan={11} className="px-6 py-20 text-center text-gray-400 font-bold">
                                                 검색된 제품이 없습니다.
                                             </td>
                                         </tr>
@@ -805,6 +817,26 @@ export default function ProductManagement() {
                                             <option key={p._id} value={p._id}>{p.title}</option>
                                         ))}
                                     </select>
+                                </div>
+                                <div className="col-span-2 flex gap-8 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                    <label className="flex items-center gap-2.5 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={editingProduct.isVisible !== false}
+                                            onChange={(e) => setEditingProduct({ ...editingProduct, isVisible: e.target.checked })}
+                                            className="w-5 h-5 rounded border-gray-300 text-sono-primary focus:ring-sono-primary cursor-pointer"
+                                        />
+                                        <span className="text-sm font-black text-sono-dark">사용자 페이지 노출</span>
+                                    </label>
+                                    <label className="flex items-center gap-2.5 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={!!editingProduct.isBest}
+                                            onChange={(e) => setEditingProduct({ ...editingProduct, isBest: e.target.checked })}
+                                            className="w-5 h-5 rounded border-gray-300 text-sono-gold focus:ring-sono-gold cursor-pointer"
+                                        />
+                                        <span className="text-sm font-black text-sono-dark">베스트 상품 지정</span>
+                                    </label>
                                 </div>
                             </div>
 

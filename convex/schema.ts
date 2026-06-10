@@ -90,6 +90,7 @@ export default defineSchema({
         image: v.string(),
         isVisible: v.optional(v.boolean()), // 노출 여부
         hasGift: v.optional(v.boolean()), // 사은품 제공 여부
+        isBest: v.optional(v.boolean()), // 베스트 상품 여부
         order: v.optional(v.number()), // 정렬 순서
         promotionId: v.optional(v.union(v.id("promotions"), v.null())), // 프로모션 연결
         createdAt: v.optional(v.string()),

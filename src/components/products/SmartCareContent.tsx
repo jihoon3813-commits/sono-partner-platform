@@ -30,6 +30,26 @@ interface SmartCareContentProps {
     isPremiumMallMode?: boolean;
 }
 
+const getPlanTagStyle = (name: string, slotCount: number) => {
+    const cleanName = name.replace(/\s/g, "");
+    if (cleanName.includes("4더블")) {
+        return "bg-gradient-to-r from-amber-500 to-orange-600 text-white border-transparent shadow-lg shadow-amber-500/20";
+    }
+    if (cleanName.includes("5")) {
+        return "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-lg shadow-blue-600/20";
+    }
+    if (slotCount === 2) {
+        return "bg-gradient-to-r from-teal-500 to-emerald-600 text-white border-transparent shadow-lg shadow-teal-500/20";
+    }
+    if (slotCount === 3) {
+        return "bg-gradient-to-r from-pink-500 to-rose-600 text-white border-transparent shadow-lg shadow-pink-500/20";
+    }
+    if (slotCount === 4) {
+        return "bg-gradient-to-r from-violet-600 to-purple-600 text-white border-transparent shadow-lg shadow-violet-600/20";
+    }
+    return "bg-gradient-to-r from-cyan-500 to-blue-500 text-white border-transparent shadow-lg shadow-cyan-500/20";
+};
+
 export default function SmartCareContent({
     partnerMode = false,
     partnerUrl = "",
@@ -369,7 +389,7 @@ export default function SmartCareContent({
                             <p className="text-white/50 text-lg md:text-xl font-medium">원하는 구좌 수를 선택하고<br className="md:hidden" /> 최신 가전을 골라보세요.</p>
                         </div>
 
-                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
                             {(careProductsData && careProductsData.length > 0 ? careProductsData : [
                                 { name: "스마트케어330", slotCount: 2, monthlyPayment: 33000, target: "1인 가구 / 소형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급"], paymentCount: "1~150회", defermentPeriod: "151~180회", maturityCount: "180회" },
                                 { name: "스마트케어330", slotCount: 3, monthlyPayment: 49500, target: "신혼 부부 / 중형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급"], paymentCount: "1~150회", defermentPeriod: "151~180회", maturityCount: "180회" },
@@ -380,7 +400,7 @@ export default function SmartCareContent({
                                 return (
                                     <div 
                                         key={i} 
-                                        className={`relative p-6 md:p-8 rounded-[28px] border transition-all duration-500 flex flex-col justify-between ${
+                                        className={`relative p-6 md:p-8 rounded-[28px] border transition-all duration-500 flex flex-col justify-between w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[360px] ${
                                             isBest 
                                                 ? "bg-[#1d2736]/90 border-sono-primary/60 shadow-[0_25px_60px_rgba(46,78,162,0.25)] md:scale-105 hover:-translate-y-2 z-10" 
                                                 : "bg-[#141920]/60 border-white/5 hover:border-white/15 hover:bg-[#1a212b]/60 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:-translate-y-1"
@@ -388,11 +408,7 @@ export default function SmartCareContent({
                                     >
                                         {/* Tag/Badge at the Top */}
                                         <div className="flex justify-between items-start mb-6">
-                                            <span className={`text-[10px] font-black tracking-wider px-3 py-1 rounded-lg border ${
-                                                isBest 
-                                                    ? "bg-sono-primary/10 border-sono-primary/30 text-sono-primary" 
-                                                    : "bg-white/5 border-white/5 text-gray-400"
-                                            }`}>
+                                            <span className={`text-[10px] font-black tracking-wider px-3.5 py-1.5 rounded-lg border ${getPlanTagStyle(plan.name, plan.slotCount)}`}>
                                                 {plan.name}
                                             </span>
                                             {isBest && (
@@ -638,13 +654,24 @@ export default function SmartCareContent({
                                     const promoStyle = getPromotionStyle(item.promotionId);
                                     const promotion = activePromotions.find(p => p._id === item.promotionId);
                                     
+                                    const isItemBest = !!item.isBest;
                                     return (
                                         <div
                                             key={index}
-                                            className={`group bg-white rounded-[40px] overflow-hidden border transition-all duration-500 flex flex-col h-full relative ${promoStyle?.border || 'border-gray-100 hover:border-sono-primary/30 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)]'} ${promoStyle ? promoStyle.borderFull : ''}`}
+                                            className={`group bg-white rounded-[40px] overflow-hidden border transition-all duration-500 flex flex-col h-full relative ${
+                                                isItemBest 
+                                                    ? 'border-sono-gold/60 shadow-[0_20px_50px_rgba(254,220,64,0.15)] ring-2 ring-sono-gold/30 hover:shadow-[0_20px_60px_rgba(254,220,64,0.25)] hover:border-sono-gold' 
+                                                    : (promoStyle?.border || 'border-gray-100 hover:border-sono-primary/30 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)]')
+                                            } ${promoStyle ? promoStyle.borderFull : ''}`}
                                         >
                                             {/* Promotion Tag (Top Left) - Neon Effect Applied */}
-                                            {item.promotionId ? (
+                                            {isItemBest ? (
+                                                <div className="absolute top-3 left-3 md:top-6 md:left-6 z-10">
+                                                    <span className="bg-sono-gold text-sono-dark text-[8px] md:text-[10px] font-black px-2.5 py-1.5 md:px-3.5 md:py-2 rounded-full shadow-lg flex items-center gap-1">
+                                                        ★ 베스트
+                                                    </span>
+                                                </div>
+                                            ) : item.promotionId ? (
                                                 <div className="absolute top-3 left-3 md:top-6 md:left-6 z-10">
                                                     <span 
                                                         className={`text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg flex items-center gap-1 animate-neon-blink ${promoStyle?.tag || 'bg-sono-primary'}`}
@@ -736,7 +763,11 @@ export default function SmartCareContent({
                                                         setPickedAppliance(item as any);
                                                         setIsModalOpen(true);
                                                     }}
-                                                    className={`w-full mt-6 py-4 bg-gray-50 text-gray-400 group-hover:text-white rounded-2xl font-black text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${promoStyle?.name === 'red' ? 'group-hover:bg-rose-600' : promoStyle?.name === 'blue' ? 'group-hover:bg-blue-600' : 'group-hover:bg-sono-dark'}`}
+                                                    className={`w-full mt-6 py-4 bg-gray-50 text-gray-400 group-hover:text-white rounded-2xl font-black text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${
+                                                        isItemBest 
+                                                            ? 'group-hover:bg-sono-gold group-hover:text-sono-dark font-black' 
+                                                            : (promoStyle?.name === 'red' ? 'group-hover:bg-rose-600' : promoStyle?.name === 'blue' ? 'group-hover:bg-blue-600' : 'group-hover:bg-sono-dark')
+                                                    }`}
                                                 >
                                                     가입 신청하기
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -818,7 +849,13 @@ export default function SmartCareContent({
                                                         onClick={() => handleApplianceClick(item)}
                                                         className={`group flex flex-col text-left transition-all duration-300 ${pickedAppliance?.name === item.name && pickedAppliance?.model === item.model ? "scale-105" : ""}`}
                                                     >
-                                                        <div className={`relative pt-[100%] rounded-[24px] overflow-hidden bg-[#f9fafb] border transition-all ${pickedAppliance?.name === item.name && pickedAppliance?.model === item.model ? "border-sono-primary ring-4 ring-sono-primary/20 shadow-xl" : "border-gray-50 group-hover:border-sono-primary/30"}`}>
+                                                        <div className={`relative pt-[100%] rounded-[24px] overflow-hidden bg-[#f9fafb] border transition-all ${
+                                                            pickedAppliance?.name === item.name && pickedAppliance?.model === item.model 
+                                                                ? "border-sono-primary ring-4 ring-sono-primary/20 shadow-xl" 
+                                                                : (item.isBest 
+                                                                    ? "border-sono-gold/60 shadow-[0_4px_20px_rgba(254,220,64,0.1)] hover:border-sono-gold" 
+                                                                    : "border-gray-50 group-hover:border-sono-primary/30")
+                                                        }`}>
                                                             <img
                                                                 src={item.image}
                                                                 alt={item.name}
@@ -827,6 +864,11 @@ export default function SmartCareContent({
                                                             <div className="absolute top-3 left-3 bg-white/80 backdrop-blur-sm text-[10px] font-bold px-2 py-1 rounded-lg border border-gray-100">
                                                                 {item.slotCount}구좌
                                                             </div>
+                                                            {item.isBest && (
+                                                                <div className="absolute top-3 right-3 bg-sono-gold text-sono-dark text-[8px] font-black px-2 py-0.5 rounded shadow z-10 animate-pulse">
+                                                                    ★ 베스트
+                                                                </div>
+                                                            )}
                                                             {pickedAppliance?.name === item.name && pickedAppliance?.model === item.model && (
                                                                 <div className="absolute inset-0 bg-sono-primary/10 flex items-center justify-center backdrop-blur-[1px]">
                                                                     <div className="bg-sono-primary text-white rounded-full p-2 shadow-lg">
