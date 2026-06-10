@@ -68,6 +68,7 @@ export default function ProductManagement() {
     const [searchTerm, setSearchTerm] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("all");
     const [slotFilter, setSlotFilter] = useState("all");
+    const [sortBy, setSortBy] = useState<"order" | "priceAsc" | "priceDesc">("order");
     const [isSyncing, setIsSyncing] = useState(false);
     const [bulkDiscounts, setBulkDiscounts] = useState<Record<number, number>>({
         1: 0, 2: 0, 3: 0, 4: 0, 6: 0
@@ -92,14 +93,27 @@ export default function ProductManagement() {
         : ["TV/디지털", "냉장가전", "주방가전", "생활가전", "에어컨/에어케어", "세탁가전", "건강/뷰티", "가구/침대", "기타가전"];
     const slots = [1, 2, 3, 4, 6];
 
-    const filteredProducts = (products || []).filter(p => {
-        const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                             p.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             p.brand.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = categoryFilter === "all" || p.category === categoryFilter;
-        const matchesSlot = slotFilter === "all" || (p.slotCount || 4).toString() === slotFilter;
-        return matchesSearch && matchesCategory && matchesSlot;
-    });
+    const filteredProducts = (products || [])
+        .filter(p => {
+            const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                 p.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                 p.brand.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesCategory = categoryFilter === "all" || p.category === categoryFilter;
+            const matchesSlot = slotFilter === "all" || (p.slotCount || 4).toString() === slotFilter;
+            return matchesSearch && matchesCategory && matchesSlot;
+        })
+        .sort((a, b) => {
+            if (sortBy === "priceAsc") {
+                return (a.monthlyPayment ?? 0) - (b.monthlyPayment ?? 0);
+            }
+            if (sortBy === "priceDesc") {
+                return (b.monthlyPayment ?? 0) - (a.monthlyPayment ?? 0);
+            }
+            if ((a.order ?? 0) !== (b.order ?? 0)) {
+                return (a.order ?? 0) - (b.order ?? 0);
+            }
+            return a.name.localeCompare(b.name);
+        });
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -386,6 +400,15 @@ export default function ProductManagement() {
                                 </option>
                             ))}
                         </select>
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value as any)}
+                            className="bg-[#f9fafb] border-none rounded-xl py-3 px-4 text-sm font-bold text-gray-500 focus:ring-2 focus:ring-sono-primary"
+                        >
+                            <option value="order">기본 정렬 순서</option>
+                            <option value="priceAsc">월납입금 낮은순</option>
+                            <option value="priceDesc">월납입금 높은순</option>
+                        </select>
                     </div>
 
                     {/* 리스트 섹션 */}
@@ -430,8 +453,8 @@ export default function ProductManagement() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs font-black text-gray-400 uppercase tracking-wider">{product.brand}</span>
+                                                <div className="flex items-center gap-1.5 whitespace-nowrap">
+                                                    <span className="text-xs font-black text-gray-400 uppercase tracking-wider">[{product.brand}]</span>
                                                     <span className="text-sm font-bold text-sono-primary">{product.category}</span>
                                                 </div>
                                             </td>
@@ -466,20 +489,24 @@ export default function ProductManagement() {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <div className="flex justify-center gap-1">
-                                                    <button 
-                                                        onClick={() => handleMove(product, 'up')}
-                                                        className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-sono-primary transition-colors"
-                                                    >
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" /></svg>
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => handleMove(product, 'down')}
-                                                        className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-sono-primary transition-colors"
-                                                    >
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
-                                                    </button>
-                                                </div>
+                                                {sortBy === "order" ? (
+                                                    <div className="flex justify-center gap-1">
+                                                        <button 
+                                                            onClick={() => handleMove(product, 'up')}
+                                                            className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-sono-primary transition-colors"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" /></svg>
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleMove(product, 'down')}
+                                                            className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-sono-primary transition-colors"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-gray-300 text-xs font-bold">-</span>
+                                                )}
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <div className="flex justify-center gap-2">
