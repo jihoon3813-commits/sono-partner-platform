@@ -148,6 +148,7 @@ export const upsert = mutation({
         isBest: v.optional(v.boolean()),
         order: v.optional(v.number()),
         promotionId: v.optional(v.union(v.id("promotions"), v.null())),
+        careProductId: v.optional(v.union(v.id("careProducts"), v.null())),
     },
     handler: async (ctx, args) => {
         const { id, ...data } = args;
@@ -467,13 +468,14 @@ export const syncProductsForPlan = action({
                 image: item.model_thumnail_url || "",
                 isVisible: true,
                 hasGift: false,
+                careProductId: args.planId, // 해당 플랜 ID 주입
                 order: i + 1,
             };
         });
         
-        // 4. Mutation 실행하여 특정 구좌 데이터만 교체
-        await ctx.runMutation(internal.products.replaceProductsForSlot, { 
-            slotCount, 
+        // 4. Mutation 실행하여 특정 플랜 데이터만 교체
+        await ctx.runMutation(internal.products.replaceProductsForPlan, { 
+            planId: args.planId, 
             products 
         });
     }
@@ -507,6 +509,52 @@ export const replaceProductsForSlot = internalMutation({
         const existing = await ctx.db
             .query("products")
             .withIndex("by_slotCount", q => q.eq("slotCount", args.slotCount))
+            .collect();
+            
+        for (const p of existing) {
+            await ctx.db.delete(p._id);
+        }
+        
+        // 새 제품 입력
+        for (const p of args.products) {
+            await ctx.db.insert("products", {
+                ...p,
+                createdAt: now,
+                updatedAt: now,
+            });
+        }
+    }
+});
+
+// 특정 스마트케어 상품(플랜)에 대한 제품 데이터 교체 internal mutation
+export const replaceProductsForPlan = internalMutation({
+    args: {
+        planId: v.id("careProducts"),
+        products: v.array(
+            v.object({
+                brand: v.string(),
+                model: v.string(),
+                name: v.string(),
+                category: v.string(),
+                slotCount: v.number(),
+                monthlyPayment: v.number(),
+                cardDiscountPayment: v.number(),
+                image: v.string(),
+                isVisible: v.boolean(),
+                hasGift: v.boolean(),
+                isBest: v.optional(v.boolean()),
+                careProductId: v.optional(v.union(v.id("careProducts"), v.null())),
+                order: v.optional(v.number()),
+            })
+        ),
+    },
+    handler: async (ctx, args) => {
+        const now = new Date().toISOString();
+        
+        // 해당 플랜의 기존 제품들만 조회해서 삭제
+        const existing = await ctx.db
+            .query("products")
+            .withIndex("by_careProductId", q => q.eq("careProductId", args.planId))
             .collect();
             
         for (const p of existing) {

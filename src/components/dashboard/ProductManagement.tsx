@@ -23,6 +23,7 @@ interface Product {
     createdAt?: string;
     updatedAt?: string;
     promotionId?: Id<"promotions"> | null;
+    careProductId?: Id<"careProducts"> | null;
 }
 
 interface CareProduct {
@@ -69,7 +70,7 @@ export default function ProductManagement() {
     const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("all");
-    const [slotFilter, setSlotFilter] = useState("all");
+    const [planFilter, setPlanFilter] = useState("all");
     const [sortBy, setSortBy] = useState<"order" | "priceAsc" | "priceDesc">("order");
     const [isSyncing, setIsSyncing] = useState(false);
     const [bulkDiscounts, setBulkDiscounts] = useState<Record<number, number>>({
@@ -101,8 +102,10 @@ export default function ProductManagement() {
                                  p.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
                                  p.brand.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesCategory = categoryFilter === "all" || p.category === categoryFilter;
-            const matchesSlot = slotFilter === "all" || (p.slotCount || 4).toString() === slotFilter;
-            return matchesSearch && matchesCategory && matchesSlot;
+            const matchesPlan = planFilter === "all" || 
+                                p.careProductId === planFilter || 
+                                (!p.careProductId && (p.slotCount || 4).toString() === planFilter);
+            return matchesSearch && matchesCategory && matchesPlan;
         })
         .sort((a, b) => {
             if (sortBy === "priceAsc") {
@@ -136,6 +139,7 @@ export default function ProductManagement() {
                 hasGift: editingProduct.hasGift ?? false,
                 isBest: editingProduct.isBest ?? false,
                 promotionId: editingProduct.promotionId,
+                careProductId: editingProduct.careProductId,
             });
             setIsModalOpen(false);
             setEditingProduct(null);
@@ -392,14 +396,14 @@ export default function ProductManagement() {
                             {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                         </select>
                         <select
-                            value={slotFilter}
-                            onChange={(e) => setSlotFilter(e.target.value)}
+                            value={planFilter}
+                            onChange={(e) => setPlanFilter(e.target.value)}
                             className="bg-[#f9fafb] border-none rounded-xl py-3 px-4 text-sm font-bold text-gray-500 focus:ring-2 focus:ring-sono-primary"
                         >
                             <option value="all">전체 상품</option>
                             {(careProducts || []).map(cp => (
-                                <option key={cp._id} value={cp.slotCount.toString()}>
-                                    {cp.name}
+                                <option key={cp._id} value={cp._id}>
+                                    {cp.name} ({cp.slotCount}구좌)
                                 </option>
                             ))}
                         </select>
@@ -470,7 +474,9 @@ export default function ProductManagement() {
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <span className="inline-block bg-sono-primary/10 text-sono-primary text-[11px] font-black px-2.5 py-1.5 rounded-lg border border-sono-primary/20 whitespace-nowrap">
-                                                    {careProducts?.find(cp => cp.slotCount === product.slotCount)?.name || `${product.slotCount}구좌`}
+                                                    {careProducts?.find(cp => cp._id === product.careProductId)?.name || 
+                                                     careProducts?.find(cp => cp.slotCount === product.slotCount)?.name || 
+                                                     `${product.slotCount}구좌`}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
@@ -765,13 +771,28 @@ export default function ProductManagement() {
                                     />
                                 </div>
                                 <div className="col-span-1">
-                                    <label className="text-xs font-bold text-[#8b95a1] mb-2 block ml-1">구좌수</label>
+                                    <label className="text-xs font-bold text-[#8b95a1] mb-2 block ml-1">연결 상품(플랜)</label>
                                     <select
-                                        value={editingProduct.slotCount || 4}
-                                        onChange={(e) => setEditingProduct({ ...editingProduct, slotCount: Number(e.target.value) })}
+                                        value={editingProduct.careProductId || ""}
+                                        onChange={(e) => {
+                                            const planId = e.target.value;
+                                            const selectedPlan = careProducts?.find(cp => cp._id === planId);
+                                            setEditingProduct({
+                                                ...editingProduct,
+                                                careProductId: planId ? planId as Id<"careProducts"> : null,
+                                                slotCount: selectedPlan ? selectedPlan.slotCount : editingProduct.slotCount,
+                                                monthlyPayment: selectedPlan ? selectedPlan.monthlyPayment : editingProduct.monthlyPayment
+                                            });
+                                        }}
                                         className="w-full bg-[#f9fafb] border-none rounded-2xl py-3 px-4 text-sm font-bold focus:ring-2 focus:ring-sono-primary"
+                                        required
                                     >
-                                        {slots.map(s => <option key={s} value={s}>{s}구좌</option>)}
+                                        <option value="">선택 안 함</option>
+                                        {careProducts?.map(cp => (
+                                            <option key={cp._id} value={cp._id}>
+                                                {cp.name} ({cp.slotCount}구좌)
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="col-span-1">

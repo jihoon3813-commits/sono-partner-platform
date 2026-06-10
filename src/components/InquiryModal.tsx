@@ -22,6 +22,7 @@ interface InquiryModalProps {
     showProductSelect?: boolean;
     initialAppliance?: string;
     initialUnit?: string;
+    initialPlanId?: string;
     isPremiumMallMode?: boolean;
 }
 
@@ -35,23 +36,34 @@ export default function InquiryModal({
     showProductSelect = false,
     initialAppliance = "",
     initialUnit = "4",
+    initialPlanId = "",
     isPremiumMallMode = false
 }: InquiryModalProps) {
     // Convex 실시간 제품 정보 쿼리
     const rawProductsData = useQuery(api.products.get);
     const productsData = (rawProductsData || []).filter((p: any) => p.isVisible !== false);
+    const careProducts = useQuery(api.careProducts.get);
 
     const [selectedUnit, setSelectedUnit] = useState<string>(initialUnit);
+    const [selectedPlanId, setSelectedPlanId] = useState<string>(initialPlanId);
     const [selectedAppliance, setSelectedAppliance] = useState<string>(initialAppliance || "상담 시 결정");
 
     const productListRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (isOpen) {
-            if (initialUnit) setSelectedUnit(initialUnit);
+            if (initialPlanId) {
+                setSelectedPlanId(initialPlanId);
+                const cp = careProducts?.find(c => c._id === initialPlanId);
+                if (cp) setSelectedUnit(cp.slotCount.toString());
+            } else if (initialUnit) {
+                setSelectedUnit(initialUnit);
+                const cp = careProducts?.find(c => c.slotCount === Number(initialUnit));
+                if (cp) setSelectedPlanId(cp._id);
+            }
             if (initialAppliance) setSelectedAppliance(initialAppliance);
         }
-    }, [isOpen, initialUnit, initialAppliance]);
+    }, [isOpen, initialPlanId, initialUnit, initialAppliance, careProducts]);
 
     const allAppliances = productsData || [];
     const isLoadingAppliances = productsData === undefined;
@@ -206,7 +218,10 @@ export default function InquiryModal({
             const isHappy450Product = ["happy450", "더 해피 450", "더 해피 450 ONE"].includes(selectedProd);
 
             if (isSmartCareProduct) {
-                calculatedPlanType = `${selectedUnit}구좌`;
+                const currentPlan = careProducts?.find(cp => cp._id === selectedPlanId);
+                calculatedPlanType = currentPlan 
+                    ? `${currentPlan.name} (${currentPlan.slotCount}구좌)` 
+                    : `${selectedUnit}구좌`;
                 productsInfo = selectedAppliance;
             } else if (isHappy450Product) {
                 calculatedPlanType = `${selectedUnit}구좌`;
@@ -423,23 +438,24 @@ export default function InquiryModal({
                         {["smartcare", "스마트케어"].includes(formData.selectedProduct || productType) && (
                             <div className="space-y-4 animate-fade-in">
                                 <div>
-                                    <label className="input-label !text-[#4e5968] !font-bold mb-3 block">가입 구좌 선택</label>
-                                    <div className="flex bg-[#f2f4f6] p-1 rounded-xl">
-                                        {["2", "3", "4", "6"].map((u) => (
+                                    <label className="input-label !text-[#4e5968] !font-bold mb-3 block">가입 상품 선택</label>
+                                    <div className="flex bg-[#f2f4f6] p-1 rounded-xl flex-wrap gap-1">
+                                        {(careProducts || []).map((cp) => (
                                             <button
-                                                key={u}
+                                                key={cp._id}
                                                 type="button"
                                                 onClick={() => {
-                                                    setSelectedUnit(u);
+                                                    setSelectedPlanId(cp._id);
+                                                    setSelectedUnit(cp.slotCount.toString());
                                                     setSelectedAppliance(isPremiumMallMode ? "" : "상담 시 결정");
                                                     if (productListRef.current) {
                                                         productListRef.current.scrollTop = 0;
                                                     }
                                                 }}
-                                                className={`flex-1 py-2 md:py-3 rounded-xl transition-all flex flex-col items-center justify-center ${selectedUnit === u ? "bg-white text-sono-primary shadow-sm" : "text-[#8b95a1]"}`}
+                                                className={`flex-1 min-w-[80px] py-2 md:py-3 rounded-xl transition-all flex flex-col items-center justify-center ${selectedPlanId === cp._id ? "bg-white text-sono-primary shadow-sm" : "text-[#8b95a1]"}`}
                                             >
-                                                <span className={`text-[9px] font-bold mb-0.5 ${selectedUnit === u ? "text-sono-primary/60" : "text-[#8b95a1]/60"}`}>스마트케어330</span>
-                                                <span className="text-sm md:text-base font-black">{u}구좌</span>
+                                                <span className={`text-[9px] font-bold mb-0.5 ${selectedPlanId === cp._id ? "text-sono-primary/60" : "text-[#8b95a1]/60"}`}>{cp.name}</span>
+                                                <span className="text-sm font-black">{cp.slotCount}구좌</span>
                                             </button>
                                         ))}
                                     </div>
@@ -460,7 +476,12 @@ export default function InquiryModal({
                                             <span className="font-bold text-sono-dark">상담 시 결정</span>
                                         </button>
                                         {allAppliances
-                                            .filter(item => item.tag && item.tag.includes(`${selectedUnit}구좌`))
+                                            .filter(item => {
+                                                return selectedPlanId 
+                                                    ? (item.careProductId === selectedPlanId || 
+                                                       (!item.careProductId && (item.slotCount || 4).toString() === selectedUnit))
+                                                    : (item.slotCount || 4).toString() === selectedUnit;
+                                            })
                                             .map((item, idx) => {
                                                 const applianceValue = item.model
                                                     ? `${item.brand} ${item.name} (${item.model})`

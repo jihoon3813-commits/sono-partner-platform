@@ -93,6 +93,7 @@ export default defineSchema({
         isBest: v.optional(v.boolean()), // 베스트 상품 여부
         order: v.optional(v.number()), // 정렬 순서
         promotionId: v.optional(v.union(v.id("promotions"), v.null())), // 프로모션 연결
+        careProductId: v.optional(v.union(v.id("careProducts"), v.null())), // 연결된 스마트케어 상품 (플랜)
         createdAt: v.optional(v.string()),
         updatedAt: v.optional(v.string()),
         tag: v.optional(v.string()), // Old field for compatibility during migration
@@ -100,6 +101,7 @@ export default defineSchema({
         .index("by_category", ["category"])
         .index("by_brand", ["brand"])
         .index("by_slotCount", ["slotCount"])
+        .index("by_careProductId", ["careProductId"])
         .index("by_isVisible", ["isVisible"]),
 
     // 파트너 신청서 (Legacy/Backup)

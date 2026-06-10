@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Header, Footer } from "@/components/layout";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InquiryModal from "@/components/InquiryModal";
 
 interface Appliance {
@@ -20,6 +20,9 @@ interface Appliance {
     isVisible: boolean;
     hasGift: boolean;
     promotionId?: string;
+    careProductId?: string;
+    isBest?: boolean;
+    order?: number;
 }
 
 interface SmartCareContentProps {
@@ -60,7 +63,7 @@ export default function SmartCareContent({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [pickedAppliance, setPickedAppliance] = useState<Appliance | null>(null);
 
-    const [selectedUnit, setSelectedUnit] = useState<string>("4");
+    const [selectedPlanId, setSelectedPlanId] = useState<string>("");
     const [showAllOverlay, setShowAllOverlay] = useState(false);
 
     // Convex Query - Fetch and filter client-side for stability
@@ -79,10 +82,22 @@ export default function SmartCareContent({
         ? Array.from(new Set(careProductsData.map(cp => cp.slotCount))).sort((a, b) => a - b)
         : Array.from(new Set(allAppliances.map(a => a.slotCount || 4))).sort((a, b) => a - b);
     
+    // Default to a 4-slot plan once careProductsData is loaded
+    useEffect(() => {
+        if (careProductsData && careProductsData.length > 0 && !selectedPlanId) {
+            const defaultPlan = careProductsData.find(cp => cp.slotCount === 4) || careProductsData[0];
+            if (defaultPlan) setSelectedPlanId(defaultPlan._id);
+        }
+    }, [careProductsData]);
+
     // Dynamic Categories based on current slot selection
     const availableCategories = Array.from(new Set(
         allAppliances
-            .filter(a => selectedUnit === "" ? true : a.slotCount === Number(selectedUnit))
+            .filter(a => {
+                if (selectedPlanId === "") return true;
+                return a.careProductId === selectedPlanId || 
+                       (!a.careProductId && a.slotCount === careProductsData?.find(cp => cp._id === selectedPlanId)?.slotCount);
+            })
             .map(a => a.category)
     )).sort((a, b) => {
         if (!a) return 1;
@@ -103,9 +118,12 @@ export default function SmartCareContent({
 
     // 현재 구좌 및 카테고리에 맞는 가전 필터링
     const filteredAppliances = allAppliances.filter(item => {
-        const matchesUnit = selectedUnit === "" ? true : item.slotCount === Number(selectedUnit);
+        const matchesPlan = selectedPlanId === "" 
+            ? true 
+            : (item.careProductId === selectedPlanId || 
+               (!item.careProductId && item.slotCount === careProductsData?.find(cp => cp._id === selectedPlanId)?.slotCount));
         const matchesCategory = selectedCategory === "전체" ? true : item.category === selectedCategory;
-        return matchesUnit && matchesCategory;
+        return matchesPlan && matchesCategory;
     });
 
     // 프로모션 상품 필터링 (프로모션 세션용)
@@ -118,15 +136,24 @@ export default function SmartCareContent({
 
     const handleApplianceClick = (item: Appliance) => {
         setPickedAppliance(item);
-        const unit = getUnitFromTag(item);
-        if (unit && unit !== selectedUnit && selectedUnit !== "") {
-            setSelectedUnit(unit);
+        if (item.careProductId && item.careProductId !== selectedPlanId && selectedPlanId !== "") {
+            setSelectedPlanId(item.careProductId);
+        } else if (!item.careProductId && item.slotCount) {
+            const cp = careProductsData?.find(c => c.slotCount === item.slotCount);
+            if (cp && cp._id !== selectedPlanId && selectedPlanId !== "") {
+                setSelectedPlanId(cp._id);
+            }
         }
     };
 
     const handleApplyWithProduct = () => {
         if (pickedAppliance) {
-            setSelectedUnit(getUnitFromTag(pickedAppliance));
+            if (pickedAppliance.careProductId) {
+                setSelectedPlanId(pickedAppliance.careProductId);
+            } else {
+                const cp = careProductsData?.find(c => c.slotCount === pickedAppliance.slotCount);
+                if (cp) setSelectedPlanId(cp._id);
+            }
             setIsModalOpen(true);
         }
     };
@@ -601,27 +628,27 @@ export default function SmartCareContent({
 
                         {/* 필터 시스템 */}
                         <div className="flex flex-col gap-4 md:gap-10">
-                            {/* 1. 구좌수 필터 - 모달 슬라이드 적용 및 크기 축소 */}
+                            {/* 1. 요금제 상품 필터 - 모달 슬라이드 적용 및 크기 축소 */}
                             <div className="flex flex-nowrap md:justify-center gap-2 overflow-x-auto pb-4 no-scrollbar -mx-6 px-6 md:mx-0 md:px-0">
                                 <button
-                                    onClick={() => { setSelectedUnit(""); setSelectedCategory("전체"); }}
-                                    className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap ${selectedUnit === ""
+                                    onClick={() => { setSelectedPlanId(""); setSelectedCategory("전체"); }}
+                                    className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap ${selectedPlanId === ""
                                         ? "bg-sono-primary text-white border-sono-primary shadow-lg shadow-sono-primary/20"
                                         : "bg-white text-gray-400 border-gray-100"
                                         }`}
                                 >
-                                    전체 구좌
+                                    전체 상품
                                 </button>
-                                {availableSlots.map((val) => (
+                                {(careProductsData || []).map((plan) => (
                                     <button
-                                        key={val}
-                                        onClick={() => { setSelectedUnit((val || 4).toString()); setSelectedCategory("전체"); }}
-                                        className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap ${selectedUnit === (val || 4).toString()
+                                        key={plan._id}
+                                        onClick={() => { setSelectedPlanId(plan._id); setSelectedCategory("전체"); }}
+                                        className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap ${selectedPlanId === plan._id
                                             ? "bg-sono-primary text-white border-sono-primary shadow-lg shadow-sono-primary/20"
                                             : "bg-white text-gray-400 border-gray-100"
                                             }`}
                                     >
-                                        {val}구좌
+                                        {plan.name} ({plan.slotCount}구좌)
                                     </button>
                                 ))}
                             </div>
@@ -650,7 +677,7 @@ export default function SmartCareContent({
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
-                                {(selectedUnit === "" ? allWithNewFormat : filteredWithNewFormat).map((item, index) => {
+                                {(selectedPlanId === "" ? allWithNewFormat : filteredWithNewFormat).map((item, index) => {
                                     const promoStyle = getPromotionStyle(item.promotionId);
                                     const promotion = activePromotions.find(p => p._id === item.promotionId);
                                     
@@ -810,18 +837,27 @@ export default function SmartCareContent({
                                     원하시는 모든 가전을<br className="md:hidden" /> 한눈에 확인해보세요
                                 </h3>
 
-                                {/* 오버레이 전용 구좌 필터 버튼 */}
-                                <div className="flex bg-[#f2f4f6] p-1.5 rounded-2xl shadow-inner border border-gray-100 inline-flex">
-                                    {["전체", "2", "3", "4", "6"].map((u) => (
+                                {/* 오버레이 전용 상품 필터 버튼 */}
+                                <div className="flex bg-[#f2f4f6] p-1.5 rounded-2xl shadow-inner border border-gray-100 inline-flex flex-wrap gap-1">
+                                    <button
+                                        onClick={() => setSelectedPlanId("")}
+                                        className={`px-4 md:px-6 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${selectedPlanId === ""
+                                            ? "bg-sono-primary text-white shadow-lg shadow-sono-primary/20"
+                                            : "text-[#8b95a1] hover:text-sono-dark"
+                                            }`}
+                                    >
+                                        전체
+                                    </button>
+                                    {(careProductsData || []).map((plan) => (
                                         <button
-                                            key={u}
-                                            onClick={() => setSelectedUnit(u === "전체" ? "" : u)}
-                                            className={`px-4 md:px-6 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${(u === "전체" && selectedUnit === "") || selectedUnit === u
+                                            key={plan._id}
+                                            onClick={() => setSelectedPlanId(plan._id)}
+                                            className={`px-4 md:px-6 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${selectedPlanId === plan._id
                                                 ? "bg-sono-primary text-white shadow-lg shadow-sono-primary/20"
                                                 : "text-[#8b95a1] hover:text-sono-dark"
                                                 }`}
                                         >
-                                            {u}{u !== "전체" && "구좌"}
+                                            {plan.name}
                                         </button>
                                     ))}
                                 </div>
@@ -831,7 +867,10 @@ export default function SmartCareContent({
                                 {availableCategories.map((cat) => {
                                     const categoryItems = allAppliances.filter(a =>
                                         a.category === cat &&
-                                        (selectedUnit === "" ? true : a.slotCount === Number(selectedUnit))
+                                        (selectedPlanId === "" 
+                                            ? true 
+                                            : (a.careProductId === selectedPlanId || 
+                                               (!a.careProductId && a.slotCount === careProductsData?.find(cp => cp._id === selectedPlanId)?.slotCount)))
                                     );
 
                                     if (categoryItems.length === 0) return null;
@@ -1484,7 +1523,10 @@ export default function SmartCareContent({
                 initialAppliance={pickedAppliance
                     ? (pickedAppliance.model ? `${pickedAppliance.brand} ${pickedAppliance.name} (${pickedAppliance.model})` : `${pickedAppliance.brand} ${pickedAppliance.name}`)
                     : undefined}
-                initialUnit={pickedAppliance ? (pickedAppliance.slotCount || 4).toString() : selectedUnit}
+                initialUnit={pickedAppliance 
+                    ? (pickedAppliance.slotCount || 4).toString() 
+                    : (careProductsData?.find(cp => cp._id === selectedPlanId)?.slotCount?.toString() || "4")}
+                initialPlanId={pickedAppliance?.careProductId || selectedPlanId}
                 isPremiumMallMode={isPremiumMallMode}
             />
         </>
