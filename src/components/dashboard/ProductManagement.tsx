@@ -49,6 +49,7 @@ export default function ProductManagement() {
     const toggleVisibility = useMutation(api.products.toggleVisibility);
     const toggleGift = useMutation(api.products.toggleGift);
     const removeProduct = useMutation(api.products.remove);
+    const removeProducts = useMutation(api.products.removeMany);
     const syncFromBilligo = useAction(api.products.syncFromBilligo);
     const updateOrder = useMutation(api.products.updateOrder);
     const bulkUpdateCardDiscount = useMutation(api.products.bulkUpdateCardDiscount);
@@ -71,6 +72,7 @@ export default function ProductManagement() {
     const [bulkDiscounts, setBulkDiscounts] = useState<Record<number, number>>({
         1: 0, 2: 0, 3: 0, 4: 0, 6: 0
     });
+    const [selectedIds, setSelectedIds] = useState<Set<Id<"products">>>(new Set());
 
     // Care Product states
     const [isCareModalOpen, setIsCareModalOpen] = useState(false);
@@ -145,7 +147,55 @@ export default function ProductManagement() {
     const handleDelete = async (id: Id<"products">) => {
         if (confirm("정말로 삭제하시겠습니까?")) {
             await removeProduct({ id });
+            setSelectedIds(prev => {
+                const next = new Set(prev);
+                next.delete(id);
+                return next;
+            });
         }
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedIds.size === 0) {
+            alert("삭제할 제품을 선택해주세요.");
+            return;
+        }
+        if (confirm(`선택한 ${selectedIds.size}개 제품을 정말로 삭제하시겠습니까?`)) {
+            try {
+                await removeProducts({ ids: Array.from(selectedIds) });
+                setSelectedIds(new Set());
+                alert("선택한 제품이 삭제되었습니다.");
+            } catch (error) {
+                console.error(error);
+                alert("삭제 중 오류가 발생했습니다.");
+            }
+        }
+    };
+
+    const handleSelectAll = () => {
+        const allFilteredIds = filteredProducts.map(p => p._id);
+        const isAllSelected = filteredProducts.length > 0 && filteredProducts.every(p => selectedIds.has(p._id));
+        setSelectedIds(prev => {
+            const next = new Set(prev);
+            if (isAllSelected) {
+                allFilteredIds.forEach(id => next.delete(id));
+            } else {
+                allFilteredIds.forEach(id => next.add(id));
+            }
+            return next;
+        });
+    };
+
+    const handleSelectProduct = (id: Id<"products">) => {
+        setSelectedIds(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) {
+                next.delete(id);
+            } else {
+                next.add(id);
+            }
+            return next;
+        });
     };
 
     const handleCareSave = async (e: React.FormEvent) => {
@@ -271,6 +321,17 @@ export default function ProductManagement() {
                             </p>
                         </div>
                         <div className="flex gap-2">
+                            {selectedIds.size > 0 && (
+                                <button
+                                    onClick={handleBulkDelete}
+                                    className="bg-red-50 border border-red-500 text-red-500 font-bold px-6 py-3 rounded-2xl hover:bg-red-100 transition-all shadow-lg flex items-center gap-1.5"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    선택 삭제 ({selectedIds.size})
+                                </button>
+                            )}
                             <button
                                 onClick={() => setIsBulkModalOpen(true)}
                                 className="bg-white border border-sono-primary text-sono-primary font-bold px-6 py-3 rounded-2xl hover:bg-sono-primary/10 transition-all shadow-lg"
@@ -333,6 +394,14 @@ export default function ProductManagement() {
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="bg-gray-50 border-b border-gray-100">
+                                        <th className="px-6 py-4 w-12 text-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={filteredProducts.length > 0 && filteredProducts.every(p => selectedIds.has(p._id))}
+                                                onChange={handleSelectAll}
+                                                className="w-4 h-4 rounded border-gray-300 text-sono-primary focus:ring-sono-primary cursor-pointer"
+                                            />
+                                        </th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-20">이미지</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-32">브랜드/카테고리</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase">제품정보</th>
@@ -347,6 +416,14 @@ export default function ProductManagement() {
                                 <tbody className="divide-y divide-gray-50">
                                     {filteredProducts.map((product) => (
                                         <tr key={product._id} className="hover:bg-gray-50/50 transition-colors">
+                                            <td className="px-6 py-4 text-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.has(product._id)}
+                                                    onChange={() => handleSelectProduct(product._id)}
+                                                    className="w-4 h-4 rounded border-gray-300 text-sono-primary focus:ring-sono-primary cursor-pointer"
+                                                />
+                                            </td>
                                             <td className="px-6 py-4">
                                                 <div className="w-12 h-12 rounded-lg bg-gray-50 border border-gray-100 p-1">
                                                     <img src={product.image} alt="" className="w-full h-full object-contain" />
@@ -431,7 +508,7 @@ export default function ProductManagement() {
                                     ))}
                                     {filteredProducts.length === 0 && (
                                         <tr>
-                                            <td colSpan={9} className="px-6 py-20 text-center text-gray-400 font-bold">
+                                            <td colSpan={10} className="px-6 py-20 text-center text-gray-400 font-bold">
                                                 검색된 제품이 없습니다.
                                             </td>
                                         </tr>

@@ -216,6 +216,16 @@ export const remove = mutation({
     },
 });
 
+// 상품 일괄 삭제
+export const removeMany = mutation({
+    args: { ids: v.array(v.id("products")) },
+    handler: async (ctx, args) => {
+        for (const id of args.ids) {
+            await ctx.db.delete(id);
+        }
+    },
+});
+
 // 구좌별 제휴카드 금액 일괄 설정
 export const bulkUpdateCardDiscount = mutation({
     args: {
