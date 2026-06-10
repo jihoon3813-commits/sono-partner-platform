@@ -43,9 +43,10 @@ export const upsert = mutation({
     handler: async (ctx, args) => {
         const { id, ...data } = args;
         const now = new Date().toISOString();
+        let careProductId = id;
+
         if (id) {
             await ctx.db.patch(id, { ...data, updatedAt: now });
-            return id;
         } else {
             // 정렬 순서가 지정되지 않았을 때의 기본값 지정 (마지막 순서)
             let finalOrder = data.order;
@@ -53,13 +54,47 @@ export const upsert = mutation({
                 const existing = await ctx.db.query("careProducts").collect();
                 finalOrder = existing.length + 1;
             }
-            return await ctx.db.insert("careProducts", {
+            careProductId = await ctx.db.insert("careProducts", {
                 ...data,
                 order: finalOrder,
                 createdAt: now,
                 updatedAt: now,
             });
         }
+
+        // 연동된 제품들의 제휴카드 할인 가격 자동 업데이트
+        if (careProductId) {
+            const discountAmount = data.cardDiscountPayment || 0;
+            // 1) careProductId가 일치하는 제품들 조회
+            const matchedProducts = await ctx.db
+                .query("products")
+                .withIndex("by_careProductId", (q) => q.eq("careProductId", careProductId))
+                .collect();
+
+            for (const p of matchedProducts) {
+                const newDiscountPayment = Math.max(0, (p.monthlyPayment || data.monthlyPayment) - discountAmount);
+                await ctx.db.patch(p._id, {
+                    monthlyPayment: p.monthlyPayment || data.monthlyPayment,
+                    cardDiscountPayment: newDiscountPayment,
+                    updatedAt: now,
+                });
+            }
+
+            // 2) 혹시 careProductId는 없으나 slotCount가 일치하는 기존 제품들도 함께 업데이트 지원 (하위 호환성)
+            const allProducts = await ctx.db.query("products").collect();
+            const slotMatchedProducts = allProducts.filter(p => !p.careProductId && p.slotCount === data.slotCount);
+            for (const p of slotMatchedProducts) {
+                const newDiscountPayment = Math.max(0, (p.monthlyPayment || data.monthlyPayment) - discountAmount);
+                await ctx.db.patch(p._id, {
+                    careProductId: careProductId, // 자동으로 careProductId 매핑 처리
+                    monthlyPayment: p.monthlyPayment || data.monthlyPayment,
+                    cardDiscountPayment: newDiscountPayment,
+                    updatedAt: now,
+                });
+            }
+        }
+
+        return careProductId;
     },
 });
 
