@@ -32,6 +32,7 @@ export const upsert = mutation({
         slotCount: v.number(),
         target: v.string(),
         monthlyPayment: v.number(),
+        cardDiscountPayment: v.optional(v.number()),
         features: v.array(v.string()),
         syncUrl: v.optional(v.string()),
         paymentCount: v.optional(v.string()),

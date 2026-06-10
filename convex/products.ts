@@ -440,9 +440,11 @@ export const syncProductsForPlan = action({
         // 3. 제품 데이터 파싱
         const slotCount = plan.slotCount;
 
-        // 기존 동일 구좌 제품의 제휴카드 요금 기본값 가져오기 (없으면 0)
+        // 제휴카드 요금 기본값 가져오기 (플랜에 정의되어 있으면 우선 사용, 없으면 기존 제품에서 가져옴)
         const existingProducts = await ctx.runQuery(api.products.get);
-        const defaultCardDiscount = existingProducts.find(p => p.slotCount === slotCount && p.cardDiscountPayment)?.cardDiscountPayment || 0;
+        const defaultCardDiscount = (plan as any).cardDiscountPayment !== undefined && (plan as any).cardDiscountPayment !== null
+            ? Math.max(0, plan.monthlyPayment - ((plan as any).cardDiscountPayment || 0))
+            : (existingProducts.find(p => p.slotCount === slotCount && p.cardDiscountPayment)?.cardDiscountPayment || 0);
 
         const products = data.Lists.map((item: any, i: number) => {
             const brandMatch = item.model_name?.match(/^\[(.*?)\]/);

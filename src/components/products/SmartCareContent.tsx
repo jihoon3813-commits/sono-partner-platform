@@ -429,8 +429,8 @@ export default function SmartCareContent({
                                         key={i} 
                                         className={`relative p-6 md:p-8 rounded-[28px] border transition-all duration-500 flex flex-col justify-between w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[360px] ${
                                             isBest 
-                                                ? "bg-[#1d2736]/90 border-sono-primary/60 shadow-[0_25px_60px_rgba(46,78,162,0.25)] md:scale-105 hover:-translate-y-2 z-10" 
-                                                : "bg-[#141920]/60 border-white/5 hover:border-white/15 hover:bg-[#1a212b]/60 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:-translate-y-1"
+                                                ? "bg-[#1f2d42]/95 border-sono-primary shadow-[0_25px_60px_rgba(46,78,162,0.4)] md:scale-105 hover:-translate-y-2 z-10" 
+                                                : "bg-[#17202c]/90 border-[#2f3d52] shadow-[0_15px_30px_rgba(0,0,0,0.4)] hover:border-[#425572] hover:bg-[#1f2c3d]/90 hover:shadow-[0_25px_50px_rgba(0,0,0,0.6)] hover:-translate-y-1"
                                         }`}
                                     >
                                         {/* Tag/Badge at the Top */}
@@ -452,7 +452,7 @@ export default function SmartCareContent({
                                                 <span className="text-lg font-bold ml-1 opacity-70">구좌</span>
                                             </h3>
                                             <p className="text-white/45 text-xs font-bold mb-4">{plan.target}</p>
-                                            <div className={`pt-4 border-t ${isBest ? "border-sono-primary/20" : "border-white/5"}`}>
+                                            <div className={`pt-4 border-t ${isBest ? "border-sono-primary/30" : "border-white/10"}`}>
                                                 <span className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
                                                     {plan.monthlyPayment.toLocaleString()}
                                                 </span>
@@ -464,8 +464,8 @@ export default function SmartCareContent({
                                         {(plan.paymentCount || plan.defermentPeriod || plan.maturityCount) && (
                                             <div className={`mb-6 p-4.5 rounded-2xl text-[11px] font-bold flex flex-col gap-2.5 ${
                                                 isBest 
-                                                    ? "bg-[#3b82f6]/5 border border-[#3b82f6]/10 text-white/90" 
-                                                    : "bg-white/[0.02] border border-white/5 text-white/85"
+                                                    ? "bg-[#3b82f6]/10 border border-[#3b82f6]/20 text-white/90" 
+                                                    : "bg-white/[0.05] border border-white/10 text-white/85"
                                             }`}>
                                                 {plan.paymentCount && (
                                                     <div className="flex justify-between items-center">
@@ -474,13 +474,13 @@ export default function SmartCareContent({
                                                     </div>
                                                 )}
                                                 {plan.defermentPeriod && (
-                                                    <div className={`flex justify-between items-center border-t pt-2.5 ${isBest ? "border-[#3b82f6]/10" : "border-white/5"}`}>
+                                                    <div className={`flex justify-between items-center border-t pt-2.5 ${isBest ? "border-[#3b82f6]/20" : "border-white/10"}`}>
                                                         <span className="opacity-40">거치기간</span>
                                                         <span>{plan.defermentPeriod}</span>
                                                     </div>
                                                 )}
                                                 {plan.maturityCount && (
-                                                    <div className={`flex justify-between items-center border-t pt-2.5 ${isBest ? "border-[#3b82f6]/10" : "border-white/5"}`}>
+                                                    <div className={`flex justify-between items-center border-t pt-2.5 ${isBest ? "border-[#3b82f6]/20" : "border-white/10"}`}>
                                                         <span className="opacity-40">만기회차</span>
                                                         <span className={isBest ? "text-[#60a5fa]" : "text-sono-primary"}>{plan.maturityCount}</span>
                                                     </div>
@@ -632,9 +632,9 @@ export default function SmartCareContent({
                             <div className="flex flex-nowrap md:justify-center gap-2 overflow-x-auto pb-4 no-scrollbar -mx-6 px-6 md:mx-0 md:px-0">
                                 <button
                                     onClick={() => { setSelectedPlanId(""); setSelectedCategory("전체"); }}
-                                    className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap ${selectedPlanId === ""
-                                        ? "bg-sono-primary text-white border-sono-primary shadow-lg shadow-sono-primary/20"
-                                        : "bg-white text-gray-400 border-gray-100"
+                                    className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap shadow-sm ${selectedPlanId === ""
+                                        ? "bg-sono-primary text-white border-sono-primary shadow-lg shadow-sono-primary/30 ring-2 ring-sono-primary/10"
+                                        : "bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:text-sono-dark"
                                         }`}
                                 >
                                     전체 상품
@@ -643,9 +643,9 @@ export default function SmartCareContent({
                                     <button
                                         key={plan._id}
                                         onClick={() => { setSelectedPlanId(plan._id); setSelectedCategory("전체"); }}
-                                        className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap ${selectedPlanId === plan._id
-                                            ? "bg-sono-primary text-white border-sono-primary shadow-lg shadow-sono-primary/20"
-                                            : "bg-white text-gray-400 border-gray-100"
+                                        className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap shadow-sm ${selectedPlanId === plan._id
+                                            ? "bg-sono-primary text-white border-sono-primary shadow-lg shadow-sono-primary/30 ring-2 ring-sono-primary/10"
+                                            : "bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:text-sono-dark"
                                             }`}
                                     >
                                         {plan.name} ({plan.slotCount}구좌)
@@ -659,9 +659,9 @@ export default function SmartCareContent({
                                     <button
                                         key={cat}
                                         onClick={() => setSelectedCategory(cat)}
-                                        className={`px-4 py-2 rounded-full border text-xs md:text-sm font-bold whitespace-nowrap transition-all ${selectedCategory === cat
-                                            ? "bg-sono-primary text-white border-sono-primary shadow-md"
-                                            : "bg-white border-gray-100 text-gray-400 hover:bg-gray-50"
+                                        className={`px-4 py-2 rounded-full border text-xs md:text-sm font-bold whitespace-nowrap transition-all shadow-sm ${selectedCategory === cat
+                                            ? "bg-sono-primary text-white border-sono-primary shadow-md ring-2 ring-sono-primary/10"
+                                            : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 hover:text-sono-dark"
                                         }`}
                                     >
                                         {cat}
@@ -685,10 +685,10 @@ export default function SmartCareContent({
                                     return (
                                         <div
                                             key={index}
-                                            className={`group bg-white rounded-[40px] overflow-hidden border transition-all duration-500 flex flex-col h-full relative ${
+                                            className={`group bg-white rounded-[32px] overflow-hidden border transition-all duration-500 flex flex-col h-full relative shadow-sm ${
                                                 isItemBest 
                                                     ? 'border-sono-gold/60 shadow-[0_20px_50px_rgba(254,220,64,0.15)] ring-2 ring-sono-gold/30 hover:shadow-[0_20px_60px_rgba(254,220,64,0.25)] hover:border-sono-gold' 
-                                                    : (promoStyle?.border || 'border-gray-100 hover:border-sono-primary/30 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)]')
+                                                    : (promoStyle?.border || 'border-gray-200/80 hover:border-sono-primary/50 hover:shadow-[0_25px_60px_rgba(0,0,0,0.08)]')
                                             } ${promoStyle ? promoStyle.borderFull : ''}`}
                                         >
                                             {/* Promotion Tag (Top Left) - Neon Effect Applied */}

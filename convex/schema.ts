@@ -306,6 +306,7 @@ export default defineSchema({
         slotCount: v.number(), // 구좌수 (예: 4)
         target: v.string(), // 대상 (예: 일반 가전 / 대형 가전)
         monthlyPayment: v.number(), // 월 납입금 (예: 66000)
+        cardDiscountPayment: v.optional(v.number()), // 제휴카드 할인금액
         features: v.array(v.string()), // 특장점 3개
         syncUrl: v.optional(v.string()), // 제품 동기화 URL
         paymentCount: v.optional(v.string()), // 납입회차

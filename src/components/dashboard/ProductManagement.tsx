@@ -32,6 +32,7 @@ interface CareProduct {
     slotCount: number;
     target: string;
     monthlyPayment: number;
+    cardDiscountPayment?: number;
     features: string[];
     syncUrl?: string;
     paymentCount?: string;
@@ -55,7 +56,6 @@ export default function ProductManagement() {
     const removeProducts = useMutation(api.products.removeMany);
     const syncFromBilligo = useAction(api.products.syncFromBilligo);
     const updateOrder = useMutation(api.products.updateOrder);
-    const bulkUpdateCardDiscount = useMutation(api.products.bulkUpdateCardDiscount);
     const promotions = useQuery(api.promotions.get);
 
     // Care Products Queries & Mutations
@@ -66,16 +66,12 @@ export default function ProductManagement() {
     const syncProductsForPlan = useAction(api.products.syncProductsForPlan);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("all");
     const [planFilter, setPlanFilter] = useState("all");
     const [sortBy, setSortBy] = useState<"order" | "priceAsc" | "priceDesc">("order");
     const [isSyncing, setIsSyncing] = useState(false);
-    const [bulkDiscounts, setBulkDiscounts] = useState<Record<number, number>>({
-        1: 0, 2: 0, 3: 0, 4: 0, 6: 0
-    });
     const [selectedIds, setSelectedIds] = useState<Set<Id<"products">>>(new Set());
 
     // Care Product states
@@ -148,23 +144,6 @@ export default function ProductManagement() {
             alert("저장 중 오류가 발생했습니다.");
         }
     };
-
-    const handleBulkSave = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const updates = Object.entries(bulkDiscounts).map(([slotCount, amount]) => ({
-                slotCount: Number(slotCount),
-                cardDiscountPayment: amount
-            }));
-            await bulkUpdateCardDiscount({ updates });
-            setIsBulkModalOpen(false);
-            alert("구좌별 제휴카드 금액이 일괄 변경되었습니다.");
-        } catch (error) {
-            console.error(error);
-            alert("일괄 변경 중 오류가 발생했습니다.");
-        }
-    };
-
     const handleDelete = async (id: Id<"products">) => {
         if (confirm("정말로 삭제하시겠습니까?")) {
             await removeProduct({ id });
@@ -230,6 +209,7 @@ export default function ProductManagement() {
                 slotCount: Number(editingCareProduct.slotCount) || 4,
                 target: editingCareProduct.target || "",
                 monthlyPayment: Number(editingCareProduct.monthlyPayment) || 0,
+                cardDiscountPayment: Number(editingCareProduct.cardDiscountPayment) || 0,
                 features: editingCareProduct.features || ["", "", ""],
                 syncUrl: editingCareProduct.syncUrl || "",
                 paymentCount: editingCareProduct.paymentCount || "",
@@ -353,12 +333,6 @@ export default function ProductManagement() {
                                     선택 삭제 ({selectedIds.size})
                                 </button>
                             )}
-                            <button
-                                onClick={() => setIsBulkModalOpen(true)}
-                                className="bg-white border border-sono-primary text-sono-primary font-bold px-6 py-3 rounded-2xl hover:bg-sono-primary/10 transition-all shadow-lg"
-                            >
-                                제휴카드 일괄 설정
-                            </button>
                             <button
                                 onClick={() => {
                                     setEditingProduct({
@@ -579,6 +553,7 @@ export default function ProductManagement() {
                                     slotCount: 4,
                                     target: "",
                                     monthlyPayment: 0,
+                                    cardDiscountPayment: 0,
                                     features: ["", "", ""],
                                     syncUrl: "",
                                     paymentCount: "",
@@ -604,6 +579,7 @@ export default function ProductManagement() {
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-44">대상</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-40">납입 정보</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-right w-32">월 납입금</th>
+                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-right w-36">제휴카드 할인금액</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-64">특장점 3개</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-60">동기화 URL</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-20">순서</th>
@@ -629,6 +605,9 @@ export default function ProductManagement() {
                                             </td>
                                             <td className="px-6 py-4 text-right font-black text-sono-dark text-sm whitespace-nowrap">
                                                 {plan.monthlyPayment.toLocaleString()}원
+                                            </td>
+                                            <td className="px-6 py-4 text-right font-black text-sono-primary text-sm whitespace-nowrap">
+                                                {plan.cardDiscountPayment ? `${plan.cardDiscountPayment.toLocaleString()}원` : "-"}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col gap-0.5 text-xs text-gray-500 font-medium">
@@ -781,7 +760,10 @@ export default function ProductManagement() {
                                                 ...editingProduct,
                                                 careProductId: planId ? planId as Id<"careProducts"> : null,
                                                 slotCount: selectedPlan ? selectedPlan.slotCount : editingProduct.slotCount,
-                                                monthlyPayment: selectedPlan ? selectedPlan.monthlyPayment : editingProduct.monthlyPayment
+                                                monthlyPayment: selectedPlan ? selectedPlan.monthlyPayment : editingProduct.monthlyPayment,
+                                                cardDiscountPayment: selectedPlan 
+                                                    ? Math.max(0, selectedPlan.monthlyPayment - (selectedPlan.cardDiscountPayment || 0))
+                                                    : editingProduct.cardDiscountPayment
                                             });
                                         }}
                                         className="w-full bg-[#f9fafb] border-none rounded-2xl py-3 px-4 text-sm font-bold focus:ring-2 focus:ring-sono-primary"
@@ -941,6 +923,19 @@ export default function ProductManagement() {
                                         required
                                     />
                                 </div>
+                                <div className="col-span-2 md:col-span-1">
+                                    <label className="text-xs font-bold text-[#8b95a1] mb-2 block ml-1">제휴카드 할인금액 (원)</label>
+                                    <input
+                                        type="text"
+                                        value={editingCareProduct.cardDiscountPayment ? editingCareProduct.cardDiscountPayment.toLocaleString() : ""}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(/[^0-9]/g, "");
+                                            setEditingCareProduct({ ...editingCareProduct, cardDiscountPayment: val ? Number(val) : 0 });
+                                        }}
+                                        className="w-full bg-[#f9fafb] border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary text-right"
+                                        placeholder="예: 42,000"
+                                    />
+                                </div>
                                 <div className="col-span-2 grid grid-cols-3 gap-4 bg-gray-50/50 p-4 rounded-[20px] border border-gray-100">
                                     <div>
                                         <label className="text-xs font-bold text-[#8b95a1] mb-2 block ml-1">납입회차</label>
@@ -1018,59 +1013,6 @@ export default function ProductManagement() {
                                     className="px-10 py-4 rounded-2xl font-bold bg-sono-primary text-white hover:bg-sono-dark transition-all shadow-xl shadow-sono-primary/20"
                                 >
                                     저장하기
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* 제휴카드 일괄 설정 모달 */}
-            {isBulkModalOpen && (
-                <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
-                    <div className="bg-white rounded-[32px] w-full max-w-lg overflow-hidden shadow-2xl animate-scale-in">
-                        <div className="bg-sono-dark px-8 py-6 text-white flex justify-between items-center">
-                            <h3 className="text-xl font-black tracking-tight">구좌별 제휴카드 금액 일괄 설정</h3>
-                            <button onClick={() => setIsBulkModalOpen(false)} className="opacity-60 hover:opacity-100 transition-opacity">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                        <div className="p-8 pb-4">
-                            <p className="text-sm font-bold text-gray-500 mb-6 bg-sono-primary/5 p-4 rounded-xl border border-sono-primary/10">
-                                💡 여기에 설정된 금액은 동일한 구좌를 가진 <b>모든 제품</b>의 제휴카드 할인시 납입금으로 즉시 일괄 적용됩니다.
-                            </p>
-                        </div>
-                        <form onSubmit={handleBulkSave} className="px-8 pb-8 space-y-4">
-                            {slots.map(slot => (
-                                <div key={slot} className="flex items-center justify-between p-4 bg-[#f9fafb] rounded-2xl">
-                                    <label className="text-sm font-black text-sono-dark min-w-[80px]">{slot}구좌</label>
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="number"
-                                            value={bulkDiscounts[slot] || 0}
-                                            onChange={(e) => setBulkDiscounts(prev => ({ ...prev, [slot]: Number(e.target.value) }))}
-                                            className="w-40 bg-white border border-gray-200 rounded-xl py-2.5 px-4 text-sm font-bold text-right focus:ring-2 focus:ring-sono-primary"
-                                        />
-                                        <span className="text-sm font-bold text-gray-500">원</span>
-                                    </div>
-                                </div>
-                            ))}
-
-                            <div className="flex justify-end gap-3 mt-8">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsBulkModalOpen(false)}
-                                    className="px-6 py-3.5 rounded-2xl font-bold text-gray-500 hover:bg-gray-100 transition-all"
-                                >
-                                    취소
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-8 py-3.5 rounded-2xl font-bold bg-sono-primary text-white hover:bg-sono-dark transition-all shadow-xl shadow-sono-primary/20"
-                                >
-                                    일괄 변경하기
                                 </button>
                             </div>
                         </form>
