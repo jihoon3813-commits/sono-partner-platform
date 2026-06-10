@@ -46,15 +46,18 @@ export default function SmartCareContent({
     // Convex Query - Fetch and filter client-side for stability
     const productsData = useQuery(api.products.get);
     const promotionsData = useQuery(api.promotions.get);
+    const careProductsData = useQuery(api.careProducts.get);
     
     const allAppliances = ((productsData || []) as Appliance[]).filter(p => p.isVisible !== false);
     const activePromotions = (promotionsData || []).filter(p => p.isActive !== false);
     const isLoadingAppliances = productsData === undefined;
     const [expandedProductNames, setExpandedProductNames] = useState<Set<string>>(new Set());
-    const categoriesOrder = ["에어컨", "냉장가전", "주방가전", "생활가전", "TV", "캠핑/레저", "가전패키지", "기타"];
+    const categoriesOrder = ["에어컨/에어케어", "세탁가전", "냉장가전", "주방가전", "생활가전", "TV/디지털", "건강/뷰티", "가구/침대", "기타가전"];
     
-    // Dynamic Slots based on available products - Ensure no undefined values
-    const availableSlots = Array.from(new Set(allAppliances.map(a => a.slotCount || 4))).sort((a, b) => a - b);
+    // Dynamic Slots based on registered care products
+    const availableSlots = careProductsData && careProductsData.length > 0
+        ? Array.from(new Set(careProductsData.map(cp => cp.slotCount))).sort((a, b) => a - b)
+        : Array.from(new Set(allAppliances.map(a => a.slotCount || 4))).sort((a, b) => a - b);
     
     // Dynamic Categories based on current slot selection
     const availableCategories = Array.from(new Set(
@@ -245,7 +248,7 @@ export default function SmartCareContent({
                 >
                     <div className="absolute inset-0 z-0">
                         <img
-                            src={"https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/Generated%20Image%20January%2022%2C%202026%20-%205_18PM.jpeg".replace(/ /g, '%20')}
+                            src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096482/Generated_Image_January_22_2026_-_5_18PM_gnubfx.jpg"
                             alt="Premium Home"
                             className="w-full h-full object-cover"
                         />
@@ -363,31 +366,57 @@ export default function SmartCareContent({
                             <p className="text-white/50 text-lg md:text-xl font-medium">원하는 구좌 수를 선택하고<br className="md:hidden" /> 최신 가전을 골라보세요.</p>
                         </div>
 
-                        <div className="grid md:grid-cols-4 gap-6">
-                            {[
-                                { name: "스마트케어330", unit: "2", price: "33,000", target: "1인 가구 / 소형 가전" },
-                                { name: "스마트케어330", unit: "3", price: "49,500", target: "신혼 부부 / 중형 가전" },
-                                { name: "스마트케어330", unit: "4", price: "66,000", target: "일반 가전 / 대형 가전", best: true },
-                                { name: "스마트케어330", unit: "6", price: "99,000", target: "대가족 / 프리미엄 가전 패키지" },
-                            ].map((plan, i) => (
-                                <div key={i} className={`p-5 md:p-10 rounded-[32px] border transition-all ${plan.best ? "bg-sono-primary border-sono-primary shadow-2xl md:scale-105" : "bg-white/5 border-white/10 hover:bg-white/10"}`}>
-                                    {plan.best && <span className="bg-white text-sono-primary text-[10px] font-black px-3 py-1 rounded-full mb-3 md:mb-6 inline-block">BEST CHOICE</span>}
-                                    <h3 className="font-black mb-1 md:mb-2 tracking-tighter">
-                                        <span className="text-sm md:text-base opacity-70 block mb-1">{plan.name}</span>
-                                        <span className="text-2xl md:text-3xl">{plan.unit}구좌</span>
-                                    </h3>
-                                    <p className="text-white/50 text-sm font-bold mb-4 md:mb-8">{plan.target}</p>
-                                    <div className="mb-6 md:mb-10">
-                                        <span className="text-4xl font-black">{plan.price}</span>
-                                        <span className="text-lg opacity-60 ml-1">원~</span>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {(careProductsData && careProductsData.length > 0 ? careProductsData : [
+                                { name: "스마트케어330", slotCount: 2, monthlyPayment: 33000, target: "1인 가구 / 소형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급"], paymentCount: "1~150회", defermentPeriod: "151~180회", maturityCount: "180회" },
+                                { name: "스마트케어330", slotCount: 3, monthlyPayment: 49500, target: "신혼 부부 / 중형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급"], paymentCount: "1~150회", defermentPeriod: "151~180회", maturityCount: "180회" },
+                                { name: "스마트케어330", slotCount: 4, monthlyPayment: 66000, target: "일반 가전 / 대형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급"], paymentCount: "1~150회", defermentPeriod: "151~180회", maturityCount: "180회" },
+                                { name: "스마트케어330", slotCount: 6, monthlyPayment: 99000, target: "대가족 / 프리미엄 가전 패키지", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급"], paymentCount: "1~150회", defermentPeriod: "151~180회", maturityCount: "180회" },
+                            ]).map((plan: any, i) => {
+                                const isBest = plan.slotCount === 4 || (careProductsData && careProductsData.length > 0 ? i === 2 : i === 2);
+                                return (
+                                    <div key={i} className={`p-5 md:p-10 rounded-[32px] border transition-all ${isBest ? "bg-sono-primary border-sono-primary shadow-2xl md:scale-105" : "bg-white/5 border-white/10 hover:bg-white/10"}`}>
+                                        {isBest && <span className="bg-white text-sono-primary text-[10px] font-black px-3 py-1 rounded-full mb-3 md:mb-6 inline-block">BEST CHOICE</span>}
+                                        <h3 className="font-black mb-1 md:mb-2 tracking-tighter">
+                                            <span className="text-sm md:text-base opacity-70 block mb-1">{plan.name}</span>
+                                            <span className="text-2xl md:text-3xl">{plan.slotCount}구좌</span>
+                                        </h3>
+                                        <p className="text-white/50 text-sm font-bold mb-4 md:mb-8">{plan.target}</p>
+                                        <div className="mb-6 md:mb-10">
+                                            <span className="text-4xl font-black">{plan.monthlyPayment.toLocaleString()}</span>
+                                            <span className="text-lg opacity-60 ml-1">원~</span>
+                                        </div>
+                                        {/* 납입/거치/만기 정보 표시 */}
+                                        {(plan.paymentCount || plan.defermentPeriod || plan.maturityCount) && (
+                                            <div className={`mb-6 p-4 rounded-2xl text-xs font-bold ${isBest ? "bg-white/15 text-white" : "bg-black/20 text-white/90"} flex flex-col gap-1.5`}>
+                                                {plan.paymentCount && (
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="opacity-70">납입회차</span>
+                                                        <span>{plan.paymentCount}</span>
+                                                    </div>
+                                                )}
+                                                {plan.defermentPeriod && (
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="opacity-70">거치기간</span>
+                                                        <span>{plan.defermentPeriod}</span>
+                                                    </div>
+                                                )}
+                                                {plan.maturityCount && (
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="opacity-70">만기회차</span>
+                                                        <span>{plan.maturityCount}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                        <ul className="space-y-2 md:space-y-4 mb-2 md:mb-4 opacity-80 text-sm font-bold">
+                                            {(plan.features || []).map((feat: any, fidx: number) => (
+                                                <li key={fidx} className="flex items-center gap-2">✓ {feat}</li>
+                                            ))}
+                                        </ul>
                                     </div>
-                                    <ul className="space-y-2 md:space-y-4 mb-2 md:mb-4 opacity-80 text-sm font-bold">
-                                        <li className="flex items-center gap-2">✓ 가전 렌탈료 전액 지원 혜택</li>
-                                        <li className="flex items-center gap-2">✓ 멤버십 즉시 이용</li>
-                                        <li className="flex items-center gap-2">✓ 100% 만기 환급</li>
-                                    </ul>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 </section>
@@ -838,17 +867,17 @@ export default function SmartCareContent({
                                 {
                                     title: "정성을 다하는 서비스",
                                     desc: "고인을 위한 관과 수의를 정직하게 정성을 다합니다.",
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/fileView%20(2).jpg?raw=true"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096655/fileView_2_xwfg3z.jpg"
                                 },
                                 {
                                     title: "고객님을 위로하는 마음",
                                     desc: "전문 장례지도사가 모든 예법주관부터 행정업무까지 편리하게 지원합니다.",
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/fileView%20(3).jpg?raw=true"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096744/fileView_3_k2et3b.jpg"
                                 },
                                 {
                                     title: "전문가의 따뜻한 손길",
                                     desc: "필요한 장의용품부터 고인 전용 차량까지 모두 제공합니다.",
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/fileView%20(1).jpg?raw=true"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096759/fileView_1_hlf0pp.jpg"
                                 },
                             ].map((item, index) => (
                                 <div key={index} className="flex flex-col text-center group">
@@ -1074,42 +1103,42 @@ export default function SmartCareContent({
                                 {
                                     title: "웨딩",
                                     desc: "품격 있는 웨딩부티크 스튜디오, 드레스 등 토탈 케어",
-                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product06.jpg"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096899/photo_best02_product06_mwr7lz.jpg"
                                 },
                                 {
                                     title: "크루즈",
                                     desc: "바다 위의 움직이는 호텔, 럭셔리 크루즈 여행",
-                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product09.jpg"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096921/photo_best02_product09_a7ho9v.jpg"
                                 },
                                 {
                                     title: "해외여행",
                                     desc: "전 세계 어디든 원하는 곳으로 떠나는 프리미엄 패키지",
-                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097134/photo_best02_product01_n3u0hk.jpg"
                                 },
                                 {
                                     title: "골프",
                                     desc: "국내외 명문 골프장에서 즐기는 여유로운 라운딩",
-                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product02.jpg"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097148/photo_best02_product02_cwq9zm.jpg"
                                 },
                                 {
                                     title: "교육/어학연수",
                                     desc: "자녀를 위한 해외 명문 학교 영어 캠프 및 연수 프로그램",
-                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product04.jpg"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097278/photo_best02_product04_btsohx.jpg"
                                 },
                                 {
                                     title: "리빙",
                                     desc: "소노시즌 매트리스, 최신 가전, 휴대폰, 1:1 맞춤케어, 이사 컨시어지, 입주청소&정리수납, 키즈/침실/주방/거실 가구 패키지 등",
-                                    img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product07.jpg"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097295/photo_best02_product07_lkcnml.jpg"
                                 },
                                 {
                                     title: "명품케어",
                                     desc: <>글로벌 명품 브랜드의 제품<br/>수선/매입/해외명품관 쇼핑</>,
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product10.jpg?raw=true"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097313/photo_best02_product10_xkyzcb.jpg"
                                 },
                                 {
                                     title: "쉼케어",
                                     desc: <>종합심리검사+해석상담<br/>장지 시설/안치 장소 및 시설 안내</>,
-                                    img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product08.jpg?raw=true"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097325/photo_best02_product08_xyqjwk.jpg"
                                 }
                             ].map((item, index) => (
                                 <div key={index} className="group bg-white rounded-[24px] md:rounded-[32px] overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-500 flex flex-row md:flex-col">
@@ -1183,7 +1212,7 @@ export default function SmartCareContent({
                         <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
                             <div className="flex-1 w-full animate-fade-in">
                                 <img 
-                                    src="https://github.com/jihoon3813-commits/img_sono/blob/main/computer_main.png?raw=true" 
+                                    src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097341/computer_main_bvy4u9.png" 
                                     alt="소노아임레디몰 메인" 
                                     className="w-full h-auto drop-shadow-2xl transition-transform duration-700 hover:scale-[1.02]"
                                 />

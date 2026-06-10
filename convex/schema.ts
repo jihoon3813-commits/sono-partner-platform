@@ -296,4 +296,20 @@ export default defineSchema({
         createdBy: v.string(),
         createdAt: v.string(),
     }).index("by_customerKey", ["customerKey"]),
+
+    // 스마트케어 상품정보 테이블
+    careProducts: defineTable({
+        name: v.string(), // 상품명 (예: 스마트케어 4더블)
+        slotCount: v.number(), // 구좌수 (예: 4)
+        target: v.string(), // 대상 (예: 일반 가전 / 대형 가전)
+        monthlyPayment: v.number(), // 월 납입금 (예: 66000)
+        features: v.array(v.string()), // 특장점 3개
+        syncUrl: v.optional(v.string()), // 제품 동기화 URL
+        paymentCount: v.optional(v.string()), // 납입회차
+        defermentPeriod: v.optional(v.string()), // 거치기간
+        maturityCount: v.optional(v.string()), // 만기회차
+        order: v.optional(v.number()), // 정렬 순서
+        createdAt: v.optional(v.string()),
+        updatedAt: v.optional(v.string()),
+    }).index("by_slotCount", ["slotCount"]),
 });

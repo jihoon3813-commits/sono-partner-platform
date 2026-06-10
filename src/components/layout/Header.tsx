@@ -71,9 +71,9 @@ export default function Header({
                             />
                         ) : (
                             <img
-                                src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png"
+                                src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096692/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90_BI_%EA%B0%80%EB%A1%9CA_ouqjzl.png"
                                 alt="SONO I'M READY"
-                                className={`h-7 md:h-[34px] w-auto object-contain transition-all duration-300 group-hover:scale-105 ${scrolled ? "brightness-0" : ""}`}
+                                className={`h-7 md:h-[34px] w-auto object-contain transition-all duration-300 group-hover:scale-105 ${scrolled ? "brightness-0" : "brightness-0 invert"}`}
                             />
                         )}
                     </Link>

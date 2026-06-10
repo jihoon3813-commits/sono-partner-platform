@@ -14,7 +14,7 @@ export default function Footer({ partnerMode = false, productType }: FooterProps
                     <div className="md:col-span-4">
                         <div className="flex items-center mb-6">
                             <img
-                                src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png"
+                                src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096692/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90_BI_%EA%B0%80%EB%A1%9CA_ouqjzl.png"
                                 alt="SONO I'M READY"
                                 className="h-7 w-auto object-contain grayscale opacity-80"
                             />
@@ -23,7 +23,7 @@ export default function Footer({ partnerMode = false, productType }: FooterProps
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="text-sono-dark text-base font-bold">(주)라이프앤조이 |</span>
                                 <img
-                                    src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA.png"
+                                    src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097378/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90_BI_%EA%B0%80%EB%A1%9CA_dohxox.png"
                                     alt="소노아임레디 공식총판"
                                     className="h-5 w-auto object-contain"
                                 />
