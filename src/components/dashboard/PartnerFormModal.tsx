@@ -41,7 +41,8 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
         loginPassword: "",
         status: "active" as "active" | "inactive" | "pending",
         parentPartnerId: "",
-        parentPartnerName: ""
+        parentPartnerName: "",
+        role: "master" as "master" | "tm"
     });
 
     useEffect(() => {
@@ -66,13 +67,15 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                 loginPassword: partner.loginPassword || "",
                 status: partner.status || "active",
                 parentPartnerId: partner.parentPartnerId || "",
-                parentPartnerName: partner.parentPartnerName || ""
+                parentPartnerName: partner.parentPartnerName || "",
+                role: (partner.role || "master") as "master" | "tm"
             });
         } else if (initialData) {
             setFormData(prev => ({
                 ...prev,
                 ...initialData,
-                status: "active"
+                status: "active",
+                role: (initialData.role || "master") as "master" | "tm"
             }));
         }
     }, [partner, initialData]);
@@ -468,16 +471,29 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                                 />
                             </div>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-gray-400 ml-1">파트너 상태</label>
-                            <select
-                                value={formData.status}
-                                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                                className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary"
-                            >
-                                <option value="active">정상 (Active)</option>
-                                <option value="inactive">중지 (Inactive)</option>
-                            </select>
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-400 ml-1">파트너 상태</label>
+                                <select
+                                    value={formData.status}
+                                    onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                                    className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary"
+                                >
+                                    <option value="active">정상 (Active)</option>
+                                    <option value="inactive">중지 (Inactive)</option>
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-400 ml-1">권한 등급 (Role)</label>
+                                <select
+                                    value={formData.role}
+                                    onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
+                                    className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary"
+                                >
+                                    <option value="master">마스터 파트너 (Master)</option>
+                                    <option value="tm">TM 상담원 (TM)</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 

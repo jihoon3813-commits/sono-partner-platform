@@ -114,9 +114,13 @@ export default function CustomerManagement({
     const defaultStatuses = ['접수대기', '접수완료', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '배송완료', '청약철회', '해약', '정산완료'];
     
     // Combine dynamic and default statuses (ensure unique)
-    const availableStatuses = dbStatuses 
+    const rawAvailableStatuses = dbStatuses 
         ? dbStatuses.map(s => s.label) 
         : defaultStatuses;
+    
+    const availableStatuses = currentUser?.role === 'tm'
+        ? rawAvailableStatuses.filter(s => s !== "정산예정" && s !== "정산완료")
+        : rawAvailableStatuses;
 
     const statusOptions = ['전체', ...availableStatuses];
 
@@ -243,7 +247,11 @@ export default function CustomerManagement({
     // 2. Status & Product Filter
     const filteredApplications = initialFiltered.filter(app => {
         // Status Filter
-        const statusMatch = statusFilter === "all" || (app.status || "접수대기") === statusFilter;
+        const appStatus = app.status || "접수대기";
+        const displayStatus = (currentUser?.role === 'tm' && (appStatus === '정산예정' || appStatus === '정산완료'))
+            ? '정상가입'
+            : appStatus;
+        const statusMatch = statusFilter === "all" || displayStatus === statusFilter;
         if (!statusMatch) return false;
 
         // Product Filter
@@ -252,6 +260,13 @@ export default function CustomerManagement({
 
         return productMatch;
     });
+
+    const getDisplayStatus = (status: string) => {
+        if (currentUser?.role === 'tm' && (status === '정산예정' || status === '정산완료')) {
+            return '정상가입';
+        }
+        return status || "접수대기";
+    };
 
     const formatDate = (val: string | undefined | number) => {
         if (!val) return "-";
@@ -442,7 +457,7 @@ export default function CustomerManagement({
                                             app.partnerMemberId || "-",
                                             app.preferredContactTime || "-",
                                             app.inquiry?.replace(/\n/g, " ") || "-",
-                                            app.status,
+                                            getDisplayStatus(app.status),
                                             app.firstPaymentDate || "-",
                                             app.registrationDate || "-",
                                             app.paymentMethod || "-",
@@ -831,8 +846,8 @@ export default function CustomerManagement({
                                                 {((app.productType || "").toLowerCase().includes("smart") || (app.productType || "").includes("스마트")) ? (app.products || "-") : "-"}
                                             </td>
                                             <td className="px-2 py-4 text-center whitespace-nowrap">
-                                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyles(app.status)}`}>
-                                                    {app.status}
+                                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyles(getDisplayStatus(app.status))}`}>
+                                                    {getDisplayStatus(app.status)}
                                                 </span>
                                             </td>
                                         </tr>
@@ -927,6 +942,7 @@ export default function CustomerManagement({
                     onUpdate={onRefresh}
                     isAdmin={isAdmin}
                     partnerLoginId={getPartnerLoginId(selectedApp.partnerId, selectedApp.partnerName)}
+                    currentUserRole={currentUser?.role || 'master'}
                 />
             )}
 

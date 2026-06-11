@@ -12,15 +12,23 @@ interface CustomerDetailModalProps {
     onUpdate: () => void;
     isAdmin?: boolean;
     partnerLoginId?: string;
+    currentUserRole?: string;
 }
 
-export default function CustomerDetailModal({ application, onClose, onUpdate, isAdmin = false, partnerLoginId }: CustomerDetailModalProps) {
+export default function CustomerDetailModal({ application, onClose, onUpdate, isAdmin = false, partnerLoginId, currentUserRole = "master" }: CustomerDetailModalProps) {
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
     const statusHistory = useQuery(api.applications.getStatusHistory, { applicationNo: application.applicationNo });
 
 
     const getStatusStyles = (status: string) => {
         return getDynamicStatusStyles(status, dbStatuses);
+    };
+
+    const getDisplayStatus = (statusVal: string) => {
+        if (currentUserRole === 'tm' && (statusVal === '정산예정' || statusVal === '정산완료')) {
+            return '정상가입';
+        }
+        return statusVal || "접수대기";
     };
 
 
@@ -191,13 +199,18 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     ];
     
     // Filter statuses based on isAdmin and isPartnerVisible flag
-    const statusOptions = dbStatuses 
+    const rawStatusOptions = dbStatuses 
         ? dbStatuses
             .filter(s => isAdmin || s.isPartnerVisible)
             .map(s => s.label) 
         : defaultStatusOptions;
 
-    const canPartnerEditStatus = !isAdmin && statusOptions.length > 0;
+    const statusOptions = currentUserRole === 'tm'
+        ? rawStatusOptions.filter(opt => opt !== '정산예정' && opt !== '정산완료')
+        : rawStatusOptions;
+
+    const isRestrictedStatus = currentUserRole === 'tm' && (application.status === '정산예정' || application.status === '정산완료');
+    const canPartnerEditStatus = !isAdmin && statusOptions.length > 0 && !isRestrictedStatus;
 
     return (
         <div
@@ -230,7 +243,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                 >
                                     {/* 현재 상태가 목록에 없더라도 표시될 수 있게 함 (이미 설정된 상태가 파트너 비노출인 경우 등) */}
                                     {!statusOptions.includes(status) && (
-                                        <option value={status}>{status} (변경불가)</option>
+                                        <option value={status}>{getDisplayStatus(status)} (변경불가)</option>
                                     )}
                                     {statusOptions.map((opt) => (
                                         <option key={opt} value={opt}>{opt}</option>
@@ -245,8 +258,8 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             </div>
                         ) : (
                             <div className="flex items-center">
-                                <span className={`px-3 py-1.5 rounded-lg text-sm font-bold ${getStatusStyles(application.status)}`}>
-                                    {application.status}
+                                <span className={`px-3 py-1.5 rounded-lg text-sm font-bold ${getStatusStyles(getDisplayStatus(application.status))}`}>
+                                    {getDisplayStatus(application.status)}
                                 </span>
                             </div>
                         )}
@@ -432,8 +445,8 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                             <div className="absolute -left-[9px] top-1.5 w-3 h-3 rounded-full bg-gray-200 border-2 border-white" />
                                             <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
                                                 <div className="flex justify-between items-start mb-1">
-                                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${getDynamicStatusStyles(history.newStatus, dbStatuses)}`}>
-                                                        {history.newStatus}
+                                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${getDynamicStatusStyles(getDisplayStatus(history.newStatus), dbStatuses)}`}>
+                                                        {getDisplayStatus(history.newStatus)}
                                                     </span>
                                                     <span className="text-[10px] text-gray-400 font-medium">
                                                         {formatHistoryDate(history.changedAt)}

@@ -25,6 +25,7 @@ export interface Partner {
     status: 'active' | 'inactive' | 'pending';
     parentPartnerId?: string;
     parentPartnerName?: string;
+    role?: string; // 'master' | 'tm'
     createdAt: string;
     approvedAt: string;
     approvedBy: string;

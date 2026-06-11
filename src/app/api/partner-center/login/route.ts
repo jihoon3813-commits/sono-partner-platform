@@ -29,7 +29,8 @@ export async function POST(request: Request) {
                     customUrl: String(partner.customUrl),
                     pointInfo: String(partner.pointInfo),
                     level: 'partner',
-                    loginId: String(partner.loginId)
+                    loginId: String(partner.loginId),
+                    role: String(partner.role || 'master')
                 };
 
                 return NextResponse.json({
@@ -63,7 +64,8 @@ export async function POST(request: Request) {
                 customUrl: String(partner.customUrl),
                 pointInfo: String(partner.pointInfo),
                 level: 'partner',
-                loginId: String(partner.loginId)
+                loginId: String(partner.loginId),
+                role: String(partner.role || 'master')
             };
 
             return NextResponse.json({

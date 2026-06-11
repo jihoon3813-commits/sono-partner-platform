@@ -169,6 +169,7 @@ export async function POST(request: Request) {
                 status: 'active',
                 parentPartnerId: partnerData.parentPartnerId || '',
                 parentPartnerName: partnerData.parentPartnerName || '',
+                role: partnerData.role || 'master',
                 approvedAt: new Date().toISOString().split('T')[0],
                 approvedBy: partnerData.approvedBy || 'admin',
             });

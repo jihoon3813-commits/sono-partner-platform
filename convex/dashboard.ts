@@ -44,16 +44,33 @@ export const getDashboardData = query({
 
         if (!myPartner) return { isAdmin: false, partners: [], customers: [], pendingRequests: [] };
 
-        // 본인 + 직계 하위 파트너 목록 가져오기 (인덱스 활용)
-        // myPartner.partnerId를 사용해야 하위 파트너를 올바르게 찾을 수 있음
+        // TM 계정인 경우, 상위 파트너를 기준으로 데이터를 조회
+        let targetParentPartner = myPartner;
+        if (myPartner.role === 'tm' && myPartner.parentPartnerId) {
+            const parent = await ctx.db
+                .query("partners")
+                .withIndex("by_partnerId", (q) => q.eq("partnerId", myPartner.parentPartnerId!))
+                .unique();
+            if (parent) {
+                targetParentPartner = parent;
+            }
+        }
+
+        // 본인(또는 상위 파트너) + 직계 하위 파트너 목록 가져오기 (인덱스 활용)
         const subPartners = await ctx.db
             .query("partners")
-            .withIndex("by_parentPartnerId", (q) => q.eq("parentPartnerId", myPartner.partnerId))
+            .withIndex("by_parentPartnerId", (q) => q.eq("parentPartnerId", targetParentPartner.partnerId))
             .collect();
 
         console.log("[Dashboard Query] Found subPartners count:", subPartners.length);
 
-        const partnerList = [myPartner, ...subPartners];
+        // partnerList에는 상위 파트너, 상위의 모든 하위 파트너(TM 자신 포함)가 포함되어야 함
+        const partnerList = [targetParentPartner, ...subPartners];
+        
+        // TM 계정인 경우 리스트에 TM 본인도 확실히 포함하도록 보장
+        if (!partnerList.find(p => p.partnerId === myPartner.partnerId)) {
+            partnerList.push(myPartner);
+        }
 
         // partnerId 또는 loginId로 매칭 (기존 데이터와 새 데이터 모두 지원)
         const validSystemIds = partnerList.map(p => p.partnerId);

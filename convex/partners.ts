@@ -74,6 +74,9 @@ export const createPartner = mutation({
         landingTitle: v.optional(v.string()),
         shopUrl: v.optional(v.string()),
         partnerGroup: v.optional(v.string()),
+        role: v.optional(v.string()),
+        approvedAt: v.optional(v.string()),
+        approvedBy: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const partnerId = `P-${Date.now()}`;
@@ -81,6 +84,7 @@ export const createPartner = mutation({
 
         const id = await ctx.db.insert("partners", {
             ...args,
+            role: args.role || "master",
             partnerId,
             createdAt,
         });

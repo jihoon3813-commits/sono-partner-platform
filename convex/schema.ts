@@ -26,6 +26,7 @@ export default defineSchema({
         status: v.string(), // 'active', 'inactive'
         parentPartnerId: v.optional(v.string()),
         parentPartnerName: v.optional(v.string()),
+        role: v.optional(v.string()), // 'master', 'tm'
         createdAt: v.string(),
         approvedAt: v.optional(v.string()),
         approvedBy: v.optional(v.string()),
