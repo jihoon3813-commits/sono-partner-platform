@@ -5,6 +5,54 @@ import * as XLSX from "xlsx";
 import { Partner } from "@/lib/types";
 import { nowKST } from "../../../convex/utils";
 
+// 날짜 포맷 표준화 (Excel 시리얼 번호 및 다양한 포맷 지원)
+const normalizeDate = (val: string | number | undefined): string => {
+    if (!val) return "";
+    const strVal = String(val).trim();
+    if (!strVal) return "";
+    
+    // Excel 시리얼 번호 형식 (예: 46106)
+    const serial = parseFloat(strVal);
+    if (!isNaN(serial) && serial > 30000 && serial < 60000) {
+        const date = new Date(Math.round((serial - 25569) * 86400 * 1000));
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}${mm}${dd}`;
+    }
+    
+    // 숫자만 남기기 (예: 2026-06-11 -> 20260611)
+    const clean = strVal.replace(/[^0-9]/g, '');
+    if (clean.length === 8) {
+        return clean;
+    }
+    
+    // 일반 날짜 문자열 변환 시도
+    try {
+        const d = new Date(strVal);
+        if (!isNaN(d.getTime())) {
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}${mm}${dd}`;
+        }
+    } catch {
+        // ignore
+    }
+    
+    return strVal;
+};
+
+// 화면 표시용 날짜 포맷 (YYYYMMDD -> YYYY-MM-DD)
+const formatDateForDisplay = (val: string | undefined): string => {
+    if (!val) return "-";
+    const strVal = String(val).trim();
+    if (strVal.length === 8 && /^\d{8}$/.test(strVal)) {
+        return `${strVal.substring(0, 4)}-${strVal.substring(4, 6)}-${strVal.substring(6, 8)}`;
+    }
+    return strVal;
+};
+
     // 메모 모달 컴포넌트
     function RetentionMemoModal({
         customerName,
@@ -102,7 +150,16 @@ import { nowKST } from "../../../convex/utils";
     }
 
     export default function RetentionManagement({ isAdmin = false, partnerId, partners = [] }: RetentionManagementProps) {
-        const records = useQuery(api.retention.getRetentionRecords, { partnerId: isAdmin ? "admin" : partnerId });
+        const rawRecords = useQuery(api.retention.getRetentionRecords, { partnerId: isAdmin ? "admin" : partnerId });
+        
+        const records = useMemo(() => {
+            if (!rawRecords) return undefined;
+            return rawRecords.map(r => ({
+                ...r,
+                joinDate: normalizeDate(r.joinDate)
+            }));
+        }, [rawRecords]);
+
         const availableIdNos = useQuery(api.retention.getAllAvailableIdNos);
         const mappings = useQuery(api.retention.getPartnerMappings);
 
@@ -141,7 +198,7 @@ import { nowKST } from "../../../convex/utils";
                 const formattedRecords = rows.map(row => ({
                     certNo: String(row[0] || ""),
                     memberNo: String(row[1] || ""),
-                    joinDate: String(row[2] || ""),
+                    joinDate: normalizeDate(row[2]),
                     customerName: String(row[3] || ""),
                     birth: String(row[4] || ""),
                     phone: String(row[5] || ""),
@@ -150,7 +207,7 @@ import { nowKST } from "../../../convex/utils";
                     b2bCompany: String(row[9] || ""),
                     paymentStatus: String(row[10] || ""),
                     modelName: String(row[11] || ""),
-                    transferDate: String(row[12] || ""),
+                    transferDate: normalizeDate(row[12]),
                     paymentMethod: String(row[13] || ""),
                     cancelStatus: String(row[14] || ""),
                     approvalStatus: String(row[15] || ""),
@@ -372,7 +429,7 @@ import { nowKST } from "../../../convex/utils";
 
                 const dataToExport = filteredRecords.map(r => ({
                     "회원번호": r.memberNo,
-                    "가입일자": r.joinDate,
+                    "가입일자": formatDateForDisplay(r.joinDate),
                     "고객명": r.customerName,
                     "생년월일": r.birth,
                     "휴대전화": r.phone,
@@ -789,7 +846,7 @@ import { nowKST } from "../../../convex/utils";
                                                                 <span className={isDuplicate ? "ml-4" : ""}>{r.memberNo}</span>
                                                             </div>
                                                         </td>
-                                                        <td className="px-3 py-4 text-[11px] text-gray-500 text-center border-b border-gray-50">{r.joinDate}</td>
+                                                        <td className="px-3 py-4 text-[11px] text-gray-500 text-center border-b border-gray-50">{formatDateForDisplay(r.joinDate)}</td>
                                                         <td className="px-3 py-4 text-sm font-black text-sono-dark text-center border-b border-gray-50">{r.customerName}</td>
                                                         <td className="px-3 py-4 text-[11px] text-gray-400 text-center border-b border-gray-50">{r.birth}</td>
                                                         <td className="px-3 py-4 text-[11px] text-gray-400 text-center border-b border-gray-50">{r.phone}</td>
