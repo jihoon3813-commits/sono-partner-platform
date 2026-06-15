@@ -161,23 +161,26 @@ export default function CustomerManagement({
 
         // Search Match (Defensive)
         const name = (app.customerName || "").toLowerCase();
+        const cleanName = name.replace(/\s+/g, "");
         const phone = (app.customerPhone || "");
+        const cleanPhone = phone.replace(/\s+/g, "");
         const pName = (app.partnerName || "").toLowerCase();
         const pId = (app.partnerId || "").toLowerCase();
         const sTerm = (searchTerm || "").toLowerCase().trim();
+        const cleanSTerm = sTerm.replace(/\s+/g, "");
         
         // Wildcard search support (e.g., 김*훈)
-        let nameMatch = name.includes(sTerm);
-        if (sTerm.includes('*') && sTerm.length >= 2) {
-            const parts = sTerm.split('*');
+        let nameMatch = cleanName.includes(cleanSTerm);
+        if (cleanSTerm.includes('*') && cleanSTerm.length >= 2) {
+            const parts = cleanSTerm.split('*');
             if (parts.length === 2) {
                 const start = parts[0];
                 const end = parts[1];
-                nameMatch = name.startsWith(start) && name.endsWith(end);
+                nameMatch = cleanName.startsWith(start) && cleanName.endsWith(end);
             }
         }
 
-        const searchMatch = nameMatch || phone.includes(searchTerm) || pName.includes(sTerm) || pId.includes(sTerm);
+        const searchMatch = nameMatch || cleanPhone.includes(cleanSTerm) || pName.includes(sTerm) || pId.includes(sTerm);
         if (!searchMatch) return false;
 
         // Date Filter
