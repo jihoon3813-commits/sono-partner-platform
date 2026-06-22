@@ -283,7 +283,7 @@ export default function Happy450Content({
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#f59e0b] text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-lg whitespace-nowrap z-10">연회비 가장 저렴</div>
                                     <div className="aspect-[1.58/1] bg-gray-50 rounded-2xl mb-8 flex items-center justify-center overflow-hidden">
                                         <img 
-                                            src="https://res.cloudinary.com/dx7l09wwu/image/upload/v1777597781/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_KB%EC%B9%B4%EB%93%9C_ffyvb2.png" 
+                                            src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097491/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_KB%EC%B9%B4%EB%93%9C_ffyvb2_zql90f.png" 
                                             alt="소노아임레디 KB국민카드"
                                             className="w-full h-full object-contain p-2"
                                         />
@@ -336,7 +336,7 @@ export default function Happy450Content({
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-lg whitespace-nowrap z-10">빠른 신청(전용번호)</div>
                                     <div className="aspect-[1.58/1] bg-gray-50 rounded-2xl mb-8 flex items-center justify-center overflow-hidden">
                                         <img 
-                                            src="https://res.cloudinary.com/dx7l09wwu/image/upload/v1777597782/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_%ED%94%8C%EB%9F%AC%EC%8A%A4_%ED%95%98%EB%82%98%EC%B9%B4%EB%93%9C_nyopom.png" 
+                                            src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097508/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_%ED%94%8C%EB%9F%AC%EC%8A%A4_%ED%95%98%EB%82%98%EC%B9%B4%EB%93%9C_nyopom_delgx0.png" 
                                             alt="소노아임레디 플러스 하나카드"
                                             className="w-full h-full object-contain p-2"
                                         />
@@ -389,7 +389,7 @@ export default function Happy450Content({
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-sono-primary text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-lg whitespace-nowrap z-10">최대 캐시백</div>
                                     <div className="aspect-[1.58/1] bg-gray-50 rounded-2xl mb-8 flex items-center justify-center overflow-hidden">
                                         <img 
-                                            src="https://res.cloudinary.com/dx7l09wwu/image/upload/v1777597782/%EC%83%81%EC%A1%B0%EC%97%94%EB%A1%9C%EC%B9%B4_%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94__%EC%B9%B4%EB%93%9C_zn324u.png" 
+                                            src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097527/%EC%83%81%EC%A1%B0%EC%97%94%EB%A1%9C%EC%B9%B4_%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94__%EC%B9%B4%EB%93%9C_zn324u_ih9agw.png" 
                                             alt="상조엔로카 소노아임레디"
                                             className="w-full h-full object-contain p-2"
                                         />

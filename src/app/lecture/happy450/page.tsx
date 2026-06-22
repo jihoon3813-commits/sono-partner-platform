@@ -236,7 +236,7 @@ export default function Happy450LecturePage() {
                                     ],
                                     fee: "국내외겸용 15,000원",
                                     phone: "1899-0077",
-                                    img: "https://res.cloudinary.com/dx7l09wwu/image/upload/v1777597781/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_KB%EC%B9%B4%EB%93%9C_ffyvb2.png"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097491/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_KB%EC%B9%B4%EB%93%9C_ffyvb2_zql90f.png"
                                 },
                                 {
                                     tag: "빠른 신청(전용번호)",
@@ -254,7 +254,7 @@ export default function Happy450LecturePage() {
                                     ],
                                     fee: "국내외겸용 20,000원",
                                     phone: "1800-0672",
-                                    img: "https://res.cloudinary.com/dx7l09wwu/image/upload/v1777597782/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_%ED%94%8C%EB%9F%AC%EC%8A%A4_%ED%95%98%EB%82%98%EC%B9%B4%EB%93%9C_nyopom.png"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097508/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_%ED%94%8C%EB%9F%AC%EC%8A%A4_%ED%95%98%EB%82%98%EC%B9%B4%EB%93%9C_nyopom_delgx0.png"
                                 },
                                 {
                                     tag: "최대 캐시백",
@@ -273,7 +273,7 @@ export default function Happy450LecturePage() {
                                     ],
                                     fee: "국내외겸용 20,000원",
                                     phone: "1588-8100",
-                                    img: "https://res.cloudinary.com/dx7l09wwu/image/upload/v1777597782/%EC%83%81%EC%A1%B0%EC%97%94%EB%A1%9C%EC%B9%B4_%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94__%EC%B9%B4%EB%93%9C_zn324u.png"
+                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097527/%EC%83%81%EC%A1%B0%EC%97%94%EB%A1%9C%EC%B9%B4_%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94__%EC%B9%B4%EB%93%9C_zn324u_ih9agw.png"
                                 }
                             ].map((card, i) => (
                                 <div key={i} className="bg-white rounded-[48px] p-8 shadow-xl border border-white flex flex-col relative overflow-hidden group">
@@ -687,10 +687,10 @@ export default function Happy450LecturePage() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     {[
-                                        "https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914664/sono-img-1_nf9jij.jpg",
-                                        "https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914672/sono-img-2_wuo9ty.jpg",
-                                        "https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914676/sono-img-3_jaq9py.jpg",
-                                        "https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914677/sono-img-4_ujvpnt.jpg"
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100408/b8c95695-4612-4ee8-b614-01894c3f08e8.png",
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100530/d5160f49-4fe1-41bd-9ef8-871fa8d472b0.png",
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100600/a8924d28-257c-44df-9257-abf7b62b6cc0.png",
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100622/4616f1d3-7eba-4742-bd43-c34a880e68c4.png"
                                     ].map((img, idx) => (
                                         <div key={idx} className="rounded-2xl overflow-hidden h-56">
                                             <img src={img} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" alt={`Resort ${idx}`} />
@@ -708,14 +708,17 @@ export default function Happy450LecturePage() {
                                     </div>
                                     <p className="text-sono-gold font-black text-lg">오션월드, 비발디파크 등 최대 35% 할인</p>
                                 </div>
-                                <div className="grid grid-cols-1 gap-3">
-                                    <div className="h-56 rounded-2xl overflow-hidden">
-                                        <img src="https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914705/benefit_list_bg02_nqr8hr.jpg" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" alt="Leisure 1" />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-3 h-56">
-                                        <img src="https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914708/benefit_list_bg03_cehqc0.jpg" className="w-full h-full object-cover rounded-2xl hover:scale-110 transition-transform duration-500" alt="Leisure 2" />
-                                        <img src="https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914714/benefit_list_bg04_ifzhw9.jpg" className="w-full h-full object-cover rounded-2xl hover:scale-110 transition-transform duration-500" alt="Leisure 3" />
-                                    </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {[
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100675/17d4cfae-4596-447e-af22-34c188ca326a.png",
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100679/43f9dbaa-c130-42bc-8a9f-78f34788b3a2.png",
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100683/7d658bc1-8908-4570-bcbb-0fb7e2f0ad50.png",
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782101030/c1e90898-b402-4d79-a3a3-93d3ff17ac4f.png"
+                                    ].map((img, idx) => (
+                                        <div key={idx} className="rounded-2xl overflow-hidden h-56">
+                                            <img src={img} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" alt={`Leisure ${idx}`} />
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>

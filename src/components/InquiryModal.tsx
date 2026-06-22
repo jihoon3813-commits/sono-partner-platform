@@ -362,7 +362,7 @@ export default function InquiryModal({
                         {isPremiumMallMode && (
                             <div className="text-center space-y-4 mb-4">
                                 <img 
-                                    src="https://res.cloudinary.com/dx7l09wwu/image/upload/v1778639752/KakaoTalk_20230718_144359973_gnyomv.png" 
+                                    src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781675975/logo_ewkbpd.png" 
                                     alt="Promotional Logo" 
                                     className="mx-auto max-w-[200px] h-auto"
                                 />

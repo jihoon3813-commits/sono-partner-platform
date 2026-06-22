@@ -78,6 +78,65 @@ const ApplianceGridSlide = ({ unit, monthly, total, service, appliances }: { uni
         </div>
     );
 };
+
+const fallbackAppliances = [
+    { brand: "LG전자", name: "LG 오브제컬렉션 워시타워 (세탁기 25kg + 건조기 21kg)", model: "W20GEE", image: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096655/fileView_2_xwfg3z.jpg" },
+    { brand: "삼성전자", name: "삼성 비스포크 냉장고 4도어 (875L)", model: "RF85B9111AP", image: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096744/fileView_3_k2et3b.jpg" },
+    { brand: "LG전자", name: "LG 트롬 오브제컬렉션 스타일러", model: "SC5GMR80H", image: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096759/fileView_1_hlf0pp.jpg" },
+    { brand: "삼성전자", name: "삼성 Neo QLED 4K TV (75인치)", model: "KQ75QNB85AFXKR", image: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097134/photo_best02_product01_n3u0hk.jpg" },
+    { brand: "LG전자", name: "LG 스탠바이미 Go (27인치)", model: "27LX5QKNA", image: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097148/photo_best02_product02_cwq9zm.jpg" },
+    { brand: "삼성전자", name: "삼성 비스포크 제트 봇 AI 로봇청소기", model: "VR50B9563AE", image: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097278/photo_best02_product04_btsohx.jpg" },
+    { brand: "LG전자", name: "LG 디오스 오브제컬렉션 식기세척기", model: "DUBJ4EL", image: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097295/photo_best02_product07_lkcnml.jpg" },
+    { brand: "삼성전자", name: "삼성 무풍에어컨 갤러리 (2in1)", model: "AF17B7934GZN", image: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097313/photo_best02_product10_xkyzcb.jpg" }
+];
+
+const ApplianceShortcutSlide = ({ allAppliances }: { allAppliances: Appliance[] }) => {
+    const displayList = allAppliances && allAppliances.filter(p => p.image).length >= 4
+        ? allAppliances.filter(p => p.image).slice(0, 8)
+        : fallbackAppliances;
+
+    return (
+        <div className="w-full h-full bg-[#0f172a] text-white p-8 md:p-12 flex flex-col justify-center overflow-y-auto">
+            <div className="text-center mb-8 shrink-0">
+                <span className="bg-[#3b82f6] text-white px-5 py-1.5 rounded-full text-xs font-black tracking-widest mb-3 inline-block uppercase">
+                    Premium Hybrid Plan
+                </span>
+                <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-3">
+                    스마트케어 최신 프리미엄 가전 라인업
+                </h2>
+                <p className="text-white/50 text-base md:text-lg font-medium max-w-3xl mx-auto break-keep">
+                    삼성전자, LG전자 등 국내 최고의 프리미엄 가전을 렌탈료 부담 없이 자유롭게 매칭해 드립니다. 아래의 대표 제품 외에 더욱 다양한 최신 스마트케어 가전을 확인해보세요.
+                </p>
+            </div>
+
+            <div className="w-full max-w-[1300px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 shrink">
+                {displayList.map((app, idx) => (
+                    <div key={idx} className="bg-white/5 border border-white/10 rounded-[24px] p-4 flex flex-col h-[180px] hover:bg-white/10 hover:border-white/20 transition-all duration-300 relative group overflow-hidden shadow-lg backdrop-blur-sm">
+                        <div className="h-20 w-full mb-3 flex items-center justify-center p-2 rounded-xl bg-white/5 group-hover:bg-white/10 transition-colors shrink-0">
+                            <img src={app.image} alt={app.name} className="max-h-full max-w-full object-contain filter drop-shadow-lg group-hover:scale-105 transition-transform duration-300" />
+                        </div>
+                        <div className="flex flex-col flex-grow text-left">
+                            <span className="text-[9px] font-black text-blue-400 uppercase tracking-wider mb-0.5">{app.brand}</span>
+                            <h3 className="text-xs font-black text-white line-clamp-2 leading-snug mb-1">{app.name}</h3>
+                            <p className="text-[9px] text-white/40 mt-auto truncate">모델명: {app.model}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="text-center mt-2 shrink-0">
+                <button 
+                    onClick={() => window.open("https://sono-partners.com/p/neora/products/smartcare", "_blank")}
+                    className="relative z-20 bg-gradient-to-r from-blue-500 to-[#3b82f6] text-white px-12 py-5 rounded-[24px] font-black text-lg shadow-[0_0_35px_rgba(59,130,246,0.3)] hover:scale-[1.03] hover:from-blue-600 hover:to-blue-500 transition-all flex items-center gap-3 mx-auto group border border-blue-400/20"
+                >
+                    <span>실시간 가전제품 리스트 & 스펙 보러가기</span>
+                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
+                </button>
+            </div>
+        </div>
+    );
+};
+
 export default function SmartCareLecturePage() {
     const [modalUrl, setModalUrl] = useState<string | null>(null);
     const [showPromoModal, setShowPromoModal] = useState<boolean>(false);
@@ -186,41 +245,129 @@ export default function SmartCareLecturePage() {
         {
             id: "plan-options",
             content: (
-                <div className="h-full bg-[#191f28] text-white p-16 flex flex-col justify-center">
-                    <div className="text-center mb-16">
-                        <h2 className="text-5xl font-black tracking-tighter mb-4">다양한 라이프스타일에 맞춘 구성</h2>
+                <div className="h-full bg-[#0b0f19] text-white p-8 md:p-12 flex flex-col justify-center overflow-y-auto">
+                    <div className="text-center mb-8 shrink-0">
+                        <h2 className="text-5xl font-black tracking-tighter mb-2">다양한 라이프스타일에 맞춘 구성</h2>
                         <p className="text-white/50 text-xl font-medium">원하는 구좌 수를 선택하고 최신 가전을 골라보세요.</p>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-6 max-w-[1200px] mx-auto w-full px-4">
-                        {[
-                            { name: "스마트케어330", unit: "2", price: "33,000", target: "1인 가구 / 소형 가전" },
-                            { name: "스마트케어330", unit: "3", price: "49,500", target: "신혼 부부 / 중형 가전" },
-                            { name: "스마트케어330", unit: "4", price: "66,000", target: "일반 가전 / 대형 가전", best: true },
-                            { name: "스마트케어330", unit: "6", price: "99,000", target: "대가족 / 프리미엄 가전 패키지" },
-                        ].map((plan, i) => (
-                            <div key={i} className={`p-8 rounded-[32px] border transition-all ${plan.best ? "bg-[#3b82f6] border-[#3b82f6] shadow-2xl scale-105 z-10" : "bg-[#202632] border-[#2d3442] hover:bg-[#2a303c] mt-4 mb-4"}`}>
-                                {plan.best ? (
-                                    <span className="bg-white text-[#3b82f6] text-[10px] font-black px-4 py-1.5 rounded-full mb-6 inline-block">BEST CHOICE</span>
-                                ) : (
-                                    <div className="h-[32px] mb-6 hidden md:block opacity-0"><span className="px-4 py-1.5 inline-block">SPACER</span></div>
-                                )}
-                                <h3 className="font-black mb-2 tracking-tighter">
-                                    <span className="text-sm opacity-70 block mb-2">{plan.name}</span>
-                                    <span className="text-4xl">{plan.unit}구좌</span>
-                                </h3>
-                                <p className="text-white/60 text-xs font-bold mb-10">{plan.target}</p>
-                                <div className="mb-12">
-                                    <span className="text-5xl font-black">{plan.price}</span>
-                                    <span className="text-xl opacity-60 ml-1">원~</span>
+                    <div className="flex flex-col gap-6 max-w-[1250px] mx-auto w-full px-4 shrink">
+                        {/* Row 1: 3 cards */}
+                        <div className="flex flex-wrap justify-center gap-6">
+                            {[
+                                { name: "스마트케어 4더블", tagBg: "bg-[#ff6b00]", unit: "2", price: "55,200", target: "1인 가구 / 소형 가전", best: false },
+                                { name: "스마트케어 5", tagBg: "bg-[#3b82f6]", unit: "1", price: "33,000", target: "1인 가구 / 소형 가전", best: false },
+                                { name: "스마트케어 5더블", tagBg: "bg-[#3b82f6]", unit: "2", price: "66,000", target: "신혼 부부 / 중형 가전", best: true },
+                            ].map((plan, i) => (
+                                <div key={i} className={`w-full sm:w-[340px] p-6 rounded-[32px] border-2 transition-all bg-[#131924] ${plan.best ? "border-[#3b82f6] shadow-[0_0_25px_rgba(59,130,246,0.35)] scale-105 z-10" : "border-[#202632] hover:border-white/10"}`}>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className={`${plan.tagBg} text-white text-[11px] font-black px-3 py-1 rounded-md inline-block`}>
+                                            {plan.name}
+                                        </span>
+                                        {plan.best && (
+                                            <span className="bg-[#3b82f6] text-white text-[9px] font-black px-3 py-1 rounded-full flex items-center gap-0.5 shadow-lg shadow-blue-500/20">
+                                                ★ BEST
+                                            </span>
+                                        )}
+                                    </div>
+                                    <h3 className="font-black mb-1 text-left">
+                                        <span className="text-3xl text-white font-black">{plan.unit}</span>
+                                        <span className="text-xl text-white/90 ml-0.5 font-bold">구좌</span>
+                                    </h3>
+                                    <p className="text-white/60 text-xs font-bold mb-6 text-left">{plan.target}</p>
+                                    <div className="mb-6 text-left">
+                                        <span className="text-4xl font-black text-white">{plan.price}</span>
+                                        <span className="text-lg opacity-60 ml-1">원~</span>
+                                    </div>
+
+                                    {/* 납입 구조 Table */}
+                                    <div className="border-y border-white/10 py-4 my-6 text-xs space-y-3 opacity-90 text-left">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-white/50 font-bold">납입회차</span>
+                                            <span className="font-black text-white/90">1~180회</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-white/50 font-bold">거치기간</span>
+                                            <span className="font-black text-white/90">181~200회</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-[#3b82f6] font-black">
+                                            <span>만기회차</span>
+                                            <span>200회</span>
+                                        </div>
+                                    </div>
+
+                                    <ul className="space-y-3 text-xs font-bold text-left">
+                                        <li className="flex items-center gap-2 text-white/90">
+                                            <span className="text-[#3b82f6] font-black">✓</span> 가전 렌탈료 전액 지원 혜택
+                                        </li>
+                                        <li className="flex items-center gap-2 text-white/90">
+                                            <span className="text-[#3b82f6] font-black">✓</span> 멤버십 즉시 이용
+                                        </li>
+                                        <li className="flex items-center gap-2 text-white/90">
+                                            <span className="text-[#3b82f6] font-black">✓</span> 100% 만기 환급
+                                        </li>
+                                    </ul>
                                 </div>
-                                <ul className="space-y-4 opacity-80 text-sm font-bold">
-                                    <li className="flex items-center gap-2">✓ 가전 렌탈료 전액 지원 혜택</li>
-                                    <li className="flex items-center gap-2">✓ 멤버십 즉시 이용</li>
-                                    <li className="flex items-center gap-2">✓ 100% 만기 환급</li>
-                                </ul>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+
+                        {/* Row 2: 2 cards */}
+                        <div className="flex flex-wrap justify-center gap-6">
+                            {[
+                                { name: "스마트케어 5트리플", tagBg: "bg-[#3b82f6]", unit: "3", price: "99,000", target: "일반 가전 / 대형 가전", best: false },
+                                { name: "스마트케어 5쿼드", tagBg: "bg-[#3b82f6]", unit: "4", price: "132,000", target: "대가족 / 프리미엄 가전 패키지", best: true }
+                            ].map((plan, i) => (
+                                <div key={i} className={`w-full sm:w-[340px] p-6 rounded-[32px] border-2 transition-all bg-[#131924] ${plan.best ? "border-[#3b82f6] shadow-[0_0_25px_rgba(59,130,246,0.35)] scale-105 z-10" : "border-[#202632] hover:border-white/10"}`}>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className={`${plan.tagBg} text-white text-[11px] font-black px-3 py-1 rounded-md inline-block`}>
+                                            {plan.name}
+                                        </span>
+                                        {plan.best && (
+                                            <span className="bg-[#3b82f6] text-white text-[9px] font-black px-3 py-1 rounded-full flex items-center gap-0.5 shadow-lg shadow-blue-500/20">
+                                                ★ BEST
+                                            </span>
+                                        )}
+                                    </div>
+                                    <h3 className="font-black mb-1 text-left">
+                                        <span className="text-3xl text-white font-black">{plan.unit}</span>
+                                        <span className="text-xl text-white/90 ml-0.5 font-bold">구좌</span>
+                                    </h3>
+                                    <p className="text-white/60 text-xs font-bold mb-6 text-left">{plan.target}</p>
+                                    <div className="mb-6 text-left">
+                                        <span className="text-4xl font-black text-white">{plan.price}</span>
+                                        <span className="text-lg opacity-60 ml-1">원~</span>
+                                    </div>
+
+                                    {/* 납입 구조 Table */}
+                                    <div className="border-y border-white/10 py-4 my-6 text-xs space-y-3 opacity-90 text-left">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-white/50 font-bold">납입회차</span>
+                                            <span className="font-black text-white/90">1~180회</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-white/50 font-bold">거치기간</span>
+                                            <span className="font-black text-white/90">181~200회</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-[#3b82f6] font-black">
+                                            <span>만기회차</span>
+                                            <span>200회</span>
+                                        </div>
+                                    </div>
+
+                                    <ul className="space-y-3 text-xs font-bold text-left">
+                                        <li className="flex items-center gap-2 text-white/90">
+                                            <span className="text-[#3b82f6] font-black">✓</span> 가전 렌탈료 전액 지원 혜택
+                                        </li>
+                                        <li className="flex items-center gap-2 text-white/90">
+                                            <span className="text-[#3b82f6] font-black">✓</span> 멤버십 즉시 이용
+                                        </li>
+                                        <li className="flex items-center gap-2 text-white/90">
+                                            <span className="text-[#3b82f6] font-black">✓</span> 100% 만기 환급
+                                        </li>
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             )
@@ -240,7 +387,7 @@ export default function SmartCareLecturePage() {
                     {[
                         {
                             name: "[롯데] LOCA X BS렌탈 롯데카드",
-                            img: "https://res.cloudinary.com/dx7l09wwu/image/upload/v1777597782/%EC%83%81%EC%A1%B0%EC%97%94%EB%A1%9C%EC%B9%B4_%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94__%EC%B9%B4%EB%93%9C_zn324u.png", // Using a placeholder that looks like Lotte card
+                            img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782102356/e338c84c-b065-425f-9db6-229f792a8bf5.png", // Using a placeholder that looks like Lotte card
                             benefit: "카드 발급 월 기준 전월실적 무관 2회차까지 월 10,000원 캐시백",
                             fee: "국내/국외 전용 동일 20,000원",
                             apply: "콜센터 - 1588 - 8100",
@@ -254,7 +401,7 @@ export default function SmartCareLecturePage() {
                         },
                         {
                             name: "[하나] BS렌탈 플러스 하나카드",
-                            img: "https://res.cloudinary.com/dx7l09wwu/image/upload/v1777597782/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_%ED%94%8C%EB%9F%AC%EC%8A%A4_%ED%95%98%EB%82%98%EC%B9%B4%EB%93%9C_nyopom.png", // Using a placeholder that looks like Hana card
+                            img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782102346/f73500a9-516b-4c01-94fb-32f2b1cfd628.png", // Using a placeholder that looks like Hana card
                             benefit: "카드 발급 월 기준 전월실적 무관 2회차까지 월 13,000원 할인",
                             fee: "국내/국외 전용 동일 15,000원[VISA]",
                             apply: "콜센터 - 1800 - 1111",
@@ -336,7 +483,7 @@ export default function SmartCareLecturePage() {
                     {[
                         {
                             name: "[하나] 소노아임레디 플러스 하나카드",
-                            img: "https://res.cloudinary.com/dx7l09wwu/image/upload/v1777597782/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_%ED%94%8C%EB%9F%AC%EC%8A%A4_%ED%95%98%EB%82%98%EC%B9%B4%EB%93%9C_nyopom.png",
+                            img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097508/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_%ED%94%8C%EB%9F%AC%EC%8A%A4_%ED%95%98%EB%82%98%EC%B9%B4%EB%93%9C_nyopom_delgx0.png",
                             benefit: "카드 발급 월 기준 전월실적 무관 2회차까지 월 12,000원 할인",
                             fee: "국내/국외 전용 동일 20,000원 [VISA]",
                             apply: "콜센터 - 1800-0672 | 카드신청URL 접속 QR코드",
@@ -349,7 +496,7 @@ export default function SmartCareLecturePage() {
                         },
                         {
                             name: "[롯데] 소노아임레디 [상조엔로카] 롯데카드",
-                            img: "https://res.cloudinary.com/dx7l09wwu/image/upload/v1777597782/%EC%83%81%EC%A1%B0%EC%97%94%EB%A1%9C%EC%B9%B4_%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94__%EC%B9%B4%EB%93%9C_zn324u.png",
+                            img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097527/%EC%83%81%EC%A1%B0%EC%97%94%EB%A1%9C%EC%B9%B4_%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94__%EC%B9%B4%EB%93%9C_zn324u_ih9agw.png",
                             benefit: "카드 발급 월 기준 전월실적 무관 2회차까지 월 15,000원 캐시백",
                             fee: "국내/국외 전용 동일 20,000원",
                             apply: "콜센터 - 1588-8100 | 카드신청URL 접속 QR코드",
@@ -363,7 +510,7 @@ export default function SmartCareLecturePage() {
                         },
                         {
                             name: "[국민] 소노아임레디 KB 국민카드",
-                            img: "https://res.cloudinary.com/dx7l09wwu/image/upload/v1777597781/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_KB%EC%B9%B4%EB%93%9C_ffyvb2.png",
+                            img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097491/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_KB%EC%B9%B4%EB%93%9C_ffyvb2_zql90f.png",
                             benefit: "카드 발급 월 기준 전월실적 무관 2회차까지 월 12,000원 할인",
                             fee: "국내/국외 전용 동일 15,000원",
                             apply: "콜센터 - 1899-0077 | 카드신청URL 접속 QR코드",
@@ -434,16 +581,8 @@ export default function SmartCareLecturePage() {
             )
         },
         {
-            id: "smartcare-products-2",
-            content: <ApplianceGridSlide unit={2} monthly="33,000원" total="660만원" service="2회" appliances={appliances2} />
-        },
-        {
-            id: "smartcare-products-4",
-            content: <ApplianceGridSlide unit={4} monthly="66,000원" total="1,320만원" service="4회" appliances={appliances4} />
-        },
-        {
-            id: "smartcare-products-6",
-            content: <ApplianceGridSlide unit={6} monthly="99,000원" total="1,980만원" service="6회" appliances={appliances6} />
+            id: "smartcare-products-shortcut",
+            content: <ApplianceShortcutSlide allAppliances={allAppliances} />
         },
         {
             id: "funeral-service-combined",
@@ -797,10 +936,10 @@ export default function SmartCareLecturePage() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     {[
-                                        "https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914664/sono-img-1_nf9jij.jpg",
-                                        "https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914672/sono-img-2_wuo9ty.jpg",
-                                        "https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914676/sono-img-3_jaq9py.jpg",
-                                        "https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914677/sono-img-4_ujvpnt.jpg"
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100408/b8c95695-4612-4ee8-b614-01894c3f08e8.png",
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100530/d5160f49-4fe1-41bd-9ef8-871fa8d472b0.png",
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100600/a8924d28-257c-44df-9257-abf7b62b6cc0.png",
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100622/4616f1d3-7eba-4742-bd43-c34a880e68c4.png"
                                     ].map((img, idx) => (
                                         <div key={idx} className="rounded-2xl overflow-hidden h-56">
                                             <img src={img} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" alt={`Resort ${idx}`} />
@@ -818,14 +957,17 @@ export default function SmartCareLecturePage() {
                                     </div>
                                     <p className="text-sono-gold font-black text-lg">오션월드, 비발디파크 등 최대 35% 할인</p>
                                 </div>
-                                <div className="grid grid-cols-1 gap-3">
-                                    <div className="h-56 rounded-2xl overflow-hidden">
-                                        <img src="https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914705/benefit_list_bg02_nqr8hr.jpg" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" alt="Leisure 1" />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-3 h-56">
-                                        <img src="https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914708/benefit_list_bg03_cehqc0.jpg" className="w-full h-full object-cover rounded-2xl hover:scale-110 transition-transform duration-500" alt="Leisure 2" />
-                                        <img src="https://res.cloudinary.com/dx7l09wwu/image/upload/v1778914714/benefit_list_bg04_ifzhw9.jpg" className="w-full h-full object-cover rounded-2xl hover:scale-110 transition-transform duration-500" alt="Leisure 3" />
-                                    </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {[
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100675/17d4cfae-4596-447e-af22-34c188ca326a.png",
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100679/43f9dbaa-c130-42bc-8a9f-78f34788b3a2.png",
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782100683/7d658bc1-8908-4570-bcbb-0fb7e2f0ad50.png",
+                                        "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782101030/c1e90898-b402-4d79-a3a3-93d3ff17ac4f.png"
+                                    ].map((img, idx) => (
+                                        <div key={idx} className="rounded-2xl overflow-hidden h-56">
+                                            <img src={img} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" alt={`Leisure ${idx}`} />
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -962,7 +1104,7 @@ export default function SmartCareLecturePage() {
                                 <tbody>
                                     {[
                                         { title: "납입 구조", happy: "월 18,000원 × 250회\n(총 450만원 / 1구좌)", smart: "월 33,000원 × 200회\n(총 660만원 / 1구좌)", highlight: false },
-                                        { title: "가입 단위", happy: "1 ~ 3구좌 선택 가능", smart: "2, 4, 6구좌 다구좌 결합", highlight: false },
+                                        { title: "가입 단위", happy: "1 ~ 3구좌 선택 가능", smart: "1 ~ 4구좌 선택 가능", highlight: false },
                                         { title: "핵심 혜택", happy: "소노호텔앤리조트 멤버십 제공\n(객실/부대시설 특별 할인가)", smart: "최신 프리미엄 가전제품\n렌탈 비용 전액 지원", highlight: true },
                                         { title: "라이프 서비스", happy: "고품격 상조 및 전환 서비스\n(크루즈/골프/여행 등 자유 전환)", smart: "고품격 상조 및 전환 서비스\n(크루즈/골프/여행 등 자유 전환)", highlight: false },
                                         { title: "만기 혜택", happy: "만기 시 100% 전액 환급\n(서비스 미이용 시)", smart: "만기 시 100% 전액 환급\n(서비스 미이용 시)", highlight: false },
@@ -986,7 +1128,7 @@ export default function SmartCareLecturePage() {
             content: (
                 <div className="h-full bg-white flex flex-col items-center justify-center p-16 text-center">
                     <div className="mb-12">
-                        <img src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_B.png" className="h-12 grayscale opacity-50" />
+                        <img src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1782103566/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_BI_3_hoptu9.png" className="h-14 w-auto object-contain" />
                     </div>
                     <h2 className="text-6xl font-black text-sono-dark tracking-tighter mb-8">
                         가장 스마트한 선택,<br />
