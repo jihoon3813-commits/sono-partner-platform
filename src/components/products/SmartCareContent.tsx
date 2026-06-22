@@ -476,7 +476,7 @@ export default function SmartCareContent({
 
                                         {/* 납입/거치/만기 정보 표시 */}
                                         {(plan.paymentCount || plan.defermentPeriod || plan.maturityCount) && (
-                                            <div className={`mb-6 p-4.5 rounded-2xl text-[11px] font-bold flex flex-col gap-2.5 ${
+                                            <div className={`mb-6 p-5 rounded-2xl text-[11px] font-bold flex flex-col gap-2.5 ${
                                                 isBest 
                                                     ? "bg-[#3b82f6]/10 border border-[#3b82f6]/20 text-white/90" 
                                                     : "bg-white/[0.05] border border-white/10 text-white/85"
