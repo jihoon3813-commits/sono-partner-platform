@@ -158,9 +158,23 @@ export default function SmartCareContent({
         }
     };
 
-    // Use these for the new UI mapping
-    const allWithNewFormat = allAppliances;
-    const filteredWithNewFormat = filteredAppliances;
+    // Sort and filter appliances for display
+    const displayAppliances = (() => {
+        let list = [...filteredAppliances];
+        if (selectedPlanId === "") {
+            list.sort((a, b) => {
+                const slotsA = a.slotCount || 0;
+                const slotsB = b.slotCount || 0;
+                if (slotsB !== slotsA) {
+                    return slotsB - slotsA;
+                }
+                const orderA = a.order ?? 999;
+                const orderB = b.order ?? 999;
+                return orderA - orderB;
+            });
+        }
+        return list;
+    })();
 
     // Helper for promotion types/colors
     const getPromotionStyle = (promotionId?: string) => {
@@ -629,7 +643,7 @@ export default function SmartCareContent({
                         {/* 필터 시스템 */}
                         <div className="flex flex-col gap-4 md:gap-10">
                             {/* 1. 요금제 상품 필터 - 모달 슬라이드 적용 및 크기 축소 */}
-                            <div className="flex flex-nowrap md:justify-center gap-2 overflow-x-auto pb-4 no-scrollbar -mx-6 px-6 md:mx-0 md:px-0">
+                            <div className="flex flex-wrap justify-center gap-2 pb-4 px-4 md:px-0">
                                 <button
                                     onClick={() => { setSelectedPlanId(""); setSelectedCategory("전체"); }}
                                     className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap shadow-sm ${selectedPlanId === ""
@@ -677,7 +691,7 @@ export default function SmartCareContent({
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
-                                {(selectedPlanId === "" ? allWithNewFormat : filteredWithNewFormat).map((item, index) => {
+                                {displayAppliances.map((item, index) => {
                                     const promoStyle = getPromotionStyle(item.promotionId);
                                     const promotion = activePromotions.find(p => p._id === item.promotionId);
                                     
