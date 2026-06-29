@@ -614,24 +614,13 @@ export default function SmartCareContent({
                                                         </p>
                                                     </div>
 
-                                                    {/* 프로모션 카드에도 금액 표시 */}
-                                                    <div className="mb-4 md:mb-6 space-y-2">
-                                                        <div className="flex justify-between items-center px-1">
-                                                            <span className="text-gray-400 font-bold text-[9px] md:text-[10px]">월 납입금</span>
-                                                            <span className="text-sono-dark font-black text-xs md:text-sm">{item.monthlyPayment?.toLocaleString()}원</span>
-                                                        </div>
-                                                        <div className="flex flex-col md:flex-row md:justify-between md:items-center bg-white p-2 md:p-3 rounded-xl border border-sono-primary/10 gap-0.5">
-                                                            <span className="text-sono-primary font-black text-[9px] md:text-[10px] whitespace-nowrap">제휴카드 할인시</span>
-                                                            <span className="text-sono-primary font-black text-sm md:text-base leading-none">{item.cardDiscountPayment?.toLocaleString()}원</span>
-                                                        </div>
-                                                    </div>
 
                                                     <button
                                                         onClick={() => {
                                                             setPickedAppliance(item as any);
                                                             setIsModalOpen(true);
                                                         }}
-                                                        className={`w-full py-3 md:py-4 text-white rounded-xl md:rounded-2xl font-black text-[11px] md:text-sm transition-all shadow-lg ${promoStyle?.button || 'bg-sono-primary hover:bg-sono-dark shadow-sono-primary/20'}`}
+                                                        className={`w-full mt-auto py-3 md:py-4 text-white rounded-xl md:rounded-2xl font-black text-[11px] md:text-sm transition-all shadow-lg ${promoStyle?.button || 'bg-sono-primary hover:bg-sono-dark shadow-sono-primary/20'}`}
                                                     >
                                                         혜택 신청
                                                     </button>
@@ -786,28 +775,13 @@ export default function SmartCareContent({
                                                     </div>
                                                 )}
 
-                                                {/* Price Area - 모바일 2열 배치 대응 */}
-                                                <div className="mt-auto pt-4 md:pt-6 border-t border-gray-50">
-                                                    <div className="flex flex-col gap-2">
-                                                        <div className="flex justify-between items-center">
-                                                            <span className="text-gray-400 font-bold text-[9px] md:text-xs">월 납입금</span>
-                                                            <span className="text-sono-dark font-black text-xs md:text-lg">{item.monthlyPayment?.toLocaleString()}원</span>
-                                                        </div>
-                                                        <div className={`p-2 md:p-3 rounded-xl md:rounded-2xl ${promoStyle?.bg || 'bg-sono-primary/5'}`}>
-                                                            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-0.5">
-                                                                <span className={`font-black text-[9px] md:text-[11px] whitespace-nowrap ${promoStyle?.text || 'text-sono-primary'}`}>제휴카드 할인시</span>
-                                                                <span className={`font-black text-sm md:text-xl leading-none ${promoStyle?.text || 'text-sono-primary'}`}>{item.cardDiscountPayment?.toLocaleString()}원</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
 
                                                 <button
                                                     onClick={() => {
                                                         setPickedAppliance(item as any);
                                                         setIsModalOpen(true);
                                                     }}
-                                                    className={`w-full mt-6 py-4 bg-gray-50 text-gray-400 group-hover:text-white rounded-2xl font-black text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${
+                                                    className={`w-full mt-auto py-4 bg-gray-50 text-gray-400 group-hover:text-white rounded-2xl font-black text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${
                                                         isItemBest 
                                                             ? 'group-hover:bg-sono-gold group-hover:text-sono-dark font-black' 
                                                             : (promoStyle?.name === 'red' ? 'group-hover:bg-rose-600' : promoStyle?.name === 'blue' ? 'group-hover:bg-blue-600' : 'group-hover:bg-sono-dark')
