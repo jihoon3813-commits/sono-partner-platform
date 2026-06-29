@@ -377,7 +377,7 @@ export default function HomePage() {
                                     {[
                                         "삼성/LG 최신가전 렌탈금 전액 지원",
                                         "제휴몰 포인트 지급",
-                                        "납입금 100% 환급 (만기 납입 후 익월 해약 시)",
+                                        "납입금 100% 환급 (만기 후 익월 해약 시)",
                                         "4가지 플랜 (실속형~프리미엄)"
                                     ].map((text, i) => (
                                         <li key={i} className="flex items-center gap-3 text-white font-bold">
