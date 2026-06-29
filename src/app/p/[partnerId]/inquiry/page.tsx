@@ -448,8 +448,8 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                                                 
                                                 <p className="font-bold text-[#6b7684] mb-1">2. 개인정보 취급업무 위탁 안내</p>
                                                 <ul className="space-y-0.5 list-none pl-0">
-                                                    <li>▷ 취급을 위탁받는 자(수탁업체) : 라이프앤조이, {partner?.name || "파트너사"}</li>
-                                                    <li>▷ 업무내용 : {displayWorkContent} 상품 소개, 상담접수</li>
+                                                    <li>▷ 취급을 위탁받는 자(수탁업체) : 라이프앤조이, {partner?.name || "파트너사"}, (주)효성ITX</li>
+                                                    <li>▷ 업무내용 : {displayWorkContent} 상품 소개, 상담접수, 계약체결</li>
                                                 </ul>
                                             </>
                                         );
