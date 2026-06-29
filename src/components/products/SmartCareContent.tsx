@@ -528,6 +528,9 @@ export default function SmartCareContent({
                             <p className="section-subtitle max-w-2xl mx-auto mb-16 text-gray-500 font-medium">
                                 라이프 스타일에 딱 맞는 최신 가전을 선택해보세요.<br />
                                 렌탈료 전액 지원으로 부담 없이 시작할 수 있습니다.
+                                <span className="block mt-2 text-xs md:text-sm text-gray-400 font-normal">
+                                    (만기 후 익월 해약 시 또는 라이프서비스 사용 시)
+                                </span>
                             </p>
 
                         </div>
