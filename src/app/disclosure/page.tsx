@@ -16,11 +16,11 @@ export default function DisclosurePage() {
         },
         care4: {
             url: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782719913/%EC%8A%A4%EB%A7%88%ED%8A%B8%EC%BC%80%EC%96%B4_4_%ED%95%B4%EC%95%BD%ED%99%98%EA%B8%89%EA%B8%88_kkktpk.jpg",
-            title: "스마트케어 4 해약환급금 표"
+            title: "스마트케어 4 해약환급금표"
         },
         care5: {
             url: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782719912/%EC%8A%A4%EB%A7%88%ED%8A%B8%EC%BC%80%EC%96%B4_5_%ED%95%B4%EC%95%BD%ED%99%98%EA%B8%89%EA%B8%88_afo2dx.jpg",
-            title: "스마트케어 5 해약환급금 표"
+            title: "스마트케어 5 해약환급금표"
         }
     };
 
@@ -35,7 +35,7 @@ export default function DisclosurePage() {
                     <div className="text-center mb-12 animate-fade-in">
                         <span className="badge-primary mb-4 px-5 py-2">PUBLIC DISCLOSURE</span>
                         <h1 className="text-3xl md:text-4xl font-black text-sono-dark tracking-tight mb-4">
-                            중요정보 고시사항 및 해약환급금 표
+                            중요정보 고시사항 및 해약환급금표
                         </h1>
                         <p className="text-gray-500 font-bold max-w-2xl mx-auto break-keep text-sm md:text-base leading-relaxed">
                             할부거래법에 따른 소노아임레디 스마트케어 상품의 중요고시사항 및 해약환급금 기준 테이블입니다. 이미지 클릭 시 확대해서 보실 수 있습니다.
