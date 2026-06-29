@@ -48,16 +48,29 @@ export default function Footer({ partnerMode = false, productType }: FooterProps
                             <li><Link href="/partner-center" className="text-sm font-bold text-[#8b95a1] hover:text-sono-primary transition-colors">파트너 센터</Link></li>
                         </ul>
                     </div>
-                    {!partnerMode && (
-                        <div className="md:col-span-4">
-                            <h4 className="font-bold text-sono-dark mb-6">고객지원</h4>
+                    <div className="md:col-span-4">
+                        <h4 className="font-bold text-sono-dark mb-6">고객지원</h4>
+                        <ul className="space-y-4 mb-6">
+                            <li>
+                                <Link 
+                                    href="/disclosure" 
+                                    className="text-sm font-bold text-[#8b95a1] hover:text-sono-primary transition-colors flex items-center gap-1.5"
+                                >
+                                    <span>중요정보고시사항 및 환급금 표</span>
+                                    <svg className="w-3.5 h-3.5 text-[#adb5bd]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                </Link>
+                            </li>
+                        </ul>
+                        {!partnerMode && (
                             <div className="p-6 bg-[#f9fafb] rounded-[24px]">
                                 <p className="text-xs font-bold text-[#8b95a1] mb-2">파트너 제휴 문의</p>
                                 <p className="text-2xl font-bold text-sono-primary mb-1">1588-0883</p>
                                 <p className="text-xs font-medium text-[#adb5bd]">평일 09:00 - 18:00 (주말/공휴일 휴무)</p>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
 
                 <div className="mb-12 text-[11px] text-[#8b95a1] leading-relaxed space-y-1">
