@@ -633,9 +633,9 @@ export default function Happy450LecturePage() {
                                 </div>
                                 <div className="space-y-6">
                                     {[
-                                        { icon: "🏷️", title: "매일 기다려지는 특가 상품과 이벤트", desc: "타임딜, 릴레이딜부터 룰렛 이벤트! 매일 새로운 상품과 이벤트가 쏟아집니다!" },
-                                        { icon: "👥", title: "초청 회원 가능", desc: "소중한 지인들과 함께 특가를 즐기고, 나에게는 포인트가 쌓이는 즐거움을 경험해보세요!" },
-                                        { icon: "💰", title: "더욱 강력해진 적립&쿠폰 혜택", desc: "만기까지 유지하신 고객님들께는 혜택을 더 드려요! 특별 적립 & 쿠폰, 더 강력해진 혜택을 드립니다." }
+                                        { icon: "🏷️", title: "매일 기다려지는 특가 상품과 이벤트", desc: "타임딜, 릴레이딜부터 룰렛 이벤트까지! 매일 새로운 상품과 이벤트가 쏟아집니다." },
+                                        { icon: "👥", title: "신규 가입자 5,000원 쿠폰을!", desc: "신규 가입 고객에게만 제공되는 혜택을 받아보세요. 필요한 상품을 더 합리적인 가격으로 경험해 보세요!" },
+                                        { icon: "👛", title: "레디캐쉬로 연결되는 합리적인 소비", desc: "소노아임레디몰에서 레디캐쉬를 활용해 보세요! 구매 부담은 줄이고, 풍부한 혜택을 받아보세요!" }
                                     ].map((item, idx) => (
                                         <div key={idx} className="flex gap-4">
                                             <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl shrink-0">{item.icon}</div>

@@ -676,82 +676,274 @@ export default function SmartCareLecturePage() {
         {
             id: "funeral-service-details",
             content: (
-                <div className="h-full bg-[#f2f4f6] p-10 flex flex-col justify-center">
-                    <div className="max-w-[1250px] mx-auto w-full">
+                <div className="h-full bg-[#f2f4f6] p-10 flex flex-col justify-center overflow-y-auto">
+                    <div className="max-w-[1250px] mx-auto w-full py-8">
                         <div className="mb-8 text-center space-y-1">
                             <span className="text-xs font-black text-sono-gold uppercase tracking-widest">SERVICE DETAILS</span>
                             <h2 className="text-5xl font-black text-sono-dark tracking-tighter">의전 서비스 상세 구성</h2>
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-6">
-                            {[
-                                {
-                                    title: "고인용품 (입관/수시)",
-                                    items: [
-                                        { label: "관", value: "오동나무 45mm (매장) / 오동나무 18mm/유골함 (화장)", highlight: false },
-                                        { label: "수의", value: "대마 100% 기계식 (꽃관보/도우미 대체 가능)", highlight: false }
-                                    ]
-                                },
-                                {
-                                    title: "입관용품",
-                                    items: [
-                                        { label: "의류", value: "도포, 원삼, 천금, 지금 (수의와 동일 제품)", highlight: false },
-                                        { label: "기타", value: "명정, 관보, 베개, 습신 등 규격품 일체 제공", highlight: false }
-                                    ]
-                                },
-                                {
-                                    title: "빈소 및 기타용품",
-                                    items: [
-                                        { label: "빈소내 용품", value: "향, 양초, 부의록, 위패 등 필요량 일체 제공", highlight: false },
-                                        { label: "대여/기타", value: "향로, 촛대 (대여) / 완장, 상장, 장갑 (제공)", highlight: false }
-                                    ]
-                                },
-                                {
-                                    title: "의전 및 제단",
-                                    items: [
-                                        { label: "현대식 상복", value: "검정 양복 / 개량 한복 각 3벌 (남녀 무관)", highlight: true },
-                                        { label: "꽃장식", value: "헌화용 국화 30송이, 꽃바구니 2개 (제단 꽃장식 제외)", highlight: true, red: true }
-                                    ]
-                                },
-                                {
-                                    title: "차량지원",
-                                    items: [
-                                        { label: "이송차량", value: "관내 (시, 군내) 무료 제공", highlight: false },
-                                        { label: "유족버스/리무진", value: "왕복 200km 제공 택 1 (초과시 별도)", highlight: true }
-                                    ]
-                                },
-                                {
-                                    title: "인력지원",
-                                    items: [
-                                        { label: "장례지도사", value: "국가공인 지도사 1명 (입관 및 행사 진행)", highlight: true },
-                                        { label: "의전도우미", value: "전문 도우미 3명 (접객 및 빈소 관리)", highlight: true }
-                                    ]
-                                }
-                            ].map((card, idx) => (
-                                <div key={idx} className="bg-white rounded-[32px] overflow-hidden shadow-md flex flex-col border border-gray-100">
-                                    <div className="bg-[#1a1a1a] p-4 px-8">
-                                        <h3 className="text-white text-lg font-black">{card.title}</h3>
-                                    </div>
-                                    <div className="p-8 flex-grow space-y-6">
-                                        {card.items.map((item, i) => (
-                                            <div key={i} className="flex justify-between items-start gap-8">
-                                                <span className="text-sono-primary text-sm font-black shrink-0 pt-0.5">{item.label}</span>
-                                                <div className="text-right">
-                                                    <p className={`text-[14px] font-bold leading-snug break-keep ${item.red ? 'text-red-500' : item.highlight ? 'text-[#007aff]' : 'text-sono-dark'}`}>
-                                                        {item.value.split(' ').map((word, wi) => (
-                                                            <span key={wi} className={word.includes('1명') || word.includes('3명') || word.includes('3벌') || word.includes('200km') ? 'text-2xl font-black mx-1 underline underline-offset-4' : ''}>
-                                                                {word}{' '}
-                                                            </span>
-                                                        ))}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="overflow-x-auto rounded-[32px] border border-gray-100 bg-white shadow-xl">
+                            <table className="w-full text-center border-collapse text-sm text-sono-dark min-w-[900px]">
+                                <thead>
+                                    <tr className="bg-sono-dark text-white text-base">
+                                        <th className="py-5 px-6 font-bold border border-gray-200/50 bg-[#191f28]" colSpan={3}>구분</th>
+                                        <th className="w-[30%] py-5 px-6 font-black border border-gray-200/50 bg-sono-primary text-white text-lg">스마트케어 4</th>
+                                        <th className="w-[30%] py-5 px-6 font-black border border-gray-200/50 bg-sono-secondary text-white text-lg">스마트케어 5</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100 font-medium">
+                                    {/* 고인용품 및 수시용품 */}
+                                    <tr>
+                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={9}>
+                                            고인용품<br />및<br />수시용품
+                                        </td>
+                                        <td className="py-5 px-4 font-bold border-r border-gray-100 text-sono-primary bg-white" rowSpan={3}>관</td>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">매장시</td>
+                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            오동나무 45mm
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">화장시</td>
+                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            오동나무 18mm, 유골함
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">횡관시</td>
+                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            오동나무 18mm, 횡대
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td className="py-5 px-4 font-bold border-r border-gray-100 text-sono-primary bg-white" rowSpan={2}>수의</td>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">수의</td>
+                                        <td className="py-4 px-4 text-[#007aff] font-bold bg-white">
+                                            마혼방 (대마, 아마, 저마), 기계직
+                                        </td>
+                                        <td className="py-4 px-4 text-[#007aff] font-bold bg-white">
+                                            대마 100%, 기계직
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">수의 준비고객</td>
+                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            꽃관보 또는 장례의전 도우미 1명 (택1)
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td className="py-5 px-4 font-bold border-r border-gray-100 text-sono-primary bg-white" rowSpan={4}>
+                                            입관 및<br />수시용품
+                                        </td>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">
+                                            도포, 원삼, 천금, 지금
+                                        </td>
+                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            수의 제품과 동일제품 제공
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">명정</td>
+                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            규격품 제공
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">관보</td>
+                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            규격품 제공
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">
+                                            베개, 습신, 수시포, 한지 등
+                                        </td>
+                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            규격품 제공
+                                        </td>
+                                    </tr>
+
+                                    {/* 빈소 및 기타용품 */}
+                                    <tr>
+                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={3}>
+                                            빈소 및<br />기타용품
+                                        </td>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>
+                                            빈소용품 (향, 양초, 부의록, 축문, 위패)
+                                        </td>
+                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            일체 제공
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>
+                                            대여용품 (향로, 촛대, 잔대)
+                                        </td>
+                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            일체 제공
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>
+                                            기타용품 (완장, 상장, 운구장갑)
+                                        </td>
+                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            필요량 일체 제공
+                                        </td>
+                                    </tr>
+
+                                    {/* 의전용품 */}
+                                    <tr>
+                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={4}>
+                                            의전용품
+                                        </td>
+                                        <td className="py-5 px-4 font-bold border-r border-gray-100 text-sono-primary bg-white" rowSpan={2}>현대식 상복</td>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">남성</td>
+                                        <td className="py-4 px-4 text-[#007aff] font-bold bg-white">
+                                            제공 <span className="underline underline-offset-4 font-black text-base">(5벌)</span>
+                                        </td>
+                                        <td className="py-4 px-4 text-[#007aff] font-bold bg-white">
+                                            제공 <span className="underline underline-offset-4 font-black text-base">(10벌)</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">여성</td>
+                                        <td className="py-4 px-4 text-[#007aff] font-bold bg-white">
+                                            제공 <span className="underline underline-offset-4 font-black text-base">(5벌)</span>
+                                        </td>
+                                        <td className="py-4 px-4 text-[#007aff] font-bold bg-white">
+                                            직계제공
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-5 px-4 font-bold border-r border-gray-100 text-sono-primary bg-white" rowSpan={2}>전통식 상복</td>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">남성</td>
+                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            직계 제공
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">여성</td>
+                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            필요량 제공
+                                        </td>
+                                    </tr>
+
+                                    {/* 제단장식 */}
+                                    <tr>
+                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={4}>
+                                            제단장식<br />(꽃장식)
+                                        </td>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>생화꽃 액자</td>
+                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>제공</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>생화꽃 제단장식</td>
+                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
+                                            25만원 상당
+                                        </td>
+                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
+                                            35만원 상당
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>헌화용 국화</td>
+                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
+                                            30송이
+                                        </td>
+                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
+                                            50송이
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>꽃바구니</td>
+                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>꽃바구니 2개</td>
+                                    </tr>
+
+                                    {/* 차량지원 */}
+                                    <tr>
+                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={3}>
+                                            차량지원
+                                        </td>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>운구이송차량</td>
+                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            관내(시,군내) 제공 (요청 시)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>고인전용 리무진</td>
+                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
+                                            왕복 200KM <span className="text-xs text-gray-400 block font-normal mt-1">(초과시 2,000원 / KM)</span>
+                                        </td>
+                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
+                                            왕복 300KM <span className="text-xs text-gray-400 block font-normal mt-1">(초과시 2,000원 / KM)</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>유족전용 버스</td>
+                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
+                                            왕복 200KM <span className="text-xs text-gray-400 block font-normal mt-1">(초과시 2,000원 / KM)</span>
+                                        </td>
+                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
+                                            왕복 300KM <span className="text-xs text-gray-400 block font-normal mt-1">(초과시 2,000원 / KM)</span>
+                                        </td>
+                                    </tr>
+
+                                    {/* 인력지원 */}
+                                    <tr>
+                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={2}>
+                                            인력지원
+                                        </td>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>장례지도사</td>
+                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
+                                            장례진행 1명, 입관지원 1명
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>장례의전 도우미</td>
+                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
+                                            4명 <span className="text-xs text-gray-400 font-normal block mt-1">(인당 10시간)</span>
+                                        </td>
+                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
+                                            5명 <span className="text-xs text-gray-400 font-normal block mt-1">(인당 10시간)</span>
+                                        </td>
+                                    </tr>
+
+                                    {/* 편의서비스 */}
+                                    <tr>
+                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={2}>
+                                            편의서비스
+                                        </td>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>일회용 식기세트</td>
+                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>150인분</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>편의용품</td>
+                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>(남/녀 6인세트) 1개</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <p className="mt-6 text-center text-[10px] text-gray-400 font-bold italic">※ 상기 품목은 지역 및 장례식장 여건에 따라 동급의 타 제품으로 대체될 수 있습니다.</p>
+
+                        <div className="mt-8 max-w-4xl mx-auto bg-white rounded-3xl p-6 border border-gray-100 shadow-sm text-left">
+                            <h4 className="text-sm font-black text-sono-dark mb-3 flex items-center gap-2">
+                                <span className="w-1.5 h-4 bg-sono-primary rounded-full"></span>
+                                안내사항
+                            </h4>
+                            <ul className="space-y-2 text-xs text-gray-500 font-semibold list-none pl-1 leading-relaxed">
+                                <li className="flex items-start gap-1.5">
+                                    <span className="text-sono-primary mt-0.5">•</span>
+                                    <span>위 구성은 소노아임레디 표준 서비스 기준이며, 가입하신 상품 회차 및 계약 조건에 따라 일부 차이가 있을 수 있습니다.</span>
+                                </li>
+                                <li className="flex items-start gap-1.5">
+                                    <span className="text-sono-primary mt-0.5">•</span>
+                                    <span>장례식장 시설 이용료, 식대, 제물비, 화장/묘지 관련 비용은 서비스에 포함되지 않습니다.</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             )
@@ -882,9 +1074,9 @@ export default function SmartCareLecturePage() {
                                 </div>
                                 <div className="space-y-6">
                                     {[
-                                        { icon: "🏷️", title: "매일 기다려지는 특가 상품과 이벤트", desc: "타임딜, 릴레이딜부터 룰렛 이벤트! 매일 새로운 상품과 이벤트가 쏟아집니다!" },
-                                        { icon: "👥", title: "초청 회원 가능", desc: "소중한 지인들과 함께 특가를 즐기고, 나에게는 포인트가 쌓이는 즐거움을 경험해보세요!" },
-                                        { icon: "💰", title: "더욱 강력해진 적립&쿠폰 혜택", desc: "만기까지 유지하신 고객님들께는 혜택을 더 드려요! 특별 적립 & 쿠폰, 더 강력해진 혜택을 드립니다." }
+                                        { icon: "🏷️", title: "매일 기다려지는 특가 상품과 이벤트", desc: "타임딜, 릴레이딜부터 룰렛 이벤트까지! 매일 새로운 상품과 이벤트가 쏟아집니다." },
+                                        { icon: "👥", title: "신규 가입자 5,000원 쿠폰을!", desc: "신규 가입 고객에게만 제공되는 혜택을 받아보세요. 필요한 상품을 더 합리적인 가격으로 경험해 보세요!" },
+                                        { icon: "👛", title: "레디캐쉬로 연결되는 합리적인 소비", desc: "소노아임레디몰에서 레디캐쉬를 활용해 보세요! 구매 부담은 줄이고, 풍부한 혜택을 받아보세요!" }
                                     ].map((item, idx) => (
                                         <div key={idx} className="flex gap-4">
                                             <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl shrink-0">{item.icon}</div>
