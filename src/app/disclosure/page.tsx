@@ -5,101 +5,9 @@ import { Header, Footer } from "@/components/layout";
 
 type TabType = "info" | "care4" | "care5" | "happy450";
 
-type MenuCategoryType = "hybrid" | "membership" | "mall";
-
-interface MenuItem {
-    title: string;
-    desc: React.ReactNode;
-    img: string;
-}
-
-const menuData: Record<MenuCategoryType, { title: string; items: MenuItem[] }> = {
-    hybrid: {
-        title: "전환(하이브리드) 서비스",
-        items: [
-            {
-                title: "웨딩",
-                desc: "품격 있는 웨딩부티크 스튜디오, 드레스 등 토탈 케어",
-                img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096899/photo_best02_product06_mwr7lz.jpg"
-            },
-            {
-                title: "크루즈",
-                desc: "바다 위의 움직이는 호텔, 럭셔리 크루즈 여행",
-                img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096921/photo_best02_product09_a7ho9v.jpg"
-            },
-            {
-                title: "해외여행",
-                desc: "전 세계 어디든 원하는 곳으로 떠나는 프리미엄 패키지",
-                img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097134/photo_best02_product01_n3u0hk.jpg"
-            },
-            {
-                title: "골프",
-                desc: "국내외 명문 골프장에서 즐기는 여유로운 라운딩",
-                img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097148/photo_best02_product02_cwq9zm.jpg"
-            },
-            {
-                title: "교육/어학연수",
-                desc: "자녀를 위한 해외 명문 학교 영어 캠프 및 연수 프로그램",
-                img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097278/photo_best02_product04_btsohx.jpg"
-            },
-            {
-                title: "리빙",
-                desc: "소노시즌 매트리스, 최신 가전, 휴대폰, 이사, 입주청소 등",
-                img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097295/photo_best02_product07_lkcnml.jpg"
-            },
-            {
-                title: "명품케어",
-                desc: <>글로벌 명품 브랜드 제품<br/>수선/매입/해외명품관 쇼핑</>,
-                img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097313/photo_best02_product10_xkyzcb.jpg"
-            },
-            {
-                title: "쉼케어",
-                desc: <>종합심리검사+해석상담 및<br/>장지 시설/안치 장소 안내</>,
-                img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097325/photo_best02_product08_xyqjwk.jpg"
-            }
-        ]
-    },
-    membership: {
-        title: "대명소노그룹 멤버십",
-        items: [
-            {
-                title: "소노호텔 & 리조트 우대",
-                desc: "전국 소노호텔&리조트 객실 우대 가격 이용 (비수기 주중 무기명 우대 요금)",
-                img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096482/Generated_Image_January_22_2026_-_5_18PM_gnubfx.jpg"
-            },
-            {
-                title: "레저 시설 할인 혜택",
-                desc: "오션월드, 스키월드, 골프, 사우나 등 최대 35% 할인 우대",
-                img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/ba129da43419b13c6e6fe3df92fc852b3f2e6abf/Generated%20Image%20January%2022%2C%202026%20-%203_23PM.jpeg"
-            }
-        ]
-    },
-    mall: {
-        title: "소노아임레디몰",
-        items: [
-            {
-                title: "매일 기다려지는 특가 상품과 이벤트",
-                desc: "타임딜, 릴레이딜부터 룰렛 이벤트까지! 매일 새로운 상품과 이벤트가 쏟아집니다.",
-                img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097341/computer_main_bvy4u9.png"
-            },
-            {
-                title: "신규 가입자 5,000원 쿠폰",
-                desc: "신규 가입 고객에게만 제공되는 웰컴 할인 혜택으로 필요한 상품을 더 합리적으로 구입하세요.",
-                img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097295/photo_best02_product07_lkcnml.jpg"
-            },
-            {
-                title: "레디캐쉬 연계 소비",
-                desc: "소노아임레디몰에서 가입한 상품의 레디캐쉬를 활용하여 해약 전에도 쇼핑을 즐겨보세요.",
-                img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097325/photo_best02_product08_xyqjwk.jpg"
-            }
-        ]
-    }
-};
-
 export default function DisclosurePage() {
     const [activeTab, setActiveTab] = useState<TabType>("info");
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-    const [activeMenuCategory, setActiveMenuCategory] = useState<MenuCategoryType>("hybrid");
 
     const images: Record<TabType, { url: string; title: string }> = {
         info: {
@@ -156,7 +64,7 @@ export default function DisclosurePage() {
                     </div>
 
                     {/* Image Viewer Container */}
-                    <div className="bg-white rounded-[32px] border border-gray-100 p-6 md:p-10 shadow-xl flex flex-col items-center animate-fade-in relative group mb-12">
+                    <div className="bg-white rounded-[32px] border border-gray-100 p-6 md:p-10 shadow-xl flex flex-col items-center animate-fade-in relative group">
                         {/* Action buttons */}
                         <div className="w-full flex justify-between items-center mb-6">
                             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
@@ -205,68 +113,6 @@ export default function DisclosurePage() {
                                     클릭하여 확대보기
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* 서비스 메뉴 섹션 */}
-                    <div className="mt-20 md:mt-32 border-t border-gray-100 pt-16 animate-fade-in">
-                        <div className="text-center mb-12">
-                            <span className="badge-primary mb-4 px-5 py-2">SERVICES</span>
-                            <h2 className="text-3xl md:text-4xl font-black text-sono-dark tracking-tight mb-4">
-                                소노아임레디 회원 특별 서비스
-                            </h2>
-                            <p className="text-gray-500 font-bold max-w-2xl mx-auto break-keep text-sm md:text-base leading-relaxed">
-                                가입과 동시에 누릴 수 있는 전환(하이브리드) 서비스와 멤버십, 전용몰 쇼핑까지 차원이 다른 혜택을 확인해 보세요.
-                            </p>
-                        </div>
-
-                        {/* 서비스 카테고리 탭 네비게이션 */}
-                        <div className="flex bg-[#f2f4f6] rounded-[24px] p-2 gap-1 mb-10 max-w-[700px] mx-auto">
-                            {(Object.keys(menuData) as MenuCategoryType[]).map((category) => (
-                                <button
-                                    key={category}
-                                    onClick={() => setActiveMenuCategory(category)}
-                                    className={`flex-1 py-3 px-4 rounded-[18px] text-sm md:text-base font-black transition-all ${
-                                        activeMenuCategory === category
-                                            ? "bg-white text-sono-primary shadow-md scale-[1.01]"
-                                            : "text-gray-500 hover:text-sono-dark hover:bg-white/50"
-                                    }`}
-                                >
-                                    {menuData[category].title}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* 카테고리별 아이템 리스트 그리드 */}
-                        <div className={`grid gap-6 md:gap-8 justify-center ${
-                            activeMenuCategory === "membership"
-                                ? "grid-cols-1 md:grid-cols-2 max-w-[800px] mx-auto"
-                                : activeMenuCategory === "mall"
-                                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-[1000px] mx-auto"
-                                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-                        }`}>
-                            {menuData[activeMenuCategory].items.map((item, idx) => (
-                                <div
-                                    key={idx}
-                                    className="group bg-white rounded-[24px] overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-500 flex flex-row sm:flex-col shadow-sm"
-                                >
-                                    <div className="relative w-24 sm:w-full h-auto sm:h-48 md:h-56 overflow-hidden flex-shrink-0">
-                                        <img
-                                            src={item.img}
-                                            alt={item.title}
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                        />
-                                    </div>
-                                    <div className="p-4 sm:p-6 md:p-8 text-left sm:text-center flex-1 flex flex-col justify-center">
-                                        <h3 className="font-black text-sono-dark text-base sm:text-lg md:text-xl mb-1 sm:mb-3 tracking-tight group-hover:text-sono-primary transition-colors leading-tight">
-                                            {item.title}
-                                        </h3>
-                                        <p className="text-[#8b95a1] text-xs sm:text-sm font-bold leading-relaxed break-keep">
-                                            {item.desc}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
                         </div>
                     </div>
                 </div>
