@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Header, Footer } from "@/components/layout";
 
-type TabType = "info" | "care4" | "care5";
+type TabType = "info" | "care4" | "care5" | "happy450";
 
 export default function DisclosurePage() {
     const [activeTab, setActiveTab] = useState<TabType>("info");
@@ -21,6 +21,10 @@ export default function DisclosurePage() {
         care5: {
             url: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782719912/%EC%8A%A4%EB%A7%88%ED%8A%B8%EC%BC%80%EC%96%B4_5_%ED%95%B4%EC%95%BD%ED%99%98%EA%B8%89%EA%B8%88_afo2dx.jpg",
             title: "스마트케어 5 해약환급금표"
+        },
+        happy450: {
+            url: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1783404917/KakaoTalk_20260707_151457960_mnzyz9.png",
+            title: "일반상조(더해피 450one)"
         }
     };
 
