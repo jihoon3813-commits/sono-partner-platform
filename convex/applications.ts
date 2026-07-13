@@ -821,3 +821,48 @@ export const fixGenderData = mutation({
         return { updated: updatedCount };
     },
 });
+
+export const updateMultipleApplicationStatuses = mutation({
+    args: {
+        applicationNos: v.array(v.string()),
+        newStatus: v.string(),
+        changedBy: v.string(),
+        memo: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        let count = 0;
+        const now = nowKST();
+        for (const appNo of args.applicationNos) {
+            const app = await ctx.db
+                .query("applications")
+                .withIndex("by_applicationNo", (q) => q.eq("applicationNo", appNo))
+                .unique();
+            if (app) {
+                const previousStatus = app.status;
+                const updates: any = {
+                    status: args.newStatus,
+                    updatedAt: now,
+                    statusUpdatedAt: now,
+                };
+                if (args.newStatus === "정상가입") {
+                    updates.contractDate = now;
+                }
+                await ctx.db.patch(app._id, updates);
+
+                // 로그 기록
+                await ctx.db.insert("statusHistory", {
+                    historyId: `H-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+                    applicationNo: appNo,
+                    previousStatus,
+                    newStatus: args.newStatus,
+                    changedBy: args.changedBy,
+                    changedAt: now,
+                    memo: args.memo,
+                });
+                count++;
+            }
+        }
+        return count;
+    },
+});
+
