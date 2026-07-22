@@ -405,15 +405,15 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                     className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
                                 >
                                     <option value="">선택하세요</option>
-                                    {preferredContactTime && !["10시~11시", "11시~12시", "14시~15시", "15시~16시", "16시~17시", "17시~18시"].includes(preferredContactTime) && (
+                                    {preferredContactTime && !["10:00~11:00", "11:00~12:00", "14:00~15:00", "15:00~16:00", "16:00~17:00", "17:00~18:00", "10시~11시", "11시~12시", "14시~15시", "15시~16시", "16시~17시", "17시~18시"].includes(preferredContactTime) && (
                                         <option value={preferredContactTime}>{preferredContactTime}</option>
                                     )}
-                                    <option value="10시~11시">10시~11시</option>
-                                    <option value="11시~12시">11시~12시</option>
-                                    <option value="14시~15시">14시~15시</option>
-                                    <option value="15시~16시">15시~16시</option>
-                                    <option value="16시~17시">16시~17시</option>
-                                    <option value="17시~18시">17시~18시</option>
+                                    <option value="10:00~11:00">10:00~11:00</option>
+                                    <option value="11:00~12:00">11:00~12:00</option>
+                                    <option value="14:00~15:00">14:00~15:00</option>
+                                    <option value="15:00~16:00">15:00~16:00</option>
+                                    <option value="16:00~17:00">16:00~17:00</option>
+                                    <option value="17:00~18:00">17:00~18:00</option>
                                 </select>
                             </div>
                         </div>

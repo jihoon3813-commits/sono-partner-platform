@@ -146,6 +146,12 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
             return;
         }
 
+        // Validation for preferredTime
+        if (!formData.preferredTime) {
+            alert("통화가능 시간을 선택해주세요.");
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
@@ -395,6 +401,24 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                                             </div>
                                         </>
                                     )}
+                                    <div className="col-span-2">
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block ml-1">통화가능 시간 <span className="text-sono-primary">*</span></label>
+                                        <select
+                                            name="preferredTime"
+                                            value={formData.preferredTime}
+                                            onChange={handleChange}
+                                            className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 w-full cursor-pointer text-[#4e5968] font-medium"
+                                            required
+                                        >
+                                            <option value="">통화가능 시간을 선택해주세요</option>
+                                            <option value="10:00~11:00">10:00~11:00</option>
+                                            <option value="11:00~12:00">11:00~12:00</option>
+                                            <option value="14:00~15:00">14:00~15:00</option>
+                                            <option value="15:00~16:00">15:00~16:00</option>
+                                            <option value="16:00~17:00">16:00~17:00</option>
+                                            <option value="17:00~18:00">17:00~18:00</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 {["smartcare", "스마트케어"].includes(formData.selectedProduct) && (

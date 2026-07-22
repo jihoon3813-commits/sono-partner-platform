@@ -343,7 +343,7 @@ export default function CustomerManagement({
             ) : (
                 <div className="bg-white p-6 rounded-2xl shadow-sm space-y-6">
                     {/* Header Row: Title & Action Buttons */}
-                    <div className="flex flex-col lg:flex-row justify-between lg:items-end gap-6 border-b border-gray-100 pb-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-100 pb-6">
                         <div>
                             <h2 className="text-2xl font-black text-sono-dark tracking-tighter">고객 상담 내역</h2>
                             <p className="text-sm text-gray-400 mt-1.5 font-medium">총 <span className="text-sono-primary font-bold">{filteredApplications.length}</span>건의 신청 내역이 있습니다.</p>

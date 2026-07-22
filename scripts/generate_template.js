@@ -2,13 +2,13 @@ const XLSX = require('xlsx');
 const path = require('path');
 
 const standardHeaders = [
-    "고객명", "연락처", "생년월일(YYYYMMDD)", "성별(남/여)", "주소", "상세주소",
-    "상품유형(happy450/smartcare)", "구좌수(숫자만)", "가전제품(스마트케어인 경우)",
+    "고객명 *", "연락처 *", "생년월일(선택)", "성별(선택)", "주소(선택)", "상세주소(선택)",
+    "상품유형 *", "구좌수 *", "통화가능시간 *", "가전제품(스마트케어인 경우 필수)",
     "회원번호(선택)", "문의사항(선택)"
 ];
 
 const adminHeaders = [
-    "파트너ID(로그인ID)",
+    "파트너ID(로그인ID) *",
     ...standardHeaders
 ];
 

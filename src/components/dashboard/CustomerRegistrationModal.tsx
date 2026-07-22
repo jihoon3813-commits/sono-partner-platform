@@ -27,6 +27,7 @@ interface StagedCustomer {
     productType: string;
     planType: string; // 구좌
     products: string; // 가전제품
+    preferredContactTime: string; // 통화가능 시간
     partnerMemberId: string; // 회원번호
     inquiry: string;
     // For Admin:
@@ -59,6 +60,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
         productType: "더 해피 450 ONE",
         planType: "1",
         products: "",
+        preferredContactTime: "",
         partnerMemberId: "",
         inquiry: "",
         selectedPartnerId: partner?.partnerId || "",
@@ -80,6 +82,14 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
             if (numbers.length <= 4) finalValue = numbers;
             else if (numbers.length <= 6) finalValue = `${numbers.slice(0, 4)}-${numbers.slice(4)}`;
             else finalValue = `${numbers.slice(0, 4)}-${numbers.slice(4, 6)}-${numbers.slice(6, 8)}`;
+        } else if (name === "productType") {
+            setManualForm(prev => ({
+                ...prev,
+                productType: value,
+                planType: value === "더 해피 450 ONE" ? "1" : "4",
+                products: value === "스마트케어" ? prev.products : "",
+            }));
+            return;
         }
 
         // When partner is selected, also update loginId and name
@@ -120,8 +130,20 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
     };
 
     const addManualCustomer = () => {
-        if (!manualForm.customerName || !manualForm.customerPhone) {
-            alert("고객명과 연락처는 필수입니다.");
+        if (!manualForm.customerName.trim()) {
+            alert("고객명을 입력해주세요.");
+            return;
+        }
+        if (!manualForm.customerPhone.trim()) {
+            alert("연락처를 입력해주세요.");
+            return;
+        }
+        if (!manualForm.preferredContactTime) {
+            alert("통화가능 시간을 선택해주세요.");
+            return;
+        }
+        if (manualForm.productType === '스마트케어' && !manualForm.products.trim()) {
+            alert("스마트케어 상품 선택 시 가전제품은 필수 입력사항입니다.");
             return;
         }
 
@@ -161,8 +183,9 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
             customerAddress: "",
             customerAddressDetail: "",
             productType: "더 해피 450 ONE",
-            planType: manualForm.productType === '더 해피 450 ONE' ? "1" : "4",
+            planType: "1",
             products: "",
+            preferredContactTime: "",
             partnerMemberId: "",
             inquiry: "",
             selectedPartnerId: isAdmin ? manualForm.selectedPartnerId : (partner?.partnerId || ""),
@@ -174,8 +197,6 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
     const removeStaged = (id: string) => {
         setStagedCustomers(prev => prev.filter(c => c.id !== id));
     };
-
-
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -189,61 +210,73 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
             const ws = wb.Sheets[wsname];
             const data = XLSX.utils.sheet_to_json(ws, { header: 1 }) as any[][];
 
-            // Remove header
             if (data.length < 2) return;
+            const headerRow = (data[0] || []).map((h: any) => String(h || "").trim());
             const rows = data.slice(1);
+
+            const getCol = (keywords: string[], fallbackIdx: number) => {
+                const foundIdx = headerRow.findIndex(h => keywords.some(k => h.includes(k)));
+                return foundIdx !== -1 ? foundIdx : fallbackIdx;
+            };
+
+            const offset = isAdmin ? 1 : 0;
+            const nameIdx = getCol(["고객명", "성함"], 0 + offset);
+            const phoneIdx = getCol(["연락처", "전화"], 1 + offset);
+            const birthIdx = getCol(["생년월일"], 2 + offset);
+            const genderIdx = getCol(["성별"], 3 + offset);
+            const addrIdx = getCol(["주소"], 4 + offset);
+            const addrDetailIdx = getCol(["상세주소"], 5 + offset);
+            const prodTypeIdx = getCol(["상품유형", "상품"], 6 + offset);
+            const planIdx = getCol(["구좌"], 7 + offset);
+            const timeIdx = getCol(["통화가능", "희망시간", "선호시간"], 8 + offset);
+            const applianceIdx = getCol(["가전제품", "가전"], 9 + offset);
+            const memberIdIdx = getCol(["회원번호"], 10 + offset);
+            const inquiryIdx = getCol(["문의사항"], 11 + offset);
 
             const newCustomers: StagedCustomer[] = [];
 
             rows.forEach((row, idx) => {
-                // Determine index offset based on isAdmin (header shift)
-                const offset = isAdmin ? 1 : 0;
-
-                // If admin, read partner ID
                 let pId = partner?.partnerId || "";
                 let pName = partner?.companyName || partner?.name || "";
                 let pLoginId = partner?.loginId || "";
 
                 if (isAdmin) {
-                    const loginId = String(row[0] || "").trim(); // First col is Partner Login ID
-
-                    // Try to find partner by Login ID or Partner ID (exact match)
+                    const partnerColIdx = getCol(["파트너"], 0);
+                    const loginId = String(row[partnerColIdx] || "").trim();
                     let p = partners.find(p => p.loginId === loginId || p.partnerId === loginId);
 
                     if (p) {
                         pId = p.partnerId;
-                        pLoginId = p.loginId || ""; // Store login ID first
-                        pName = p.companyName || ""; // Only use company name
-                    } else {
-                        // Fallback: If no partner found by ID, use manually selected partner if available
-                        if (manualForm.selectedPartnerId) {
-                            pId = manualForm.selectedPartnerId;
-                            const selected = partners.find(p => p.partnerId === pId);
-                            pName = selected?.companyName || "";
-                            pLoginId = selected?.loginId || "";
-                        }
+                        pLoginId = p.loginId || "";
+                        pName = p.companyName || "";
+                    } else if (manualForm.selectedPartnerId) {
+                        pId = manualForm.selectedPartnerId;
+                        const selected = partners.find(p => p.partnerId === pId);
+                        pName = selected?.companyName || "";
+                        pLoginId = selected?.loginId || "";
                     }
                 }
 
-                if (!pId) return; // Skip if no partner identified
+                if (!pId) return;
 
-                const customerName = row[0 + offset];
-                const customerPhone = row[1 + offset];
+                const customerName = row[nameIdx];
+                const customerPhone = row[phoneIdx];
                 if (!customerName || !customerPhone) return;
 
                 newCustomers.push({
                     id: `excel-${Date.now()}-${idx}`,
                     customerName: String(customerName),
                     customerPhone: String(customerPhone),
-                    customerBirth: row[2 + offset] ? String(row[2 + offset]) : "",
-                    customerGender: row[3 + offset] ? (String(row[3 + offset]).includes("여") ? "여성" : "남성") : "-",
-                    customerAddress: row[4 + offset] ? String(row[4 + offset]) : "",
-                    customerAddressDetail: row[5 + offset] ? String(row[5 + offset]) : "",
-                    productType: row[6 + offset] ? (String(row[6 + offset]).toLowerCase().includes("smart") || String(row[6 + offset]).includes("스마트") ? "스마트케어" : "더 해피 450 ONE") : "더 해피 450 ONE",
-                    planType: row[7 + offset] ? String(row[7 + offset]) : "1",
-                    products: row[8 + offset] ? String(row[8 + offset]) : "",
-                    partnerMemberId: row[9 + offset] ? String(row[9 + offset]) : "",
-                    inquiry: row[10 + offset] ? String(row[10 + offset]) : "",
+                    customerBirth: row[birthIdx] ? String(row[birthIdx]) : "",
+                    customerGender: row[genderIdx] ? (String(row[genderIdx]).includes("여") ? "여성" : "남성") : "-",
+                    customerAddress: row[addrIdx] ? String(row[addrIdx]) : "",
+                    customerAddressDetail: row[addrDetailIdx] ? String(row[addrDetailIdx]) : "",
+                    productType: row[prodTypeIdx] ? (String(row[prodTypeIdx]).toLowerCase().includes("smart") || String(row[prodTypeIdx]).includes("스마트") ? "스마트케어" : "더 해피 450 ONE") : "더 해피 450 ONE",
+                    planType: row[planIdx] ? String(row[planIdx]) : "1",
+                    preferredContactTime: row[timeIdx] ? String(row[timeIdx]) : "",
+                    products: row[applianceIdx] ? String(row[applianceIdx]) : "",
+                    partnerMemberId: row[memberIdIdx] ? String(row[memberIdIdx]) : "",
+                    inquiry: row[inquiryIdx] ? String(row[inquiryIdx]) : "",
                     selectedPartnerId: pId,
                     selectedPartnerName: pName,
                     selectedPartnerLoginId: pLoginId
@@ -251,7 +284,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
             });
 
             setStagedCustomers(prev => [...prev, ...newCustomers]);
-            if (fileInputRef.current) fileInputRef.current.value = ""; // Reset input
+            if (fileInputRef.current) fileInputRef.current.value = "";
         };
         reader.readAsBinaryString(file);
     };
@@ -276,7 +309,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                 customerAddress: `${c.customerAddress} ${c.customerAddressDetail}`.trim(),
                 customerZipcode: "", // Not in simple form, maybe parse from address?
                 partnerMemberId: c.partnerMemberId,
-                preferredContactTime: "",
+                preferredContactTime: c.preferredContactTime || "",
                 inquiry: c.inquiry,
                 status: "접수대기",
                 accessPath: "D",
@@ -370,7 +403,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                             {isAdmin && (
                                 <div className="col-span-2 md:col-span-1">
-                                    <label className="block text-xs font-bold text-gray-400 mb-1">파트너사</label>
+                                    <label className="block text-xs font-bold text-gray-400 mb-1">파트너사 *</label>
                                     <select
                                         name="selectedPartnerId"
                                         value={manualForm.selectedPartnerId}
@@ -408,8 +441,25 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     inputMode="numeric"
                                 />
                             </div>
+                            <div className="col-span-2 md:col-span-1">
+                                <label className="block text-xs font-bold text-gray-400 mb-1">통화가능 시간 *</label>
+                                <select
+                                    name="preferredContactTime"
+                                    value={manualForm.preferredContactTime}
+                                    onChange={handleManualChange}
+                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary font-medium text-gray-700"
+                                >
+                                    <option value="">선택</option>
+                                    <option value="10:00~11:00">10:00~11:00</option>
+                                    <option value="11:00~12:00">11:00~12:00</option>
+                                    <option value="14:00~15:00">14:00~15:00</option>
+                                    <option value="15:00~16:00">15:00~16:00</option>
+                                    <option value="16:00~17:00">16:00~17:00</option>
+                                    <option value="17:00~18:00">17:00~18:00</option>
+                                </select>
+                            </div>
                             <div className="col-span-1">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">상품</label>
+                                <label className="block text-xs font-bold text-gray-400 mb-1">상품 *</label>
                                 <select
                                     name="productType"
                                     value={manualForm.productType}
@@ -421,7 +471,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                 </select>
                             </div>
                             <div className="col-span-1">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">구좌</label>
+                                <label className="block text-xs font-bold text-gray-400 mb-1">구좌 *</label>
                                 <select
                                     name="planType"
                                     value={manualForm.planType}
@@ -435,7 +485,9 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                 </select>
                             </div>
                             <div className="col-span-2">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">가전제품 (스마트케어만)</label>
+                                <label className="block text-xs font-bold text-gray-400 mb-1">
+                                    가전제품 {manualForm.productType === '스마트케어' ? '(스마트케어 필수) *' : '(스마트케어만)'}
+                                </label>
                                 <input
                                     type="text"
                                     name="products"
@@ -443,7 +495,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     onChange={handleManualChange}
                                     disabled={manualForm.productType !== '스마트케어'}
                                     className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary disabled:bg-gray-100"
-                                    placeholder="예: 삼성 에어드레서"
+                                    placeholder={manualForm.productType === '스마트케어' ? "예: 삼성 에어드레서" : "스마트케어 선택 시 입력 가능"}
                                 />
                             </div>
                             <div className="col-span-2 md:col-span-1">
@@ -528,6 +580,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                         {isAdmin && <th className="px-4 py-3 font-bold text-gray-500 text-xs">파트너</th>}
                                         <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center w-20">고객명</th>
                                         <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center">연락처</th>
+                                        <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center">통화가능시간</th>
                                         <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center">상품</th>
                                         <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center w-16">구좌</th>
                                         <th className="px-4 py-3 font-bold text-gray-500 text-xs text-right">관리</th>
@@ -539,12 +592,13 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                             {isAdmin && <td className="px-4 py-3 text-gray-600 font-bold text-xs truncate max-w-[100px]">{c.selectedPartnerName}</td>}
                                             <td className="px-4 py-3 font-bold text-sono-dark text-xs text-center">{c.customerName}</td>
                                             <td className="px-4 py-3 text-gray-600 text-xs text-center">{c.customerPhone}</td>
+                                            <td className="px-4 py-3 text-gray-600 text-xs text-center">{c.preferredContactTime || "-"}</td>
                                             <td className="px-4 py-3 text-center">
                                                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${c.productType === '스마트케어' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'}`}>
                                                     {c.productType}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-3 text-gray-600 text-xs text-center">{c.planType}</td>
+                                            <td className="px-4 py-3 text-gray-600 text-xs text-center">{c.planType}구좌</td>
                                             <td className="px-4 py-3 text-right">
                                                 <button
                                                     onClick={() => removeStaged(c.id)}
@@ -556,7 +610,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                         </tr>
                                     )) : (
                                         <tr>
-                                            <td colSpan={isAdmin ? 6 : 5} className="px-4 py-10 text-center text-gray-400 text-xs">
+                                            <td colSpan={isAdmin ? 7 : 6} className="px-4 py-10 text-center text-gray-400 text-xs">
                                                 등록된 고객이 없습니다. 고객을 추가해주세요.
                                             </td>
                                         </tr>
