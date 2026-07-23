@@ -762,7 +762,7 @@ export default function CustomerManagement({
             <div className={`bg-white rounded-2xl shadow-sm overflow-hidden ${isWidget ? 'shadow-none' : ''}`}>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="min-w-full text-left whitespace-nowrap">
                         <thead>
                             <tr className="bg-[#f9fafb] border-b border-gray-100">
                                 {isAdmin && (

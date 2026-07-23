@@ -655,7 +655,7 @@ const formatDateForDisplay = (val: string | undefined): string => {
 
                     {/* 데이터 테이블 */}
                     <div className="w-full">
-                        <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="bg-white rounded-[32px] shadow-sm border border-gray-100">
                             <div className="p-6 border-b border-gray-50 flex flex-col gap-4 bg-white">
                                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                                     <div className="relative flex-1 max-w-md w-full">
@@ -770,13 +770,13 @@ const formatDateForDisplay = (val: string | undefined): string => {
                                 </div>
                             </div>
 
-                            <div className="overflow-x-auto">
-                                <table className="w-full border-collapse">
-                                    <thead>
-                                        <tr className="bg-gray-50/50">
-                                            <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">회원번호</th>
+                            <div className="w-full border border-gray-100 rounded-2xl">
+                                <table className="min-w-full border-separate border-spacing-0 whitespace-nowrap">
+                                    <thead className="sticky top-0 z-50 bg-gray-100 shadow-md">
+                                        <tr className="bg-gray-100">
+                                            <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">회원번호</th>
                                             <th
-                                                className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100 cursor-pointer hover:bg-gray-100 transition-colors"
+                                                className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm cursor-pointer hover:bg-gray-200 transition-colors"
                                                 onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
                                             >
                                                 <div className="flex items-center justify-center gap-1">
@@ -788,17 +788,17 @@ const formatDateForDisplay = (val: string | undefined): string => {
                                                     )}
                                                 </div>
                                             </th>
-                                            <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">고객명</th>
-                                            <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">생년월일</th>
-                                            <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">휴대전화</th>
-                                            <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">가입상품</th>
-                                            <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">가입상태</th>
-                                            <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">납입상태</th>
-                                            <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">납입방법</th>
-                                            <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">해약처리</th>
-                                            <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">실납입회차</th>
-                                            <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">ID_NO</th>
-                                            <th className="px-3 py-4 text-[10px] font-black text-gray-400 text-center uppercase tracking-tighter border-b border-gray-100">이력</th>
+                                            <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">고객명</th>
+                                            <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">생년월일</th>
+                                            <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">휴대전화</th>
+                                            <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">가입상품</th>
+                                            <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">가입상태</th>
+                                            <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">납입상태</th>
+                                            <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">납입방법</th>
+                                            <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">해약처리</th>
+                                            <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">실납입회차</th>
+                                            <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">ID_NO</th>
+                                            <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">이력</th>
                                         </tr>
                                     </thead>
                                     <tbody>
