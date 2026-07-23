@@ -117,6 +117,12 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
             const cleanMgr = mgr.replace(/\s+/g, '').trim();
             if (cleanMgr) validManagerNames.add(cleanMgr);
         }
+        if (p.ceoName) {
+            const ceo = p.ceoName.trim();
+            validManagerNames.add(ceo);
+            const cleanCeo = ceo.replace(/\s+/g, '').trim();
+            if (cleanCeo) validManagerNames.add(cleanCeo);
+        }
     };
 
     // 하위 파트너 재귀적 수집
@@ -137,33 +143,52 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
         const children = allPartners.filter((p: any) => {
             if (!p || collectedPartnerIds.has(String(p._id))) return false;
 
-            // 1. parentPartnerId 매칭
             const subParentId = p.parentPartnerId ? p.parentPartnerId.trim() : "";
-            if (subParentId) {
-                if (pId && subParentId === pId) return true;
-                if (pLogin && subParentId === pLogin) return true;
-                if (pUrl && subParentId === pUrl) return true;
-                if (pObjId && subParentId === pObjId) return true;
-            }
-
-            // 2. parentPartnerName 매칭
             const subParentName = p.parentPartnerName ? p.parentPartnerName.trim() : "";
-            if (subParentName) {
-                if (pComp && (subParentName === pComp || subParentName.includes(pComp) || pComp.includes(subParentName))) return true;
-                if (pLogin && subParentName === pLogin) return true;
-                if (pId && subParentName === pId) return true;
+            const subCleanName = subParentName.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
 
-                const subCleanName = subParentName.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
-                if (pCleanComp && subCleanName && (subCleanName === pCleanComp || subCleanName.includes(pCleanComp) || pCleanComp.includes(subCleanName))) return true;
-            }
+            const isChild = (
+                (subParentId && (
+                    subParentId === pId ||
+                    subParentId === pLogin ||
+                    subParentId === pUrl ||
+                    subParentId === pObjId ||
+                    (pComp && (subParentId === pComp || subParentId.includes(pComp) || pComp.includes(subParentId))) ||
+                    (pCleanComp && subCleanName && (subCleanName === pCleanComp || subCleanName.includes(pCleanComp) || pCleanComp.includes(subCleanName)))
+                )) ||
+                (subParentName && (
+                    (pComp && (subParentName === pComp || subParentName.includes(pComp) || pComp.includes(subParentName))) ||
+                    (pLogin && subParentName === pLogin) ||
+                    (pId && subParentName === pId) ||
+                    (pCleanComp && subCleanName && (subCleanName === pCleanComp || subCleanName.includes(pCleanComp) || pCleanComp.includes(subCleanName)))
+                ))
+            );
 
-            return false;
+            return isChild;
         });
 
         children.forEach((child: any) => collectHierarchy(child));
     };
 
     collectHierarchy(currentPartner);
+
+    // 상위 파트너(Master/최상위) 여부판별
+    const isUpperPartner = (currentPartner.role === 'master') || (!currentPartner.parentPartnerId) || (collectedPartnerIds.size > 1);
+
+    // 타 파트너 그룹(상위 파트너 본인 및 하위 파트너 그룹에 속하지 않은 다른 파트너들)의 식별명 집합 생성
+    const otherPartners = allPartners.filter((p: any) => !collectedPartnerIds.has(String(p._id)));
+    const otherPartnerNames = new Set<string>();
+    otherPartners.forEach((p: any) => {
+        if (p.companyName) {
+            const comp = p.companyName.trim();
+            otherPartnerNames.add(comp);
+            const clean = comp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+            if (clean) otherPartnerNames.add(clean);
+        }
+        if (p.loginId) otherPartnerNames.add(p.loginId.trim());
+        if (p.partnerId) otherPartnerNames.add(p.partnerId.trim());
+    });
+    const otherPartnerArray = Array.from(otherPartnerNames);
 
     // 본인 및 하위 파트너의 신청서 목록 가져오기
     const allApps = await ctx.db.query("applications").collect();
@@ -277,6 +302,20 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
                 if (rPhoneDigits.length >= 7 && appPhoneDigits.startsWith(rPhoneDigits.slice(0, 7))) return true;
                 if (rPhoneDigits.length >= 4 && appPhoneDigits.endsWith(rLast4)) return true;
                 if (appPhoneDigits.endsWith(rLast4)) return true;
+            }
+        }
+
+        // 3. 상위 파트너(Master/최상위)인 경우, 타 파트너사의 명시적 태그가 붙어있지 않거나 범용인 데이터 허용
+        if (isUpperPartner) {
+            const isExplicitlyOther = otherPartnerArray.some(otherName => {
+                if (!otherName) return false;
+                if (subComp && (subComp === otherName || subClean === otherName)) return true;
+                if (b2bComp && (b2bComp === otherName || b2bClean === otherName)) return true;
+                return false;
+            });
+
+            if (!isExplicitlyOther) {
+                return true;
             }
         }
 
