@@ -288,6 +288,10 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
         const prevYearMonth = formatYM(prevDate);
 
         return records.filter((r: any) => {
+            // 가입상태가 '대기'인 고객 제외
+            const joinSt = (r.joinStatus || "").trim();
+            if (joinSt === "대기" || joinSt.includes("대기")) return false;
+
             const joinYM = r.joinDate.substring(0, 6);
             const joinYMD = r.joinDate.substring(0, 8);
             
