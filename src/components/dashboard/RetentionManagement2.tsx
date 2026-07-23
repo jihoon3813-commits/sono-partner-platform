@@ -509,13 +509,20 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
         });
     };
 
-    // 레코드별 파트너사명 정확 추출 (신청서 DB, 소속/업체명, ID_NO, 추천인명, B2B회사명 대조)
+    // 레코드별 파트너사명 정확 추출 (DB 바인딩 필드 우선 -> 신청서 DB, 소속/업체명, ID_NO 대조)
     const getDisplayPartnerName = (r: any) => {
+        // 1. DB에 이미 바인딩되어 저장된 파트너명이 존재하고 허용 목록에 있으면 최우선 사용
+        if (r.partnerName && r.partnerName !== "-" && isAllowedPartnerName(r.partnerName)) {
+            return r.partnerName;
+        }
+
+        // 2. 신청서 DB(applications) 매칭 결과
         const mapped = getMappedInfo(r.customerName, r.phone);
         if (mapped.partnerName && mapped.partnerName !== "-" && isAllowedPartnerName(mapped.partnerName)) {
             return mapped.partnerName;
         }
 
+        // 3. 엑셀 소속(업체명)
         const sub = (r.subCompany || "").trim();
         if (sub && sub !== "-" && sub !== "소속없음" && sub !== "본사") {
             const found = partners.find((p: any) => 
@@ -528,18 +535,14 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
             if (isAllowedPartnerName(sub)) return sub;
         }
 
+        // 4. ID NO (Column P)가 파트너 LoginID / PartnerID와 일치하는 경우
         const idNo = (r.idNo || "").trim();
         if (idNo && idNo !== "-") {
             const found = partners.find((p: any) => p.loginId === idNo || p.partnerId === idNo);
             if (found && isAllowedPartnerName(found.companyName)) return found.companyName;
         }
 
-        const transferor = (r.transferorName || "").trim();
-        if (transferor && transferor !== "-") {
-            const found = partners.find((p: any) => p.managerName?.trim() === transferor || p.ceoName?.trim() === transferor);
-            if (found && isAllowedPartnerName(found.companyName)) return found.companyName;
-        }
-
+        // 5. B2B 회사명
         const b2b = (r.b2bCompany || "").trim();
         if (b2b && b2b !== "-") {
             const found = partners.find((p: any) => 
@@ -547,11 +550,6 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                 p.companyName?.replace(/\(주\)/g, '').trim() === b2b.replace(/\(주\)/g, '').trim()
             );
             if (found && isAllowedPartnerName(found.companyName)) return found.companyName;
-        }
-
-        if (!isAdmin && partnerId) {
-            const currentP = partners.find((p: any) => p.partnerId === partnerId || p.loginId === partnerId || p.customUrl === partnerId);
-            if (currentP?.companyName) return currentP.companyName;
         }
 
         return "-";

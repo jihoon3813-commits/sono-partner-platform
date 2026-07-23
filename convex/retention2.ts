@@ -13,47 +13,8 @@ function resolvePartnerForRecord(record: any, allPartners: any[], allApps: any[]
 
     const subClean = subComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
     const b2bClean = b2bComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
-    const transferorClean = transferor.replace(/\s+/g, '').trim();
 
-    // 1. 파트너 데이터 직접 대조
-    for (const p of allPartners) {
-        if (!p) continue;
-        const pId = (p.partnerId || "").trim();
-        const pLogin = (p.loginId || "").trim();
-        const pUrl = (p.customUrl || "").trim();
-        const pObjId = String(p._id);
-        const pComp = (p.companyName || "").trim();
-        const pCleanComp = pComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
-        const pMgr = (p.managerName || "").replace(/\s+/g, '').trim();
-        const pCeo = (p.ceoName || "").replace(/\s+/g, '').trim();
-
-        const partnerIds = new Set<string>([pId, pLogin, pUrl, pObjId].filter(Boolean));
-        
-        // 매핑 테이블 ID_NO 항목 수집
-        const m2 = allMappings2.filter((m: any) => partnerIds.has(m.partnerId));
-        m2.forEach((m: any) => m.idNos?.forEach((id: string) => partnerIds.add(id.trim())));
-        const m1 = allMappings1.filter((m: any) => partnerIds.has(m.partnerId));
-        m1.forEach((m: any) => m.idNos?.forEach((id: string) => partnerIds.add(id.trim())));
-
-        for (const vId of Array.from(partnerIds)) {
-            if (!vId) continue;
-            if (idNo && (idNo === vId || idNo.includes(vId) || vId.includes(idNo))) return p;
-            if (subComp && (subComp === vId || subComp.includes(vId) || vId.includes(subComp))) return p;
-            if (b2bComp && (b2bComp === vId || b2bComp.includes(vId) || vId.includes(b2bComp))) return p;
-            if (transferor && (transferor === vId || transferor.includes(vId) || vId.includes(transferor))) return p;
-        }
-
-        if (pCleanComp) {
-            if (subClean && (subClean === pCleanComp || subClean.includes(pCleanComp) || pCleanComp.includes(subClean))) return p;
-            if (b2bClean && (b2bClean === pCleanComp || b2bClean.includes(pCleanComp) || pCleanComp.includes(b2bClean))) return p;
-            if (transferorClean && (transferorClean === pCleanComp || transferorClean.includes(pCleanComp) || pCleanComp.includes(transferorClean))) return p;
-        }
-
-        if (pMgr && transferorClean && (transferorClean === pMgr || transferorClean.includes(pMgr) || pMgr.includes(transferorClean))) return p;
-        if (pCeo && transferorClean && (transferorClean === pCeo || transferorClean.includes(pCeo) || pCeo.includes(transferorClean))) return p;
-    }
-
-    // 2. 신청서 DB(applications) 매칭 검사
+    // 1순위: 신청서 DB(applications) 고객명 + 전화번호 역매칭 (하위 파트너 링크를 통해 신청한 고객 파트너사 추적)
     if (customerName && phoneDigits && allApps.length > 0) {
         const last4 = phoneDigits.length >= 4 ? phoneDigits.slice(-4) : "";
         const first3 = phoneDigits.length >= 3 ? phoneDigits.slice(0, 3) : "";
@@ -116,7 +77,35 @@ function resolvePartnerForRecord(record: any, allPartners: any[], allApps: any[]
         }
     }
 
-    return null;
+    // 2순위: 엑셀 소속(subCompany) 파트너사명 대조
+    if (subClean) {
+        const foundP = allPartners.find((p: any) => {
+            if (!p) return false;
+            const pComp = (p.companyName || "").trim();
+            const pClean = pComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+            if (pClean && (subClean === pClean || subClean.includes(pClean) || pClean.includes(subClean))) return true;
+            if (p.partnerId && subComp === p.partnerId) return true;
+            if (p.loginId && subComp === p.loginId) return true;
+            return false;
+        });
+        if (foundP) return foundP;
+    }
+
+    // 3순위: ID NO (Column P)가 파트너 PartnerID / LoginID와 직접 대조
+    if (idNo) {
+        const foundP = allPartners.find((p: any) => {
+            if (!p) return false;
+            if (p.partnerId && idNo === p.partnerId.trim()) return true;
+            if (p.loginId && idNo === p.loginId.trim()) return true;
+            if (p.customUrl && idNo === p.customUrl.trim()) return true;
+            return false;
+        });
+        if (foundP) return foundP;
+    }
+
+    // 4순위: 미매칭 시 본사(라이프앤조이)로 할당
+    const hq = allPartners.find((p: any) => p.companyName === "라이프앤조이" || p.loginId === "lifenjoy");
+    return hq || null;
 }
 
 // 유지율2 데이터 업로드 (매칭 파트너 및 상위 파트너 정보 DB 즉시 저장)
@@ -253,23 +242,11 @@ export const updateRetentionStatus = mutation({
     }
 });
 
-// 파트너 매핑 필터 헬퍼 함수 (신청건 기반 매핑 - 본인 및 하위 파트너 포함)
+// 파트너 매핑 필터 헬퍼 함수 (DB 바인딩 저장 필드 + 계층 구조 기반)
 async function filterRecordsForPartner(ctx: any, records: any[], partnerId: string) {
     if (!partnerId || partnerId === "admin") return records;
 
     const allPartners = await ctx.db.query("partners").collect();
-    const allApps = await ctx.db.query("applications").collect();
-    let allMappings1: any[] = [];
-    let allMappings2: any[] = [];
-
-    try {
-        allMappings1 = await ctx.db.query("partnerRetentionMappings").collect();
-        allMappings2 = await ctx.db.query("partnerRetentionMappings2").collect();
-    } catch (e) {
-        console.error("Mapping table error:", e);
-    }
-
-    // 현재 파트너 찾기 (partnerId, loginId, customUrl, _id 중 일치하는 항목)
     const currentPartner = allPartners.find((p: any) =>
         p.partnerId === partnerId || p.loginId === partnerId || p.customUrl === partnerId || String(p._id) === partnerId
     );
@@ -278,13 +255,25 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
         return [];
     }
 
-    // 본인 및 하위 파트너 정보 수집
+    // 본인 및 하위 파트너 계층 수집
     const collectedPartners: any[] = [];
     const collectedPartnerIds = new Set<string>();
+    const collectedPartnerNames = new Set<string>();
     
     const collectHierarchy = (parentP: any) => {
         if (!parentP || collectedPartnerIds.has(String(parentP._id))) return;
         collectedPartnerIds.add(String(parentP._id));
+        if (parentP.partnerId) collectedPartnerIds.add(parentP.partnerId.trim());
+        if (parentP.loginId) collectedPartnerIds.add(parentP.loginId.trim());
+        if (parentP.customUrl) collectedPartnerIds.add(parentP.customUrl.trim());
+
+        if (parentP.companyName) {
+            const comp = parentP.companyName.trim();
+            collectedPartnerNames.add(comp);
+            const clean = comp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+            if (clean) collectedPartnerNames.add(clean);
+        }
+
         collectedPartners.push(parentP);
 
         const pId = (parentP.partnerId || "").trim();
@@ -324,179 +313,33 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
 
     collectHierarchy(currentPartner);
 
-    // 단일 파트너별 연체 레코드 매핑 필터 헬퍼 함수
-    const getRecordsForSinglePartner = (p: any) => {
-        const pPartnerIds = new Set<string>();
-        const pCompanyNames = new Set<string>();
-        const pManagerNames = new Set<string>();
-
-        if (p.partnerId) pPartnerIds.add(p.partnerId.trim());
-        if (p.loginId) pPartnerIds.add(p.loginId.trim());
-        if (p.customUrl) pPartnerIds.add(p.customUrl.trim());
-        if (p._id) pPartnerIds.add(String(p._id));
-
-        if (p.companyName) {
-            const comp = p.companyName.trim();
-            pCompanyNames.add(comp);
-            const cleanComp = comp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
-            if (cleanComp) pCompanyNames.add(cleanComp);
+    // DB에 바인딩된 partnerId/parentPartnerId 및 partnerName 기반 100% 명확 필터링
+    return records.filter(r => {
+        // 1. DB 바인딩 필드 검사
+        if (r.partnerId && collectedPartnerIds.has(r.partnerId.trim())) return true;
+        if (r.parentPartnerId && collectedPartnerIds.has(r.parentPartnerId.trim())) return true;
+        
+        if (r.partnerName) {
+            const pName = r.partnerName.trim();
+            const cleanPName = pName.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+            if (collectedPartnerNames.has(pName) || collectedPartnerNames.has(cleanPName)) return true;
         }
 
-        if (p.managerName) {
-            const mgr = p.managerName.trim();
-            pManagerNames.add(mgr);
-            const cleanMgr = mgr.replace(/\s+/g, '').trim();
-            if (cleanMgr) pManagerNames.add(cleanMgr);
-        }
-        if (p.ceoName) {
-            const ceo = p.ceoName.trim();
-            pManagerNames.add(ceo);
-            const cleanCeo = ceo.replace(/\s+/g, '').trim();
-            if (cleanCeo) pManagerNames.add(cleanCeo);
+        if (r.parentPartnerName) {
+            const parentName = r.parentPartnerName.trim();
+            const cleanParentName = parentName.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+            if (collectedPartnerNames.has(parentName) || collectedPartnerNames.has(cleanParentName)) return true;
         }
 
-        // 매핑 테이블 항목 추가
-        for (const vId of Array.from(pPartnerIds)) {
-            const m2 = allMappings2.filter((m: any) => m.partnerId === vId);
-            m2.forEach((m: any) => m.idNos?.forEach((id: string) => pPartnerIds.add(id.trim())));
-
-            const m1 = allMappings1.filter((m: any) => m.partnerId === vId);
-            m1.forEach((m: any) => m.idNos?.forEach((id: string) => pPartnerIds.add(id.trim())));
+        // 2. 엑셀 소속(subCompany) 검사
+        if (r.subCompany) {
+            const sub = r.subCompany.trim();
+            const cleanSub = sub.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+            if (collectedPartnerNames.has(sub) || collectedPartnerNames.has(cleanSub) || collectedPartnerIds.has(sub)) return true;
         }
 
-        // 해당 파트너의 신청서 목록
-        const pApps = allApps.filter((app: any) => {
-            if (!app) return false;
-            const aId = (app.partnerId || "").trim();
-            const aParentId = (app.parentPartnerId || "").trim();
-            const aName = (app.partnerName || "").trim();
-            const aCleanName = aName.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
-
-            if (aId && pPartnerIds.has(aId)) return true;
-            if (aParentId && pPartnerIds.has(aParentId)) return true;
-
-            for (const comp of Array.from(pCompanyNames)) {
-                const compClean = comp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
-                if (aName && (aName === comp || aName.includes(comp) || comp.includes(aName))) return true;
-                if (aCleanName && compClean && (aCleanName === compClean || aCleanName.includes(compClean) || compClean.includes(aCleanName))) return true;
-            }
-
-            return false;
-        });
-
-        const pIdArray = Array.from(pPartnerIds);
-        const pCompArray = Array.from(pCompanyNames);
-        const pMgrArray = Array.from(pManagerNames);
-
-        return records.filter(r => {
-            const subComp = (r.subCompany || "").trim();
-            const b2bComp = (r.b2bCompany || "").trim();
-            const idNo = (r.idNo || "").trim();
-            const transferor = (r.transferorName || "").trim();
-            const memberNo = (r.memberNo || "").trim();
-            const uniqueNo = (r.uniqueNo || "").trim();
-
-            const subClean = subComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
-            const b2bClean = b2bComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
-            const transferorClean = transferor.replace(/\s+/g, '').trim();
-
-            // 1-A. 파트너 ID / LoginID / customUrl / _id / 매핑 ID NO 일치
-            for (const vId of pIdArray) {
-                if (!vId) continue;
-                if (subComp && (subComp === vId || subComp.includes(vId) || vId.includes(subComp))) return true;
-                if (b2bComp && (b2bComp === vId || b2bComp.includes(vId) || vId.includes(b2bComp))) return true;
-                if (idNo && (idNo === vId || idNo.includes(vId) || vId.includes(idNo))) return true;
-                if (transferor && (transferor === vId || transferor.includes(vId) || vId.includes(transferor))) return true;
-                if (memberNo && (memberNo === vId || memberNo.includes(vId) || vId.includes(memberNo))) return true;
-                if (uniqueNo && (uniqueNo === vId || uniqueNo.includes(vId) || vId.includes(uniqueNo))) return true;
-            }
-
-            // 1-B. 회사명 일치
-            for (const comp of pCompArray) {
-                if (!comp) continue;
-                const compClean = comp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
-                if (subComp && (subComp === comp || subComp.includes(comp) || comp.includes(subComp))) return true;
-                if (b2bComp && (b2bComp === comp || b2bComp.includes(comp) || comp.includes(b2bComp))) return true;
-                if (subClean && compClean && (subClean === compClean || subClean.includes(compClean) || compClean.includes(subClean))) return true;
-                if (b2bClean && compClean && (b2bClean === compClean || b2bClean.includes(compClean) || compClean.includes(b2bClean))) return true;
-                if (transferor && (transferor === comp || transferor.includes(comp) || comp.includes(transferor))) return true;
-                if (transferorClean && compClean && (transferorClean === compClean || transferorClean.includes(compClean) || compClean.includes(transferorClean))) return true;
-            }
-
-            // 1-C. 담당자/추천인명 검사
-            for (const mgr of pMgrArray) {
-                if (!mgr) continue;
-                const mgrClean = mgr.replace(/\s+/g, '').trim();
-                if (transferor && (transferor === mgr || transferor.includes(mgr) || mgr.includes(transferor))) return true;
-                if (transferorClean && mgrClean && (transferorClean === mgrClean || transferorClean.includes(mgrClean) || mgrClean.includes(transferorClean))) return true;
-                if (subComp && (subComp === mgr || subComp.includes(mgr) || mgr.includes(subComp))) return true;
-                if (b2bComp && (b2bComp === mgr || b2bComp.includes(mgr) || mgr.includes(b2bComp))) return true;
-            }
-
-            // 2. 신청서 DB 매칭 검사
-            if (pApps.length > 0) {
-                const rName = (r.customerName || "").replace(/\s+/g, '').trim();
-                const rPhoneDigits = (r.phone || "").replace(/[^0-9]/g, '');
-
-                for (const app of pApps) {
-                    if (!app.customerName || !app.customerPhone) continue;
-                    const appName = app.customerName.replace(/\s+/g, '').trim();
-                    const appPhoneDigits = app.customerPhone.replace(/[^0-9]/g, '');
-
-                    let nameMatch = false;
-                    if (rName === appName) {
-                        nameMatch = true;
-                    } else if (rName.includes('*')) {
-                        if (rName.length === appName.length) {
-                            let match = true;
-                            for (let i = 0; i < rName.length; i++) {
-                                if (rName[i] !== '*' && rName[i] !== appName[i]) { match = false; break; }
-                            }
-                            if (match) nameMatch = true;
-                        } else if (rName.length === 2 && appName.length >= 2 && rName[0] === appName[0]) {
-                            nameMatch = true;
-                        }
-                    } else if (appName.includes('*')) {
-                        if (appName.length === cleanNameLength(appName)) {
-                            let match = true;
-                            for (let i = 0; i < appName.length; i++) {
-                                if (appName[i] !== '*' && appName[i] !== rName[i]) { match = false; break; }
-                            }
-                            if (match) nameMatch = true;
-                        } else if (appName.length === 2 && rName.length >= 2 && appName[0] === rName[0]) {
-                            nameMatch = true;
-                        }
-                    }
-
-                    if (!nameMatch) continue;
-                    if (!rPhoneDigits || !appPhoneDigits) return true;
-                    if (rPhoneDigits === appPhoneDigits) return true;
-
-                    const rFirst3 = rPhoneDigits.slice(0, 3);
-                    const rLast4 = rPhoneDigits.slice(-4);
-                    if (appPhoneDigits.startsWith(rFirst3) && appPhoneDigits.endsWith(rLast4)) return true;
-                    if (rPhoneDigits.length >= 7 && appPhoneDigits.startsWith(rPhoneDigits.slice(0, 7))) return true;
-                    if (rPhoneDigits.length >= 4 && appPhoneDigits.endsWith(rLast4)) return true;
-                    if (appPhoneDigits.endsWith(rLast4)) return true;
-                }
-            }
-
-            return false;
-        });
-    };
-
-    function cleanNameLength(s: string) { return s.length; }
-
-    // 하위 파트너 및 본인의 모든 연체 리스트 수집 및 병합 (중복 제거)
-    const recordMap = new Map<string, any>();
-    for (const p of collectedPartners) {
-        const pRecords = getRecordsForSinglePartner(p);
-        pRecords.forEach(r => {
-            recordMap.set(String(r._id), r);
-        });
-    }
-
-    return Array.from(recordMap.values());
+        return false;
+    });
 }
 
 // [DEBUG] 파트너 계층 및 연체 매칭 디버그 쿼리
