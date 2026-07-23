@@ -362,6 +362,141 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
     return Array.from(recordMap.values());
 }
 
+// [DEBUG] 파트너 계층 및 연체 매칭 디버그 쿼리
+export const debugPartnerHierarchy = query({
+    args: { partnerId: v.optional(v.string()) },
+    handler: async (ctx, args) => {
+        const allPartners = await ctx.db.query("partners").collect();
+        const records = await ctx.db.query("retentionRecords2").order("desc").collect();
+
+        const partnerId = args.partnerId || "";
+
+        // 현재 파트너 찾기
+        const currentPartner = allPartners.find((p: any) =>
+            p.partnerId === partnerId || p.loginId === partnerId || p.customUrl === partnerId || String(p._id) === partnerId
+        );
+
+        if (!currentPartner) {
+            return {
+                error: `Partner not found for: ${partnerId}`,
+                allPartnerSummary: allPartners.map((p: any) => ({
+                    partnerId: p.partnerId,
+                    loginId: p.loginId,
+                    companyName: p.companyName,
+                    parentPartnerId: p.parentPartnerId,
+                    parentPartnerName: p.parentPartnerName,
+                }))
+            };
+        }
+
+        // collectHierarchy 로직 복제 (디버그 로깅 포함)
+        const collectedPartners: any[] = [];
+        const collectedPartnerIds = new Set<string>();
+        const hierarchyLog: string[] = [];
+
+        const collectHierarchy = (parentP: any) => {
+            if (!parentP || collectedPartnerIds.has(String(parentP._id))) return;
+            collectedPartnerIds.add(String(parentP._id));
+            collectedPartners.push(parentP);
+            hierarchyLog.push(`[COLLECTED] ${parentP.companyName} (partnerId=${parentP.partnerId}, loginId=${parentP.loginId})`);
+
+            const pId = (parentP.partnerId || "").trim();
+            const pLogin = (parentP.loginId || "").trim();
+            const pUrl = (parentP.customUrl || "").trim();
+            const pObjId = String(parentP._id);
+            const pComp = (parentP.companyName || "").trim();
+            const pCleanComp = pComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim().toLowerCase();
+
+            const children = allPartners.filter((p: any) => {
+                if (!p || collectedPartnerIds.has(String(p._id))) return false;
+
+                const subParentId = (p.parentPartnerId || "").trim();
+                const subParentName = (p.parentPartnerName || "").trim();
+                const subCleanParentName = subParentName.replace(/\(주\)/g, '').replace(/\s+/g, '').trim().toLowerCase();
+
+                if (subParentId) {
+                    if (pId && subParentId === pId) { hierarchyLog.push(`  CHILD ${p.companyName}: subParentId(${subParentId}) === pId(${pId})`); return true; }
+                    if (pLogin && subParentId === pLogin) { hierarchyLog.push(`  CHILD ${p.companyName}: subParentId(${subParentId}) === pLogin(${pLogin})`); return true; }
+                    if (pUrl && subParentId === pUrl) { hierarchyLog.push(`  CHILD ${p.companyName}: subParentId(${subParentId}) === pUrl(${pUrl})`); return true; }
+                    if (pObjId && subParentId === pObjId) { hierarchyLog.push(`  CHILD ${p.companyName}: subParentId(${subParentId}) === pObjId(${pObjId})`); return true; }
+                    if (pCleanComp && subParentId.replace(/\(주\)/g, '').replace(/\s+/g, '').trim().toLowerCase().includes(pCleanComp)) { hierarchyLog.push(`  CHILD ${p.companyName}: subParentId(${subParentId}) includes pCleanComp(${pCleanComp})`); return true; }
+                }
+
+                if (subParentName) {
+                    if (pComp && (subParentName === pComp || subParentName.includes(pComp) || pComp.includes(subParentName))) { hierarchyLog.push(`  CHILD ${p.companyName}: subParentName(${subParentName}) matches pComp(${pComp})`); return true; }
+                    if (pLogin && (subParentName === pLogin || subParentName.includes(pLogin))) { hierarchyLog.push(`  CHILD ${p.companyName}: subParentName(${subParentName}) matches pLogin(${pLogin})`); return true; }
+                    if (pId && (subParentName === pId || subParentName.includes(pId))) { hierarchyLog.push(`  CHILD ${p.companyName}: subParentName(${subParentName}) matches pId(${pId})`); return true; }
+                    if (pCleanComp && subCleanParentName && (subCleanParentName.includes(pCleanComp) || pCleanComp.includes(subCleanParentName))) { hierarchyLog.push(`  CHILD ${p.companyName}: subCleanParentName(${subCleanParentName}) matches pCleanComp(${pCleanComp})`); return true; }
+                }
+
+                return false;
+            });
+
+            if (children.length === 0) {
+                hierarchyLog.push(`  [NO CHILDREN FOUND for ${parentP.companyName}]`);
+            }
+
+            children.forEach((child: any) => collectHierarchy(child));
+        };
+
+        collectHierarchy(currentPartner);
+
+        // 각 파트너별 records.filter 결과 (간략)
+        const perPartnerCounts: any[] = [];
+        for (const p of collectedPartners) {
+            const filteredResult = await filterRecordsForPartner(ctx, records, p.partnerId || p.loginId || String(p._id));
+            perPartnerCounts.push({
+                companyName: p.companyName,
+                partnerId: p.partnerId,
+                loginId: p.loginId,
+                recordCount: filteredResult.length,
+            });
+        }
+
+        // 전체 결과
+        const fullResult = await filterRecordsForPartner(ctx, records, partnerId);
+
+        return {
+            inputPartnerId: partnerId,
+            currentPartner: {
+                companyName: currentPartner.companyName,
+                partnerId: currentPartner.partnerId,
+                loginId: currentPartner.loginId,
+                parentPartnerId: currentPartner.parentPartnerId,
+                parentPartnerName: currentPartner.parentPartnerName,
+                role: currentPartner.role,
+            },
+            collectedPartnersCount: collectedPartners.length,
+            collectedPartnersList: collectedPartners.map((p: any) => ({
+                companyName: p.companyName,
+                partnerId: p.partnerId,
+                loginId: p.loginId,
+                parentPartnerId: p.parentPartnerId,
+                parentPartnerName: p.parentPartnerName,
+            })),
+            hierarchyLog,
+            perPartnerCounts,
+            totalRecordsInDB: records.length,
+            filteredRecordCount: fullResult.length,
+            sampleFilteredRecords: fullResult.slice(0, 5).map((r: any) => ({
+                customerName: r.customerName,
+                subCompany: r.subCompany,
+                b2bCompany: r.b2bCompany,
+                idNo: r.idNo,
+                transferorName: r.transferorName,
+            })),
+            // 모든 파트너의 parentPartnerId/parentPartnerName 현황
+            allPartnerParentInfo: allPartners.map((p: any) => ({
+                companyName: p.companyName,
+                partnerId: p.partnerId,
+                loginId: p.loginId,
+                parentPartnerId: p.parentPartnerId || "(없음)",
+                parentPartnerName: p.parentPartnerName || "(없음)",
+            })),
+        };
+    }
+});
+
 // 유지율2 데이터 조회 (Admin 또는 파트너 필터링)
 export const getRetentionRecords = query({
     args: { partnerId: v.optional(v.string()) },

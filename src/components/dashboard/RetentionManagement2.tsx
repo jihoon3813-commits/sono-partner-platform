@@ -93,6 +93,11 @@ interface RetentionManagement2Props {
 export default function RetentionManagement2({ isAdmin = false, partnerId, partners = [] }: RetentionManagement2Props) {
     const rawRecords = useQuery(api.retention2.getRetentionRecords, { partnerId: isAdmin ? "admin" : partnerId });
     const allApplications = useQuery(api.applications.getAllApplications);
+    // [DEBUG] 파트너 계층 구조 및 연체 매칭 디버그 데이터
+    const debugData = useQuery(api.retention2.debugPartnerHierarchy, { partnerId: isAdmin ? "admin" : partnerId });
+    if (debugData) {
+        console.log("[DEBUG] Partner Hierarchy Debug:", JSON.stringify(debugData, null, 2));
+    }
     
     const uploadRecords = useMutation(api.retention2.uploadRetentionRecords);
     const updateRetentionStatus = useMutation(api.retention2.updateRetentionStatus);
