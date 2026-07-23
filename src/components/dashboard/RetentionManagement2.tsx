@@ -545,20 +545,6 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                 if (resolveStatus !== delinquencyFilter) return false;
             }
 
-            // 파트너 전용 필터 (HQ Admin이 아닌 경우 본인 및 하위 파트너 고객 표출)
-            if (!isAdmin && partnerId && allowedCompanyNames && allowedCompanyNames.length > 0) {
-                const rPartner = (r.partnerName || "").trim();
-                const sub = (r.subCompany || "").trim();
-                const b2b = (r.b2bCompany || "").trim();
-
-                const isAllowed = allowedCompanyNames.some((cName: string) => 
-                    (rPartner !== "-" && (rPartner === cName || rPartner.includes(cName) || cName.includes(rPartner))) ||
-                    (sub && (sub === cName || sub.includes(cName) || cName.includes(sub))) ||
-                    (b2b && (b2b === cName || b2b.includes(cName) || cName.includes(b2b)))
-                );
-
-                if (!isAllowed) return false;
-            }
 
             // 대시보드 토글 필터
             if (activeStatFilter !== "all") {

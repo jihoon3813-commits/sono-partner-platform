@@ -115,9 +115,15 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
         const pComp = parent.companyName?.trim();
         const pCleanComp = pComp ? pComp.replace(/\(주\)/g, '').trim() : "";
 
+        const pUrl = parent.customUrl;
+        const pIdStr = String(parent._id);
+
         const subs = allPartners.filter((p: any) => {
             if (!p) return false;
-            const matchParentId = (pId && p.parentPartnerId === pId) || (pLogin && p.parentPartnerId === pLogin);
+            const matchParentId = (pId && p.parentPartnerId === pId) ||
+                                  (pLogin && p.parentPartnerId === pLogin) ||
+                                  (pUrl && p.parentPartnerId === pUrl) ||
+                                  (pIdStr && p.parentPartnerId === pIdStr);
             const subParentName = p.parentPartnerName ? p.parentPartnerName.trim() : "";
             const subCleanName = subParentName.replace(/\(주\)/g, '').trim();
 
@@ -172,31 +178,38 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
 
         // 2. 신청서 DB(applications) 매칭을 통한 권한 확인
         if (filteredApps.length > 0) {
-            const rPhoneDigits = r.phone.replace(/[^0-9]/g, '');
-            const rName = r.customerName.trim();
-            const rLast4 = rPhoneDigits.length >= 4 ? rPhoneDigits.slice(-4) : "";
-            const rFirst3 = rPhoneDigits.length >= 3 ? rPhoneDigits.slice(0, 3) : "";
+            const rPhoneDigits = r.phone ? r.phone.replace(/[^0-9]/g, '') : '';
+            const rName = (r.customerName || "").trim();
 
             for (const app of filteredApps) {
                 if (!app.customerName || !app.customerPhone) continue;
                 const appPhoneDigits = app.customerPhone.replace(/[^0-9]/g, '');
                 const appName = app.customerName.trim();
 
-                const phoneMatch = appPhoneDigits.startsWith(rFirst3) && appPhoneDigits.endsWith(rLast4);
-                if (!phoneMatch) continue;
-
+                // 이름 매칭 (마스킹 포함)
                 let nameMatch = false;
-                if (rName.includes('*')) {
-                    if (rName.length === appName.length) {
-                        if (appName.startsWith(rName[0]) && appName.endsWith(rName[rName.length - 1])) {
-                            nameMatch = true;
-                        }
+                if (rName === appName) {
+                    nameMatch = true;
+                } else if (rName.includes('*')) {
+                    if (rName.length === appName.length && appName.startsWith(rName[0]) && appName.endsWith(rName[rName.length - 1])) {
+                        nameMatch = true;
                     }
-                } else {
-                    nameMatch = (appName === rName);
+                } else if (appName.includes('*')) {
+                    if (appName.length === rName.length && rName.startsWith(appName[0]) && rName.endsWith(appName[appName.length - 1])) {
+                        nameMatch = true;
+                    }
                 }
 
-                if (nameMatch) return true;
+                if (!nameMatch) continue;
+
+                // 전화번호 매칭 (마스킹 포함)
+                if (rPhoneDigits && appPhoneDigits) {
+                    if (rPhoneDigits === appPhoneDigits) return true;
+                    const rFirst3 = rPhoneDigits.slice(0, 3);
+                    const rLast4 = rPhoneDigits.slice(-4);
+                    if (appPhoneDigits.startsWith(rFirst3) && appPhoneDigits.endsWith(rLast4)) return true;
+                    if (rPhoneDigits.length >= 7 && appPhoneDigits.startsWith(rPhoneDigits.slice(0, 7))) return true;
+                }
             }
         }
 
