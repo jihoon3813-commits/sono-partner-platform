@@ -172,6 +172,22 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
 
     collectHierarchy(currentPartner);
 
+    // partnerRetentionMappings2 및 partnerRetentionMappings 에서 매핑된 idNos 추가 수집
+    try {
+        const allMappings2 = await ctx.db.query("partnerRetentionMappings2").collect();
+        const allMappings1 = await ctx.db.query("partnerRetentionMappings").collect();
+        
+        for (const vId of Array.from(validPartnerIds)) {
+            const m2 = allMappings2.filter((m: any) => m.partnerId === vId);
+            m2.forEach((m: any) => m.idNos?.forEach((id: string) => validPartnerIds.add(id.trim())));
+
+            const m1 = allMappings1.filter((m: any) => m.partnerId === vId);
+            m1.forEach((m: any) => m.idNos?.forEach((id: string) => validPartnerIds.add(id.trim())));
+        }
+    } catch (e) {
+        console.error("Mapping table fetch error:", e);
+    }
+
     // 상위 파트너(Master/최상위) 여부판별
     const isUpperPartner = (currentPartner.role === 'master') || (!currentPartner.parentPartnerId) || (collectedPartnerIds.size > 1);
 
@@ -222,18 +238,22 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
         const b2bComp = (r.b2bCompany || "").trim();
         const idNo = (r.idNo || "").trim();
         const transferor = (r.transferorName || "").trim();
+        const memberNo = (r.memberNo || "").trim();
+        const uniqueNo = (r.uniqueNo || "").trim();
 
         const subClean = subComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
         const b2bClean = b2bComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
         const transferorClean = transferor.replace(/\s+/g, '').trim();
 
-        // 1-A. 파트너 ID / LoginID / customUrl / _id 일치 검사
+        // 1-A. 파트너 ID / LoginID / customUrl / _id / 매핑 ID NO 일치 검사
         for (const vId of validIdArray) {
             if (!vId) continue;
             if (subComp && (subComp === vId || subComp.includes(vId) || vId.includes(subComp))) return true;
             if (b2bComp && (b2bComp === vId || b2bComp.includes(vId) || vId.includes(b2bComp))) return true;
             if (idNo && (idNo === vId || idNo.includes(vId) || vId.includes(idNo))) return true;
             if (transferor && (transferor === vId || transferor.includes(vId) || vId.includes(transferor))) return true;
+            if (memberNo && (memberNo === vId || memberNo.includes(vId) || vId.includes(memberNo))) return true;
+            if (uniqueNo && (uniqueNo === vId || uniqueNo.includes(vId) || vId.includes(uniqueNo))) return true;
         }
 
         // 1-B. 회사명 일치 검사
