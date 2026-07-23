@@ -718,7 +718,8 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                 <div className="w-full">
                     <div className="bg-white rounded-[32px] shadow-sm border border-gray-100">
                         <div className="p-6 border-b border-gray-50 flex flex-col gap-4 bg-white">
-                            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                            {/* Row 1: 검색어 + 기간 필터 바 + 엑셀 다운로드 */}
+                            <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
                                 <div className="relative flex-1 max-w-md w-full">
                                     <input
                                         type="text"
@@ -731,26 +732,9 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
                                 </div>
-                                <button
-                                    onClick={handleDownloadExcel}
-                                    disabled={isDownloading}
-                                    className={`flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all shadow-lg active:scale-95 ${isDownloading ? 'opacity-70 cursor-wait' : ''}`}
-                                >
-                                    {isDownloading ? (
-                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    ) : (
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg>
-                                    )}
-                                    {isDownloading ? '준비 중...' : '엑셀 다운로드'}
-                                </button>
-                            </div>
 
-                            {/* 추가 필터 선택 영역 */}
-                            <div className="flex flex-wrap items-center justify-between gap-3">
-                                <div className="flex flex-wrap items-center gap-3">
-                                    <div className="flex bg-gray-100 p-1 rounded-xl mr-2">
+                                <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+                                    <div className="flex bg-gray-100 p-1 rounded-xl">
                                         {[
                                             { id: "today", label: "당일" },
                                             { id: "yesterday", label: "전일" },
@@ -772,12 +756,32 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                             </button>
                                         ))}
                                     </div>
-                                    <div className="h-4 w-px bg-gray-200 mx-1"></div>
+
+                                    <button
+                                        onClick={handleDownloadExcel}
+                                        disabled={isDownloading}
+                                        className={`flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all shadow-lg active:scale-95 shrink-0 ${isDownloading ? 'opacity-70 cursor-wait' : ''}`}
+                                    >
+                                        {isDownloading ? (
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        ) : (
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                        )}
+                                        {isDownloading ? '준비 중...' : '엑셀 다운로드'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Row 2: 전체 드롭다운 필터 (좌측) + 엑셀 업데이트 (우측) */}
+                            <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                                <div className="flex flex-wrap items-center gap-2">
                                     {/* 1. 가입상품 필터 */}
                                     <select
                                         value={productFilter}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setProductFilter(e.target.value)}
-                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-3 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
                                     >
                                         <option value="">가입상품 전체</option>
                                         {filterOptions.products.map((p: any) => <option key={p} value={p}>{p}</option>)}
@@ -788,7 +792,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                         <select
                                             value={partnerFilter}
                                             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPartnerFilter(e.target.value)}
-                                            className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                            className="bg-gray-50 border-none rounded-xl text-xs font-bold px-3 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
                                         >
                                             <option value="">파트너사 전체</option>
                                             {filterOptions.partners.map((p: string) => <option key={p} value={p}>{p}</option>)}
@@ -799,7 +803,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                     <select
                                         value={statusFilter}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value)}
-                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-3 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
                                     >
                                         <option value="">가입상태 전체</option>
                                         {filterOptions.statuses.map((s: any) => <option key={s} value={s}>{s}</option>)}
@@ -809,7 +813,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                     <select
                                         value={paymentStatusFilter}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPaymentStatusFilter(e.target.value)}
-                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-3 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
                                     >
                                         <option value="">납입상태 전체</option>
                                         {filterOptions.paymentStatuses.map((p: any) => <option key={p} value={p}>{p}</option>)}
@@ -819,7 +823,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                     <select
                                         value={delinquencyFilter}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDelinquencyFilter(e.target.value)}
-                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-3 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
                                     >
                                         <option value="">연체해결 전체</option>
                                         <option value="미해결">미해결</option>
@@ -830,7 +834,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                     <select
                                         value={cancelFilter}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCancelFilter(e.target.value)}
-                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-3 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
                                     >
                                         <option value="">해약처리 전체</option>
                                         {filterOptions.cancelStatuses.map((c: any) => <option key={c} value={c}>{c}</option>)}
@@ -840,7 +844,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                     <select
                                         value={paymentCountFilter}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPaymentCountFilter(e.target.value)}
-                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-3 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
                                     >
                                         <option value="">실납입회차 전체</option>
                                         {filterOptions.paymentCounts.map((cnt: any) => <option key={cnt} value={cnt}>{cnt}회</option>)}
@@ -850,7 +854,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                     <select
                                         value={refundFilter}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRefundFilter(e.target.value)}
-                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-3 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
                                     >
                                         <option value="">환수여부 전체</option>
                                         {REFUND_OPTIONS.map((r: string) => <option key={r} value={r}>{r}</option>)}
@@ -860,44 +864,13 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                     <select
                                         value={revivalFilter}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRevivalFilter(e.target.value)}
-                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-3 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
                                     >
                                         <option value="">부활여부 전체</option>
                                         {REVIVAL_OPTIONS.map((v: string) => <option key={v} value={v}>{v}</option>)}
                                     </select>
 
-                                    {/* 정렬 드롭다운 */}
-                                    <select
-                                        value={`${sortField}_${sortOrder}`}
-                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                                            const val = e.target.value;
-                                            if (val === "default_asc") {
-                                                setSortField("default");
-                                                setSortOrder("asc");
-                                            } else if (val === "joinDate_asc") {
-                                                setSortField("joinDate");
-                                                setSortOrder("asc");
-                                            } else if (val === "joinDate_desc") {
-                                                setSortField("joinDate");
-                                                setSortOrder("desc");
-                                            } else if (val === "customerName_asc") {
-                                                setSortField("customerName");
-                                                setSortOrder("asc");
-                                            } else if (val === "customerName_desc") {
-                                                setSortField("customerName");
-                                                setSortOrder("desc");
-                                            }
-                                        }}
-                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
-                                    >
-                                        <option value="default_asc">기본 정렬 (연체순 &gt; 가입일순 &gt; 이름순)</option>
-                                        <option value="joinDate_asc">가입일자 오래된순</option>
-                                        <option value="joinDate_desc">가입일자 최신순</option>
-                                        <option value="customerName_asc">고객명 가나다순</option>
-                                        <option value="customerName_desc">고객명 가나다 역순</option>
-                                    </select>
-
-                                    {(productFilter || partnerFilter || statusFilter || paymentStatusFilter || methodFilter || cancelFilter || paymentCountFilter || refundFilter || revivalFilter || delinquencyFilter || sortField !== "default" || activeStatFilter !== "all") && (
+                                    {(productFilter || partnerFilter || statusFilter || paymentStatusFilter || methodFilter || cancelFilter || paymentCountFilter || refundFilter || revivalFilter || delinquencyFilter || activeStatFilter !== "all") && (
                                         <button
                                             onClick={() => {
                                                 setProductFilter("");
@@ -914,15 +887,16 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                                 setSortOrder("asc");
                                                 setActiveStatFilter("all");
                                             }}
-                                            className="text-[10px] font-bold text-sono-primary hover:underline"
+                                            className="text-[10px] font-bold text-sono-primary hover:underline px-1"
                                         >
                                             필터 초기화
                                         </button>
                                     )}
                                 </div>
 
+                                {/* 엑셀 업데이트 날짜 표시 (필터 라인 우측) */}
                                 {records && records.length > 0 && (
-                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-100">
+                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-100 ml-auto">
                                         <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">엑셀 업데이트</span>
                                         <span className="text-[11px] font-bold text-gray-600">
                                             {records[0].uploadedAt?.substring(0, 10) || "-"}
