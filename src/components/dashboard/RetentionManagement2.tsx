@@ -547,7 +547,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
             {/* 상단 헤더 & 업로드 */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
                 <div>
-                    <h2 className="text-2xl font-black text-sono-dark tracking-tighter">유지율2 관리</h2>
+                    <h2 className="text-2xl font-black text-sono-dark tracking-tighter">연체 관리</h2>
                     <p className="text-gray-400 text-sm font-bold mt-1">고객의 납입, 유지, 환수 및 부활 현황을 관리합니다.</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
