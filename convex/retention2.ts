@@ -112,38 +112,36 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
         collectedPartnerIds.add(String(parentP._id));
         collectedPartners.push(parentP);
 
-        const pId = parentP.partnerId?.trim();
-        const pLogin = parentP.loginId?.trim();
-        const pUrl = parentP.customUrl?.trim();
+        const pId = (parentP.partnerId || "").trim();
+        const pLogin = (parentP.loginId || "").trim();
+        const pUrl = (parentP.customUrl || "").trim();
         const pObjId = String(parentP._id);
-        const pComp = parentP.companyName?.trim();
-        const pCleanComp = pComp ? pComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim() : "";
+        const pComp = (parentP.companyName || "").trim();
+        const pCleanComp = pComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim().toLowerCase();
 
         const children = allPartners.filter((p: any) => {
             if (!p || collectedPartnerIds.has(String(p._id))) return false;
 
-            const subParentId = p.parentPartnerId ? p.parentPartnerId.trim() : "";
-            const subParentName = p.parentPartnerName ? p.parentPartnerName.trim() : "";
-            const subCleanName = subParentName.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+            const subParentId = (p.parentPartnerId || "").trim();
+            const subParentName = (p.parentPartnerName || "").trim();
+            const subCleanParentName = subParentName.replace(/\(주\)/g, '').replace(/\s+/g, '').trim().toLowerCase();
 
-            const isChild = (
-                (subParentId && (
-                    subParentId === pId ||
-                    subParentId === pLogin ||
-                    subParentId === pUrl ||
-                    subParentId === pObjId ||
-                    (pComp && (subParentId === pComp || subParentId.includes(pComp) || pComp.includes(subParentId))) ||
-                    (pCleanComp && subCleanName && (subCleanName === pCleanComp || subCleanName.includes(pCleanComp) || pCleanComp.includes(subCleanName)))
-                )) ||
-                (subParentName && (
-                    (pComp && (subParentName === pComp || subParentName.includes(pComp) || pComp.includes(subParentName))) ||
-                    (pLogin && subParentName === pLogin) ||
-                    (pId && subParentName === pId) ||
-                    (pCleanComp && subCleanName && (subCleanName === pCleanComp || subCleanName.includes(pCleanComp) || pCleanComp.includes(subCleanName)))
-                ))
-            );
+            if (subParentId) {
+                if (pId && subParentId === pId) return true;
+                if (pLogin && subParentId === pLogin) return true;
+                if (pUrl && subParentId === pUrl) return true;
+                if (pObjId && subParentId === pObjId) return true;
+                if (pCleanComp && subParentId.replace(/\(주\)/g, '').replace(/\s+/g, '').trim().toLowerCase().includes(pCleanComp)) return true;
+            }
 
-            return isChild;
+            if (subParentName) {
+                if (pComp && (subParentName === pComp || subParentName.includes(pComp) || pComp.includes(subParentName))) return true;
+                if (pLogin && (subParentName === pLogin || subParentName.includes(pLogin))) return true;
+                if (pId && (subParentName === pId || subParentName.includes(pId))) return true;
+                if (pCleanComp && subCleanParentName && (subCleanParentName.includes(pCleanComp) || pCleanComp.includes(subCleanParentName))) return true;
+            }
+
+            return false;
         });
 
         children.forEach((child: any) => collectHierarchy(child));
@@ -284,7 +282,7 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
                             nameMatch = true;
                         }
                     } else if (appName.includes('*')) {
-                        if (appName.length === rName.length) {
+                        if (appName.length === cleanNameLength(appName)) {
                             let match = true;
                             for (let i = 0; i < appName.length; i++) {
                                 if (appName[i] !== '*' && appName[i] !== rName[i]) { match = false; break; }
@@ -311,6 +309,8 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
             return false;
         });
     };
+
+    function cleanNameLength(s: string) { return s.length; }
 
     // 하위 파트너 및 본인의 모든 연체 리스트 수집 및 병합 (중복 제거)
     const recordMap = new Map<string, any>();
