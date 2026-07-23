@@ -43,18 +43,42 @@ export async function GET(request: Request) {
 
         // 파트너 계층 구조 조회 (본인 + 하위 파트너)
         const allPartners = await getAllPartners();
-        const myPartners = allPartners.filter(p => p.partnerId === partnerId || p.parentPartnerId === partnerId);
+        const pId = partner.partnerId;
+        const pLogin = partner.loginId;
+        const pComp = partner.companyName?.trim();
+        const pCleanComp = pComp ? pComp.replace(/\(주\)/g, '').trim() : "";
 
-        // 고객 데이터 조회를 위한 ID 목록 구성 (본인 + 하위 파트너들의 ID 및 LoginID)
+        const myPartners = allPartners.filter(p => {
+            if (p.partnerId === partnerId || p.loginId === partnerId) return true;
+            const matchId = (pId && p.parentPartnerId === pId) || (pLogin && p.parentPartnerId === pLogin);
+            const subParentName = p.parentPartnerName ? p.parentPartnerName.trim() : "";
+            const subCleanName = subParentName.replace(/\(주\)/g, '').trim();
+            const matchName = (pComp && subParentName && (subParentName === pComp || subParentName.includes(pComp) || pComp.includes(subParentName))) ||
+                                    (pCleanComp && subCleanName && (subCleanName === pCleanComp || subCleanName.includes(pCleanComp) || pCleanComp.includes(subCleanName)));
+            return matchId || matchName;
+        });
+
+        // 고객 데이터 조회를 위한 ID 목록 구성 (본인 + 하위 파트너들의 ID, LoginID, 회사명)
         const validIds: string[] = [];
+        const validComps: string[] = [];
         myPartners.forEach(p => {
             if (p.partnerId) validIds.push(p.partnerId);
             if (p.loginId) validIds.push(p.loginId);
+            if (p.companyName) validComps.push(p.companyName.trim());
         });
 
         const allApplications = await getAllApplications();
         const partnerApplications = allApplications
-            .filter(app => validIds.includes(app.partnerId))
+            .filter(app => {
+                if (app.partnerId && validIds.includes(app.partnerId)) return true;
+                if (app.partnerName) {
+                    const appComp = app.partnerName.trim();
+                    for (const comp of validComps) {
+                        if (appComp === comp || appComp.includes(comp) || comp.includes(appComp)) return true;
+                    }
+                }
+                return false;
+            })
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
         return NextResponse.json({

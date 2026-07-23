@@ -98,7 +98,12 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
     const addPartnerInfo = (p: any) => {
         if (p.partnerId) validPartnerIds.add(p.partnerId);
         if (p.loginId) validPartnerIds.add(p.loginId);
-        if (p.companyName) validCompanyNames.add(p.companyName.trim());
+        if (p.companyName) {
+            const comp = p.companyName.trim();
+            validCompanyNames.add(comp);
+            const clean = comp.replace(/\(주\)/g, '').trim();
+            if (clean) validCompanyNames.add(clean);
+        }
     };
 
     addPartnerInfo(partner);
@@ -108,11 +113,17 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
         const pId = parent.partnerId;
         const pLogin = parent.loginId;
         const pComp = parent.companyName?.trim();
+        const pCleanComp = pComp ? pComp.replace(/\(주\)/g, '').trim() : "";
 
         const subs = allPartners.filter((p: any) => {
             if (!p) return false;
             const matchParentId = (pId && p.parentPartnerId === pId) || (pLogin && p.parentPartnerId === pLogin);
-            const matchParentName = pComp && p.parentPartnerName && p.parentPartnerName.trim() === pComp;
+            const subParentName = p.parentPartnerName ? p.parentPartnerName.trim() : "";
+            const subCleanName = subParentName.replace(/\(주\)/g, '').trim();
+
+            const matchParentName = (pComp && subParentName && (subParentName === pComp || subParentName.includes(pComp) || pComp.includes(subParentName))) ||
+                                    (pCleanComp && subCleanName && (subCleanName === pCleanComp || subCleanName.includes(pCleanComp) || pCleanComp.includes(subCleanName)));
+
             return matchParentId || matchParentName;
         });
 

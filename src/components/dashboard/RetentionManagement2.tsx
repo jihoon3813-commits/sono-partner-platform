@@ -144,18 +144,27 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
 
         const allowed = new Set<string>();
         if (currentP.companyName) {
-            allowed.add(currentP.companyName.trim());
+            const comp = currentP.companyName.trim();
+            allowed.add(comp);
+            const clean = comp.replace(/\(주\)/g, '').trim();
+            if (clean) allowed.add(clean);
         }
 
         const findSubPartners = (parent: any) => {
             const pId = parent.partnerId;
             const pLogin = parent.loginId;
             const pComp = parent.companyName?.trim();
+            const pCleanComp = pComp ? pComp.replace(/\(주\)/g, '').trim() : "";
 
             const subs = partners.filter((p: any) => {
                 if (!p) return false;
                 const matchParentId = (pId && p.parentPartnerId === pId) || (pLogin && p.parentPartnerId === pLogin);
-                const matchParentName = pComp && p.parentPartnerName && p.parentPartnerName.trim() === pComp;
+                const subParentName = p.parentPartnerName ? p.parentPartnerName.trim() : "";
+                const subCleanName = subParentName.replace(/\(주\)/g, '').trim();
+
+                const matchParentName = (pComp && subParentName && (subParentName === pComp || subParentName.includes(pComp) || pComp.includes(subParentName))) ||
+                                        (pCleanComp && subCleanName && (subCleanName === pCleanComp || subCleanName.includes(pCleanComp) || pCleanComp.includes(subCleanName)));
+
                 return matchParentId || matchParentName;
             });
 
@@ -164,6 +173,8 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                     const comp = sub.companyName.trim();
                     if (!allowed.has(comp)) {
                         allowed.add(comp);
+                        const cleanSub = comp.replace(/\(주\)/g, '').trim();
+                        if (cleanSub) allowed.add(cleanSub);
                         findSubPartners(sub);
                     }
                 }

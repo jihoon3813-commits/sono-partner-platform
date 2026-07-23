@@ -56,32 +56,67 @@ export const getDashboardData = query({
             }
         }
 
-        // 본인(또는 상위 파트너) + 직계 하위 파트너 목록 가져오기 (인덱스 활용)
-        const subPartners = await ctx.db
-            .query("partners")
-            .withIndex("by_parentPartnerId", (q) => q.eq("parentPartnerId", targetParentPartner.partnerId))
-            .collect();
+        // 전체 파트너 목록 가져오기
+        const allPartners = await ctx.db.query("partners").collect();
 
-        console.log("[Dashboard Query] Found subPartners count:", subPartners.length);
+        // targetParentPartner 및 모든 하위 파트너 재귀 수집 (partnerId, loginId, companyName 매칭)
+        const partnerMap = new Map<string, any>();
+        partnerMap.set(targetParentPartner._id, targetParentPartner);
 
-        // partnerList에는 상위 파트너, 상위의 모든 하위 파트너(TM 자신 포함)가 포함되어야 함
-        const partnerList = [targetParentPartner, ...subPartners];
-        
-        // TM 계정인 경우 리스트에 TM 본인도 확실히 포함하도록 보장
-        if (!partnerList.find(p => p.partnerId === myPartner.partnerId)) {
-            partnerList.push(myPartner);
+        const collectSubs = (parent: any) => {
+            const pId = parent.partnerId;
+            const pLogin = parent.loginId;
+            const pComp = parent.companyName?.trim();
+            const pCleanComp = pComp ? pComp.replace(/\(주\)/g, '').trim() : "";
+
+            const subs = allPartners.filter((p: any) => {
+                if (!p || partnerMap.has(p._id)) return false;
+                const matchId = (pId && p.parentPartnerId === pId) || (pLogin && p.parentPartnerId === pLogin);
+                const subParentName = p.parentPartnerName ? p.parentPartnerName.trim() : "";
+                const subCleanName = subParentName.replace(/\(주\)/g, '').trim();
+
+                const matchName = (pComp && subParentName && (subParentName === pComp || subParentName.includes(pComp) || pComp.includes(subParentName))) ||
+                                        (pCleanComp && subCleanName && (subCleanName === pCleanComp || subCleanName.includes(pCleanComp) || pCleanComp.includes(subCleanName)));
+
+                return matchId || matchName;
+            });
+
+            subs.forEach((sub: any) => {
+                partnerMap.set(sub._id, sub);
+                collectSubs(sub);
+            });
+        };
+
+        collectSubs(targetParentPartner);
+        if (!partnerMap.has(myPartner._id)) {
+            partnerMap.set(myPartner._id, myPartner);
         }
 
-        // partnerId 또는 loginId로 매칭 (기존 데이터와 새 데이터 모두 지원)
-        const validSystemIds = partnerList.map(p => p.partnerId);
+        const partnerList = Array.from(partnerMap.values());
+        console.log("[Dashboard Query] Found partnerList count:", partnerList.length);
+
+        // partnerId 또는 loginId, 회사명 매칭 리스트 생성
+        const validSystemIds = partnerList.map(p => p.partnerId).filter(Boolean);
         const validLoginIds = partnerList.map(p => p.loginId).filter(Boolean);
-        const allValidIds = [...validSystemIds, ...validLoginIds];
+        const validCompanyNames = partnerList.map(p => p.companyName?.trim()).filter(Boolean);
+        const allValidIds = new Set([...validSystemIds, ...validLoginIds]);
 
-        console.log("[Dashboard Query] Valid IDs for filtering:", allValidIds);
+        console.log("[Dashboard Query] Valid IDs for filtering:", Array.from(allValidIds));
 
-        // 애플리케이션 필터링 (partnerId가 시스템ID 또는 loginId와 매칭되는 경우)
+        // 애플리케이션 필터링 (partnerId가 시스템ID 또는 loginId, 파트너사명과 매칭되는 경우)
         const allApplications = await ctx.db.query("applications").order("desc").collect();
-        const filteredApps = allApplications.filter(app => allValidIds.includes(app.partnerId));
+        const filteredApps = allApplications.filter(app => {
+            if (app.partnerId && allValidIds.has(app.partnerId)) return true;
+            if (app.partnerName) {
+                const appComp = app.partnerName.trim();
+                for (const comp of validCompanyNames) {
+                    if (appComp === comp || appComp.includes(comp) || comp.includes(appComp)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
 
         console.log("[Dashboard Query] Total apps:", allApplications.length, "Filtered apps:", filteredApps.length);
 
