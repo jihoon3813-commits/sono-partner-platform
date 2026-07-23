@@ -321,44 +321,6 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
         });
     }
 
-    // 최상위/Master 파트너의 경우 타 파트너 전용 데이터가 아닌 범용 항목도 추가 포함
-    const isUpperPartner = (currentPartner.role === 'master') || (!currentPartner.parentPartnerId) || (collectedPartnerIds.size > 1);
-    if (isUpperPartner) {
-        const otherPartners = allPartners.filter((p: any) => !collectedPartnerIds.has(String(p._id)));
-        const otherPartnerNames = new Set<string>();
-        otherPartners.forEach((p: any) => {
-            if (p.companyName) {
-                const comp = p.companyName.trim();
-                otherPartnerNames.add(comp);
-                const clean = comp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
-                if (clean) otherPartnerNames.add(clean);
-            }
-            if (p.loginId) otherPartnerNames.add(p.loginId.trim());
-            if (p.partnerId) otherPartnerNames.add(p.partnerId.trim());
-        });
-        const otherPartnerArray = Array.from(otherPartnerNames);
-
-        records.forEach(r => {
-            if (recordMap.has(String(r._id))) return;
-
-            const subComp = (r.subCompany || "").trim();
-            const b2bComp = (r.b2bCompany || "").trim();
-            const subClean = subComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
-            const b2bClean = b2bComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
-
-            const isExplicitlyOther = otherPartnerArray.some(otherName => {
-                if (!otherName) return false;
-                if (subComp && (subComp === otherName || subClean === otherName)) return true;
-                if (b2bComp && (b2bComp === otherName || b2bClean === otherName)) return true;
-                return false;
-            });
-
-            if (!isExplicitlyOther) {
-                recordMap.set(String(r._id), r);
-            }
-        });
-    }
-
     return Array.from(recordMap.values());
 }
 
