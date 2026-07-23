@@ -52,6 +52,23 @@ const formatDateForDisplay = (val: string | undefined): string => {
     return strVal;
 };
 
+// 화면 표시용 이체일자 포맷 (25 -> 25일, 20011001 -> 2001-10-01)
+const formatTransferDateForDisplay = (val: string | undefined): string => {
+    if (!val) return "-";
+    const str = String(val).trim();
+    if (!str || str === "-") return "-";
+    
+    if (/^\d{8}$/.test(str)) {
+        return `${str.substring(0, 4)}-${str.substring(4, 6)}-${str.substring(6, 8)}`;
+    }
+    
+    if (/^\d{1,2}$/.test(str)) {
+        return `${str}일`;
+    }
+    
+    return str;
+};
+
 // 환수여부 옵션 목록 (100% ~ 40%까지 5%씩 감축 + 선택없음)
 const REFUND_OPTIONS = [
     "선택없음",
@@ -920,6 +937,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                         <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">납입방법</th>
                                         <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">해약처리</th>
                                         <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">실납입회차</th>
+                                        <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">이체일자</th>
                                         <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">환수 여부</th>
                                         <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">부활 여부</th>
                                     </tr>
@@ -927,7 +945,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                 <tbody>
                                     {filteredRecords.length === 0 ? (
                                         <tr>
-                                            <td colSpan={14} className="px-4 py-20 text-center text-gray-400 font-bold italic">조회된 데이터가 없습니다.</td>
+                                            <td colSpan={15} className="px-4 py-20 text-center text-gray-400 font-bold italic">조회된 데이터가 없습니다.</td>
                                         </tr>
                                     ) : (
                                         filteredRecords.map((r: any, i: number) => {
@@ -1029,7 +1047,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                                     <td className="px-3 py-2.5 text-[11px] font-bold text-gray-500 text-center border-b border-gray-50 align-middle">{r.paymentMethod}</td>
                                                     <td className="px-3 py-2.5 text-[11px] text-red-400 text-center border-b border-gray-50 align-middle">{r.cancelStatus}</td>
                                                     <td className="px-3 py-2.5 text-xs font-black text-sono-dark text-center border-b border-gray-50 align-middle">{r.actualPaymentCount}회</td>
-                                                    <td className="px-3 py-2.5 text-[11px] font-bold text-gray-600 text-center border-b border-gray-50 align-middle">{r.transferDate || "-"}</td>
+                                                    <td className="px-3 py-2.5 text-[11px] font-bold text-gray-600 text-center border-b border-gray-50 align-middle">{formatTransferDateForDisplay(r.transferDate)}</td>
                                                     <td className="px-3 py-2.5 text-center border-b border-gray-50 align-middle">
                                                         <div className="flex flex-col items-center justify-center">
                                                             {updatingMap[`${r._id}_refundStatus`] ? (
