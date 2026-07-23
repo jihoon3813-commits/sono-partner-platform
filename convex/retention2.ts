@@ -2,7 +2,124 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { nowKST } from "./utils";
 
-// 유지율2 데이터 업로드
+// 파트너 매핑 해결 헬퍼 함수 (업로드 시 / DB 재바인딩 시 각 레코드에 파트너 정보 주입)
+function resolvePartnerForRecord(record: any, allPartners: any[], allApps: any[], allMappings1: any[], allMappings2: any[]) {
+    const subComp = (record.subCompany || "").trim();
+    const b2bComp = (record.b2bCompany || "").trim();
+    const idNo = (record.idNo || "").trim();
+    const transferor = (record.transferorName || "").trim();
+    const customerName = (record.customerName || "").replace(/\s+/g, '').trim();
+    const phoneDigits = (record.phone || "").replace(/[^0-9]/g, '');
+
+    const subClean = subComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+    const b2bClean = b2bComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+    const transferorClean = transferor.replace(/\s+/g, '').trim();
+
+    // 1. 파트너 데이터 직접 대조
+    for (const p of allPartners) {
+        if (!p) continue;
+        const pId = (p.partnerId || "").trim();
+        const pLogin = (p.loginId || "").trim();
+        const pUrl = (p.customUrl || "").trim();
+        const pObjId = String(p._id);
+        const pComp = (p.companyName || "").trim();
+        const pCleanComp = pComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+        const pMgr = (p.managerName || "").replace(/\s+/g, '').trim();
+        const pCeo = (p.ceoName || "").replace(/\s+/g, '').trim();
+
+        const partnerIds = new Set<string>([pId, pLogin, pUrl, pObjId].filter(Boolean));
+        
+        // 매핑 테이블 ID_NO 항목 수집
+        const m2 = allMappings2.filter((m: any) => partnerIds.has(m.partnerId));
+        m2.forEach((m: any) => m.idNos?.forEach((id: string) => partnerIds.add(id.trim())));
+        const m1 = allMappings1.filter((m: any) => partnerIds.has(m.partnerId));
+        m1.forEach((m: any) => m.idNos?.forEach((id: string) => partnerIds.add(id.trim())));
+
+        for (const vId of Array.from(partnerIds)) {
+            if (!vId) continue;
+            if (idNo && (idNo === vId || idNo.includes(vId) || vId.includes(idNo))) return p;
+            if (subComp && (subComp === vId || subComp.includes(vId) || vId.includes(subComp))) return p;
+            if (b2bComp && (b2bComp === vId || b2bComp.includes(vId) || vId.includes(b2bComp))) return p;
+            if (transferor && (transferor === vId || transferor.includes(vId) || vId.includes(transferor))) return p;
+        }
+
+        if (pCleanComp) {
+            if (subClean && (subClean === pCleanComp || subClean.includes(pCleanComp) || pCleanComp.includes(subClean))) return p;
+            if (b2bClean && (b2bClean === pCleanComp || b2bClean.includes(pCleanComp) || pCleanComp.includes(b2bClean))) return p;
+            if (transferorClean && (transferorClean === pCleanComp || transferorClean.includes(pCleanComp) || pCleanComp.includes(transferorClean))) return p;
+        }
+
+        if (pMgr && transferorClean && (transferorClean === pMgr || transferorClean.includes(pMgr) || pMgr.includes(transferorClean))) return p;
+        if (pCeo && transferorClean && (transferorClean === pCeo || transferorClean.includes(pCeo) || pCeo.includes(transferorClean))) return p;
+    }
+
+    // 2. 신청서 DB(applications) 매칭 검사
+    if (customerName && phoneDigits && allApps.length > 0) {
+        const last4 = phoneDigits.length >= 4 ? phoneDigits.slice(-4) : "";
+        const first3 = phoneDigits.length >= 3 ? phoneDigits.slice(0, 3) : "";
+
+        for (const app of allApps) {
+            if (!app.customerName || !app.customerPhone) continue;
+            const appName = app.customerName.replace(/\s+/g, '').trim();
+            const appPhoneDigits = app.customerPhone.replace(/[^0-9]/g, '');
+
+            let phoneMatch = false;
+            if (phoneDigits.includes('*') || phoneDigits.length < 10) {
+                phoneMatch = appPhoneDigits.startsWith(first3) && appPhoneDigits.endsWith(last4);
+            } else {
+                phoneMatch = (appPhoneDigits === phoneDigits);
+            }
+            if (!phoneMatch) continue;
+
+            let nameMatch = false;
+            if (customerName === appName) {
+                nameMatch = true;
+            } else if (customerName.includes('*')) {
+                if (customerName.length === appName.length) {
+                    let match = true;
+                    for (let i = 0; i < customerName.length; i++) {
+                        if (customerName[i] !== '*' && customerName[i] !== appName[i]) { match = false; break; }
+                    }
+                    if (match) nameMatch = true;
+                } else if (customerName.length === 2 && appName.length >= 2 && customerName[0] === appName[0]) {
+                    nameMatch = true;
+                }
+            } else if (appName.includes('*')) {
+                if (appName.length === customerName.length) {
+                    let match = true;
+                    for (let i = 0; i < appName.length; i++) {
+                        if (appName[i] !== '*' && appName[i] !== customerName[i]) { match = false; break; }
+                    }
+                    if (match) nameMatch = true;
+                } else if (appName.length === 2 && customerName.length >= 2 && appName[0] === customerName[0]) {
+                    nameMatch = true;
+                }
+            }
+
+            if (nameMatch) {
+                const aId = (app.partnerId || "").trim();
+                const aName = (app.partnerName || "").trim();
+                const aCleanName = aName.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+
+                const foundP = allPartners.find((p: any) => {
+                    if (!p) return false;
+                    if (aId && (p.partnerId === aId || p.loginId === aId || p.customUrl === aId || String(p._id) === aId)) return true;
+                    const pComp = (p.companyName || "").trim();
+                    const pClean = pComp.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+                    if (aName && (pComp === aName || pComp.includes(aName) || aName.includes(pComp))) return true;
+                    if (aCleanName && pClean && (pClean === aCleanName || pClean.includes(aCleanName) || aCleanName.includes(pClean))) return true;
+                    return false;
+                });
+
+                if (foundP) return foundP;
+            }
+        }
+    }
+
+    return null;
+}
+
+// 유지율2 데이터 업로드 (매칭 파트너 및 상위 파트너 정보 DB 즉시 저장)
 export const uploadRetentionRecords = mutation({
     args: {
         records: v.array(v.object({
@@ -37,17 +154,75 @@ export const uploadRetentionRecords = mutation({
             await ctx.db.delete(record._id);
         }
 
-        // 새 데이터 삽입
+        const allPartners = await ctx.db.query("partners").collect();
+        const allApps = await ctx.db.query("applications").collect();
+        let allMappings1: any[] = [];
+        let allMappings2: any[] = [];
+
+        try {
+            allMappings1 = await ctx.db.query("partnerRetentionMappings").collect();
+            allMappings2 = await ctx.db.query("partnerRetentionMappings2").collect();
+        } catch (e) {
+            console.error("Mapping table error:", e);
+        }
+
+        // 새 데이터 삽입 (파트너 정보 바인딩 후 저장)
         for (const record of args.records) {
             const joinStatus = record.joinStatus || "";
             const paymentStatus = (joinStatus.includes("해약") || joinStatus === "해약") ? "해약처리" : record.paymentStatus;
+            
+            const matchedP = resolvePartnerForRecord(record, allPartners, allApps, allMappings1, allMappings2);
+            
+            const partnerId = matchedP?.partnerId || matchedP?.loginId || "";
+            const partnerName = matchedP?.companyName || "";
+            const parentPartnerId = matchedP?.parentPartnerId || "";
+            const parentPartnerName = matchedP?.parentPartnerName || "";
+
             await ctx.db.insert("retentionRecords2", {
                 ...record,
                 paymentStatus,
+                partnerId,
+                partnerName,
+                parentPartnerId,
+                parentPartnerName,
                 uploadedAt: now,
             });
         }
         return { count: args.records.length };
+    }
+});
+
+// 기존 연체 리스트 전체 파트너 정보 재바인딩 DB 업데이트 뮤테이션
+export const rebindAllRetentionRecords = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const existing = await ctx.db.query("retentionRecords2").collect();
+        const allPartners = await ctx.db.query("partners").collect();
+        const allApps = await ctx.db.query("applications").collect();
+        let allMappings1: any[] = [];
+        let allMappings2: any[] = [];
+
+        try {
+            allMappings1 = await ctx.db.query("partnerRetentionMappings").collect();
+            allMappings2 = await ctx.db.query("partnerRetentionMappings2").collect();
+        } catch (e) {
+            console.error("Mapping table error:", e);
+        }
+
+        let updatedCount = 0;
+        for (const record of existing) {
+            const matchedP = resolvePartnerForRecord(record, allPartners, allApps, allMappings1, allMappings2);
+            if (matchedP) {
+                await ctx.db.patch(record._id, {
+                    partnerId: matchedP.partnerId || matchedP.loginId || "",
+                    partnerName: matchedP.companyName || "",
+                    parentPartnerId: matchedP.parentPartnerId || "",
+                    parentPartnerName: matchedP.parentPartnerName || "",
+                });
+                updatedCount++;
+            }
+        }
+        return { updatedCount, totalCount: existing.length };
     }
 });
 

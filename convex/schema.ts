@@ -324,6 +324,12 @@ export default defineSchema({
         subCompany: v.optional(v.string()), // 소속(업체명) (Col S)
         transferorName: v.optional(v.string()), // 전해자명 (Col T)
 
+        // 매칭된 파트너 정보 (업로드 시/동기화 시 자동 바인딩 저장)
+        partnerId: v.optional(v.string()),
+        partnerName: v.optional(v.string()),
+        parentPartnerId: v.optional(v.string()),
+        parentPartnerName: v.optional(v.string()),
+
         // 수동 선택 상태
         refundStatus: v.optional(v.string()), // 환수여부 (100%~40%, 선택없음)
         refundUpdatedAt: v.optional(v.string()),
@@ -333,7 +339,9 @@ export default defineSchema({
         delinquencyResolveUpdatedAt: v.optional(v.string()),
 
         uploadedAt: v.string(),
-    }).index("by_idNo", ["idNo"]),
+    }).index("by_idNo", ["idNo"])
+      .index("by_partnerId", ["partnerId"])
+      .index("by_parentPartnerId", ["parentPartnerId"]),
 
     // 파트너별 유지율2 ID_NO 매핑 테이블
     partnerRetentionMappings2: defineTable({
