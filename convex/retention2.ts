@@ -78,30 +78,69 @@ export const updateRetentionStatus = mutation({
     }
 });
 
-// 파트너 매핑 필터 헬퍼 함수 (신청건 기반 매핑)
+// 파트너 매핑 필터 헬퍼 함수 (신청건 기반 매핑 - 본인 및 하위 파트너 포함)
 async function filterRecordsForPartner(ctx: any, records: any[], partnerId: string) {
     if (!partnerId || partnerId === "admin") return records;
 
-    const partner = await ctx.db
-        .query("partners")
-        .withIndex("by_partnerId", (q: any) => q.eq("partnerId", partnerId))
-        .first();
+    const allPartners = await ctx.db.query("partners").collect();
 
-    const partnerByLogin = partner || await ctx.db
-        .query("partners")
-        .withIndex("by_loginId", (q: any) => q.eq("loginId", partnerId))
-        .first();
+    // 현재 파트너 정보 가져오기
+    const partner = allPartners.find((p: any) =>
+        p.partnerId === partnerId || p.loginId === partnerId || p.customUrl === partnerId
+    );
 
-    const companyName = partnerByLogin?.companyName?.trim();
+    if (!partner) return [];
+
+    // 본인 및 하위 파트너 정보 수집
+    const validPartnerIds = new Set<string>();
+    const validCompanyNames = new Set<string>();
+
+    const addPartnerInfo = (p: any) => {
+        if (p.partnerId) validPartnerIds.add(p.partnerId);
+        if (p.loginId) validPartnerIds.add(p.loginId);
+        if (p.companyName) validCompanyNames.add(p.companyName.trim());
+    };
+
+    addPartnerInfo(partner);
+
+    // 하위 파트너 수집 함수
+    const findSubPartners = (parent: any) => {
+        const pId = parent.partnerId;
+        const pLogin = parent.loginId;
+        const pComp = parent.companyName?.trim();
+
+        const subs = allPartners.filter((p: any) => {
+            if (!p) return false;
+            const matchParentId = (pId && p.parentPartnerId === pId) || (pLogin && p.parentPartnerId === pLogin);
+            const matchParentName = pComp && p.parentPartnerName && p.parentPartnerName.trim() === pComp;
+            return matchParentId || matchParentName;
+        });
+
+        subs.forEach((sub: any) => {
+            const hasSub = (sub.partnerId && validPartnerIds.has(sub.partnerId)) || (sub.loginId && validPartnerIds.has(sub.loginId));
+            if (!hasSub) {
+                addPartnerInfo(sub);
+                findSubPartners(sub);
+            }
+        });
+    };
+
+    findSubPartners(partner);
 
     // 전체 신청서 목록 가져오기
     const allApps = await ctx.db.query("applications").collect();
 
     const filteredApps = allApps.filter((app: any) => {
         if (!app.partnerId && !app.partnerName) return false;
-        if (app.partnerId === partnerId) return true;
-        if (partnerByLogin && (app.partnerId === partnerByLogin.loginId || app.partnerId === partnerByLogin.partnerId)) return true;
-        if (companyName && app.partnerName && (app.partnerName.trim() === companyName || app.partnerName.includes(companyName) || companyName.includes(app.partnerName.trim()))) return true;
+        if (app.partnerId && validPartnerIds.has(app.partnerId)) return true;
+        if (app.partnerName) {
+            const appComp = app.partnerName.trim();
+            for (const comp of Array.from(validCompanyNames)) {
+                if (appComp === comp || appComp.includes(comp) || comp.includes(appComp)) {
+                    return true;
+                }
+            }
+        }
         return false;
     });
 

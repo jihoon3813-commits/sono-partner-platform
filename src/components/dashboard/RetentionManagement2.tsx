@@ -135,6 +135,45 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
     const [revivalFilter, setRevivalFilter] = useState("");
     const [activeStatFilter, setActiveStatFilter] = useState<string>("all");
 
+    // 본인 및 하위 파트너 회사명 목록 (상위 파트너 권한 지원)
+    const allowedCompanyNames = useMemo(() => {
+        if (isAdmin || !partnerId || !partners || partners.length === 0) return null;
+
+        const currentP = partners.find((p: any) => p.partnerId === partnerId || p.loginId === partnerId || p.customUrl === partnerId);
+        if (!currentP) return null;
+
+        const allowed = new Set<string>();
+        if (currentP.companyName) {
+            allowed.add(currentP.companyName.trim());
+        }
+
+        const findSubPartners = (parent: any) => {
+            const pId = parent.partnerId;
+            const pLogin = parent.loginId;
+            const pComp = parent.companyName?.trim();
+
+            const subs = partners.filter((p: any) => {
+                if (!p) return false;
+                const matchParentId = (pId && p.parentPartnerId === pId) || (pLogin && p.parentPartnerId === pLogin);
+                const matchParentName = pComp && p.parentPartnerName && p.parentPartnerName.trim() === pComp;
+                return matchParentId || matchParentName;
+            });
+
+            subs.forEach((sub: any) => {
+                if (sub.companyName) {
+                    const comp = sub.companyName.trim();
+                    if (!allowed.has(comp)) {
+                        allowed.add(comp);
+                        findSubPartners(sub);
+                    }
+                }
+            });
+        };
+
+        findSubPartners(currentP);
+        return Array.from(allowed);
+    }, [isAdmin, partnerId, partners]);
+
     // 가장 오래된 신청건 순으로 정렬된 신청 데이터
     const sortedApplications = useMemo(() => {
         if (!allApplications) return [];
@@ -749,8 +788,8 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                         {filterOptions.products.map((p: any) => <option key={p} value={p}>{p}</option>)}
                                     </select>
 
-                                    {/* 2. 파트너사명 (본사어드민만) */}
-                                    {isAdmin && (
+                                    {/* 2. 파트너사명 (본사어드민 또는 하위 파트너가 있는 상위 파트너만) */}
+                                    {(isAdmin || (allowedCompanyNames && allowedCompanyNames.length > 1)) && (
                                         <select
                                             value={partnerFilter}
                                             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPartnerFilter(e.target.value)}
