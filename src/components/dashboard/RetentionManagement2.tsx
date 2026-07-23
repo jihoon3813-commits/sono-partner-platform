@@ -479,16 +479,57 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
         return 50000;
     };
 
+    // 레코드별 파트너사명 정확 추출 (신청서 DB, 소속/업체명, ID_NO, 추천인명, B2B회사명 대조)
+    const getDisplayPartnerName = (r: any) => {
+        const mapped = getMappedInfo(r.customerName, r.phone);
+        if (mapped.partnerName && mapped.partnerName !== "-") {
+            return mapped.partnerName;
+        }
+
+        const sub = (r.subCompany || "").trim();
+        if (sub && sub !== "-" && sub !== "소속없음" && sub !== "본사") {
+            const found = partners.find((p: any) => 
+                p.companyName?.trim() === sub || 
+                p.companyName?.replace(/\(주\)/g, '').trim() === sub.replace(/\(주\)/g, '').trim() ||
+                p.loginId === sub || 
+                p.partnerId === sub
+            );
+            if (found) return found.companyName;
+            return sub;
+        }
+
+        const idNo = (r.idNo || "").trim();
+        if (idNo && idNo !== "-") {
+            const found = partners.find((p: any) => p.loginId === idNo || p.partnerId === idNo);
+            if (found) return found.companyName;
+        }
+
+        const transferor = (r.transferorName || "").trim();
+        if (transferor && transferor !== "-") {
+            const found = partners.find((p: any) => p.managerName?.trim() === transferor || p.ceoName?.trim() === transferor);
+            if (found) return found.companyName;
+        }
+
+        const b2b = (r.b2bCompany || "").trim();
+        if (b2b && b2b !== "-") {
+            const found = partners.find((p: any) => 
+                p.companyName?.trim() === b2b || 
+                p.companyName?.replace(/\(주\)/g, '').trim() === b2b.replace(/\(주\)/g, '').trim()
+            );
+            if (found) return found.companyName;
+            return b2b;
+        }
+
+        return "-";
+    };
+
     // 필터 옵션 추출 (모든 항목 동적 옵션)
     const filterOptions = useMemo(() => {
         if (!records) return { products: [], partners: [], statuses: [], paymentStatuses: [], methods: [], cancelStatuses: [], paymentCounts: [] };
 
         const mapped = records.map((r: any) => {
-            const info = getMappedInfo(r.customerName, r.phone);
-            const fallbackPartnerName = (info.partnerName && info.partnerName !== "-")
-                ? info.partnerName
-                : (r.subCompany || r.b2bCompany || "-");
-            return { ...r, partnerName: fallbackPartnerName };
+            const pName = getDisplayPartnerName(r);
+            return { ...r, partnerName: pName };
         });
 
         const products = Array.from(new Set(mapped.map((r: any) => r.productName))).filter(Boolean).sort();
@@ -500,20 +541,18 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
         const paymentCounts = Array.from(new Set(mapped.map((r: any) => Number(r.actualPaymentCount)))).filter((n: any) => !isNaN(n)).sort((a: number, b: number) => a - b);
 
         return { products, partners: partnersList, statuses, paymentStatuses, methods, cancelStatuses, paymentCounts };
-    }, [records, getMappedInfo]);
+    }, [records, getMappedInfo, partners]);
 
     // 검색 및 상세 필터링 + 정렬 (고객 실명/풀번호/파트너사 매핑 포함)
     const filteredRecords = useMemo(() => {
         let result = periodFilteredRecords.map((r: any) => {
             const mapped = getMappedInfo(r.customerName, r.phone);
-            const fallbackPartnerName = (mapped.partnerName && mapped.partnerName !== "-")
-                ? mapped.partnerName
-                : (r.subCompany || r.b2bCompany || "-");
+            const pName = getDisplayPartnerName(r);
             return {
                 ...r,
                 displayCustomerName: mapped.fullName,
                 displayPhone: mapped.fullPhone,
-                partnerName: fallbackPartnerName,
+                partnerName: pName,
             };
         }).filter((r: any) => {
             // 검색어 필터
