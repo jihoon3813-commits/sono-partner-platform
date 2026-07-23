@@ -485,7 +485,10 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
 
         const mapped = records.map((r: any) => {
             const info = getMappedInfo(r.customerName, r.phone);
-            return { ...r, partnerName: info.partnerName };
+            const fallbackPartnerName = (info.partnerName && info.partnerName !== "-")
+                ? info.partnerName
+                : (r.subCompany || r.b2bCompany || "-");
+            return { ...r, partnerName: fallbackPartnerName };
         });
 
         const products = Array.from(new Set(mapped.map((r: any) => r.productName))).filter(Boolean).sort();
@@ -503,11 +506,14 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
     const filteredRecords = useMemo(() => {
         let result = periodFilteredRecords.map((r: any) => {
             const mapped = getMappedInfo(r.customerName, r.phone);
+            const fallbackPartnerName = (mapped.partnerName && mapped.partnerName !== "-")
+                ? mapped.partnerName
+                : (r.subCompany || r.b2bCompany || "-");
             return {
                 ...r,
                 displayCustomerName: mapped.fullName,
                 displayPhone: mapped.fullPhone,
-                partnerName: mapped.partnerName,
+                partnerName: fallbackPartnerName,
             };
         }).filter((r: any) => {
             // 검색어 필터
@@ -539,16 +545,19 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                 if (resolveStatus !== delinquencyFilter) return false;
             }
 
-            // 파트너 전용 필터 (HQ Admin이 아닌 경우 본인 파트너 고객만 표출)
-            if (!isAdmin && partnerId) {
-                const currentP = partners.find((p: any) => p.partnerId === partnerId || p.loginId === partnerId);
-                const targetCompName = currentP?.companyName?.trim();
-                if (targetCompName) {
-                    const rPartner = r.partnerName.trim();
-                    if (rPartner === "-" || (rPartner !== targetCompName && !rPartner.includes(targetCompName) && !targetCompName.includes(rPartner))) {
-                        return false;
-                    }
-                }
+            // 파트너 전용 필터 (HQ Admin이 아닌 경우 본인 및 하위 파트너 고객 표출)
+            if (!isAdmin && partnerId && allowedCompanyNames && allowedCompanyNames.length > 0) {
+                const rPartner = (r.partnerName || "").trim();
+                const sub = (r.subCompany || "").trim();
+                const b2b = (r.b2bCompany || "").trim();
+
+                const isAllowed = allowedCompanyNames.some((cName: string) => 
+                    (rPartner !== "-" && (rPartner === cName || rPartner.includes(cName) || cName.includes(rPartner))) ||
+                    (sub && (sub === cName || sub.includes(cName) || cName.includes(sub))) ||
+                    (b2b && (b2b === cName || b2b.includes(cName) || cName.includes(b2b)))
+                );
+
+                if (!isAllowed) return false;
             }
 
             // 대시보드 토글 필터
@@ -618,7 +627,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
             const nameB = b.displayCustomerName || b.customerName || "";
             return nameA.localeCompare(nameB, "ko-KR");
         });
-    }, [periodFilteredRecords, searchTerm, productFilter, partnerFilter, statusFilter, paymentStatusFilter, methodFilter, cancelFilter, paymentCountFilter, refundFilter, revivalFilter, delinquencyFilter, sortField, sortOrder, activeStatFilter, allApplications, partners]);
+    }, [periodFilteredRecords, searchTerm, productFilter, partnerFilter, statusFilter, paymentStatusFilter, methodFilter, cancelFilter, paymentCountFilter, refundFilter, revivalFilter, delinquencyFilter, sortField, sortOrder, activeStatFilter, allApplications, partners, allowedCompanyNames, isAdmin, partnerId]);
 
     // 중복 고객 그룹화 데이터 생성
     const groupedData = useMemo(() => {

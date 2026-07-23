@@ -155,36 +155,49 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
         return false;
     });
 
-    if (!filteredApps.length) {
-        return [];
-    }
-
     return records.filter(r => {
-        const rPhoneDigits = r.phone.replace(/[^0-9]/g, '');
-        const rName = r.customerName.trim();
-        const rLast4 = rPhoneDigits.length >= 4 ? rPhoneDigits.slice(-4) : "";
-        const rFirst3 = rPhoneDigits.length >= 3 ? rPhoneDigits.slice(0, 3) : "";
+        // 1. Excel 데이터 자체의 소속(업체명) / B2B회사명이 본인 또는 하위 파트너사명과 직접 일치하는지 확인
+        const subComp = r.subCompany ? r.subCompany.trim() : "";
+        const b2bComp = r.b2bCompany ? r.b2bCompany.trim() : "";
+        const subClean = subComp.replace(/\(주\)/g, '').trim();
+        const b2bClean = b2bComp.replace(/\(주\)/g, '').trim();
 
-        for (const app of filteredApps) {
-            if (!app.customerName || !app.customerPhone) continue;
-            const appPhoneDigits = app.customerPhone.replace(/[^0-9]/g, '');
-            const appName = app.customerName.trim();
+        for (const comp of Array.from(validCompanyNames)) {
+            const compClean = comp.replace(/\(주\)/g, '').trim();
+            if (subComp && (subComp === comp || subComp.includes(comp) || comp.includes(subComp))) return true;
+            if (b2bComp && (b2bComp === comp || b2bComp.includes(comp) || comp.includes(b2bComp))) return true;
+            if (subClean && compClean && (subClean === compClean || subClean.includes(compClean) || compClean.includes(subClean))) return true;
+            if (b2bClean && compClean && (b2bClean === compClean || b2bClean.includes(compClean) || compClean.includes(b2bClean))) return true;
+        }
 
-            const phoneMatch = appPhoneDigits.startsWith(rFirst3) && appPhoneDigits.endsWith(rLast4);
-            if (!phoneMatch) continue;
+        // 2. 신청서 DB(applications) 매칭을 통한 권한 확인
+        if (filteredApps.length > 0) {
+            const rPhoneDigits = r.phone.replace(/[^0-9]/g, '');
+            const rName = r.customerName.trim();
+            const rLast4 = rPhoneDigits.length >= 4 ? rPhoneDigits.slice(-4) : "";
+            const rFirst3 = rPhoneDigits.length >= 3 ? rPhoneDigits.slice(0, 3) : "";
 
-            let nameMatch = false;
-            if (rName.includes('*')) {
-                if (rName.length === appName.length) {
-                    if (appName.startsWith(rName[0]) && appName.endsWith(rName[rName.length - 1])) {
-                        nameMatch = true;
+            for (const app of filteredApps) {
+                if (!app.customerName || !app.customerPhone) continue;
+                const appPhoneDigits = app.customerPhone.replace(/[^0-9]/g, '');
+                const appName = app.customerName.trim();
+
+                const phoneMatch = appPhoneDigits.startsWith(rFirst3) && appPhoneDigits.endsWith(rLast4);
+                if (!phoneMatch) continue;
+
+                let nameMatch = false;
+                if (rName.includes('*')) {
+                    if (rName.length === appName.length) {
+                        if (appName.startsWith(rName[0]) && appName.endsWith(rName[rName.length - 1])) {
+                            nameMatch = true;
+                        }
                     }
+                } else {
+                    nameMatch = (appName === rName);
                 }
-            } else {
-                nameMatch = (appName === rName);
-            }
 
-            if (nameMatch) return true;
+                if (nameMatch) return true;
+            }
         }
 
         return false;
