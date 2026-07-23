@@ -711,6 +711,12 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
         return { counts, groupColors };
     }, [filteredRecords]);
 
+    // 현재 검색/필터링 조건 기반 고유 고객수 계산
+    const filteredUniqueCount = useMemo(() => {
+        const keys = new Set(filteredRecords.map((r: any) => `${r.displayCustomerName}_${r.birth}_${r.displayPhone}`));
+        return keys.size;
+    }, [filteredRecords]);
+
     // 엑셀 다운로드
     const handleDownloadExcel = async () => {
         if (filteredRecords.length === 0) {
@@ -780,16 +786,68 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
             {/* 상단 헤더 & 업로드 */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
                 <div>
-                    <h2 className="text-2xl font-black text-sono-dark tracking-tighter">연체 관리</h2>
+                    <div className="flex items-center gap-3">
+                        <h2 className="text-2xl font-black text-sono-dark tracking-tighter">연체 관리</h2>
+                        <div className="flex items-center gap-2 px-3.5 py-1 bg-sono-primary/10 rounded-full">
+                            <span className="text-xs font-black text-sono-primary">총 고객 {filteredUniqueCount.toLocaleString()}명</span>
+                            <span className="text-[11px] font-bold text-gray-400">({filteredRecords.length.toLocaleString()}건)</span>
+                        </div>
+                    </div>
                     <p className="text-gray-400 text-sm font-bold mt-1">고객의 납입, 유지, 환수 및 부활 현황을 관리합니다.</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                     {isAdmin && (
                         <label className={`cursor-pointer px-6 py-3 bg-sono-primary text-white rounded-2xl font-black text-sm hover:bg-sono-dark transition-all shadow-lg active:scale-95 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                             {isUploading ? '업로드 중...' : '엑셀 업로드'}
-                            <input type="file" accept=".xlsx,.xls" onChange={handleFileUpload} className="hidden" />
+                            <input type="file" accept=".xls,.xlsx" onChange={handleFileUpload} className="hidden" />
                         </label>
                     )}
+                </div>
+            </div>
+
+            {/* 대시보드 현황판 (총 고객수 및 상태별 수치 카운트) */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <button
+                    onClick={() => setActiveStatFilter("all")}
+                    className={`text-left transition-all bg-white p-5 rounded-[24px] shadow-sm border ${activeStatFilter === "all" ? "border-sono-primary ring-2 ring-sono-primary/20" : "border-gray-100"}`}
+                >
+                    <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">전체 고객</div>
+                    <div className="text-2xl font-black text-sono-dark tracking-tighter">
+                        {displayStats.total.unique.toLocaleString()}명 <span className="text-sm font-bold text-gray-400">/ {displayStats.total.count.toLocaleString()}건</span>
+                    </div>
+                </button>
+                <button
+                    onClick={() => setActiveStatFilter("normal")}
+                    className={`text-left transition-all bg-white p-5 rounded-[24px] shadow-sm border ${activeStatFilter === "normal" ? "border-emerald-100 ring-2 ring-emerald-500/20" : "border-gray-100"} bg-emerald-50/10`}
+                >
+                    <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">정상 납입</div>
+                    <div className="text-2xl font-black text-emerald-600 tracking-tighter">
+                        {displayStats.normalPayment.unique.toLocaleString()}명 <span className="text-sm font-bold text-emerald-400">/ {displayStats.normalPayment.count.toLocaleString()}건</span>
+                    </div>
+                </button>
+                <button
+                    onClick={() => setActiveStatFilter("delinquent")}
+                    className={`text-left transition-all bg-white p-5 rounded-[24px] shadow-sm border ${activeStatFilter === "delinquent" ? "border-red-100 ring-2 ring-red-500/20" : "border-gray-100"} bg-red-50/10`}
+                >
+                    <div className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">연체 회원</div>
+                    <div className="text-2xl font-black text-red-600 tracking-tighter">
+                        {displayStats.delinquent.unique.toLocaleString()}명 <span className="text-sm font-bold text-red-400">/ {displayStats.delinquent.count.toLocaleString()}건</span>
+                    </div>
+                </button>
+                <button
+                    onClick={() => setActiveStatFilter("cancel")}
+                    className={`text-left transition-all bg-white p-5 rounded-[24px] shadow-sm border ${activeStatFilter === "cancel" ? "border-orange-100 ring-2 ring-orange-500/20" : "border-gray-100"} bg-orange-50/10`}
+                >
+                    <div className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">해약/철회</div>
+                    <div className="text-2xl font-black text-orange-600 tracking-tighter">
+                        {displayStats.cancel.unique.toLocaleString()}명 <span className="text-sm font-bold text-orange-400">/ {displayStats.cancel.count.toLocaleString()}건</span>
+                    </div>
+                </button>
+                <div className="bg-white p-5 rounded-[24px] shadow-sm border border-sono-primary/10 bg-sono-primary/5">
+                    <div className="text-[10px] font-black text-sono-primary uppercase tracking-widest mb-1">납입 방법</div>
+                    <div className="text-base font-black text-sono-dark mt-1">
+                        카드 {displayStats.cardCount}건 <span className="text-gray-300">|</span> CMS {displayStats.cmsCount}건
+                    </div>
                 </div>
             </div>
 
@@ -984,13 +1042,25 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                     )}
                                 </div>
 
-                                {/* 엑셀 업데이트 날짜 표시 (필터 라인 우측) */}
+                                {/* 엑셀 업데이트 날짜 및 조회 고객수 표시 (필터 라인 우측) */}
                                 {records && records.length > 0 && (
-                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-100 ml-auto">
-                                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">엑셀 업데이트</span>
-                                        <span className="text-[11px] font-bold text-gray-600">
-                                            {records[0].uploadedAt?.substring(0, 10) || "-"}
-                                        </span>
+                                    <div className="flex flex-wrap items-center gap-2 ml-auto">
+                                        <div className="flex items-center gap-2 px-3 py-1.5 bg-sono-primary/5 rounded-xl border border-sono-primary/10">
+                                            <span className="text-[9px] font-black text-sono-primary uppercase tracking-widest">조회 고객수</span>
+                                            <span className="text-[11px] font-black text-sono-primary">
+                                                {filteredUniqueCount.toLocaleString()}명
+                                            </span>
+                                            <span className="text-[10px] font-bold text-gray-400">
+                                                ({filteredRecords.length.toLocaleString()}건)
+                                            </span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-100">
+                                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">엑셀 업데이트</span>
+                                            <span className="text-[11px] font-bold text-gray-600">
+                                                {records[0].uploadedAt?.substring(0, 10) || "-"}
+                                            </span>
+                                        </div>
                                     </div>
                                 )}
                             </div>
