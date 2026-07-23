@@ -10,6 +10,12 @@ const normalizeDate = (val: string | number | undefined): string => {
     const strVal = String(val).trim();
     if (!strVal) return "";
     
+    // 숫자만 남기기 (8자리 미만은 일반 숫자/일자이므로 날짜 변환 시도하지 않음)
+    const clean = strVal.replace(/[^0-9]/g, '');
+    if (clean.length < 8) {
+        return strVal;
+    }
+
     // Excel 시리얼 번호 형식 (예: 46106)
     const serial = parseFloat(strVal);
     if (!isNaN(serial) && serial > 30000 && serial < 60000) {
@@ -20,23 +26,8 @@ const normalizeDate = (val: string | number | undefined): string => {
         return `${yyyy}${mm}${dd}`;
     }
     
-    // 숫자만 남기기 (예: 2026-06-11 -> 20260611)
-    const clean = strVal.replace(/[^0-9]/g, '');
     if (clean.length === 8) {
         return clean;
-    }
-    
-    // 일반 날짜 문자열 변환 시도
-    try {
-        const d = new Date(strVal);
-        if (!isNaN(d.getTime())) {
-            const yyyy = d.getFullYear();
-            const mm = String(d.getMonth() + 1).padStart(2, '0');
-            const dd = String(d.getDate()).padStart(2, '0');
-            return `${yyyy}${mm}${dd}`;
-        }
-    } catch {
-        // ignore
     }
     
     return strVal;
@@ -52,21 +43,33 @@ const formatDateForDisplay = (val: string | undefined): string => {
     return strVal;
 };
 
-// 화면 표시용 이체일자 포맷 (25 -> 25일, 20011001 -> 2001-10-01)
-const formatTransferDateForDisplay = (val: string | undefined): string => {
+// 화면 표시용 이체일자 포맷 (10 -> 10일, 25 -> 25일, 기존 20011001 복원 포함)
+const formatTransferDateForDisplay = (val: string | number | undefined): string => {
     if (!val) return "-";
-    const str = String(val).trim();
+    let str = String(val).trim();
     if (!str || str === "-") return "-";
-    
-    if (/^\d{8}$/.test(str)) {
-        return `${str.substring(0, 4)}-${str.substring(4, 6)}-${str.substring(6, 8)}`;
+
+    str = str.replace(/\.0$/, '');
+
+    // 이전 normalizeDate("10") 버그로 인해 "20011001"로 잘못 들어간 값 복원
+    if (/^2001\d{4}$/.test(str)) {
+        const mm = parseInt(str.substring(4, 6), 10);
+        const dd = parseInt(str.substring(6, 8), 10);
+        if (mm === 10 && dd === 1) {
+            str = "10";
+        } else if (dd > 1) {
+            str = String(dd);
+        } else {
+            str = String(mm);
+        }
     }
-    
-    if (/^\d{1,2}$/.test(str)) {
-        return `${str}일`;
+
+    const numOnly = str.replace(/[^0-9]/g, '');
+    if (numOnly.length >= 1 && numOnly.length <= 2) {
+        return `${numOnly}일`;
     }
-    
-    return str;
+
+    return str.endsWith("일") ? str : `${str}일`;
 };
 
 // 환수여부 옵션 목록 (100% ~ 40%까지 5%씩 감축 + 선택없음)
@@ -275,7 +278,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                     paymentStatus: paymentStatus,             // Col G: 납입상태
                     joinStatus: joinStatus,                   // Col H: 가입상태
                     joinDate: normalizeDate(row[8]),          // Col I: 가입일자
-                    transferDate: normalizeDate(row[9]),      // Col J: 이체일자
+                    transferDate: String(row[9] ?? "").trim().replace(/\.0$/, '').replace(/[^0-9]/g, ''), // Col J: 이체일자 (일자 숫자)
                     paymentMethod: String(row[10] || ""),     // Col K: 납입방법
                     cancelStatus: String(row[11] || ""),      // Col L: 해약처리
                     cancelDate: String(row[12] || ""),        // Col M: 해약처리일
