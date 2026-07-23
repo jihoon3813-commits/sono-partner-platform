@@ -497,10 +497,22 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
         return 50000;
     };
 
+    const isAllowedPartnerName = (candidate: string) => {
+        if (!candidate || candidate === "-") return false;
+        if (isAdmin) return true;
+        if (!allowedCompanyNames || allowedCompanyNames.length === 0) return true;
+
+        const cleanCandidate = candidate.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+        return allowedCompanyNames.some((allowed: string) => {
+            const cleanAllowed = allowed.replace(/\(주\)/g, '').replace(/\s+/g, '').trim();
+            return candidate === allowed || cleanCandidate === cleanAllowed || cleanCandidate.includes(cleanAllowed) || cleanAllowed.includes(cleanCandidate);
+        });
+    };
+
     // 레코드별 파트너사명 정확 추출 (신청서 DB, 소속/업체명, ID_NO, 추천인명, B2B회사명 대조)
     const getDisplayPartnerName = (r: any) => {
         const mapped = getMappedInfo(r.customerName, r.phone);
-        if (mapped.partnerName && mapped.partnerName !== "-") {
+        if (mapped.partnerName && mapped.partnerName !== "-" && isAllowedPartnerName(mapped.partnerName)) {
             return mapped.partnerName;
         }
 
@@ -512,20 +524,20 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                 p.loginId === sub || 
                 p.partnerId === sub
             );
-            if (found) return found.companyName;
-            return sub;
+            if (found && isAllowedPartnerName(found.companyName)) return found.companyName;
+            if (isAllowedPartnerName(sub)) return sub;
         }
 
         const idNo = (r.idNo || "").trim();
         if (idNo && idNo !== "-") {
             const found = partners.find((p: any) => p.loginId === idNo || p.partnerId === idNo);
-            if (found) return found.companyName;
+            if (found && isAllowedPartnerName(found.companyName)) return found.companyName;
         }
 
         const transferor = (r.transferorName || "").trim();
         if (transferor && transferor !== "-") {
             const found = partners.find((p: any) => p.managerName?.trim() === transferor || p.ceoName?.trim() === transferor);
-            if (found) return found.companyName;
+            if (found && isAllowedPartnerName(found.companyName)) return found.companyName;
         }
 
         const b2b = (r.b2bCompany || "").trim();
@@ -534,7 +546,12 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                 p.companyName?.trim() === b2b || 
                 p.companyName?.replace(/\(주\)/g, '').trim() === b2b.replace(/\(주\)/g, '').trim()
             );
-            if (found) return found.companyName;
+            if (found && isAllowedPartnerName(found.companyName)) return found.companyName;
+        }
+
+        if (!isAdmin && partnerId) {
+            const currentP = partners.find((p: any) => p.partnerId === partnerId || p.loginId === partnerId || p.customUrl === partnerId);
+            if (currentP?.companyName) return currentP.companyName;
         }
 
         return "-";
