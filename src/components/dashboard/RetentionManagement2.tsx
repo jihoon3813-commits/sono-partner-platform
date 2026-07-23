@@ -253,24 +253,42 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
 
             if (!phoneMatch) continue;
 
-            // 이름 일치 확인
+            // 이름 일치 확인 (마스킹 지원)
             let nameMatch = false;
-            if (cleanName.includes('*')) {
+            if (cleanName === appName) {
+                nameMatch = true;
+            } else if (cleanName.includes('*')) {
                 if (cleanName.length === appName.length) {
-                    const firstChar = cleanName[0];
-                    const lastChar = cleanName[cleanName.length - 1];
-                    if (appName.startsWith(firstChar) && appName.endsWith(lastChar)) {
-                        nameMatch = true;
+                    let match = true;
+                    for (let i = 0; i < cleanName.length; i++) {
+                        if (cleanName[i] !== '*' && cleanName[i] !== appName[i]) {
+                            match = false;
+                            break;
+                        }
                     }
+                    if (match) nameMatch = true;
+                } else if (cleanName.length === 2 && appName.length >= 2 && cleanName[0] === appName[0]) {
+                    nameMatch = true;
                 }
-            } else {
-                nameMatch = (appName === cleanName);
+            } else if (appName.includes('*')) {
+                if (appName.length === cleanName.length) {
+                    let match = true;
+                    for (let i = 0; i < appName.length; i++) {
+                        if (appName[i] !== '*' && appName[i] !== cleanName[i]) {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match) nameMatch = true;
+                } else if (appName.length === 2 && cleanName.length >= 2 && appName[0] === cleanName[0]) {
+                    nameMatch = true;
+                }
             }
 
             if (nameMatch) {
                 let partnerName = app.partnerName || "";
                 if (!partnerName && app.partnerId) {
-                    const pObj = partners.find((p: any) => p.partnerId === app.partnerId || p.loginId === app.partnerId);
+                    const pObj = partners.find((p: any) => p.partnerId === app.partnerId || p.loginId === app.partnerId || p.customUrl === app.partnerId);
                     if (pObj) partnerName = pObj.companyName;
                 }
                 return {

@@ -258,7 +258,7 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
             if (b2bComp && (b2bComp === mgr || b2bComp.includes(mgr) || mgr.includes(b2bComp))) return true;
         }
 
-        // 2. 신청서 DB(applications)와의 고객명+전화번호 매칭 검사
+        // 2. 신청서 DB(applications)와의 고객명+전화번호 역매칭 검사 (고객이 등록된 파트너사 역추적)
         if (filteredApps.length > 0) {
             const rName = (r.customerName || "").replace(/\s+/g, '').trim();
             const rPhoneDigits = (r.phone || "").replace(/[^0-9]/g, '');
@@ -268,20 +268,34 @@ async function filterRecordsForPartner(ctx: any, records: any[], partnerId: stri
                 const appName = app.customerName.replace(/\s+/g, '').trim();
                 const appPhoneDigits = app.customerPhone.replace(/[^0-9]/g, '');
 
-                // 이름 매칭 (마스킹 포함)
+                // 이름 매칭 (마스킹 다채로운 형태 지원)
                 let nameMatch = false;
                 if (rName === appName) {
                     nameMatch = true;
                 } else if (rName.includes('*')) {
-                    if (rName.length === appName.length && appName.startsWith(rName[0]) && appName.endsWith(rName[rName.length - 1])) {
-                        nameMatch = true;
-                    } else if (rName.length === 2 && appName.startsWith(rName[0])) {
+                    if (rName.length === appName.length) {
+                        let match = true;
+                        for (let i = 0; i < rName.length; i++) {
+                            if (rName[i] !== '*' && rName[i] !== appName[i]) {
+                                match = false;
+                                break;
+                            }
+                        }
+                        if (match) nameMatch = true;
+                    } else if (rName.length === 2 && appName.length >= 2 && rName[0] === appName[0]) {
                         nameMatch = true;
                     }
                 } else if (appName.includes('*')) {
-                    if (appName.length === rName.length && rName.startsWith(appName[0]) && rName.endsWith(appName[appName.length - 1])) {
-                        nameMatch = true;
-                    } else if (appName.length === 2 && rName.startsWith(appName[0])) {
+                    if (appName.length === rName.length) {
+                        let match = true;
+                        for (let i = 0; i < appName.length; i++) {
+                            if (appName[i] !== '*' && appName[i] !== rName[i]) {
+                                match = false;
+                                break;
+                            }
+                        }
+                        if (match) nameMatch = true;
+                    } else if (appName.length === 2 && rName.length >= 2 && appName[0] === rName[0]) {
                         nameMatch = true;
                     }
                 }
