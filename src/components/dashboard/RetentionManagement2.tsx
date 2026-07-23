@@ -101,13 +101,18 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
     const [periodFilter, setPeriodFilter] = useState<string>("cumulative"); // cumulative, current, previous, year
 
     // 신규 필터 및 정렬 상태
+    const [sortField, setSortField] = useState<"default" | "joinDate" | "customerName">("default");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
     const [productFilter, setProductFilter] = useState("");
+    const [partnerFilter, setPartnerFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
+    const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
+    const [delinquencyFilter, setDelinquencyFilter] = useState("");
+    const [cancelFilter, setCancelFilter] = useState("");
+    const [paymentCountFilter, setPaymentCountFilter] = useState("");
     const [methodFilter, setMethodFilter] = useState("");
     const [refundFilter, setRefundFilter] = useState("");
     const [revivalFilter, setRevivalFilter] = useState("");
-    const [delinquencyFilter, setDelinquencyFilter] = useState("");
     const [activeStatFilter, setActiveStatFilter] = useState<string>("all");
 
     // 고객 매핑 맵 계산 (마스킹된 이름/휴대전화 -> 실명, 풀 전화번호, 파트너사명)
@@ -362,16 +367,50 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
         return stats;
     }, [periodFilteredRecords]);
 
-    // 필터 옵션 추출
+    // 납입상태 정렬 순위 계산
+    // 1. 연체회차 높은순 -> 낮은순 (13회연체 = 9987, 12회연체 = 9988 ...)
+    // 2. 당월미납 (20000)
+    // 3. 정상납입 (30000)
+    // 4. 해약처리 (40000)
+    const getPaymentRank = (status: string) => {
+        if (!status) return 50000;
+        const clean = status.trim();
+        if (clean.includes("연체")) {
+            const match = clean.match(/(\d+)/);
+            const count = match ? parseInt(match[1], 10) : 0;
+            return 10000 - count;
+        }
+        if (clean.includes("미납") || clean.includes("당월미납")) {
+            return 20000;
+        }
+        if (clean.includes("정상")) {
+            return 30000;
+        }
+        if (clean.includes("해약")) {
+            return 40000;
+        }
+        return 50000;
+    };
+
+    // 필터 옵션 추출 (모든 항목 동적 옵션)
     const filterOptions = useMemo(() => {
-        if (!records) return { products: [], statuses: [], methods: [] };
+        if (!records) return { products: [], partners: [], statuses: [], paymentStatuses: [], methods: [], cancelStatuses: [], paymentCounts: [] };
 
-        const products = Array.from(new Set(records.map((r: any) => r.productName))).filter(Boolean).sort();
-        const statuses = Array.from(new Set(records.map((r: any) => r.joinStatus))).filter(Boolean).sort();
-        const methods = Array.from(new Set(records.map((r: any) => r.paymentMethod))).filter(Boolean).sort();
+        const mapped = records.map((r: any) => {
+            const info = getMappedInfo(r.customerName, r.phone);
+            return { ...r, partnerName: info.partnerName };
+        });
 
-        return { products, statuses, methods };
-    }, [records]);
+        const products = Array.from(new Set(mapped.map((r: any) => r.productName))).filter(Boolean).sort();
+        const partnersList = Array.from(new Set(mapped.map((r: any) => r.partnerName))).filter((p: any) => p && p !== "-").sort();
+        const statuses = Array.from(new Set(mapped.map((r: any) => r.joinStatus))).filter(Boolean).sort();
+        const paymentStatuses = Array.from(new Set(mapped.map((r: any) => r.paymentStatus))).filter(Boolean).sort((a: string, b: string) => getPaymentRank(a) - getPaymentRank(b));
+        const methods = Array.from(new Set(mapped.map((r: any) => r.paymentMethod))).filter(Boolean).sort();
+        const cancelStatuses = Array.from(new Set(mapped.map((r: any) => r.cancelStatus))).filter((c: any) => c && c !== "-").sort();
+        const paymentCounts = Array.from(new Set(mapped.map((r: any) => Number(r.actualPaymentCount)))).filter((n: any) => !isNaN(n)).sort((a: number, b: number) => a - b);
+
+        return { products, partners: partnersList, statuses, paymentStatuses, methods, cancelStatuses, paymentCounts };
+    }, [records, getMappedInfo]);
 
     // 검색 및 상세 필터링 + 정렬 (고객 실명/풀번호/파트너사 매핑 포함)
     const filteredRecords = useMemo(() => {
@@ -396,10 +435,14 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
 
             if (!matchesSearch) return false;
 
-            // 추가 필터
+            // 추가 필터링
             if (productFilter && r.productName !== productFilter) return false;
+            if (partnerFilter && r.partnerName !== partnerFilter) return false;
             if (statusFilter && r.joinStatus !== statusFilter) return false;
+            if (paymentStatusFilter && r.paymentStatus !== paymentStatusFilter) return false;
             if (methodFilter && r.paymentMethod !== methodFilter) return false;
+            if (cancelFilter && (r.cancelStatus || "-") !== cancelFilter) return false;
+            if (paymentCountFilter !== "" && String(r.actualPaymentCount) !== String(paymentCountFilter)) return false;
             if (refundFilter && (r.refundStatus || "선택없음") !== refundFilter) return false;
             if (revivalFilter && (r.revivalStatus || "선택없음") !== revivalFilter) return false;
             if (delinquencyFilter) {
@@ -442,20 +485,53 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
             return true;
         });
 
-        // 정렬 적용 (가입일자)
+        // 정렬 적용
         return result.sort((a: any, b: any) => {
-            const keyA_real = `${a.displayCustomerName}_${a.birth}_${a.displayPhone}`;
-            const keyB_real = `${b.displayCustomerName}_${b.birth}_${b.displayPhone}`;
+            // 헤더 클릭 / 드롭다운에 의한 개별 필드 정렬
+            if (sortField === "customerName") {
+                const nameA = a.displayCustomerName || a.customerName || "";
+                const nameB = b.displayCustomerName || b.customerName || "";
+                const cmp = nameA.localeCompare(nameB, "ko-KR");
+                if (cmp !== 0) return sortOrder === "asc" ? cmp : -cmp;
 
-            if (keyA_real !== keyB_real) return keyA_real.localeCompare(keyB_real);
+                const dateA = a.joinDate.replace(/[^0-9]/g, '');
+                const dateB = b.joinDate.replace(/[^0-9]/g, '');
+                return dateA.localeCompare(dateB);
+            }
 
+            if (sortField === "joinDate") {
+                const dateA = a.joinDate.replace(/[^0-9]/g, '');
+                const dateB = b.joinDate.replace(/[^0-9]/g, '');
+                const cmp = dateA.localeCompare(dateB);
+                if (cmp !== 0) return sortOrder === "asc" ? cmp : -cmp;
+
+                const rankA = getPaymentRank(a.paymentStatus);
+                const rankB = getPaymentRank(b.paymentStatus);
+                if (rankA !== rankB) return rankA - rankB;
+
+                const nameA = a.displayCustomerName || a.customerName || "";
+                const nameB = b.displayCustomerName || b.customerName || "";
+                return nameA.localeCompare(nameB, "ko-KR");
+            }
+
+            // 기본 정렬 (사용자 지정 3단계 정렬):
+            // 1순위: 납입상태 (연체회차 높은순 -> 낮은순 -> 당월미납 -> 정상납입 -> 해약처리)
+            const rankA = getPaymentRank(a.paymentStatus);
+            const rankB = getPaymentRank(b.paymentStatus);
+            if (rankA !== rankB) return rankA - rankB;
+
+            // 2순위: 가입일자 오래된날 -> 최신일
             const dateA = a.joinDate.replace(/[^0-9]/g, '');
             const dateB = b.joinDate.replace(/[^0-9]/g, '');
+            const dateCmp = dateA.localeCompare(dateB);
+            if (dateCmp !== 0) return dateCmp;
 
-            if (sortOrder === "asc") return dateA.localeCompare(dateB);
-            return dateB.localeCompare(dateA);
+            // 3순위: 고객명 가나다순
+            const nameA = a.displayCustomerName || a.customerName || "";
+            const nameB = b.displayCustomerName || b.customerName || "";
+            return nameA.localeCompare(nameB, "ko-KR");
         });
-    }, [periodFilteredRecords, searchTerm, productFilter, statusFilter, methodFilter, refundFilter, revivalFilter, sortOrder, activeStatFilter, allApplications, partners]);
+    }, [periodFilteredRecords, searchTerm, productFilter, partnerFilter, statusFilter, paymentStatusFilter, methodFilter, cancelFilter, paymentCountFilter, refundFilter, revivalFilter, delinquencyFilter, sortField, sortOrder, activeStatFilter, allApplications, partners]);
 
     // 중복 고객 그룹화 데이터 생성
     const groupedData = useMemo(() => {
@@ -697,6 +773,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                         ))}
                                     </div>
                                     <div className="h-4 w-px bg-gray-200 mx-1"></div>
+                                    {/* 1. 가입상품 필터 */}
                                     <select
                                         value={productFilter}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setProductFilter(e.target.value)}
@@ -705,6 +782,20 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                         <option value="">가입상품 전체</option>
                                         {filterOptions.products.map((p: any) => <option key={p} value={p}>{p}</option>)}
                                     </select>
+
+                                    {/* 2. 파트너사명 (본사어드민만) */}
+                                    {isAdmin && (
+                                        <select
+                                            value={partnerFilter}
+                                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPartnerFilter(e.target.value)}
+                                            className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                        >
+                                            <option value="">파트너사 전체</option>
+                                            {filterOptions.partners.map((p: string) => <option key={p} value={p}>{p}</option>)}
+                                        </select>
+                                    )}
+
+                                    {/* 3. 가입상태 필터 */}
                                     <select
                                         value={statusFilter}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value)}
@@ -713,30 +804,18 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                         <option value="">가입상태 전체</option>
                                         {filterOptions.statuses.map((s: any) => <option key={s} value={s}>{s}</option>)}
                                     </select>
+
+                                    {/* 4. 납입상태 필터 */}
                                     <select
-                                        value={methodFilter}
-                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setMethodFilter(e.target.value)}
+                                        value={paymentStatusFilter}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPaymentStatusFilter(e.target.value)}
                                         className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
                                     >
-                                        <option value="">납입방법 전체</option>
-                                        {filterOptions.methods.map((m: any) => <option key={m} value={m}>{m}</option>)}
+                                        <option value="">납입상태 전체</option>
+                                        {filterOptions.paymentStatuses.map((p: any) => <option key={p} value={p}>{p}</option>)}
                                     </select>
-                                    <select
-                                        value={refundFilter}
-                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRefundFilter(e.target.value)}
-                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
-                                    >
-                                        <option value="">환수여부 전체</option>
-                                        {REFUND_OPTIONS.map((r: string) => <option key={r} value={r}>{r}</option>)}
-                                    </select>
-                                    <select
-                                        value={revivalFilter}
-                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRevivalFilter(e.target.value)}
-                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
-                                    >
-                                        <option value="">부활여부 전체</option>
-                                        {REVIVAL_OPTIONS.map((v: string) => <option key={v} value={v}>{v}</option>)}
-                                    </select>
+
+                                    {/* 5. 연체해결 필터 */}
                                     <select
                                         value={delinquencyFilter}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDelinquencyFilter(e.target.value)}
@@ -746,23 +825,93 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                         <option value="미해결">미해결</option>
                                         <option value="해결함">해결함</option>
                                     </select>
+
+                                    {/* 6. 해약처리 필터 */}
                                     <select
-                                        value={sortOrder}
-                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSortOrder(e.target.value as "asc" | "desc")}
+                                        value={cancelFilter}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCancelFilter(e.target.value)}
                                         className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
                                     >
-                                        <option value="asc">가입일자 오래된순</option>
-                                        <option value="desc">가입일자 최신순</option>
+                                        <option value="">해약처리 전체</option>
+                                        {filterOptions.cancelStatuses.map((c: any) => <option key={c} value={c}>{c}</option>)}
                                     </select>
-                                    {(productFilter || statusFilter || methodFilter || refundFilter || revivalFilter || delinquencyFilter || activeStatFilter !== "all") && (
+
+                                    {/* 7. 실납입회차 필터 */}
+                                    <select
+                                        value={paymentCountFilter}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPaymentCountFilter(e.target.value)}
+                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                    >
+                                        <option value="">실납입회차 전체</option>
+                                        {filterOptions.paymentCounts.map((cnt: any) => <option key={cnt} value={cnt}>{cnt}회</option>)}
+                                    </select>
+
+                                    {/* 8. 환수여부 필터 */}
+                                    <select
+                                        value={refundFilter}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRefundFilter(e.target.value)}
+                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                    >
+                                        <option value="">환수여부 전체</option>
+                                        {REFUND_OPTIONS.map((r: string) => <option key={r} value={r}>{r}</option>)}
+                                    </select>
+
+                                    {/* 9. 부활여부 필터 */}
+                                    <select
+                                        value={revivalFilter}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRevivalFilter(e.target.value)}
+                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                    >
+                                        <option value="">부활여부 전체</option>
+                                        {REVIVAL_OPTIONS.map((v: string) => <option key={v} value={v}>{v}</option>)}
+                                    </select>
+
+                                    {/* 정렬 드롭다운 */}
+                                    <select
+                                        value={`${sortField}_${sortOrder}`}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                            const val = e.target.value;
+                                            if (val === "default_asc") {
+                                                setSortField("default");
+                                                setSortOrder("asc");
+                                            } else if (val === "joinDate_asc") {
+                                                setSortField("joinDate");
+                                                setSortOrder("asc");
+                                            } else if (val === "joinDate_desc") {
+                                                setSortField("joinDate");
+                                                setSortOrder("desc");
+                                            } else if (val === "customerName_asc") {
+                                                setSortField("customerName");
+                                                setSortOrder("asc");
+                                            } else if (val === "customerName_desc") {
+                                                setSortField("customerName");
+                                                setSortOrder("desc");
+                                            }
+                                        }}
+                                        className="bg-gray-50 border-none rounded-xl text-xs font-bold px-4 py-2 focus:ring-2 focus:ring-sono-primary/20 outline-none"
+                                    >
+                                        <option value="default_asc">기본 정렬 (연체순 &gt; 가입일순 &gt; 이름순)</option>
+                                        <option value="joinDate_asc">가입일자 오래된순</option>
+                                        <option value="joinDate_desc">가입일자 최신순</option>
+                                        <option value="customerName_asc">고객명 가나다순</option>
+                                        <option value="customerName_desc">고객명 가나다 역순</option>
+                                    </select>
+
+                                    {(productFilter || partnerFilter || statusFilter || paymentStatusFilter || methodFilter || cancelFilter || paymentCountFilter || refundFilter || revivalFilter || delinquencyFilter || sortField !== "default" || activeStatFilter !== "all") && (
                                         <button
                                             onClick={() => {
                                                 setProductFilter("");
+                                                setPartnerFilter("");
                                                 setStatusFilter("");
+                                                setPaymentStatusFilter("");
                                                 setMethodFilter("");
+                                                setCancelFilter("");
+                                                setPaymentCountFilter("");
                                                 setRefundFilter("");
                                                 setRevivalFilter("");
                                                 setDelinquencyFilter("");
+                                                setSortField("default");
+                                                setSortOrder("asc");
                                                 setActiveStatFilter("all");
                                             }}
                                             className="text-[10px] font-bold text-sono-primary hover:underline"
@@ -789,19 +938,53 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                     <tr className="bg-gray-100">
                                         <th
                                             className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm cursor-pointer hover:bg-gray-200 transition-colors"
-                                            onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+                                            onClick={() => {
+                                                if (sortField === "joinDate") {
+                                                    setSortOrder(prev => prev === "asc" ? "desc" : "asc");
+                                                } else {
+                                                    setSortField("joinDate");
+                                                    setSortOrder("asc");
+                                                }
+                                            }}
                                         >
                                             <div className="flex items-center justify-center gap-1">
                                                 가입일자
-                                                {sortOrder === "asc" ? (
-                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
+                                                {sortField === "joinDate" ? (
+                                                    sortOrder === "asc" ? (
+                                                        <svg className="w-3 h-3 text-sono-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" /></svg>
+                                                    ) : (
+                                                        <svg className="w-3 h-3 text-sono-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+                                                    )
                                                 ) : (
-                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                                    <svg className="w-3 h-3 text-gray-400 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>
                                                 )}
                                             </div>
                                         </th>
                                         <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">파트너사명</th>
-                                        <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">고객명</th>
+                                        <th
+                                            className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm cursor-pointer hover:bg-gray-200 transition-colors"
+                                            onClick={() => {
+                                                if (sortField === "customerName") {
+                                                    setSortOrder(prev => prev === "asc" ? "desc" : "asc");
+                                                } else {
+                                                    setSortField("customerName");
+                                                    setSortOrder("asc");
+                                                }
+                                            }}
+                                        >
+                                            <div className="flex items-center justify-center gap-1">
+                                                고객명
+                                                {sortField === "customerName" ? (
+                                                    sortOrder === "asc" ? (
+                                                        <svg className="w-3 h-3 text-sono-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" /></svg>
+                                                    ) : (
+                                                        <svg className="w-3 h-3 text-sono-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+                                                    )
+                                                ) : (
+                                                    <svg className="w-3 h-3 text-gray-400 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>
+                                                )}
+                                            </div>
+                                        </th>
                                         <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">생년월일</th>
                                         <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">휴대전화</th>
                                         <th className="sticky top-0 z-50 bg-gray-100 px-3 py-3.5 text-[10px] font-black text-gray-600 text-center uppercase tracking-tighter border-b border-gray-200 shadow-sm">가입상품</th>
