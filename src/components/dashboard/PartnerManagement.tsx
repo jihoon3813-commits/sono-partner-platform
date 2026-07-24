@@ -8,6 +8,7 @@ interface PartnerManagementProps {
     partners: Partner[];
     onRefresh: () => void;
     isAdmin?: boolean;
+    currentUser?: Partner | null;
 }
 
 // Tree view component for hierarchical display
@@ -210,18 +211,28 @@ function MobilePartnerRow({
     );
 }
 
-export default function PartnerManagement({ partners, onRefresh, isAdmin = false }: PartnerManagementProps) {
+export default function PartnerManagement({ partners, onRefresh, isAdmin = false, currentUser }: PartnerManagementProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
+    const [initialFormData, setInitialFormData] = useState<Partial<Partner> | null>(null);
 
     const handleEdit = (partner: Partner) => {
         setSelectedPartner(partner);
+        setInitialFormData(null);
         setIsModalOpen(true);
     };
 
     const handleRegister = () => {
         setSelectedPartner(null);
+        if (!isAdmin && currentUser) {
+            setInitialFormData({
+                parentPartnerId: currentUser.partnerId,
+                parentPartnerName: currentUser.companyName
+            });
+        } else {
+            setInitialFormData(null);
+        }
         setIsModalOpen(true);
     };
 
@@ -365,6 +376,7 @@ export default function PartnerManagement({ partners, onRefresh, isAdmin = false
             {isModalOpen && (
                 <PartnerFormModal
                     partner={selectedPartner}
+                    initialData={initialFormData || undefined}
                     onClose={handleModalClose}
                     onSuccess={handleSuccess}
                     isAdmin={isAdmin}
