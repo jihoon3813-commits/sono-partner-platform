@@ -782,24 +782,43 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
     return (
         <div className="space-y-6">
             {/* 상단 헤더 & 업로드 */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
-                <div>
-                    <div className="flex items-center gap-3">
-                        <h2 className="text-2xl font-black text-sono-dark tracking-tighter">연체 관리</h2>
-                        <div className="flex items-center gap-2 px-3.5 py-1 bg-sono-primary/10 rounded-full">
-                            <span className="text-xs font-black text-sono-primary">총 고객 {filteredUniqueCount.toLocaleString()}명</span>
-                            <span className="text-[11px] font-bold text-gray-400">({filteredRecords.length.toLocaleString()}건)</span>
+            <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 space-y-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <div className="flex items-center gap-3">
+                            <h2 className="text-2xl font-black text-sono-dark tracking-tighter">연체 관리</h2>
+                            <div className="flex items-center gap-2 px-3.5 py-1 bg-sono-primary/10 rounded-full">
+                                <span className="text-xs font-black text-sono-primary">총 고객 {filteredUniqueCount.toLocaleString()}명</span>
+                                <span className="text-[11px] font-bold text-gray-400">({filteredRecords.length.toLocaleString()}건)</span>
+                            </div>
                         </div>
+                        <p className="text-gray-400 text-sm font-bold mt-1">고객의 납입, 유지, 환수 및 부활 현황을 관리합니다.</p>
                     </div>
-                    <p className="text-gray-400 text-sm font-bold mt-1">고객의 납입, 유지, 환수 및 부활 현황을 관리합니다.</p>
+                    <div className="flex flex-wrap items-center gap-3">
+                        {isAdmin && (
+                            <label className={`cursor-pointer px-6 py-3 bg-sono-primary text-white rounded-2xl font-black text-sm hover:bg-sono-dark transition-all shadow-lg active:scale-95 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                                {isUploading ? '업로드 중...' : '엑셀 업로드'}
+                                <input type="file" accept=".xls,.xlsx" onChange={handleFileUpload} className="hidden" />
+                            </label>
+                        )}
+                    </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-3">
-                    {isAdmin && (
-                        <label className={`cursor-pointer px-6 py-3 bg-sono-primary text-white rounded-2xl font-black text-sm hover:bg-sono-dark transition-all shadow-lg active:scale-95 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-                            {isUploading ? '업로드 중...' : '엑셀 업로드'}
-                            <input type="file" accept=".xls,.xlsx" onChange={handleFileUpload} className="hidden" />
-                        </label>
-                    )}
+
+                {/* Notice 박스 */}
+                <div className="p-4 bg-amber-50/90 border border-amber-300/80 rounded-2xl flex items-start gap-3 text-amber-900 animate-pulse shadow-sm">
+                    <div className="p-1.5 bg-amber-100 text-amber-700 rounded-xl shrink-0 mt-0.5">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div className="text-xs leading-relaxed space-y-0.5">
+                        <p className="font-bold text-amber-900 text-sm">
+                            &quot;당월미납&quot;은 연체가 아닙니다.
+                        </p>
+                        <p className="text-amber-800/90 font-medium">
+                            단, 고객별 이체일자가 지난 날짜 기준 &quot;당월미납&quot;은 당월연체가 맞습니다.
+                        </p>
+                    </div>
                 </div>
             </div>
 
