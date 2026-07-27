@@ -277,7 +277,7 @@ export default function Happy450Content({
                                 <p className="section-subtitle">제휴카드로 결제 시 매월 납입금 부담을 더 줄여드립니다.</p>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 mb-16">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 mb-16 max-w-5xl mx-auto">
                                 {/* 카드 1: KB국민카드 */}
                                 <div className="relative bg-white rounded-[32px] p-8 md:p-10 shadow-sm border border-gray-100 flex flex-col hover:shadow-xl transition-all duration-300">
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#f59e0b] text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-lg whitespace-nowrap z-10">연회비 가장 저렴</div>
@@ -379,63 +379,6 @@ export default function Happy450Content({
                                             1800-0672 전화 신청
                                         </a>
                                         <a href="https://m.hanacard.co.kr/MPACMM101M.web?CD_PD_SEQ=13910" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-white text-sono-dark border-2 border-sono-dark/10 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-all text-sm">
-                                            온라인 신청
-                                        </a>
-                                    </div>
-                                </div>
-
-                                {/* 카드 3: 상조엔로카 */}
-                                <div className="relative bg-white rounded-[32px] p-8 md:p-10 shadow-sm border border-gray-100 flex flex-col hover:shadow-xl transition-all duration-300">
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-sono-primary text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-lg whitespace-nowrap z-10">최대 캐시백</div>
-                                    <div className="aspect-[1.58/1] bg-gray-50 rounded-2xl mb-8 flex items-center justify-center overflow-hidden">
-                                        <img 
-                                            src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097527/%EC%83%81%EC%A1%B0%EC%97%94%EB%A1%9C%EC%B9%B4_%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94__%EC%B9%B4%EB%93%9C_zn324u_ih9agw.png" 
-                                            alt="상조엔로카 소노아임레디"
-                                            className="w-full h-full object-contain p-2"
-                                        />
-                                    </div>
-                                    <div className="mb-8 text-center md:text-left">
-                                        <h3 className="text-[16px] sm:text-xl md:text-2xl font-black text-sono-dark mb-2 tracking-tighter whitespace-nowrap">소노아임레디 상조엔로카</h3>
-                                        <p className="text-sono-primary font-bold text-lg whitespace-nowrap">최대 <span className="text-2xl md:text-3xl">2.5만원</span> 캐시백</p>
-                                    </div>
-                                    <div className="space-y-4 mb-8 flex-grow">
-                                        <div className="bg-gray-50/50 rounded-2xl p-5 border border-gray-50">
-                                            <div className="flex justify-between items-center mb-3">
-                                                <span className="text-[#8b95a1] font-bold text-[11px] md:text-xs shrink-0">전월 30만원 실적 시</span>
-                                                <span className="text-sono-dark font-black text-xs md:text-sm">13,000원 캐시백</span>
-                                            </div>
-                                            <div className="flex justify-between items-center text-sono-primary">
-                                                <span className="font-bold text-[11px] md:text-xs shrink-0">첫 달 실적 없어도</span>
-                                                <span className="font-black text-xs md:text-sm underline underline-offset-4 decoration-2">13,000원 캐시백</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-3 px-1">
-                                            <div className="flex justify-between items-center text-[11px] md:text-xs font-bold">
-                                                <span className="text-[#8b95a1]">전월 30만원 ↑</span>
-                                                <span className="text-sono-dark">13,000원</span>
-                                            </div>
-                                            <div className="flex justify-between items-center text-[11px] md:text-xs font-bold">
-                                                <span className="text-[#8b95a1]">전월 70만원 ↑</span>
-                                                <span className="text-sono-dark">16,000원</span>
-                                            </div>
-                                            <div className="flex justify-between items-center text-[11px] md:text-xs font-bold">
-                                                <span className="text-[#8b95a1]">전월 150만원 ↑</span>
-                                                <span className="text-sono-dark">25,000원</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex justify-between items-center py-4 border-t border-gray-50 mt-4">
-                                            <span className="text-[#8b95a1] font-bold text-xs">연회비</span>
-                                            <span className="text-xs font-bold text-sono-dark text-right">국내외겸용 20,000원</span>
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-1 gap-3 mt-auto">
-                                        <a href="tel:1588-8100" className="flex items-center justify-center gap-2 bg-sono-dark text-white font-bold py-4 rounded-2xl hover:bg-black transition-all shadow-lg shadow-black/5 text-sm">
-                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 004.587 4.587l.773-1.548a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
-                                            1588-8100 전화 신청
-                                        </a>
-                                        <a href="https://m.lottecard.co.kr/spa/card/booth?bId=95495&vtCdKndC=P15627-A15627" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-white text-sono-dark border-2 border-sono-dark/10 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-all text-sm">
                                             온라인 신청
                                         </a>
                                     </div>

@@ -218,7 +218,7 @@ export default function Happy450LecturePage() {
                             <p className="text-xl text-gray-400 font-bold">제휴카드로 결제 시 매월 납입금 부담을 더 줄여드립니다.</p>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                             {[
                                 {
                                     tag: "연회비 가장 저렴",
@@ -255,25 +255,6 @@ export default function Happy450LecturePage() {
                                     fee: "국내외겸용 20,000원",
                                     phone: "1800-0672",
                                     img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097508/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_%ED%94%8C%EB%9F%AC%EC%8A%A4_%ED%95%98%EB%82%98%EC%B9%B4%EB%93%9C_nyopom_delgx0.png"
-                                },
-                                {
-                                    tag: "최대 캐시백",
-                                    tagColor: "bg-[#007aff]",
-                                    title: "소노아임레디 상조엔로카",
-                                    discount: "최대 2.5만원",
-                                    discountSuffix: "캐시백",
-                                    highlightTitle: "전월 30만원 실적 시",
-                                    highlightValue: "13,000원 캐시백",
-                                    highlightSubTitle: "첫 달 실적 없어도",
-                                    highlightSubValue: "13,000원 캐시백",
-                                    rows: [
-                                        { label: "전월 30만원 ↑", value: "13,000" },
-                                        { label: "전월 70만원 ↑", value: "16,000" },
-                                        { label: "전월 150만원 ↑", value: "25,000" }
-                                    ],
-                                    fee: "국내외겸용 20,000원",
-                                    phone: "1588-8100",
-                                    img: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097527/%EC%83%81%EC%A1%B0%EC%97%94%EB%A1%9C%EC%B9%B4_%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94__%EC%B9%B4%EB%93%9C_zn324u_ih9agw.png"
                                 }
                             ].map((card, i) => (
                                 <div key={i} className="bg-white rounded-[48px] p-8 shadow-xl border border-white flex flex-col relative overflow-hidden group">
