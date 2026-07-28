@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Application, ApplicationStatus } from "@/lib/types";
@@ -550,6 +550,8 @@ function InputRow({ label, value, onChange, placeholder, type = "text", showCopy
     showCopy?: boolean,
     showCopyNoHyphen?: boolean
 }) {
+    const inputRef = useRef<HTMLInputElement>(null);
+
     const handleCopy = async (text: string) => {
         try {
             await navigator.clipboard.writeText(text);
@@ -559,16 +561,33 @@ function InputRow({ label, value, onChange, placeholder, type = "text", showCopy
         }
     };
 
+    const handleDateClick = () => {
+        if (type === 'date' && inputRef.current) {
+            try {
+                inputRef.current.showPicker?.();
+            } catch (err) {
+                // browser fallback
+            }
+        }
+    };
+
     return (
         <div className="flex items-center gap-2 text-sm">
-            <span className="w-24 text-gray-400 font-medium shrink-0">{label}</span>
+            <span 
+                className={`w-24 text-gray-400 font-medium shrink-0 ${type === 'date' ? 'cursor-pointer hover:text-sono-primary transition-colors' : ''}`}
+                onClick={handleDateClick}
+            >
+                {label}
+            </span>
             <div className="flex-1 flex gap-1.5 items-center">
                 <input
+                    ref={inputRef}
                     type={type}
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
+                    onClick={handleDateClick}
                     placeholder={placeholder}
-                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                    className={`flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px] ${type === 'date' ? 'cursor-pointer' : ''}`}
                 />
                 <div className="flex gap-1 shrink-0">
                     {showCopy && (

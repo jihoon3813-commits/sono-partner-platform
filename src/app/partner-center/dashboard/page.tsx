@@ -532,14 +532,16 @@ export default function PartnerDashboard() {
                                             type="date"
                                             value={customStartDate}
                                             onChange={(e) => setCustomStartDate(e.target.value)}
-                                            className="border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-sono-primary bg-white font-bold"
+                                            onClick={(e) => { try { e.currentTarget.showPicker?.(); } catch (err) {} }}
+                                            className="border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-sono-primary bg-white font-bold cursor-pointer"
                                         />
                                         <span className="text-gray-400 text-xs">~</span>
                                         <input
                                             type="date"
                                             value={customEndDate}
                                             onChange={(e) => setCustomEndDate(e.target.value)}
-                                            className="border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-sono-primary bg-white font-bold"
+                                            onClick={(e) => { try { e.currentTarget.showPicker?.(); } catch (err) {} }}
+                                            className="border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-sono-primary bg-white font-bold cursor-pointer"
                                         />
                                     </div>
                                 )}

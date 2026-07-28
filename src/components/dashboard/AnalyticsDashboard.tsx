@@ -83,14 +83,16 @@ export default function AnalyticsDashboard() {
                                 type="date" 
                                 value={startDate} 
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className="flex-1 bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-bold text-sono-dark focus:ring-2 focus:ring-sono-primary transition-all"
+                                onClick={(e) => { try { e.currentTarget.showPicker?.(); } catch (err) {} }}
+                                className="flex-1 bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-bold text-sono-dark focus:ring-2 focus:ring-sono-primary transition-all cursor-pointer"
                             />
                             <span className="text-gray-300">~</span>
                             <input 
                                 type="date" 
                                 value={endDate} 
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className="flex-1 bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-bold text-sono-dark focus:ring-2 focus:ring-sono-primary transition-all"
+                                onClick={(e) => { try { e.currentTarget.showPicker?.(); } catch (err) {} }}
+                                className="flex-1 bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-bold text-sono-dark focus:ring-2 focus:ring-sono-primary transition-all cursor-pointer"
                             />
                         </div>
                     </div>
