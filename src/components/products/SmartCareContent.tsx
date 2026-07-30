@@ -425,9 +425,20 @@ export default function SmartCareContent({
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sono-primary/10 rounded-full blur-[150px] pointer-events-none z-0"></div>
                     
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
-                        <div className="text-center mb-8 sm:mb-16 md:mb-24">
+                        <div className="text-center mb-6 sm:mb-16 md:mb-24">
                             <h2 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tighter mb-3 sm:mb-6">다양한 라이프스타일에<br className="md:hidden" /> 맞춘 구성</h2>
                             <p className="text-white/50 text-xs sm:text-lg md:text-xl font-medium">원하는 구좌 수를 선택하고<br className="md:hidden" /> 최신 가전을 골라보세요.</p>
+                            
+                            {/* 모바일 전용 좌우 스크롤 안내 뱃지 */}
+                            <div className="md:hidden mt-4 inline-flex items-center gap-2 bg-[#1f2d42] border border-sono-primary/50 text-blue-300 text-[11px] font-bold px-3.5 py-1.5 rounded-full shadow-lg animate-pulse">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                                </svg>
+                                <span>좌우로 스크롤하여 요금제 비교</span>
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </div>
                         </div>
 
                         <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 pt-2 -mx-6 px-6 md:mx-0 md:px-0 md:flex-wrap md:justify-center md:gap-6 max-w-6xl mx-auto no-scrollbar">
@@ -441,7 +452,7 @@ export default function SmartCareContent({
                                 return (
                                     <div 
                                         key={i} 
-                                        className={`relative p-5 md:p-8 rounded-xl border transition-all duration-500 flex flex-col justify-between shrink-0 snap-center w-[270px] sm:w-[320px] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] ${
+                                        className={`relative p-5 md:p-8 rounded-xl border transition-all duration-500 flex flex-col justify-between shrink-0 snap-center w-[78vw] max-w-[280px] sm:w-[320px] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] ${
                                             isBest 
                                                 ? "bg-[#1f2d42]/95 border-sono-primary shadow-[0_25px_60px_rgba(46,78,162,0.4)] md:scale-105 hover:-translate-y-2 z-10" 
                                                 : "bg-[#17202c]/90 border-[#2f3d52] shadow-[0_15px_30px_rgba(0,0,0,0.4)] hover:border-[#425572] hover:bg-[#1f2c3d]/90 hover:shadow-[0_25px_50px_rgba(0,0,0,0.6)] hover:-translate-y-1"
@@ -516,6 +527,13 @@ export default function SmartCareContent({
                                     </div>
                                 );
                             })}
+                        </div>
+                        
+                        {/* 모바일 하단 스크롤 안내 가이드 */}
+                        <div className="md:hidden flex justify-center items-center gap-2 mt-8 text-[11px] font-bold text-white/50">
+                            <span className="inline-block w-6 h-0.5 bg-sono-primary/60 rounded-full animate-pulse"></span>
+                            <span>👈 옆으로 넘겨서 구좌별 비교 👉</span>
+                            <span className="inline-block w-6 h-0.5 bg-sono-primary/60 rounded-full animate-pulse"></span>
                         </div>
                     </div>
                 </section>
