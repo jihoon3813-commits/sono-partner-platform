@@ -553,7 +553,26 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                             >
                                                 <option value="">-- 가전제품 선택 ({availableAppliances.length}개) --</option>
                                                 {availableAppliances.map((p: any) => {
-                                                    const label = `${p.brand ? `[${p.brand}] ` : ""}${p.name}${p.model ? ` (${p.model})` : ""}`;
+                                                    const brand = (p.brand || "").trim();
+                                                    let name = (p.name || "").trim();
+                                                    const model = (p.model || "").trim();
+
+                                                    let label = name;
+                                                    if (brand) {
+                                                        const brandTag = `[${brand}]`;
+                                                        if (name.startsWith(brandTag)) {
+                                                            label = name;
+                                                        } else if (name.startsWith(brand)) {
+                                                            const stripped = name.slice(brand.length).trim();
+                                                            label = `${brandTag} ${stripped}`;
+                                                        } else {
+                                                            label = `${brandTag} ${name}`;
+                                                        }
+                                                    }
+                                                    if (model && !label.includes(model)) {
+                                                        label = `${label} (${model})`;
+                                                    }
+
                                                     return (
                                                         <option key={p._id} value={label}>
                                                             {label}
