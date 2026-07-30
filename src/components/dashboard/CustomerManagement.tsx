@@ -52,6 +52,12 @@ export default function CustomerManagement({
         if (type === "happy450" || type.includes("해피") || type.includes("happy")) {
             return "더 해피 450 ONE";
         }
+        if (type.includes("스마트케어4") || type.includes("smartcare4") || type.includes("smart4")) {
+            return "스마트케어4";
+        }
+        if (type.includes("스마트케어5") || type.includes("smartcare5") || type.includes("smart5")) {
+            return "스마트케어5";
+        }
         if (type === "smartcare" || type.includes("스마트") || type.includes("smart")) {
             return "스마트케어";
         }

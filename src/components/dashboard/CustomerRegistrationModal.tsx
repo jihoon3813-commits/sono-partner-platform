@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import * as XLSX from "xlsx";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
@@ -43,9 +43,14 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
     const standardTemplateUrl = useQuery(api.settings.getTemplateUrl, { key: "standard_template_url" });
     const adminTemplateUrl = useQuery(api.settings.getTemplateUrl, { key: "admin_template_url" });
 
+    // Query products and careProducts for dynamic home appliance options
+    const productsData = useQuery(api.products.get);
+    const careProductsData = useQuery(api.careProducts.get);
+
     const [stagedCustomers, setStagedCustomers] = useState<StagedCustomer[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isOpenPostcode, setIsOpenPostcode] = useState(false);
+    const [isCustomProduct, setIsCustomProduct] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Manual Entry Form State
@@ -68,6 +73,29 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
         selectedPartnerName: partner?.companyName || partner?.name || "",
     });
 
+    const isSmartCare = manualForm.productType.startsWith("스마트케어");
+    const currentSlot = Number(manualForm.planType) || 0;
+
+    // Filter available home appliances dynamically based on selected product & slot count
+    const availableAppliances = useMemo(() => {
+        if (!productsData) return [];
+        const visible = productsData.filter(p => p.isVisible !== false);
+        if (!isSmartCare) return visible;
+
+        if (currentSlot > 0) {
+            const slotMatched = visible.filter(p => {
+                if (p.slotCount && p.slotCount === currentSlot) return true;
+                if (p.careProductId && careProductsData) {
+                    const cp = careProductsData.find(c => c._id === p.careProductId);
+                    if (cp && cp.slotCount === currentSlot) return true;
+                }
+                return false;
+            });
+            if (slotMatched.length > 0) return slotMatched;
+        }
+        return visible;
+    }, [productsData, careProductsData, isSmartCare, currentSlot]);
+
     const handleManualChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         let finalValue = value;
@@ -83,12 +111,21 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
             else if (numbers.length <= 6) finalValue = `${numbers.slice(0, 4)}-${numbers.slice(4)}`;
             else finalValue = `${numbers.slice(0, 4)}-${numbers.slice(4, 6)}-${numbers.slice(6, 8)}`;
         } else if (name === "productType") {
+            let defaultPlan = "1";
+            if (value === "스마트케어4") {
+                defaultPlan = "2";
+            } else if (value === "스마트케어5") {
+                defaultPlan = "1";
+            } else if (value === "더 해피 450 ONE") {
+                defaultPlan = "1";
+            }
             setManualForm(prev => ({
                 ...prev,
                 productType: value,
-                planType: value === "더 해피 450 ONE" ? "1" : "4",
-                products: value === "스마트케어" ? prev.products : "",
+                planType: defaultPlan,
+                products: value.startsWith("스마트케어") ? prev.products : "",
             }));
+            setIsCustomProduct(false);
             return;
         }
 
@@ -142,8 +179,8 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
             alert("통화가능 시간을 선택해주세요.");
             return;
         }
-        if (manualForm.productType === '스마트케어' && !manualForm.products.trim()) {
-            alert("스마트케어 상품 선택 시 가전제품은 필수 입력사항입니다.");
+        if (isSmartCare && !manualForm.products.trim()) {
+            alert("스마트케어 상품 선택 시 가전제품은 필수 입력/선택사항입니다.");
             return;
         }
 
@@ -263,6 +300,17 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                 const customerPhone = row[phoneIdx];
                 if (!customerName || !customerPhone) return;
 
+                const prodRaw = String(row[prodTypeIdx] || "");
+                const planRaw = String(row[planIdx] || "");
+                let parsedProductType = "더 해피 450 ONE";
+                if (prodRaw.includes("스마트케어4") || prodRaw.includes("스마트케어 4") || prodRaw.includes("smart4") || prodRaw.includes("smartcare4")) {
+                    parsedProductType = "스마트케어4";
+                } else if (prodRaw.includes("스마트케어5") || prodRaw.includes("스마트케어 5") || prodRaw.includes("smart5") || prodRaw.includes("smartcare5")) {
+                    parsedProductType = "스마트케어5";
+                } else if (prodRaw.includes("스마트케어") || prodRaw.includes("smart")) {
+                    parsedProductType = (planRaw === "2") ? "스마트케어4" : "스마트케어5";
+                }
+
                 newCustomers.push({
                     id: `excel-${Date.now()}-${idx}`,
                     customerName: String(customerName),
@@ -271,8 +319,8 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                     customerGender: row[genderIdx] ? (String(row[genderIdx]).includes("여") ? "여성" : "남성") : "-",
                     customerAddress: row[addrIdx] ? String(row[addrIdx]) : "",
                     customerAddressDetail: row[addrDetailIdx] ? String(row[addrDetailIdx]) : "",
-                    productType: row[prodTypeIdx] ? (String(row[prodTypeIdx]).toLowerCase().includes("smart") || String(row[prodTypeIdx]).includes("스마트") ? "스마트케어" : "더 해피 450 ONE") : "더 해피 450 ONE",
-                    planType: row[planIdx] ? String(row[planIdx]) : "1",
+                    productType: parsedProductType,
+                    planType: row[planIdx] ? String(row[planIdx]) : (parsedProductType === "스마트케어4" ? "2" : "1"),
                     preferredContactTime: row[timeIdx] ? String(row[timeIdx]) : "",
                     products: row[applianceIdx] ? String(row[applianceIdx]) : "",
                     partnerMemberId: row[memberIdIdx] ? String(row[memberIdIdx]) : "",
@@ -464,10 +512,11 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     name="productType"
                                     value={manualForm.productType}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
+                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white font-bold text-gray-800"
                                 >
                                     <option value="더 해피 450 ONE">더 해피 450 ONE</option>
-                                    <option value="스마트케어">스마트케어</option>
+                                    <option value="스마트케어4">스마트케어4</option>
+                                    <option value="스마트케어5">스마트케어5</option>
                                 </select>
                             </div>
                             <div className="col-span-1 sm:col-span-1 md:col-span-1">
@@ -476,27 +525,76 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     name="planType"
                                     value={manualForm.planType}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
+                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white font-bold text-gray-800"
                                 >
-                                    {manualForm.productType === '더 해피 450 ONE'
-                                        ? ["1", "2", "3"].map(n => <option key={n} value={n}>{n}구좌</option>)
-                                        : ["2", "3", "4", "6"].map(n => <option key={n} value={n}>{n}구좌</option>)
-                                    }
+                                    {manualForm.productType === '더 해피 450 ONE' && ["1", "2", "3"].map(n => <option key={n} value={n}>{n}구좌</option>)}
+                                    {manualForm.productType === '스마트케어4' && ["2"].map(n => <option key={n} value={n}>{n}구좌</option>)}
+                                    {manualForm.productType === '스마트케어5' && ["1", "2", "3", "4"].map(n => <option key={n} value={n}>{n}구좌</option>)}
                                 </select>
                             </div>
                             <div className="col-span-1 sm:col-span-2 md:col-span-2">
                                 <label className="block text-xs font-bold text-gray-400 mb-1">
-                                    가전제품 {manualForm.productType === '스마트케어' ? '(스마트케어 필수) *' : '(스마트케어만)'}
+                                    가전제품 {isSmartCare ? '(스마트케어 필수) *' : '(스마트케어만)'}
                                 </label>
-                                <input
-                                    type="text"
-                                    name="products"
-                                    value={manualForm.products}
-                                    onChange={handleManualChange}
-                                    disabled={manualForm.productType !== '스마트케어'}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary disabled:bg-gray-100 bg-white"
-                                    placeholder={manualForm.productType === '스마트케어' ? "예: 삼성 에어드레서" : "스마트케어 선택 시 입력 가능"}
-                                />
+                                {isSmartCare ? (
+                                    <div className="space-y-1.5">
+                                        {!isCustomProduct ? (
+                                            <select
+                                                value={manualForm.products}
+                                                onChange={(e) => {
+                                                    if (e.target.value === "__CUSTOM__") {
+                                                        setIsCustomProduct(true);
+                                                        setManualForm(prev => ({ ...prev, products: "" }));
+                                                    } else {
+                                                        setManualForm(prev => ({ ...prev, products: e.target.value }));
+                                                    }
+                                                }}
+                                                className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white font-medium text-gray-800"
+                                            >
+                                                <option value="">-- 가전제품 선택 ({availableAppliances.length}개) --</option>
+                                                {availableAppliances.map((p: any) => {
+                                                    const label = `${p.brand ? `[${p.brand}] ` : ""}${p.name}${p.model ? ` (${p.model})` : ""}`;
+                                                    return (
+                                                        <option key={p._id} value={label}>
+                                                            {label}
+                                                        </option>
+                                                    );
+                                                })}
+                                                <option value="__CUSTOM__">✍️ 직접 입력 (목록에 없는 경우)</option>
+                                            </select>
+                                        ) : (
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    name="products"
+                                                    value={manualForm.products}
+                                                    onChange={handleManualChange}
+                                                    className="flex-1 p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
+                                                    placeholder="예: 삼성 에어드레서"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setIsCustomProduct(false);
+                                                        setManualForm(prev => ({ ...prev, products: "" }));
+                                                    }}
+                                                    className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-bold hover:bg-gray-200 shrink-0"
+                                                >
+                                                    목록에서 선택
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        name="products"
+                                        value={manualForm.products}
+                                        disabled={true}
+                                        className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none disabled:bg-gray-100 bg-white"
+                                        placeholder="스마트케어 선택 시 입력 가능"
+                                    />
+                                )}
                             </div>
                             <div className="col-span-1 sm:col-span-1 md:col-span-1">
                                 <label className="block text-xs font-bold text-gray-400 mb-1">생년월일</label>
