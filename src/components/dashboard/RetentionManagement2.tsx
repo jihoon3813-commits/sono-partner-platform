@@ -888,8 +888,8 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                     </svg>
                                 </div>
 
-                                <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
-                                    <div className="flex bg-gray-100 p-1 rounded-xl">
+                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+                                    <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar max-w-full">
                                         {[
                                             { id: "today", label: "당일" },
                                             { id: "yesterday", label: "전일" },
@@ -902,7 +902,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                             <button
                                                 key={p.id}
                                                 onClick={() => setPeriodFilter(p.id)}
-                                                className={`px-3 py-1.5 text-[11px] font-black rounded-lg transition-all ${periodFilter === p.id
+                                                className={`px-3 py-1.5 text-[11px] font-black rounded-lg transition-all shrink-0 ${periodFilter === p.id
                                                         ? "bg-white text-sono-primary shadow-sm"
                                                         : "text-gray-400 hover:text-gray-600"
                                                     }`}
@@ -915,7 +915,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                     <button
                                         onClick={handleDownloadExcel}
                                         disabled={isDownloading}
-                                        className={`flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all shadow-lg active:scale-95 shrink-0 ${isDownloading ? 'opacity-70 cursor-wait' : ''}`}
+                                        className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-emerald-500 text-white rounded-2xl font-black text-xs sm:text-sm hover:bg-emerald-600 transition-all shadow-lg active:scale-95 shrink-0 w-full sm:w-auto ${isDownloading ? 'opacity-70 cursor-wait' : ''}`}
                                     >
                                         {isDownloading ? (
                                             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

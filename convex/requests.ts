@@ -88,6 +88,7 @@ export const approvePartnerRequest = mutation({
         status: v.string(),
         parentPartnerId: v.optional(v.string()),
         parentPartnerName: v.optional(v.string()),
+        showLandingUrl: v.optional(v.boolean()),
     },
     handler: async (ctx, args) => {
         const request = await ctx.db
@@ -128,6 +129,7 @@ export const approvePartnerRequest = mutation({
             status: args.status,
             parentPartnerId: args.parentPartnerId,
             parentPartnerName: args.parentPartnerName,
+            showLandingUrl: args.showLandingUrl,
             createdAt: nowKST(),
             approvedAt: nowKST(),
             approvedBy: args.approvedBy,

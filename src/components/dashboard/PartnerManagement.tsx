@@ -152,7 +152,7 @@ function MobilePartnerRow({
                                     {partner.companyName}
                                     {level === 0 && <span className="text-[10px] bg-sono-primary/10 text-sono-primary px-1.5 py-0.5 rounded">Master</span>}
                                 </div>
-                                <div className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                                <div className="text-xs text-gray-400 flex flex-wrap items-center gap-1 mt-0.5">
                                     <span>ID: {partner.loginId}</span>
                                     <span>•</span>
                                     <span>{partner.shopType}</span>
@@ -224,15 +224,9 @@ export default function PartnerManagement({ partners, onRefresh, isAdmin = false
     };
 
     const handleRegister = () => {
+        if (!isAdmin) return;
         setSelectedPartner(null);
-        if (!isAdmin && currentUser) {
-            setInitialFormData({
-                parentPartnerId: currentUser.partnerId,
-                parentPartnerName: currentUser.companyName
-            });
-        } else {
-            setInitialFormData(null);
-        }
+        setInitialFormData(null);
         setIsModalOpen(true);
     };
 
@@ -287,15 +281,17 @@ export default function PartnerManagement({ partners, onRefresh, isAdmin = false
                         </svg>
                     </div>
                     <div className="flex gap-2 w-full md:w-auto">
-                        <button
-                            onClick={handleRegister}
-                            className="flex-1 md:flex-none bg-sono-primary text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-sono-primary/90 transition-all flex items-center justify-center gap-2 whitespace-nowrap"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                            </svg>
-                            파트너 신규 등록
-                        </button>
+                        {isAdmin && (
+                            <button
+                                onClick={handleRegister}
+                                className="flex-1 md:flex-none bg-sono-primary text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-sono-primary/90 transition-all flex items-center justify-center gap-2 whitespace-nowrap"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                                </svg>
+                                파트너 신규 등록
+                            </button>
+                        )}
                         <button
                             onClick={onRefresh}
                             className="p-2 text-gray-400 hover:text-sono-primary transition-colors bg-gray-50 rounded-xl md:bg-transparent"

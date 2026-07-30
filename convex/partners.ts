@@ -74,6 +74,7 @@ export const createPartner = mutation({
         landingTitle: v.optional(v.string()),
         shopUrl: v.optional(v.string()),
         partnerGroup: v.optional(v.string()),
+        showLandingUrl: v.optional(v.boolean()),
         role: v.optional(v.string()),
         approvedAt: v.optional(v.string()),
         approvedBy: v.optional(v.string()),

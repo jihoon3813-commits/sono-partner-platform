@@ -214,15 +214,15 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
 
     return (
         <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4"
             onClick={onClose}
         >
             <div
-                className="bg-white rounded-[24px] w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col"
+                className="bg-white rounded-[20px] sm:rounded-[24px] w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                    <h2 className="text-xl font-bold text-sono-dark">상담 상세 내역</h2>
+                <div className="p-4 sm:p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                    <h2 className="text-lg sm:text-xl font-bold text-sono-dark">상담 상세 내역</h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-sono-dark">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -230,7 +230,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                     </button>
                 </div>
 
-                <div className="p-6 space-y-6 flex-1 overflow-y-auto pb-24">
+                <div className="p-4 sm:p-6 space-y-5 sm:space-y-6 flex-1 overflow-y-auto pb-24">
                     {/* Status Update/View Section */}
                     <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
                         <label className="text-xs font-bold text-gray-500 mb-2 block">진행 상태 {(isAdmin || canPartnerEditStatus) ? '변경' : ''}</label>
@@ -334,31 +334,31 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             </div>
                             <div className="flex flex-col gap-2">
                                 <div className="flex items-center gap-2 text-sm">
-                                    <span className="w-24 text-gray-400 font-medium shrink-0">주소</span>
-                                    <div className="flex-1 flex gap-2">
+                                    <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0">주소</span>
+                                    <div className="flex-1 flex gap-1.5 min-w-0">
                                         <input
                                             type="text"
                                             value={customerAddress}
                                             readOnly
                                             placeholder="주소 검색을 이용하세요"
-                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 outline-none h-[34px]"
+                                            className="flex-1 min-w-0 bg-gray-50 border border-gray-200 text-sono-dark text-xs sm:text-sm rounded-lg px-2.5 py-1.5 outline-none h-[34px]"
                                         />
                                         <button
                                             onClick={handleAddressSearch}
-                                            className="px-3 py-1.5 bg-sono-primary text-white text-[11px] font-bold rounded-lg hover:bg-sono-secondary transition-colors shrink-0"
+                                            className="px-2.5 py-1.5 bg-sono-primary text-white text-[11px] font-bold rounded-lg hover:bg-sono-secondary transition-colors shrink-0 whitespace-nowrap"
                                         >
                                             주소 검색
                                         </button>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 text-sm">
-                                    <span className="w-24 text-gray-400 font-medium shrink-0">상세주소</span>
+                                    <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0">상세주소</span>
                                     <input
                                         type="text"
                                         value={detailAddress}
                                         onChange={(e) => setDetailAddress(e.target.value)}
                                         placeholder="상세주소를 입력하세요"
-                                        className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                        className="flex-1 min-w-0 bg-gray-50 border border-gray-200 text-sono-dark text-xs sm:text-sm rounded-lg px-2.5 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
                                     />
                                 </div>
                             </div>
@@ -574,12 +574,12 @@ function InputRow({ label, value, onChange, placeholder, type = "text", showCopy
     return (
         <div className="flex items-center gap-2 text-sm">
             <span 
-                className={`w-24 text-gray-400 font-medium shrink-0 ${type === 'date' ? 'cursor-pointer hover:text-sono-primary transition-colors' : ''}`}
+                className={`w-20 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0 ${type === 'date' ? 'cursor-pointer hover:text-sono-primary transition-colors' : ''}`}
                 onClick={handleDateClick}
             >
                 {label}
             </span>
-            <div className="flex-1 flex gap-1.5 items-center">
+            <div className="flex-1 flex gap-1.5 items-center min-w-0">
                 <input
                     ref={inputRef}
                     type={type}
@@ -587,7 +587,7 @@ function InputRow({ label, value, onChange, placeholder, type = "text", showCopy
                     onChange={(e) => onChange(e.target.value)}
                     onClick={handleDateClick}
                     placeholder={placeholder}
-                    className={`flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px] ${type === 'date' ? 'cursor-pointer' : ''}`}
+                    className={`flex-1 min-w-0 bg-gray-50 border border-gray-200 text-sono-dark text-xs sm:text-sm rounded-lg px-2.5 sm:px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px] ${type === 'date' ? 'cursor-pointer' : ''}`}
                 />
                 <div className="flex gap-1 shrink-0">
                     {showCopy && (

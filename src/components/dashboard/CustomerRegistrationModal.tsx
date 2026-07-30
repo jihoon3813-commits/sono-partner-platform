@@ -398,17 +398,17 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                     </div>
 
                     {/* Manual Form */}
-                    <div className="md:col-span-3 bg-gray-50 p-5 rounded-2xl border border-gray-100">
+                    <div className="md:col-span-3 bg-gray-50 p-4 sm:p-5 rounded-2xl border border-gray-100">
                         <h3 className="text-sm font-bold text-gray-500 mb-4 uppercase tracking-wider">개별 등록</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                             {isAdmin && (
-                                <div className="col-span-2 md:col-span-1">
+                                <div className="col-span-1 sm:col-span-2 md:col-span-1">
                                     <label className="block text-xs font-bold text-gray-400 mb-1">파트너사 *</label>
                                     <select
                                         name="selectedPartnerId"
                                         value={manualForm.selectedPartnerId}
                                         onChange={handleManualChange}
-                                        className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary"
+                                        className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
                                     >
                                         <option value="">선택</option>
                                         {partners.map(p => (
@@ -417,37 +417,37 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     </select>
                                 </div>
                             )}
-                            <div className="col-span-2 md:col-span-1">
+                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
                                 <label className="block text-xs font-bold text-gray-400 mb-1">고객명 *</label>
                                 <input
                                     type="text"
                                     name="customerName"
                                     value={manualForm.customerName}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary"
+                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
                                     placeholder="홍길동"
                                 />
                             </div>
-                            <div className="col-span-2 md:col-span-1">
+                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
                                 <label className="block text-xs font-bold text-gray-400 mb-1">연락처 *</label>
                                 <input
                                     type="text"
                                     name="customerPhone"
                                     value={manualForm.customerPhone}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary"
+                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
                                     placeholder="010-0000-0000"
                                     maxLength={13}
                                     inputMode="numeric"
                                 />
                             </div>
-                            <div className="col-span-2 md:col-span-1">
+                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
                                 <label className="block text-xs font-bold text-gray-400 mb-1">통화가능 시간 *</label>
                                 <select
                                     name="preferredContactTime"
                                     value={manualForm.preferredContactTime}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary font-medium text-gray-700"
+                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary font-medium text-gray-700 bg-white"
                                 >
                                     <option value="">선택</option>
                                     <option value="10:00~11:00">10:00~11:00</option>
@@ -458,25 +458,25 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     <option value="17:00~18:00">17:00~18:00</option>
                                 </select>
                             </div>
-                            <div className="col-span-1">
+                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
                                 <label className="block text-xs font-bold text-gray-400 mb-1">상품 *</label>
                                 <select
                                     name="productType"
                                     value={manualForm.productType}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary"
+                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
                                 >
                                     <option value="더 해피 450 ONE">더 해피 450 ONE</option>
                                     <option value="스마트케어">스마트케어</option>
                                 </select>
                             </div>
-                            <div className="col-span-1">
+                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
                                 <label className="block text-xs font-bold text-gray-400 mb-1">구좌 *</label>
                                 <select
                                     name="planType"
                                     value={manualForm.planType}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary"
+                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
                                 >
                                     {manualForm.productType === '더 해피 450 ONE'
                                         ? ["1", "2", "3"].map(n => <option key={n} value={n}>{n}구좌</option>)
@@ -484,7 +484,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     }
                                 </select>
                             </div>
-                            <div className="col-span-2">
+                            <div className="col-span-1 sm:col-span-2 md:col-span-2">
                                 <label className="block text-xs font-bold text-gray-400 mb-1">
                                     가전제품 {manualForm.productType === '스마트케어' ? '(스마트케어 필수) *' : '(스마트케어만)'}
                                 </label>
@@ -494,73 +494,71 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     value={manualForm.products}
                                     onChange={handleManualChange}
                                     disabled={manualForm.productType !== '스마트케어'}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary disabled:bg-gray-100"
+                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary disabled:bg-gray-100 bg-white"
                                     placeholder={manualForm.productType === '스마트케어' ? "예: 삼성 에어드레서" : "스마트케어 선택 시 입력 가능"}
                                 />
                             </div>
-                            <div className="col-span-2 md:col-span-1">
+                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
                                 <label className="block text-xs font-bold text-gray-400 mb-1">생년월일</label>
                                 <input
                                     type="text"
                                     name="customerBirth"
                                     value={manualForm.customerBirth}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary"
+                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
                                     placeholder="YYYY-MM-DD"
                                     maxLength={10}
                                     inputMode="numeric"
                                 />
                             </div>
-                            <div className="col-span-2 md:col-span-1">
+                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
                                 <label className="block text-xs font-bold text-gray-400 mb-1">성별</label>
                                 <select
                                     name="customerGender"
                                     value={manualForm.customerGender}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary"
+                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
                                 >
                                     <option value="-">선택안함</option>
                                     <option value="남성">남성</option>
                                     <option value="여성">여성</option>
                                 </select>
                             </div>
-                            <div className="col-span-4 grid grid-cols-4 gap-3">
-                                <div className="col-span-4 md:col-span-2">
-                                    <label className="block text-xs font-bold text-gray-400 mb-1">주소</label>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            name="customerAddress"
-                                            value={manualForm.customerAddress}
-                                            readOnly
-                                            onClick={() => setIsOpenPostcode(true)}
-                                            className="flex-1 p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white cursor-pointer"
-                                            placeholder="주소 검색"
-                                        />
-                                        <button
-                                            onClick={() => setIsOpenPostcode(true)}
-                                            className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-xs font-bold hover:bg-gray-200 whitespace-nowrap"
-                                        >
-                                            검색
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="col-span-4 md:col-span-2">
-                                    <label className="block text-xs font-bold text-gray-400 mb-1">상세주소</label>
+                            <div className="col-span-1 sm:col-span-2 md:col-span-2">
+                                <label className="block text-xs font-bold text-gray-400 mb-1">주소</label>
+                                <div className="flex gap-2">
                                     <input
                                         type="text"
-                                        name="customerAddressDetail"
-                                        value={manualForm.customerAddressDetail}
-                                        onChange={handleManualChange}
-                                        className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary"
-                                        placeholder="상세주소를 입력하세요"
+                                        name="customerAddress"
+                                        value={manualForm.customerAddress}
+                                        readOnly
+                                        onClick={() => setIsOpenPostcode(true)}
+                                        className="flex-1 min-w-0 p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white cursor-pointer"
+                                        placeholder="주소 검색"
                                     />
+                                    <button
+                                        onClick={() => setIsOpenPostcode(true)}
+                                        className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-xs font-bold hover:bg-gray-200 whitespace-nowrap shrink-0"
+                                    >
+                                        검색
+                                    </button>
                                 </div>
                             </div>
-                            <div className="col-span-4 flex justify-end mt-2">
+                            <div className="col-span-1 sm:col-span-2 md:col-span-2">
+                                <label className="block text-xs font-bold text-gray-400 mb-1">상세주소</label>
+                                <input
+                                    type="text"
+                                    name="customerAddressDetail"
+                                    value={manualForm.customerAddressDetail}
+                                    onChange={handleManualChange}
+                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
+                                    placeholder="상세주소를 입력하세요"
+                                />
+                            </div>
+                            <div className="col-span-1 sm:col-span-2 md:col-span-4 flex justify-end mt-2">
                                 <button
                                     onClick={addManualCustomer}
-                                    className="px-6 py-2 bg-sono-dark text-white rounded-lg text-sm font-bold hover:bg-black transition-all"
+                                    className="w-full sm:w-auto px-6 py-2.5 bg-sono-dark text-white rounded-xl text-sm font-bold hover:bg-black transition-all"
                                 >
                                     추가하기
                                 </button>
@@ -573,8 +571,8 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                         <div className="flex justify-between items-end mb-3">
                             <h3 className="text-lg font-bold text-sono-dark">등록 대기 목록 <span className="text-sono-primary">({stagedCustomers.length})</span></h3>
                         </div>
-                        <div className="border border-gray-200 rounded-xl overflow-hidden">
-                            <table className="w-full text-left text-sm">
+                        <div className="border border-gray-200 rounded-xl overflow-x-auto">
+                            <table className="w-full text-left text-sm min-w-[550px]">
                                 <thead className="bg-gray-50 border-b border-gray-100">
                                     <tr>
                                         {isAdmin && <th className="px-4 py-3 font-bold text-gray-500 text-xs">파트너</th>}

@@ -166,6 +166,7 @@ export async function POST(request: Request) {
                 loginId: partnerData.loginId,
                 loginPassword: partnerData.loginPassword,
                 partnerGroup: partnerData.partnerGroup || '전체 상품 판매',
+                showLandingUrl: partnerData.showLandingUrl !== undefined ? partnerData.showLandingUrl : true,
                 status: 'active',
                 parentPartnerId: partnerData.parentPartnerId || '',
                 parentPartnerName: partnerData.parentPartnerName || '',

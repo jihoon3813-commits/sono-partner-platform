@@ -349,15 +349,15 @@ export default function CustomerManagement({
                             <p className="text-sm text-gray-400 mt-1.5 font-medium">총 <span className="text-sono-primary font-bold">{filteredApplications.length}</span>건의 신청 내역이 있습니다.</p>
                         </div>
                         
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto no-scrollbar whitespace-nowrap py-1">
                             <button
                                 onClick={() => setIsRegistrationModalOpen(true)}
-                                className="flex items-center gap-2 px-4 py-2.5 bg-sono-dark text-white rounded-xl text-sm font-bold hover:bg-black transition-all shadow-md active:scale-95"
+                                className="flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-sono-dark text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-black transition-all shadow-md active:scale-95 text-center whitespace-nowrap shrink-0"
                             >
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                                 </svg>
-                                고객 직접 등록
+                                <span>고객 직접 등록</span>
                             </button>
                             
                             {isAdmin && selectedAppIds.length > 0 && (
@@ -380,15 +380,15 @@ export default function CustomerManagement({
                                             }
                                         }}
                                         disabled={isDeleting}
-                                        className="flex items-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 border border-red-100 rounded-xl text-sm font-bold hover:bg-red-100 transition-all shadow-sm active:scale-95"
+                                        className="flex items-center gap-2 px-3.5 sm:px-4 py-2.5 bg-red-50 text-red-600 border border-red-100 rounded-xl text-xs sm:text-sm font-bold hover:bg-red-100 transition-all shadow-sm active:scale-95 shrink-0 whitespace-nowrap"
                                     >
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
-                                        선택 삭제 ({selectedAppIds.length})
+                                        <span>선택 삭제 ({selectedAppIds.length})</span>
                                     </button>
 
-                                    <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 p-1 rounded-xl shadow-sm">
+                                    <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 p-1 rounded-xl shadow-sm shrink-0 whitespace-nowrap">
                                         <select
                                             value={bulkStatus}
                                             onChange={(e) => setBulkStatus(e.target.value)}
@@ -427,12 +427,12 @@ export default function CustomerManagement({
                                                 }
                                             }}
                                             disabled={isUpdatingStatus || !bulkStatus}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                                         >
                                             {isUpdatingStatus ? (
-                                                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
                                             ) : (
-                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                                                 </svg>
                                             )}
@@ -445,12 +445,12 @@ export default function CustomerManagement({
                             {isAdmin && (
                                 <button
                                     onClick={() => setIsBulkUploadModalOpen(true)}
-                                    className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-sm font-bold hover:bg-emerald-100 transition-all shadow-sm active:scale-95"
+                                    className="flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-xs sm:text-sm font-bold hover:bg-emerald-100 transition-all shadow-sm active:scale-95 shrink-0 whitespace-nowrap"
                                 >
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                     </svg>
-                                    본사 엑셀 업로드
+                                    <span>본사 엑셀 업로드</span>
                                 </button>
                             )}
 
@@ -469,12 +469,12 @@ export default function CustomerManagement({
                                         }
                                         onRefresh();
                                     }}
-                                    className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-xl text-sm font-bold hover:bg-amber-100 transition-all shadow-sm active:scale-95"
+                                    className="flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-xl text-xs sm:text-sm font-bold hover:bg-amber-100 transition-all shadow-sm active:scale-95 shrink-0 whitespace-nowrap"
                                 >
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
-                                    성별 데이터 보정
+                                    <span>성별 데이터 보정</span>
                                 </button>
                             )}
 
@@ -550,12 +550,12 @@ export default function CustomerManagement({
                                     }
                                 }}
                                 disabled={isDownloading}
-                                className={`flex items-center gap-2 px-4 py-2.5 bg-sono-primary/10 text-sono-primary border border-sono-primary/20 rounded-xl text-sm font-bold hover:bg-sono-primary/20 transition-all active:scale-95 ${isDownloading ? 'opacity-70 cursor-wait' : ''}`}
+                                className={`flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-sono-primary/10 text-sono-primary border border-sono-primary/20 rounded-xl text-xs sm:text-sm font-bold hover:bg-sono-primary/20 transition-all active:scale-95 text-center whitespace-nowrap shrink-0 ${isDownloading ? 'opacity-70 cursor-wait' : ''}`}
                             >
                                 {isDownloading ? (
-                                    <div className="w-4 h-4 border-2 border-sono-primary/30 border-t-sono-primary rounded-full animate-spin" />
+                                    <div className="w-4 h-4 border-2 border-sono-primary/30 border-t-sono-primary rounded-full animate-spin shrink-0" />
                                 ) : (
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
                                 )}
@@ -579,12 +579,12 @@ export default function CustomerManagement({
                             </svg>
                         </div>
 
-                        <div className="flex items-center gap-2 w-full md:w-auto">
+                        <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full md:w-auto">
                             {isAdmin && partners.length > 0 && (
                                 <select
                                     value={partnersFilter}
                                     onChange={(e) => setPartnersFilter(e.target.value)}
-                                    className="flex-1 md:flex-none bg-white border border-gray-200 text-sono-dark text-sm rounded-2xl px-4 py-3 focus:ring-2 focus:ring-sono-primary outline-none font-bold shadow-sm min-w-[150px]"
+                                    className="col-span-2 sm:flex-none bg-white border border-gray-200 text-sono-dark text-sm rounded-2xl px-4 py-3 focus:ring-2 focus:ring-sono-primary outline-none font-bold shadow-sm sm:min-w-[150px]"
                                 >
                                     <option value="all">모든 파트너사</option>
                                     {partners.map(p => (
@@ -595,7 +595,7 @@ export default function CustomerManagement({
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value as any)}
-                                className="flex-1 md:flex-none bg-white border border-gray-200 text-sono-dark text-sm rounded-2xl px-4 py-3 focus:ring-2 focus:ring-sono-primary outline-none font-bold shadow-sm"
+                                className="bg-white border border-gray-200 text-sono-dark text-sm rounded-2xl px-3 py-3 focus:ring-2 focus:ring-sono-primary outline-none font-bold shadow-sm"
                             >
                                 <option value="updatedAt">최근수정기준</option>
                                 <option value="createdAtDesc">등록일시(내림차순)</option>
@@ -604,7 +604,7 @@ export default function CustomerManagement({
                             <select
                                 value={itemsPerPage}
                                 onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                                className="flex-1 md:flex-none bg-white border border-gray-200 text-sono-dark text-sm rounded-2xl px-4 py-3 focus:ring-2 focus:ring-sono-primary outline-none font-bold shadow-sm"
+                                className="bg-white border border-gray-200 text-sono-dark text-sm rounded-2xl px-3 py-3 focus:ring-2 focus:ring-sono-primary outline-none font-bold shadow-sm"
                             >
                                 <option value={20}>20개 보기</option>
                                 <option value={50}>50개 보기</option>

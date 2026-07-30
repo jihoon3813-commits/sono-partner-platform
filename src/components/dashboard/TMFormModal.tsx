@@ -118,6 +118,7 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
                     loginId: formData.loginId,
                     loginPassword: formData.loginPassword,
                     partnerGroup: parentPartner.partnerGroup || "전체 상품 판매",
+                    showLandingUrl: parentPartner.showLandingUrl !== undefined ? parentPartner.showLandingUrl : true,
                     status: formData.status,
                     parentPartnerId: parentPartner.partnerId,
                     parentPartnerName: parentPartner.companyName,
@@ -153,16 +154,16 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
 
     return (
         <div 
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4"
             onClick={onClose}
         >
             <div 
-                className="bg-white rounded-[24px] w-full max-w-md shadow-2xl flex flex-col overflow-hidden"
+                className="bg-white rounded-[20px] sm:rounded-[24px] w-full max-w-md shadow-2xl flex flex-col overflow-hidden max-h-[90vh]"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0">
-                    <h2 className="text-xl font-bold text-sono-dark">
+                <div className="p-4 sm:p-6 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0">
+                    <h2 className="text-lg sm:text-xl font-bold text-sono-dark">
                         {isEdit ? "상담원 정보 수정" : "신규 상담원 등록"}
                     </h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-sono-dark transition-colors">
@@ -173,7 +174,7 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-5 flex-1 overflow-y-auto max-h-[75vh]">
+                <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 flex-1 overflow-y-auto max-h-[75vh]">
                     <div className="bg-sono-primary/5 rounded-2xl p-4 border border-sono-primary/10 text-xs text-sono-dark/80 space-y-1">
                         <p className="font-bold text-sono-primary text-sm mb-1.5">상위 파트너 정보 상속</p>
                         <p>• <b>회사명</b>: {parentPartner.companyName}</p>

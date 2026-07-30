@@ -14,6 +14,7 @@ export interface Partner {
     shopType: string;
     memberCount: string;
     partnerGroup?: string;
+    showLandingUrl?: boolean;
     customUrl: string;
     logoUrl: string;
     logoText?: string;

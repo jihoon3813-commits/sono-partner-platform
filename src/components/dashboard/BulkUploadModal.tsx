@@ -151,10 +151,10 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4" onClick={onClose}>
-            <div className="bg-white rounded-[32px] w-full max-w-md p-8 shadow-2xl" onClick={e => e.stopPropagation()}>
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-sono-dark tracking-tight">본사 엑셀 일괄 등록</h2>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-3 sm:p-4" onClick={onClose}>
+            <div className="bg-white rounded-[24px] sm:rounded-[32px] w-full max-w-md p-5 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-4 sm:mb-6">
+                    <h2 className="text-xl sm:text-2xl font-bold text-sono-dark tracking-tight">본사 엑셀 일괄 등록</h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-sono-dark">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

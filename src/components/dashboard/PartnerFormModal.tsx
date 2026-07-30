@@ -32,6 +32,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
         shopType: "회원제 쇼핑몰",
         memberCount: "",
         partnerGroup: "전체 상품 판매",
+        showLandingUrl: true,
         customUrl: "",
         logoUrl: "",
         logoText: "",
@@ -58,6 +59,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                 shopType: partner.shopType || "회원제 쇼핑몰",
                 memberCount: partner.memberCount || "",
                 partnerGroup: partner.partnerGroup || "전체 상품 판매",
+                showLandingUrl: partner.showLandingUrl !== undefined ? partner.showLandingUrl : true,
                 customUrl: partner.customUrl || "",
                 logoUrl: partner.logoUrl || "",
                 logoText: partner.logoText || "",
@@ -74,6 +76,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
             setFormData(prev => ({
                 ...prev,
                 ...initialData,
+                showLandingUrl: initialData.showLandingUrl !== undefined ? initialData.showLandingUrl : true,
                 status: "active",
                 role: (initialData.role || "master") as "master" | "tm"
             }));
@@ -196,11 +199,11 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-6">
-            <div className="bg-white rounded-[32px] w-full max-w-2xl max-h-[90vh] overflow-y-auto p-10 shadow-2xl no-scrollbar">
-                <div className="flex justify-between items-center mb-10">
-                    <div className="flex items-center gap-4">
-                        <h2 className="text-2xl font-bold text-sono-dark">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-6">
+            <div className="bg-white rounded-[24px] md:rounded-[32px] w-full max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 md:p-10 shadow-2xl no-scrollbar">
+                <div className="flex justify-between items-center mb-6 sm:mb-10">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+                        <h2 className="text-xl sm:text-2xl font-bold text-sono-dark">
                             {isEdit ? "파트너 정보 수정" : "파트너 신규 등록"}
                         </h2>
                         {isEdit && isAdmin && formData.loginId && (
@@ -218,7 +221,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                         )}
                     </div>
                     <button onClick={onClose} className="text-gray-400 hover:text-sono-dark transition-colors">
-                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
@@ -228,7 +231,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                     {/* Basic Info Section */}
                     <div className="space-y-6">
                         <h3 className="text-lg font-bold text-sono-dark border-l-4 border-sono-primary pl-3">기본 정보</h3>
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-400 ml-1">업체명</label>
                                 <input
@@ -256,13 +259,13 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                     {/* Parent Partner Search Section */}
                     <div className="space-y-6">
                         <h3 className="text-lg font-bold text-sono-dark border-l-4 border-sono-primary pl-3">상위 파트너 정보</h3>
-                        <div className="bg-gray-50 rounded-2xl p-6">
+                        <div className="bg-gray-50 rounded-2xl p-4 sm:p-6">
                             {formData.parentPartnerId ? (
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                                     <div>
                                         <p className="text-xs font-bold text-sono-primary mb-1 uppercase tracking-wider">상위 파트너</p>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-lg font-bold text-sono-dark">{formData.parentPartnerName}</span>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <span className="text-base sm:text-lg font-bold text-sono-dark">{formData.parentPartnerName}</span>
                                             <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded font-mono">{formData.parentPartnerId}</span>
                                         </div>
                                     </div>
@@ -322,7 +325,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                     {/* Manager Info Section */}
                     <div className="space-y-6">
                         <h3 className="text-lg font-bold text-sono-dark border-l-4 border-sono-primary pl-3">담당자 정보</h3>
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-400 ml-1">담당자 성함</label>
                                 <input
@@ -351,7 +354,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                     {/* Service Info Section */}
                     <div className="space-y-6">
                         <h3 className="text-lg font-bold text-sono-dark border-l-4 border-sono-primary pl-3">서비스 설정</h3>
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-400 ml-1">커스텀 URL</label>
                                 <div className="flex gap-2">
@@ -371,7 +374,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                                             href={`/p/${formData.customUrl}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center justify-center w-12 bg-sono-primary/10 text-sono-primary rounded-2xl hover:bg-sono-primary hover:text-white transition-all"
+                                            className="flex items-center justify-center w-12 bg-sono-primary/10 text-sono-primary rounded-2xl hover:bg-sono-primary hover:text-white transition-all shrink-0"
                                             title="페이지 바로가기"
                                         >
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -394,23 +397,37 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                         </div>
 
                         {/* Partner Group Selection */}
-                        <div className="grid grid-cols-2 gap-6 pt-2">
-                            <div className="space-y-2 col-span-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-2">
+                            <div className="space-y-2 sm:col-span-2">
                                 <label className="text-xs font-bold text-gray-400 ml-1">상품 판매 그룹</label>
                                 <select
+                                    disabled={!isAdmin}
                                     value={formData.partnerGroup}
                                     onChange={(e) => setFormData({ ...formData, partnerGroup: e.target.value })}
-                                    className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary"
+                                    className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary disabled:opacity-60 disabled:cursor-not-allowed disabled:bg-gray-100"
                                 >
                                     <option value="전체 상품 판매">전체 상품 판매</option>
                                     <option value="결합 상품 판매">결합 상품 판매</option>
                                 </select>
                                 <p className="text-[10px] text-gray-400 ml-1 mt-1">* 결합 상품 판매 그룹은 대시보드에 결합상품 관련 URL만 노출됩니다.</p>
                             </div>
+                            <div className="space-y-2 sm:col-span-2">
+                                <label className="text-xs font-bold text-gray-400 ml-1">랜딩 노출 여부</label>
+                                <select
+                                    disabled={!isAdmin}
+                                    value={formData.showLandingUrl ? "true" : "false"}
+                                    onChange={(e) => setFormData({ ...formData, showLandingUrl: e.target.value === "true" })}
+                                    className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary disabled:opacity-60 disabled:cursor-not-allowed disabled:bg-gray-100"
+                                >
+                                    <option value="true">노출</option>
+                                    <option value="false">노출 안함</option>
+                                </select>
+                                <p className="text-[10px] text-gray-400 ml-1 mt-1">* 노출 안함 설정 시 파트너 대시보드에서 랜딩/상담신청 URL이 노출되지 않습니다.</p>
+                            </div>
                         </div>
 
                         {/* Landing Page Customization */}
-                        <div className="grid grid-cols-2 gap-6 pt-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-2">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-400 ml-1">랜딩 타이틀용 업체명 (회원님을 위한... 앞에 표시)</label>
                                 <input
@@ -432,7 +449,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                                     placeholder="https://..."
                                 />
                             </div>
-                            <div className="space-y-2 col-span-2">
+                            <div className="space-y-2 sm:col-span-2">
                                 <label className="text-xs font-bold text-gray-400 ml-1">로고 텍스트 (이미지 URL이 없을 때 표시)</label>
                                 <input
                                     type="text"
@@ -448,7 +465,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                     {/* Account Info Section */}
                     <div className="space-y-6">
                         <h3 className="text-lg font-bold text-sono-dark border-l-4 border-sono-primary pl-3">계정 정보</h3>
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-400 ml-1">로그인 ID</label>
                                 <input
@@ -471,7 +488,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                                 />
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-400 ml-1">파트너 상태</label>
                                 <select
