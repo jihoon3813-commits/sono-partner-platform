@@ -338,9 +338,9 @@ export default function Happy450Content({
                                 </div>
 
                                 {/* 카드 2: 하나카드 */}
-                                <div className="relative bg-white rounded-[32px] p-8 md:p-10 shadow-sm border border-gray-100 flex flex-col hover:shadow-xl transition-all duration-300">
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-lg whitespace-nowrap z-10">빠른 신청(전용번호)</div>
-                                    <div className="aspect-[1.58/1] bg-gray-50 rounded-2xl mb-8 flex items-center justify-center overflow-hidden">
+                                <div className="relative bg-white rounded-xl p-8 md:p-10 shadow-sm border border-gray-100 flex flex-col hover:shadow-xl transition-all duration-300">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[11px] font-black px-4 py-1.5 rounded-md shadow-lg whitespace-nowrap z-10">빠른 신청(전용번호)</div>
+                                    <div className="aspect-[1.58/1] bg-gray-50 rounded-xl mb-8 flex items-center justify-center overflow-hidden">
                                         <img 
                                             src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097508/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_%ED%94%8C%EB%9F%AC%EC%8A%A4_%ED%95%98%EB%82%98%EC%B9%B4%EB%93%9C_nyopom_delgx0.png" 
                                             alt="소노아임레디 플러스 하나카드"
@@ -352,7 +352,7 @@ export default function Happy450Content({
                                         <p className="text-red-500 font-bold text-lg whitespace-nowrap">최대 <span className="text-2xl md:text-3xl">1.9만원</span> 할인</p>
                                     </div>
                                     <div className="space-y-4 mb-8 flex-grow">
-                                        <div className="bg-red-50/50 rounded-2xl p-3 sm:p-5 border border-red-50">
+                                        <div className="bg-red-50/50 rounded-xl p-3 sm:p-5 border border-red-50">
                                             <div className="flex justify-between items-center mb-2 sm:mb-3 gap-1">
                                                 <span className="text-[#8b95a1] font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">전월 30만원 실적 시</span>
                                                 <span className="text-sono-dark font-black text-[11px] sm:text-sm whitespace-nowrap">12,000원 할인</span>
@@ -380,11 +380,11 @@ export default function Happy450Content({
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 gap-3 mt-auto">
-                                        <a href="tel:1800-0672" className="flex items-center justify-center gap-2 bg-sono-dark text-white font-bold py-4 rounded-2xl hover:bg-black transition-all shadow-lg shadow-black/5 text-sm">
+                                        <a href="tel:1800-0672" className="flex items-center justify-center gap-2 bg-sono-dark text-white font-bold py-4 rounded-xl hover:bg-black transition-all shadow-lg shadow-black/5 text-sm">
                                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 004.587 4.587l.773-1.548a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
                                             1800-0672 전화 신청
                                         </a>
-                                        <a href="https://m.hanacard.co.kr/MPACMM101M.web?CD_PD_SEQ=13910" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-white text-sono-dark border-2 border-sono-dark/10 font-bold py-4 rounded-2xl hover:bg-gray-50 transition-all text-sm">
+                                        <a href="https://m.hanacard.co.kr/MPACMM101M.web?CD_PD_SEQ=13910" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-white text-sono-dark border-2 border-sono-dark/10 font-bold py-4 rounded-xl hover:bg-gray-50 transition-all text-sm">
                                             온라인 신청
                                         </a>
                                     </div>
@@ -392,7 +392,7 @@ export default function Happy450Content({
                             </div>
 
                             <div className="w-full">
-                                <div className="bg-white p-6 md:p-10 rounded-[32px] border border-gray-200 shadow-xl shadow-sono-dark/5">
+                                <div className="bg-white p-6 md:p-10 rounded-xl border border-gray-200 shadow-xl shadow-sono-dark/5">
                                     <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                                         <div className="text-left">
                                             <h4 className="text-lg md:text-xl font-black text-sono-dark mb-2 tracking-tight">카드 발급 후 꼭 확인하세요!</h4>
@@ -400,7 +400,7 @@ export default function Happy450Content({
                                         </div>
                                         <button 
                                             onClick={() => setIsTransferModalOpen(true)}
-                                            className="w-full md:w-auto shrink-0 bg-sono-primary text-white font-bold px-8 py-4 md:py-5 rounded-2xl hover:bg-sono-dark transition-all shadow-xl shadow-sono-primary/20 flex items-center justify-center gap-2 text-base md:text-lg"
+                                            className="w-full md:w-auto shrink-0 bg-sono-primary text-white font-bold px-8 py-4 md:py-5 rounded-xl hover:bg-sono-dark transition-all shadow-xl shadow-sono-primary/20 flex items-center justify-center gap-2 text-base md:text-lg"
                                         >
                                             자동이체 변경 안내
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
@@ -446,7 +446,7 @@ export default function Happy450Content({
                                 },
                             ].map((item, index) => (
                                 <div key={index} className="flex flex-col text-center group">
-                                    <div className="relative aspect-[4/3] rounded-[32px] overflow-hidden bg-gray-100 mb-6 md:mb-10 shadow-sm transition-all duration-500 hover:shadow-2xl">
+                                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 mb-6 md:mb-10 shadow-sm transition-all duration-500 hover:shadow-2xl">
                                         {item.img ? (
                                             <img src={item.img} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                         ) : (
@@ -499,52 +499,52 @@ export default function Happy450Content({
 
 
                 {/* 의전 서비스 상세 구성 */}
-                <section className="py-6 sm:py-12 md:py-16 bg-sono-light">
-                    <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="text-center mb-8 md:mb-12">
-                            <span className="badge-gold mb-3">SERVICE DETAILS</span>
+                <section className="py-3 sm:py-6 md:py-10 bg-sono-light">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12">
+                        <div className="text-center mb-4 md:mb-8">
+                            <span className="badge-gold mb-2">SERVICE DETAILS</span>
                             <h2 className="section-title">의전 서비스 상세 구성</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-5">
                             {/* 고인용품 (입관/수시) */}
-                            <div className="bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm">
-                                <div className="bg-sono-dark text-white px-6 py-3 md:py-4 font-bold text-lg">
+                            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-4 py-2 md:py-3 font-bold text-sm md:text-base">
                                     고인용품 (입관/수시)
                                 </div>
-                                <div className="p-4 md:p-8 space-y-4 md:space-y-6">
+                                <div className="p-3 md:p-5 space-y-2 md:space-y-4">
                                     <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">관</span>
-                                        <div className="text-right text-sm md:text-base text-sono-dark font-medium">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">관</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
                                             <p>오동나무 45mm (매장)</p>
                                             <p>오동나무 18mm/유골함 (화장)</p>
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-4 md:pt-6">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">수의</span>
-                                        <div className="text-right text-sm md:text-base text-sono-dark font-medium">
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-2 md:pt-3">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">수의</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
                                             <p>대마 100% 기계직</p>
-                                            <p className="text-[#8b95a1] font-bold text-xs">(꽃관보/도우미 대체 가능)</p>
+                                            <p className="text-[#8b95a1] font-bold text-[11px]">(꽃관보/도우미 대체 가능)</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* 입관용품 */}
-                            <div className="bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm">
-                                <div className="bg-sono-dark text-white px-6 py-3 md:py-4 font-bold text-lg">
+                            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-4 py-2 md:py-3 font-bold text-sm md:text-base">
                                     입관용품
                                 </div>
-                                <div className="p-4 md:p-8 space-y-4 md:space-y-6">
+                                <div className="p-3 md:p-5 space-y-2 md:space-y-4">
                                     <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">의류</span>
-                                        <div className="text-right text-sm md:text-base text-sono-dark font-medium leading-relaxed">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">의류</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             도포, 원삼, 천금, 지금<br />(수의와 동일 제품)
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-4 md:pt-6">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">기타</span>
-                                        <div className="text-right text-sm md:text-base text-sono-dark font-medium leading-relaxed">
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-2 md:pt-3">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">기타</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             명정, 관보, 베개, 습신 등<br />규격품 일체 제공
                                         </div>
                                     </div>
@@ -552,20 +552,20 @@ export default function Happy450Content({
                             </div>
 
                             {/* 빈소 및 기타용품 */}
-                            <div className="bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm">
-                                <div className="bg-sono-dark text-white px-6 py-3 md:py-4 font-bold text-lg">
+                            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-4 py-2 md:py-3 font-bold text-sm md:text-base">
                                     빈소 및 기타용품
                                 </div>
-                                <div className="p-4 md:p-8 space-y-4 md:space-y-6">
+                                <div className="p-3 md:p-5 space-y-2 md:space-y-4">
                                     <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">빈소내 용품</span>
-                                        <div className="text-right text-sm md:text-base text-sono-dark font-medium leading-relaxed">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">빈소내 용품</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             향, 양초, 부의록, 위패 등<br />필요량 일체 제공
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-4 md:pt-6">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">대여/기타</span>
-                                        <div className="text-right text-sm md:text-base text-sono-dark font-medium leading-relaxed">
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-2 md:pt-3">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">대여/기타</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             향로, 촛대 (대여)<br />완장, 상장, 장갑 (제공)
                                         </div>
                                     </div>
@@ -573,21 +573,21 @@ export default function Happy450Content({
                             </div>
 
                             {/* 의전 및 제단 */}
-                            <div className="bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm">
-                                <div className="bg-sono-dark text-white px-6 py-3 md:py-4 font-bold text-lg">
+                            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-4 py-2 md:py-3 font-bold text-sm md:text-base">
                                     의전 및 제단
                                 </div>
-                                <div className="p-4 md:p-8 space-y-4 md:space-y-6">
+                                <div className="p-3 md:p-5 space-y-2 md:space-y-4">
                                     <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">현대식 상복</span>
-                                        <div className="text-right text-sm md:text-base text-sono-dark font-medium leading-relaxed">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">현대식 상복</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             검정 양복 / 개량 한복<br />
                                             <span className="text-sono-primary font-bold">각 5벌 (남녀 무관)</span>
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-4 md:pt-6">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">꽃장식</span>
-                                        <div className="text-right text-sm md:text-base text-sono-dark font-medium leading-relaxed">
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-2 md:pt-3">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">꽃장식</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             헌화용 국화 30송이, 꽃바구니 2개<br />
                                             <span className="text-red-500 font-bold">(제단 꽃장식 제외)</span>
                                         </div>
@@ -596,20 +596,20 @@ export default function Happy450Content({
                             </div>
 
                             {/* 차량지원 */}
-                            <div className="bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm">
-                                <div className="bg-sono-dark text-white px-6 py-3 md:py-4 font-bold text-lg">
+                            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-4 py-2 md:py-3 font-bold text-sm md:text-base">
                                     차량지원
                                 </div>
-                                <div className="p-4 md:p-8 space-y-4 md:space-y-6">
+                                <div className="p-3 md:p-5 space-y-2 md:space-y-4">
                                     <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">이송차량</span>
-                                        <div className="text-right text-sm md:text-base text-sono-dark font-medium">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">이송차량</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
                                             관내 (시, 군내) 무료 제공
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-4 md:pt-6">
-                                        <span className="font-bold text-sono-primary flex-shrink-0 text-shadow-sm">유족버스/<br />리무진</span>
-                                        <div className="text-right text-sm md:text-base text-sono-dark font-medium leading-relaxed">
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-2 md:pt-3">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">유족버스/<br />리무진</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             왕복 300km 제공<br />
                                             <span className="text-sono-primary font-bold">택 1 (초과시 별도)</span>
                                         </div>
@@ -618,34 +618,34 @@ export default function Happy450Content({
                             </div>
 
                             {/* 인력지원 */}
-                            <div className="bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm">
-                                <div className="bg-sono-dark text-white px-6 py-3 md:py-4 font-bold text-lg">
+                            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-4 py-2 md:py-3 font-bold text-sm md:text-base">
                                     인력지원
                                 </div>
-                                <div className="p-4 md:p-8 space-y-4 md:space-y-6">
+                                <div className="p-3 md:p-5 space-y-2 md:space-y-4">
                                     <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">장례지도사</span>
-                                        <div className="text-right text-sm md:text-base text-sono-dark font-medium">
-                                            국가공인 지도사 <span className="font-bold text-sono-primary text-lg">1명</span>
-                                            <p className="text-[#8b95a1] text-xs font-bold mt-1">(입관 및 행사 진행)</p>
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">장례지도사</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
+                                            국가공인 지도사 <span className="font-bold text-sono-primary text-base">1명</span>
+                                            <p className="text-[#8b95a1] text-[11px] font-bold mt-0.5">(입관 및 행사 진행)</p>
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-4 md:pt-6">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">의전도우미</span>
-                                        <div className="text-right text-sm md:text-base text-sono-dark font-medium">
-                                            전문 도우미 <span className="font-bold text-sono-primary text-lg">5명</span>
-                                            <p className="text-[#8b95a1] text-xs font-bold mt-1">(접객 및 빈소 관리)</p>
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-2 md:pt-3">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">의전도우미</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
+                                            전문 도우미 <span className="font-bold text-sono-primary text-base">5명</span>
+                                            <p className="text-[#8b95a1] text-[11px] font-bold mt-0.5">(접객 및 빈소 관리)</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-12 space-y-2">
-                            <p className="text-left md:text-center text-xs text-[#8b95a1] font-medium">
+                        <div className="mt-6 space-y-1">
+                            <p className="text-left md:text-center text-[11px] text-[#8b95a1] font-medium">
                                 ※ 상기 품목은 지역 및 장례식장 여건에 따라 동급의 타 제품으로 대체될 수 있습니다.
                             </p>
-                            <p className="text-left md:text-center text-xs text-[#8b95a1] font-medium">
+                            <p className="text-left md:text-center text-[11px] text-[#8b95a1] font-medium">
                                 ※ 고객의 요청에 의해 품목을 추가하실 경우 별도의 비용이 발생할 수 있습니다.
                             </p>
                         </div>
@@ -985,7 +985,7 @@ export default function Happy450Content({
             {isTransferModalOpen && (
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => setIsTransferModalOpen(false)}></div>
-                    <div className="relative bg-white w-full max-w-2xl rounded-[32px] overflow-hidden shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto no-scrollbar">
+                    <div className="relative bg-white w-full max-w-2xl rounded-xl overflow-hidden shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto no-scrollbar">
                         <div className="p-8 md:p-10">
                             <div className="flex justify-between items-center mb-8">
                                 <h3 className="text-2xl font-black text-sono-dark tracking-tighter">자동이체 변경 안내</h3>

@@ -334,12 +334,12 @@ export default function SmartCareContent({
                                     {partnerMode ? (
                                         <button
                                             onClick={() => setIsModalOpen(true)}
-                                            className="bg-white text-[#3b82f6] hover:bg-gray-50 px-10 py-4 rounded-[16px] font-bold text-lg md:text-xl active:scale-[0.98] transition-all duration-300 shadow-xl shadow-black/10 text-center min-w-[200px]"
+                                            className="bg-white text-[#3b82f6] hover:bg-gray-50 px-10 py-4 rounded-lg font-bold text-lg md:text-xl active:scale-[0.98] transition-all duration-300 shadow-xl shadow-black/10 text-center min-w-[200px]"
                                         >
                                             {ctaText}
                                         </button>
                                     ) : (
-                                        <Link href="/partner/apply" className="bg-white text-[#3b82f6] hover:bg-gray-50 px-10 py-4 rounded-[16px] font-bold text-lg md:text-xl active:scale-[0.98] transition-all duration-300 shadow-xl shadow-black/10 text-center min-w-[200px] flex items-center justify-center">
+                                        <Link href="/partner/apply" className="bg-white text-[#3b82f6] hover:bg-gray-50 px-10 py-4 rounded-lg font-bold text-lg md:text-xl active:scale-[0.98] transition-all duration-300 shadow-xl shadow-black/10 text-center min-w-[200px] flex items-center justify-center">
                                             {ctaText}
                                         </Link>
                                     )}
@@ -347,21 +347,21 @@ export default function SmartCareContent({
                                         onClick={() => {
                                             document.getElementById("appliance-section")?.scrollIntoView({ behavior: "smooth" });
                                         }}
-                                        className="bg-black/40 backdrop-blur-md text-white border border-white/10 hover:bg-black/50 px-10 py-4 rounded-[16px] font-bold text-lg md:text-xl active:scale-[0.98] transition-all duration-300 text-center min-w-[200px]"
+                                        className="bg-black/40 backdrop-blur-md text-white border border-white/10 hover:bg-black/50 px-10 py-4 rounded-lg font-bold text-lg md:text-xl active:scale-[0.98] transition-all duration-300 text-center min-w-[200px]"
                                     >
                                         가전 라인업 보기
                                     </button>
                                 </div>
 
                                 {/* 스마트한 선택 박스 - 이미지 1번의 '합리적 선택' 박스 스타일 구현 */}
-                                <div className="mt-16 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                                    <div className="inline-flex items-center gap-5 bg-black/40 backdrop-blur-md border border-white/10 p-5 pr-12 rounded-[24px] shadow-2xl">
-                                        <div className="w-14 h-14 rounded-full bg-white text-[#3b82f6] flex items-center justify-center font-black text-2xl shadow-lg flex-shrink-0">
+                                <div className="mt-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                                    <div className="inline-flex items-center gap-4 bg-black/40 backdrop-blur-md border border-white/10 p-4 pr-10 rounded-xl shadow-2xl">
+                                        <div className="w-12 h-12 rounded-lg bg-white text-[#3b82f6] flex items-center justify-center font-black text-xl shadow-lg flex-shrink-0">
                                             ★
                                         </div>
                                         <div>
-                                            <h3 className="text-white text-lg font-bold tracking-tight mb-1">스마트한 선택</h3>
-                                            <p className="text-gray-300 font-medium text-sm leading-snug break-keep">
+                                            <h3 className="text-white text-base font-bold tracking-tight mb-0.5">스마트한 선택</h3>
+                                            <p className="text-gray-300 font-medium text-xs sm:text-sm leading-snug break-keep">
                                                 최신가전 렌탈금 전액 지원!! 지금은 편리하게,<br />미래는 든든하게
                                             </p>
                                         </div>
@@ -408,7 +408,7 @@ export default function SmartCareContent({
                                         icon: "⭐️"
                                     },
                                 ].map((item, i) => (
-                                    <div key={i} className="p-5 sm:p-8 rounded-2xl bg-[#f2f4f6] hover:bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-transparent hover:border-gray-100">
+                                    <div key={i} className="p-5 sm:p-8 rounded-xl bg-[#f2f4f6] hover:bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-transparent hover:border-gray-100">
                                         <div className="text-3xl sm:text-4xl mb-4 sm:mb-6">{item.icon}</div>
                                         <h3 className="text-lg sm:text-xl font-bold text-sono-dark mb-2 sm:mb-4">{item.title}</h3>
                                         <p className="text-[#6b7684] font-medium leading-relaxed text-xs sm:text-base">{item.desc}</p>
@@ -441,7 +441,7 @@ export default function SmartCareContent({
                                 return (
                                     <div 
                                         key={i} 
-                                        className={`relative p-5 md:p-8 rounded-2xl border transition-all duration-500 flex flex-col justify-between shrink-0 snap-center w-[270px] sm:w-[320px] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] ${
+                                        className={`relative p-5 md:p-8 rounded-xl border transition-all duration-500 flex flex-col justify-between shrink-0 snap-center w-[270px] sm:w-[320px] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] ${
                                             isBest 
                                                 ? "bg-[#1f2d42]/95 border-sono-primary shadow-[0_25px_60px_rgba(46,78,162,0.4)] md:scale-105 hover:-translate-y-2 z-10" 
                                                 : "bg-[#17202c]/90 border-[#2f3d52] shadow-[0_15px_30px_rgba(0,0,0,0.4)] hover:border-[#425572] hover:bg-[#1f2c3d]/90 hover:shadow-[0_25px_50px_rgba(0,0,0,0.6)] hover:-translate-y-1"
@@ -449,11 +449,11 @@ export default function SmartCareContent({
                                     >
                                         {/* Tag/Badge at the Top */}
                                         <div className="flex justify-between items-start mb-6">
-                                            <span className={`text-[10px] font-black tracking-wider px-3.5 py-1.5 rounded-lg border ${getPlanTagStyle(plan.name, plan.slotCount)}`}>
+                                            <span className={`text-[10px] font-black tracking-wider px-3 py-1 rounded-md border ${getPlanTagStyle(plan.name, plan.slotCount)}`}>
                                                 {plan.name}
                                             </span>
                                             {isBest && (
-                                                <span className="bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-md tracking-wider">
+                                                <span className="bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] text-white text-[9px] font-black px-2.5 py-1 rounded-md shadow-md tracking-wider">
                                                     ★ BEST
                                                 </span>
                                             )}
@@ -621,13 +621,13 @@ export default function SmartCareContent({
                         )}
 
                         {/* 필터 시스템 */}
-                        <div className="flex flex-col gap-4 md:gap-10">
-                            {/* 1. 요금제 상품 필터 - 모달 슬라이드 적용 및 크기 축소 */}
-                            <div className="flex flex-wrap justify-center gap-2 pb-4 px-4 md:px-0">
+                        <div className="flex flex-col gap-4 md:gap-8">
+                            {/* 1. 요금제 상품 필터 */}
+                            <div className="flex flex-wrap justify-center gap-2 pb-2 px-4 md:px-0">
                                 <button
                                     onClick={() => { setSelectedPlanId(""); setSelectedCategory("전체"); }}
-                                    className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap shadow-sm ${selectedPlanId === ""
-                                        ? "bg-sono-primary text-white border-sono-primary shadow-lg shadow-sono-primary/30 ring-2 ring-sono-primary/10"
+                                    className={`px-4 md:px-6 py-2 md:py-2.5 rounded-lg font-black text-xs md:text-sm transition-all duration-300 border whitespace-nowrap shadow-sm ${selectedPlanId === ""
+                                        ? "bg-sono-primary text-white border-sono-primary shadow-md shadow-sono-primary/20 ring-2 ring-sono-primary/10"
                                         : "bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:text-sono-dark"
                                         }`}
                                 >
@@ -637,8 +637,8 @@ export default function SmartCareContent({
                                     <button
                                         key={plan._id}
                                         onClick={() => { setSelectedPlanId(plan._id); setSelectedCategory("전체"); }}
-                                        className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-base transition-all duration-300 border whitespace-nowrap shadow-sm ${selectedPlanId === plan._id
-                                            ? "bg-sono-primary text-white border-sono-primary shadow-lg shadow-sono-primary/30 ring-2 ring-sono-primary/10"
+                                        className={`px-4 md:px-6 py-2 md:py-2.5 rounded-lg font-black text-xs md:text-sm transition-all duration-300 border whitespace-nowrap shadow-sm ${selectedPlanId === plan._id
+                                            ? "bg-sono-primary text-white border-sono-primary shadow-md shadow-sono-primary/20 ring-2 ring-sono-primary/10"
                                             : "bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:text-sono-dark"
                                             }`}
                                     >
@@ -647,14 +647,14 @@ export default function SmartCareContent({
                                 ))}
                             </div>
 
-                            {/* 2. 카테고리 필터 - 여백 조정 및 크기 축소 */}
-                            <div className="flex flex-nowrap md:justify-center gap-2 overflow-x-auto pb-4 no-scrollbar -mx-6 px-6 md:mx-0 md:px-0">
+                            {/* 2. 카테고리 필터 */}
+                            <div className="flex flex-nowrap md:justify-center gap-2 overflow-x-auto pb-2 no-scrollbar -mx-6 px-6 md:mx-0 md:px-0">
                                 {availableCategories.length > 0 && ["전체", ...availableCategories].map((cat) => (
                                     <button
                                         key={cat}
                                         onClick={() => setSelectedCategory(cat)}
-                                        className={`px-4 py-2 rounded-full border text-xs md:text-sm font-bold whitespace-nowrap transition-all shadow-sm ${selectedCategory === cat
-                                            ? "bg-sono-primary text-white border-sono-primary shadow-md ring-2 ring-sono-primary/10"
+                                        className={`px-3.5 py-1.5 rounded-md border text-xs md:text-sm font-bold whitespace-nowrap transition-all shadow-sm ${selectedCategory === cat
+                                            ? "bg-sono-primary text-white border-sono-primary shadow-sm"
                                             : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 hover:text-sono-dark"
                                         }`}
                                     >
@@ -665,12 +665,12 @@ export default function SmartCareContent({
                         </div>
 
                         {isLoadingAppliances ? (
-                            <div className="py-20 flex flex-col items-center justify-center gap-6">
-                                <div className="animate-spin w-12 h-12 border-[5px] border-sono-primary border-t-transparent rounded-full"></div>
-                                <p className="text-gray-400 font-bold animate-pulse">최신 가전 데이터를 불러오고 있습니다...</p>
+                            <div className="py-16 flex flex-col items-center justify-center gap-4">
+                                <div className="animate-spin w-10 h-10 border-[4px] border-sono-primary border-t-transparent rounded-full"></div>
+                                <p className="text-gray-400 font-bold animate-pulse text-sm">최신 가전 데이터를 불러오고 있습니다...</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+                            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6 mt-4">
                                 {displayAppliances.map((item, index) => {
                                     const promoStyle = getPromotionStyle(item.promotionId);
                                     const promotion = activePromotions.find(p => p._id === item.promotionId);
@@ -683,66 +683,66 @@ export default function SmartCareContent({
                                                 setPickedAppliance(item as any);
                                                 setIsModalOpen(true);
                                             }}
-                                            className={`group bg-white rounded-2xl overflow-hidden border transition-all duration-500 flex flex-col h-full relative shadow-sm cursor-pointer ${
+                                            className={`group bg-white rounded-xl overflow-hidden border transition-all duration-300 flex flex-col h-full relative shadow-sm cursor-pointer ${
                                                 isItemBest 
-                                                    ? 'border-sono-gold/60 shadow-[0_20px_50px_rgba(254,220,64,0.15)] ring-2 ring-sono-gold/30 hover:shadow-[0_20px_60px_rgba(254,220,64,0.25)] hover:border-sono-gold' 
-                                                    : (promoStyle?.border || 'border-gray-200/80 hover:border-sono-primary/50 hover:shadow-[0_25px_60px_rgba(0,0,0,0.08)]')
+                                                    ? 'border-sono-gold/80 shadow-md ring-2 ring-sono-gold/30 hover:border-sono-gold' 
+                                                    : (promoStyle?.border || 'border-gray-200 hover:border-sono-primary/50 hover:shadow-md')
                                             } ${promoStyle ? promoStyle.borderFull : ''}`}
                                         >
-                                            {/* Promotion Tag (Top Left) - Neon Effect Applied */}
+                                            {/* Promotion Tag (Top Left) */}
                                             {isItemBest ? (
-                                                <div className="absolute top-3 left-3 md:top-6 md:left-6 z-10">
-                                                    <span className="bg-sono-gold text-sono-dark text-[8px] md:text-[10px] font-black px-2.5 py-1.5 md:px-3.5 md:py-2 rounded-full shadow-lg flex items-center gap-1">
+                                                <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
+                                                    <span className="bg-sono-gold text-sono-dark text-[8px] md:text-[10px] font-black px-2 py-1 rounded-md shadow flex items-center gap-1">
                                                         ★ 베스트
                                                     </span>
                                                 </div>
                                             ) : item.promotionId ? (
-                                                <div className="absolute top-3 left-3 md:top-6 md:left-6 z-10">
+                                                <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
                                                     <span 
-                                                        className={`text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg flex items-center gap-1 animate-neon-blink ${promoStyle?.tag || 'bg-sono-primary'}`}
+                                                        className={`text-white text-[8px] md:text-[10px] font-black px-2 py-1 rounded-md shadow flex items-center gap-1 animate-neon-blink ${promoStyle?.tag || 'bg-sono-primary'}`}
                                                         style={{ '--neon-color': promoStyle?.glow } as React.CSSProperties}
                                                     >
                                                         <span className="animate-pulse">🔥</span> 프로모션
                                                     </span>
                                                 </div>
                                             ) : item.hasGift ? (
-                                                <div className="absolute top-3 left-3 md:top-6 md:left-6 z-10">
-                                                    <span className="bg-sono-gold text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                                                <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
+                                                    <span className="bg-sono-gold text-white text-[8px] md:text-[10px] font-black px-2 py-1 rounded-md shadow flex items-center gap-1">
                                                         <span className="animate-pulse">🎁</span> 사은품
                                                     </span>
                                                 </div>
                                             ) : null}
                                             
                                             {/* Slot Tag */}
-                                            <div className="absolute top-3 right-3 md:top-6 md:right-6 z-10">
-                                                <span className="bg-sono-dark/80 backdrop-blur-md text-white text-[8px] md:text-[10px] font-black px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg">
+                                            <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
+                                                <span className="bg-sono-dark/80 backdrop-blur-md text-white text-[8px] md:text-[10px] font-black px-2 py-1 rounded-md shadow">
                                                     {item.slotCount}구좌
                                                 </span>
                                             </div>
 
-                                            {/* Image Container */}
-                                            <div className="aspect-square bg-[#f9fafb] p-4 md:p-10 flex items-center justify-center relative overflow-hidden group-hover:bg-white transition-colors duration-500">
+                                            {/* Image Container (White Background) */}
+                                            <div className="aspect-square bg-white p-2.5 md:p-6 flex items-center justify-center relative overflow-hidden transition-colors duration-300">
                                                 <img
                                                     src={item.image}
                                                     alt={item.name}
-                                                    className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
+                                                    className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                                                 />
                                                 
                                                 {/* Promotion Gift Image (Bottom Right) */}
                                                 {promotion?.imageUrl && (
-                                                    <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 w-12 h-12 md:w-16 md:h-16 bg-white rounded-xl shadow-xl overflow-hidden border-2 border-white group-hover:scale-110 transition-transform duration-500 z-10 flex items-center justify-center">
-                                                        <img src={promotion.imageUrl} alt="사은품" className="w-full h-full object-contain p-1" />
-                                                        <div className="absolute top-0 right-0 bg-sono-primary text-white text-[6px] md:text-[8px] font-black px-1.5 py-0.5 rounded-bl-lg">GIFT</div>
+                                                    <div className="absolute bottom-1.5 right-1.5 md:bottom-2 md:right-2 w-10 h-10 md:w-14 md:h-14 bg-white rounded-lg shadow border border-gray-100 overflow-hidden z-10 flex items-center justify-center">
+                                                        <img src={promotion.imageUrl} alt="사은품" className="w-full h-full object-contain p-0.5" />
+                                                        <div className="absolute top-0 right-0 bg-sono-primary text-white text-[6px] md:text-[7px] font-black px-1 py-0.2 rounded-bl-sm">GIFT</div>
                                                     </div>
                                                 )}
 
-                                                <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                             </div>
 
-                                            {/* Content Area */}
-                                            <div className="p-4 md:p-8 flex-grow flex flex-col">
-                                                <div className="mb-3 md:mb-4">
-                                                    <span className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest block mb-1 ${promoStyle?.text || 'text-sono-primary'}`}>{item.brand}</span>
+                                            {/* Content Area (Light Gray Background) */}
+                                            <div className="p-3 md:p-5 flex-grow flex flex-col bg-[#f8fafc] border-t border-gray-100">
+                                                <div className="mb-1.5 md:mb-2.5">
+                                                    <span className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest block mb-0.5 ${promoStyle?.text || 'text-sono-primary'}`}>{item.brand}</span>
                                                     <h3 
                                                         onClick={(e) => {
                                                             e.stopPropagation();
@@ -753,11 +753,11 @@ export default function SmartCareContent({
                                                                 return next;
                                                             });
                                                         }}
-                                                        className={`text-sono-dark font-black text-xs md:text-base leading-tight tracking-tighter group-hover:text-sono-primary transition-all cursor-pointer ${expandedProductNames.has(item.name) ? "line-clamp-none" : "line-clamp-2 min-h-[2rem] md:min-h-[2.5rem]"}`}
+                                                        className={`text-sono-dark font-black text-xs md:text-sm leading-tight tracking-tight group-hover:text-sono-primary transition-all cursor-pointer ${expandedProductNames.has(item.name) ? "line-clamp-none" : "line-clamp-2 min-h-[1.75rem] md:min-h-[2.25rem]"}`}
                                                     >
                                                         {item.name}
                                                     </h3>
-                                                    <p className="text-gray-400 font-bold text-[10px] md:text-xs mt-1 md:mt-2 uppercase truncate">{item.model}</p>
+                                                    <p className="text-gray-400 font-bold text-[9px] md:text-xs mt-0.5 md:mt-1 uppercase truncate">{item.model}</p>
                                                 </div>
 
                                                 {/* Benefit Box for Main List - Blinking Effect */}
@@ -1021,51 +1021,51 @@ export default function SmartCareContent({
                 </section>
 
                 {/* 의전 서비스 상세 구성 */}
-                <section className="py-6 sm:py-12 md:py-16 bg-sono-light">
-                    <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="text-center mb-8 md:mb-12">
-                            <span className="badge-gold mb-3">SERVICE DETAILS</span>
+                <section className="py-3 sm:py-6 md:py-10 bg-sono-light">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12">
+                        <div className="text-center mb-4 md:mb-8">
+                            <span className="badge-gold mb-2">SERVICE DETAILS</span>
                             <h2 className="section-title">의전 서비스 상세 구성</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-5">
                             {/* 고인용품 (입관/수시) */}
-                            <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                                <div className="bg-sono-dark text-white px-5 py-3 md:py-4 font-bold text-base md:text-lg">
+                            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-4 py-2 md:py-3 font-bold text-sm md:text-base">
                                     고인용품 (입관/수시)
                                 </div>
-                                <div className="p-4 md:p-6 space-y-3 md:space-y-5">
+                                <div className="p-3 md:p-5 space-y-2 md:space-y-4">
                                     <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">관</span>
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">관</span>
                                         <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
                                             <p>오동나무 45mm (매장)</p>
                                             <p>오동나무 18mm/유골함 (화장)</p>
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-3 md:pt-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">수의</span>
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-2 md:pt-3">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">수의</span>
                                         <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
                                             <p>대마 100% / 마혼방 기계직</p>
-                                            <p className="text-[#8b95a1] font-bold text-xs">(꽃관보/도우미 대체 가능)</p>
+                                            <p className="text-[#8b95a1] font-bold text-[11px]">(꽃관보/도우미 대체 가능)</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* 입관용품 */}
-                            <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                                <div className="bg-sono-dark text-white px-5 py-3 md:py-4 font-bold text-base md:text-lg">
+                            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-4 py-2 md:py-3 font-bold text-sm md:text-base">
                                     입관용품
                                 </div>
-                                <div className="p-4 md:p-6 space-y-3 md:space-y-5">
+                                <div className="p-3 md:p-5 space-y-2 md:space-y-4">
                                     <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">의류</span>
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">의류</span>
                                         <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             도포, 원삼, 천금, 지금<br />(수의와 동일 제품)
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-3 md:pt-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">기타</span>
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-2 md:pt-3">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">기타</span>
                                         <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             명정, 관보, 베개, 습신 등<br />규격품 일체 제공
                                         </div>
@@ -1074,19 +1074,19 @@ export default function SmartCareContent({
                             </div>
 
                             {/* 빈소 및 기타용품 */}
-                            <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                                <div className="bg-sono-dark text-white px-5 py-3 md:py-4 font-bold text-base md:text-lg">
+                            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-4 py-2 md:py-3 font-bold text-sm md:text-base">
                                     빈소 및 기타용품
                                 </div>
-                                <div className="p-4 md:p-6 space-y-3 md:space-y-5">
+                                <div className="p-3 md:p-5 space-y-2 md:space-y-4">
                                     <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">빈소내 용품</span>
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">빈소내 용품</span>
                                         <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             향, 양초, 부의록, 위패 등<br />필요량 일체 제공
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-3 md:pt-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">대여/기타</span>
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-2 md:pt-3">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">대여/기타</span>
                                         <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             향로, 촛대 (대여)<br />완장, 상장, 장갑 (제공)
                                         </div>
@@ -1095,19 +1095,19 @@ export default function SmartCareContent({
                             </div>
 
                             {/* 의전용품 및 차량 */}
-                            <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                                <div className="bg-sono-dark text-white px-5 py-3 md:py-4 font-bold text-base md:text-lg">
+                            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-4 py-2 md:py-3 font-bold text-sm md:text-base">
                                     의전용품 및 차량지원
                                 </div>
-                                <div className="p-4 md:p-6 space-y-3 md:space-y-5">
+                                <div className="p-3 md:p-5 space-y-2 md:space-y-4">
                                     <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">상복</span>
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">상복</span>
                                         <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             현대식/전통식 상복<br />남성 5~10벌, 여성 직계 제공
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-3 md:pt-4">
-                                        <span className="font-bold text-sono-primary flex-shrink-0">차량</span>
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-2 md:pt-3">
+                                        <span className="font-bold text-sono-primary flex-shrink-0 text-xs md:text-sm">차량</span>
                                         <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
                                             고인 리무진 / 유족 버스<br />왕복 200~300KM 무료 제공
                                         </div>
@@ -1116,9 +1116,9 @@ export default function SmartCareContent({
                             </div>
                         </div>
 
-                        <div className="mt-8 max-w-4xl mx-auto bg-white rounded-2xl p-5 md:p-6 border border-gray-100 shadow-sm text-left">
-                            <h4 className="text-xs font-black text-sono-dark mb-2 flex items-center gap-2">
-                                <span className="w-1.5 h-4 bg-sono-primary rounded-full"></span>
+                        <div className="mt-4 max-w-4xl mx-auto bg-white rounded-xl p-4 md:p-5 border border-gray-100 shadow-sm text-left">
+                            <h4 className="text-xs font-black text-sono-dark mb-1.5 flex items-center gap-2">
+                                <span className="w-1.5 h-3.5 bg-sono-primary rounded-full"></span>
                                 안내사항
                             </h4>
                             <ul className="space-y-1.5 text-xs text-gray-500 font-semibold list-none pl-1 leading-relaxed">

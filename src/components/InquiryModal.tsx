@@ -295,12 +295,12 @@ export default function InquiryModal({
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-sono-dark/60 backdrop-blur-sm" onClick={handleClose} />
 
-            <div className="relative bg-white rounded-[32px] shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-slide-up no-scrollbar">
+            <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-slide-up no-scrollbar">
                 <div className="sticky top-0 bg-white/80 backdrop-blur-md px-6 md:px-8 py-5 md:py-6 flex items-center justify-between border-b border-gray-50 z-10">
                     <h2 className="text-xl md:text-2xl font-bold text-sono-dark tracking-tight">
                         {isPremiumMallMode ? "프리미엄몰 접수" : "상담 신청"}
                     </h2>
-                    <button onClick={handleClose} className="p-2 hover:bg-[#f2f4f6] rounded-full transition-colors">
+                    <button onClick={handleClose} className="p-2 hover:bg-[#f2f4f6] rounded-lg transition-colors">
                         <svg className="w-6 h-6 text-[#adb5bd]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -309,14 +309,14 @@ export default function InquiryModal({
 
                 {isSubmitted ? (
                     <div className="p-10 md:p-12 text-center">
-                        <div className="w-16 md:w-20 h-16 md:h-20 rounded-[24px] md:rounded-[28px] bg-[#00d084]/10 mx-auto mb-8 flex items-center justify-center text-[#00d084]">
+                        <div className="w-16 md:w-20 h-16 md:h-20 rounded-xl bg-[#00d084]/10 mx-auto mb-8 flex items-center justify-center text-[#00d084]">
                             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
                         <h3 className="text-xl md:text-2xl font-bold text-sono-dark mb-4">신청이 완료되었습니다!</h3>
                         <p className="text-[#6b7684] font-medium mb-10 leading-relaxed text-sm md:text-base">곧 담당 플래너가 연락드리겠습니다.</p>
-                        <button onClick={handleClose} className="btn-primary w-full py-4 !rounded-2xl">확인</button>
+                        <button onClick={handleClose} className="btn-primary w-full py-4 !rounded-lg">확인</button>
                     </div>
                 ) : (showProductSelect && !formData.selectedProduct) ? (
                     <div className="p-6 md:p-8 min-h-[400px] flex flex-col justify-center">
