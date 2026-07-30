@@ -373,19 +373,19 @@ export default function SmartCareContent({
                 </section>
 
                 {/* 3대 핵심 혜택 */}
-                <section className="py-16 md:py-32 bg-white">
+                <section className="py-8 sm:py-16 md:py-24 bg-white">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="grid lg:grid-cols-3 gap-8 md:gap-12">
-                            <div className="lg:col-span-1">
-                                <span className="text-sono-primary font-black text-sm uppercase tracking-widest mb-4 block">WHY SMART CARE</span>
-                                <h2 className="text-3xl md:text-5xl font-black text-sono-dark tracking-tighter leading-tight mb-8">
-                                    스마트케어가<br />사랑받는 이유
+                        <div className="grid lg:grid-cols-3 gap-6 md:gap-12">
+                            <div className="lg:col-span-1 mb-4 lg:mb-0">
+                                <span className="text-sono-primary font-black text-xs sm:text-sm uppercase tracking-widest mb-2 sm:mb-4 block">WHY SMART CARE</span>
+                                <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-sono-dark tracking-tighter leading-tight mb-3 sm:mb-6 whitespace-nowrap">
+                                    스마트케어가 사랑받는 이유
                                 </h2>
-                                <p className="text-[#6b7684] text-lg font-medium leading-relaxed break-keep">
-                                    단순한 상조를 넘어, 현재의 즐거움과 미래의 안심을 동시에 챙기는 합리적인 고객님들의 선택입니다.
+                                <p className="text-[#6b7684] text-xs sm:text-base font-medium leading-relaxed whitespace-nowrap overflow-hidden text-ellipsis">
+                                    미래의 안심을 동시에 챙기는 합리적인 고객님들의 선택입니다.
                                 </p>
                             </div>
-                            <div className="lg:col-span-2 grid md:grid-cols-2 gap-6">
+                            <div className="lg:col-span-2 grid md:grid-cols-2 gap-4 sm:gap-6">
                                 {[
                                     {
                                         title: "프리미엄 가전 렌탈금 전액 지원",
@@ -408,10 +408,10 @@ export default function SmartCareContent({
                                         icon: "⭐️"
                                     },
                                 ].map((item, i) => (
-                                    <div key={i} className="p-8 rounded-[32px] bg-[#f2f4f6] hover:bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-transparent hover:border-gray-100">
-                                        <div className="text-4xl mb-6">{item.icon}</div>
-                                        <h3 className="text-xl font-bold text-sono-dark mb-4">{item.title}</h3>
-                                        <p className="text-[#6b7684] font-medium leading-relaxed text-sm md:text-base">{item.desc}</p>
+                                    <div key={i} className="p-5 sm:p-8 rounded-2xl bg-[#f2f4f6] hover:bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-transparent hover:border-gray-100">
+                                        <div className="text-3xl sm:text-4xl mb-4 sm:mb-6">{item.icon}</div>
+                                        <h3 className="text-lg sm:text-xl font-bold text-sono-dark mb-2 sm:mb-4">{item.title}</h3>
+                                        <p className="text-[#6b7684] font-medium leading-relaxed text-xs sm:text-base">{item.desc}</p>
                                     </div>
                                 ))}
                             </div>
@@ -420,17 +420,17 @@ export default function SmartCareContent({
                 </section>
 
                 {/* 상품 구성 섹션 */}
-                <section className="py-20 md:py-32 bg-gradient-to-b from-[#11161d] to-[#1a212c] text-white relative overflow-hidden">
+                <section className="py-8 sm:py-16 md:py-24 bg-gradient-to-b from-[#11161d] to-[#1a212c] text-white relative overflow-hidden">
                     {/* Background glow ornament */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sono-primary/10 rounded-full blur-[150px] pointer-events-none z-0"></div>
                     
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
-                        <div className="text-center mb-16 md:mb-24">
-                            <h2 className="text-3xl md:text-5xl font-black tracking-tighter mb-6">다양한 라이프스타일에<br className="md:hidden" /> 맞춘 구성</h2>
-                            <p className="text-white/50 text-lg md:text-xl font-medium">원하는 구좌 수를 선택하고<br className="md:hidden" /> 최신 가전을 골라보세요.</p>
+                        <div className="text-center mb-8 sm:mb-16 md:mb-24">
+                            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tighter mb-3 sm:mb-6">다양한 라이프스타일에<br className="md:hidden" /> 맞춘 구성</h2>
+                            <p className="text-white/50 text-xs sm:text-lg md:text-xl font-medium">원하는 구좌 수를 선택하고<br className="md:hidden" /> 최신 가전을 골라보세요.</p>
                         </div>
 
-                        <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
+                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 pt-2 -mx-6 px-6 md:mx-0 md:px-0 md:flex-wrap md:justify-center md:gap-6 max-w-6xl mx-auto no-scrollbar">
                             {(careProductsData && careProductsData.length > 0 ? careProductsData : [
                                 { name: "스마트케어330", slotCount: 2, monthlyPayment: 33000, target: "1인 가구 / 소형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급"], paymentCount: "1~150회", defermentPeriod: "151~180회", maturityCount: "180회" },
                                 { name: "스마트케어330", slotCount: 3, monthlyPayment: 49500, target: "신혼 부부 / 중형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급"], paymentCount: "1~150회", defermentPeriod: "151~180회", maturityCount: "180회" },
@@ -441,7 +441,7 @@ export default function SmartCareContent({
                                 return (
                                     <div 
                                         key={i} 
-                                        className={`relative p-6 md:p-8 rounded-[28px] border transition-all duration-500 flex flex-col justify-between w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[360px] ${
+                                        className={`relative p-5 md:p-8 rounded-2xl border transition-all duration-500 flex flex-col justify-between shrink-0 snap-center w-[270px] sm:w-[320px] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] ${
                                             isBest 
                                                 ? "bg-[#1f2d42]/95 border-sono-primary shadow-[0_25px_60px_rgba(46,78,162,0.4)] md:scale-105 hover:-translate-y-2 z-10" 
                                                 : "bg-[#17202c]/90 border-[#2f3d52] shadow-[0_15px_30px_rgba(0,0,0,0.4)] hover:border-[#425572] hover:bg-[#1f2c3d]/90 hover:shadow-[0_25px_50px_rgba(0,0,0,0.6)] hover:-translate-y-1"
@@ -520,19 +520,18 @@ export default function SmartCareContent({
                     </div>
                 </section>
                 {/* 가전 라인업 하이브리드 섹션 - 전면 수정 */}
-                <section className="py-20 md:py-32 bg-[#f9fafb]" id="appliance-section">
+                <section className="py-8 sm:py-16 md:py-24 bg-[#f9fafb]" id="appliance-section">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="text-center mb-16 md:mb-24">
-                            <span className="badge-primary mb-6 px-5 py-2">PREMIUM LINEUP</span>
-                            <h2 className="section-title tracking-tight mb-6">스마트케어 가전 라인업</h2>
-                            <p className="section-subtitle max-w-2xl mx-auto mb-16 text-gray-500 font-medium">
-                                라이프 스타일에 딱 맞는 최신 가전을 선택해보세요.<br />
-                                렌탈료 전액 지원으로 부담 없이 시작할 수 있습니다.
+                        <div className="text-center mb-8 sm:mb-16 md:mb-24">
+                            <span className="badge-primary mb-4 px-5 py-2">PREMIUM LINEUP</span>
+                            <h2 className="section-title tracking-tight mb-4">스마트케어 가전 라인업</h2>
+                            <p className="section-subtitle max-w-2xl mx-auto mb-8 sm:mb-16 text-gray-500 font-medium text-xs sm:text-base leading-snug">
+                                <span className="block">라이프 스타일에 딱 맞는 최신 가전을 선택해 보세요.</span>
+                                <span className="block">렌탈료 전액 지원으로 부담 없이 시작할 수 있습니다.</span>
                                 <span className="block mt-2 text-xs md:text-sm text-gray-400 font-normal">
                                     (만기 후 익월 해약 시 또는 라이프서비스 사용 시)
                                 </span>
                             </p>
-
                         </div>
 
                         {/* 프로모션 섹션 - 필터 위로 이동 */}
@@ -608,22 +607,11 @@ export default function SmartCareContent({
                                                     </div>
                                                     
                                                     {/* Benefit Box with Blinking Effect */}
-                                                    <div className={`backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 border mb-4 md:mb-6 animate-benefit-blink ${promoStyle?.benefit || 'bg-sono-primary/5 text-sono-primary border-sono-primary/10'}`}>
+                                                    <div className={`backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 border mb-2 animate-benefit-blink ${promoStyle?.benefit || 'bg-sono-primary/5 text-sono-primary border-sono-primary/10'}`}>
                                                         <p className="text-[10px] md:text-[11px] font-black leading-relaxed break-keep line-clamp-2 text-center">
                                                             {promotion?.description || "지금 바로 상담 신청하고 혜택을 확인하세요."}
                                                         </p>
                                                     </div>
-
-
-                                                    <button
-                                                        onClick={() => {
-                                                            setPickedAppliance(item as any);
-                                                            setIsModalOpen(true);
-                                                        }}
-                                                        className={`w-full mt-auto py-3 md:py-4 text-white rounded-xl md:rounded-2xl font-black text-[11px] md:text-sm transition-all shadow-lg ${promoStyle?.button || 'bg-sono-primary hover:bg-sono-dark shadow-sono-primary/20'}`}
-                                                    >
-                                                        혜택 신청
-                                                    </button>
                                                 </div>
                                             </div>
                                         );
@@ -691,7 +679,11 @@ export default function SmartCareContent({
                                     return (
                                         <div
                                             key={index}
-                                            className={`group bg-white rounded-[32px] overflow-hidden border transition-all duration-500 flex flex-col h-full relative shadow-sm ${
+                                            onClick={() => {
+                                                setPickedAppliance(item as any);
+                                                setIsModalOpen(true);
+                                            }}
+                                            className={`group bg-white rounded-2xl overflow-hidden border transition-all duration-500 flex flex-col h-full relative shadow-sm cursor-pointer ${
                                                 isItemBest 
                                                     ? 'border-sono-gold/60 shadow-[0_20px_50px_rgba(254,220,64,0.15)] ring-2 ring-sono-gold/30 hover:shadow-[0_20px_60px_rgba(254,220,64,0.25)] hover:border-sono-gold' 
                                                     : (promoStyle?.border || 'border-gray-200/80 hover:border-sono-primary/50 hover:shadow-[0_25px_60px_rgba(0,0,0,0.08)]')
@@ -774,24 +766,6 @@ export default function SmartCareContent({
                                                         <p className="text-[9px] md:text-[10px] font-black leading-tight line-clamp-1">{promotion.description}</p>
                                                     </div>
                                                 )}
-
-
-                                                <button
-                                                    onClick={() => {
-                                                        setPickedAppliance(item as any);
-                                                        setIsModalOpen(true);
-                                                    }}
-                                                    className={`w-full mt-auto py-4 bg-gray-50 text-gray-400 group-hover:text-white rounded-2xl font-black text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${
-                                                        isItemBest 
-                                                            ? 'group-hover:bg-sono-gold group-hover:text-sono-dark font-black' 
-                                                            : (promoStyle?.name === 'red' ? 'group-hover:bg-rose-600' : promoStyle?.name === 'blue' ? 'group-hover:bg-blue-600' : 'group-hover:bg-sono-dark')
-                                                    }`}
-                                                >
-                                                    가입 신청하기
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                                    </svg>
-                                                </button>
                                             </div>
                                         </div>
                                     );
@@ -1047,264 +1021,107 @@ export default function SmartCareContent({
                 </section>
 
                 {/* 의전 서비스 상세 구성 */}
-                <section className="py-16 md:py-24 bg-sono-light">
+                <section className="py-6 sm:py-12 md:py-16 bg-sono-light">
                     <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="text-center mb-12 md:mb-16">
-                            <span className="badge-gold mb-4">SERVICE DETAILS</span>
+                        <div className="text-center mb-8 md:mb-12">
+                            <span className="badge-gold mb-3">SERVICE DETAILS</span>
                             <h2 className="section-title">의전 서비스 상세 구성</h2>
                         </div>
 
-                        <div className="overflow-x-auto rounded-[32px] border border-gray-100 bg-white shadow-xl">
-                            <table className="w-full text-center border-collapse text-sm text-sono-dark min-w-[900px]">
-                                <thead>
-                                    <tr className="bg-sono-dark text-white text-base">
-                                        <th className="py-5 px-6 font-bold border border-gray-200/50 bg-[#191f28]" colSpan={3}>구분</th>
-                                        <th className="w-[30%] py-5 px-6 font-black border border-gray-200/50 bg-sono-primary text-white text-lg">스마트케어 4</th>
-                                        <th className="w-[30%] py-5 px-6 font-black border border-gray-200/50 bg-sono-secondary text-white text-lg">스마트케어 5</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100 font-medium">
-                                    {/* 고인용품 및 수시용품 */}
-                                    <tr>
-                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={9}>
-                                            고인용품<br />및<br />수시용품
-                                        </td>
-                                        <td className="py-5 px-4 font-bold border-r border-gray-100 text-sono-primary bg-white" rowSpan={3}>관</td>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">매장시</td>
-                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            오동나무 45mm
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">화장시</td>
-                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            오동나무 18mm, 유골함
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">횡관시</td>
-                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            오동나무 18mm, 횡대
-                                        </td>
-                                    </tr>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                            {/* 고인용품 (입관/수시) */}
+                            <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-5 py-3 md:py-4 font-bold text-base md:text-lg">
+                                    고인용품 (입관/수시)
+                                </div>
+                                <div className="p-4 md:p-6 space-y-3 md:space-y-5">
+                                    <div className="flex justify-between items-start gap-4">
+                                        <span className="font-bold text-sono-primary flex-shrink-0">관</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
+                                            <p>오동나무 45mm (매장)</p>
+                                            <p>오동나무 18mm/유골함 (화장)</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-3 md:pt-4">
+                                        <span className="font-bold text-sono-primary flex-shrink-0">수의</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
+                                            <p>대마 100% / 마혼방 기계직</p>
+                                            <p className="text-[#8b95a1] font-bold text-xs">(꽃관보/도우미 대체 가능)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                                    <tr>
-                                        <td className="py-5 px-4 font-bold border-r border-gray-100 text-sono-primary bg-white" rowSpan={2}>수의</td>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">수의</td>
-                                        <td className="py-4 px-4 text-[#007aff] font-bold bg-white">
-                                            마혼방 (대마, 아마, 저마), 기계직
-                                        </td>
-                                        <td className="py-4 px-4 text-[#007aff] font-bold bg-white">
-                                            대마 100%, 기계직
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">수의 준비고객</td>
-                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            꽃관보 또는 장례의전 도우미 1명 (택1)
-                                        </td>
-                                    </tr>
+                            {/* 입관용품 */}
+                            <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-5 py-3 md:py-4 font-bold text-base md:text-lg">
+                                    입관용품
+                                </div>
+                                <div className="p-4 md:p-6 space-y-3 md:space-y-5">
+                                    <div className="flex justify-between items-start gap-4">
+                                        <span className="font-bold text-sono-primary flex-shrink-0">의류</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                            도포, 원삼, 천금, 지금<br />(수의와 동일 제품)
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-3 md:pt-4">
+                                        <span className="font-bold text-sono-primary flex-shrink-0">기타</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                            명정, 관보, 베개, 습신 등<br />규격품 일체 제공
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                                    <tr>
-                                        <td className="py-5 px-4 font-bold border-r border-gray-100 text-sono-primary bg-white" rowSpan={4}>
-                                            입관 및<br />수시용품
-                                        </td>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">
-                                            도포, 원삼, 천금, 지금
-                                        </td>
-                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            수의 제품과 동일제품 제공
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">명정</td>
-                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            규격품 제공
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">관보</td>
-                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            규격품 제공
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">
-                                            베개, 습신, 수시포, 한지 등
-                                        </td>
-                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            규격품 제공
-                                        </td>
-                                    </tr>
+                            {/* 빈소 및 기타용품 */}
+                            <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-5 py-3 md:py-4 font-bold text-base md:text-lg">
+                                    빈소 및 기타용품
+                                </div>
+                                <div className="p-4 md:p-6 space-y-3 md:space-y-5">
+                                    <div className="flex justify-between items-start gap-4">
+                                        <span className="font-bold text-sono-primary flex-shrink-0">빈소내 용품</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                            향, 양초, 부의록, 위패 등<br />필요량 일체 제공
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-3 md:pt-4">
+                                        <span className="font-bold text-sono-primary flex-shrink-0">대여/기타</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                            향로, 촛대 (대여)<br />완장, 상장, 장갑 (제공)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                                    {/* 빈소 및 기타용품 */}
-                                    <tr>
-                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={3}>
-                                            빈소 및<br />기타용품
-                                        </td>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>
-                                            빈소용품 (향, 양초, 부의록, 축문, 위패)
-                                        </td>
-                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            일체 제공
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>
-                                            대여용품 (향로, 촛대, 잔대)
-                                        </td>
-                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            일체 제공
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>
-                                            기타용품 (완장, 상장, 운구장갑)
-                                        </td>
-                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            필요량 일체 제공
-                                        </td>
-                                    </tr>
-
-                                    {/* 의전용품 */}
-                                    <tr>
-                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={4}>
-                                            의전용품
-                                        </td>
-                                        <td className="py-5 px-4 font-bold border-r border-gray-100 text-sono-primary bg-white" rowSpan={2}>현대식 상복</td>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">남성</td>
-                                        <td className="py-4 px-4 text-[#007aff] font-bold bg-white">
-                                            제공 <span className="underline underline-offset-4 font-black text-base">(5벌)</span>
-                                        </td>
-                                        <td className="py-4 px-4 text-[#007aff] font-bold bg-white">
-                                            제공 <span className="underline underline-offset-4 font-black text-base">(10벌)</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">여성</td>
-                                        <td className="py-4 px-4 text-[#007aff] font-bold bg-white">
-                                            제공 <span className="underline underline-offset-4 font-black text-base">(5벌)</span>
-                                        </td>
-                                        <td className="py-4 px-4 text-[#007aff] font-bold bg-white">
-                                            직계제공
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-5 px-4 font-bold border-r border-gray-100 text-sono-primary bg-white" rowSpan={2}>전통식 상복</td>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">남성</td>
-                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            직계 제공
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-4 px-4 border-r border-gray-100 bg-white text-gray-600">여성</td>
-                                        <td className="py-4 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            필요량 제공
-                                        </td>
-                                    </tr>
-
-                                    {/* 제단장식 */}
-                                    <tr>
-                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={4}>
-                                            제단장식<br />(꽃장식)
-                                        </td>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>생화꽃 액자</td>
-                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>제공</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>생화꽃 제단장식</td>
-                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
-                                            25만원 상당
-                                        </td>
-                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
-                                            35만원 상당
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>헌화용 국화</td>
-                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
-                                            30송이
-                                        </td>
-                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
-                                            50송이
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>꽃바구니</td>
-                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>꽃바구니 2개</td>
-                                    </tr>
-
-                                    {/* 차량지원 */}
-                                    <tr>
-                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={3}>
-                                            차량지원
-                                        </td>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>운구이송차량</td>
-                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            관내(시,군내) 제공 (요청 시)
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>고인전용 리무진</td>
-                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
-                                            왕복 200KM <span className="text-xs text-gray-400 block font-normal mt-1">(초과시 2,000원 / KM)</span>
-                                        </td>
-                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
-                                            왕복 300KM <span className="text-xs text-gray-400 block font-normal mt-1">(초과시 2,000원 / KM)</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>유족전용 버스</td>
-                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
-                                            왕복 200KM <span className="text-xs text-gray-400 block font-normal mt-1">(초과시 2,000원 / KM)</span>
-                                        </td>
-                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
-                                            왕복 300KM <span className="text-xs text-gray-400 block font-normal mt-1">(초과시 2,000원 / KM)</span>
-                                        </td>
-                                    </tr>
-
-                                    {/* 인력지원 */}
-                                    <tr>
-                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={2}>
-                                            인력지원
-                                        </td>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>장례지도사</td>
-                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>
-                                            장례진행 1명, 입관지원 1명
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>장례의전 도우미</td>
-                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
-                                            4명 <span className="text-xs text-gray-400 font-normal block mt-1">(인당 10시간)</span>
-                                        </td>
-                                        <td className="py-5 px-4 text-[#007aff] font-bold bg-white">
-                                            5명 <span className="text-xs text-gray-400 font-normal block mt-1">(인당 10시간)</span>
-                                        </td>
-                                    </tr>
-
-                                    {/* 편의서비스 */}
-                                    <tr>
-                                        <td className="py-5 px-4 font-black bg-gray-50 border-r border-gray-100 text-sono-dark" rowSpan={2}>
-                                            편의서비스
-                                        </td>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>일회용 식기세트</td>
-                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>150인분</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-5 px-4 text-left font-bold border-r border-gray-100 bg-white" colSpan={2}>편의용품</td>
-                                        <td className="py-5 px-4 text-sono-dark font-semibold bg-white" colSpan={2}>(남/녀 6인세트) 1개</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            {/* 의전용품 및 차량 */}
+                            <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                                <div className="bg-sono-dark text-white px-5 py-3 md:py-4 font-bold text-base md:text-lg">
+                                    의전용품 및 차량지원
+                                </div>
+                                <div className="p-4 md:p-6 space-y-3 md:space-y-5">
+                                    <div className="flex justify-between items-start gap-4">
+                                        <span className="font-bold text-sono-primary flex-shrink-0">상복</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                            현대식/전통식 상복<br />남성 5~10벌, 여성 직계 제공
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-start gap-4 border-t border-gray-50 pt-3 md:pt-4">
+                                        <span className="font-bold text-sono-primary flex-shrink-0">차량</span>
+                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                            고인 리무진 / 유족 버스<br />왕복 200~300KM 무료 제공
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="mt-12 max-w-4xl mx-auto bg-white rounded-3xl p-8 border border-gray-100 shadow-sm text-left">
-                            <h4 className="text-sm font-black text-sono-dark mb-4 flex items-center gap-2">
+                        <div className="mt-8 max-w-4xl mx-auto bg-white rounded-2xl p-5 md:p-6 border border-gray-100 shadow-sm text-left">
+                            <h4 className="text-xs font-black text-sono-dark mb-2 flex items-center gap-2">
                                 <span className="w-1.5 h-4 bg-sono-primary rounded-full"></span>
                                 안내사항
                             </h4>
-                            <ul className="space-y-3 text-xs text-gray-500 font-semibold list-none pl-1 leading-relaxed">
+                            <ul className="space-y-1.5 text-xs text-gray-500 font-semibold list-none pl-1 leading-relaxed">
                                 <li className="flex items-start gap-1.5">
                                     <span className="text-sono-primary mt-0.5">•</span>
                                     <span>위 구성은 소노아임레디 표준 서비스 기준이며, 가입하신 상품 회차 및 계약 조건에 따라 일부 차이가 있을 수 있습니다.</span>
@@ -1619,7 +1436,28 @@ export default function SmartCareContent({
                         )}
                     </div>
                 </section>
-            </main >
+            </main>
+            {/* Sleek Floating Bottom Counseling Bar for both Mobile & PC */}
+            {!isModalOpen && !pickedAppliance && (
+                <div className="fixed bottom-0 left-0 right-0 z-40 bg-sono-dark/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-10px_35px_rgba(0,0,0,0.3)] py-2.5 px-4 sm:py-3.5 sm:px-8">
+                    <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                            <a href="tel:1899-0077" className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-xl text-xs sm:text-sm font-bold border border-white/15 transition-all">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                <span>📞 1899-0077</span>
+                            </a>
+                            <span className="hidden sm:inline-block text-white/50 text-xs font-medium">전화/온라인 무료 상담 대기 중</span>
+                        </div>
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="flex-1 sm:flex-initial bg-gradient-to-r from-sono-primary to-blue-600 hover:from-blue-600 hover:to-indigo-600 text-white font-black text-xs sm:text-base px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl shadow-lg shadow-sono-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 whitespace-nowrap"
+                        >
+                            <span>⚡ {isPremiumMallMode ? "프리미엄몰 접수" : (partnerMode ? "가입 상담 신청하기" : "제휴 상담 신청하기")}</span>
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {!isModalOpen && <Footer partnerMode={partnerMode} productType="smartcare" />}
 
             <InquiryModal

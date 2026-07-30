@@ -499,10 +499,10 @@ export default function Happy450Content({
 
 
                 {/* 의전 서비스 상세 구성 */}
-                <section className="py-16 md:py-24 bg-sono-light">
+                <section className="py-6 sm:py-12 md:py-16 bg-sono-light">
                     <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="text-center mb-12 md:mb-16">
-                            <span className="badge-gold mb-4">SERVICE DETAILS</span>
+                        <div className="text-center mb-8 md:mb-12">
+                            <span className="badge-gold mb-3">SERVICE DETAILS</span>
                             <h2 className="section-title">의전 서비스 상세 구성</h2>
                         </div>
 
@@ -950,6 +950,28 @@ export default function Happy450Content({
                     </div>
                 </section>
             </main>
+
+            {/* Sleek Floating Bottom Counseling Bar for both Mobile & PC */}
+            {!isModalOpen && (
+                <div className="fixed bottom-0 left-0 right-0 z-40 bg-sono-dark/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-10px_35px_rgba(0,0,0,0.3)] py-2.5 px-4 sm:py-3.5 sm:px-8">
+                    <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                            <a href="tel:1899-0077" className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-xl text-xs sm:text-sm font-bold border border-white/15 transition-all">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                <span>📞 1899-0077</span>
+                            </a>
+                            <span className="hidden sm:inline-block text-white/50 text-xs font-medium">전화/온라인 무료 상담 대기 중</span>
+                        </div>
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="flex-1 sm:flex-initial bg-gradient-to-r from-sono-primary to-blue-600 hover:from-blue-600 hover:to-indigo-600 text-white font-black text-xs sm:text-base px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl shadow-lg shadow-sono-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 whitespace-nowrap"
+                        >
+                            <span>⚡ {isPremiumMallMode ? "프리미엄몰 접수" : (partnerMode ? "가입 상담 신청하기" : "제휴 상담 신청하기")}</span>
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {!isModalOpen && <Footer partnerMode={partnerMode} productType="happy450" />}
 
             <InquiryModal
