@@ -627,7 +627,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                 <div className="p-4 sm:p-6 md:p-14 relative z-10">
                                     <div className="flex items-start justify-between mb-4 sm:mb-10">
                                         <div>
-                                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-white text-xs font-black mb-2 sm:mb-4 animate-neon-blink" style={{ '--neon-color': '49, 130, 246' } as React.CSSProperties}>
+                                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563eb] text-white text-xs font-black mb-2 sm:mb-4 animate-neon-blink shadow-md" style={{ '--neon-color': '49, 130, 246' } as React.CSSProperties}>
                                                 <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                                                 BEST CHOICE
                                             </div>

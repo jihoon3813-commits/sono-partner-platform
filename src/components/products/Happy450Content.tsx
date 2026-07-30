@@ -10,6 +10,7 @@ interface Happy450ContentProps {
     partnerUrl?: string;
     partnerName?: string;
     partnerId?: string;
+    pointInfo?: string;
     isPremiumMallMode?: boolean;
 }
 
@@ -18,10 +19,13 @@ export default function Happy450Content({
     partnerUrl = "",
     partnerName = "",
     partnerId = "",
+    pointInfo = "",
     isPremiumMallMode = false
 }: Happy450ContentProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+
+    const hasPointBenefit = Boolean(pointInfo && pointInfo.trim() !== "" && !pointInfo.includes("없음") && pointInfo !== "0P" && pointInfo !== "0포인트");
 
     // 파트너 페이지에서는 제휴신청 대신 가입신청으로 표시됨 (Header에서 처리)
     // 페이지 내 버튼 문구 처리
@@ -54,51 +58,53 @@ export default function Happy450Content({
                                     <span className="block text-4xl md:text-6xl lg:text-7xl font-black text-white drop-shadow-md">더 해피 450 ONE</span>
                                 </h1>
                                 <p className="text-xl md:text-2xl text-white mb-12 leading-relaxed max-w-2xl break-keep font-semibold drop-shadow-sm">
-                                    제휴몰 포인트 증정<span className="md:hidden"><br /></span><span className="hidden md:inline"> + </span>레디캐시 + 납입금 100% 환급<br />
+                                    {hasPointBenefit && "제휴몰 포인트 증정 + "}레디캐시 + 납입금 100% 환급<br />
                                     소노아임레디의 기본 상조 서비스
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-5">
-                                    {partnerMode ? (
-                                        <button
-                                            onClick={() => setIsModalOpen(true)}
-                                            className="bg-white text-sono-primary hover:bg-sono-gold hover:text-white px-10 py-5 rounded-2xl font-bold text-xl active:scale-[0.98] transition-all duration-300 shadow-2xl shadow-black/20 text-center"
+                                    <button
+                                        onClick={() => setIsModalOpen(true)}
+                                        className="bg-white text-sono-primary hover:bg-sono-gold hover:text-white px-10 py-5 rounded-[24px] font-black text-lg transition-all shadow-2xl shadow-black/30 hover:scale-[1.02] active:scale-[0.98] text-center"
+                                    >
+                                        {ctaText}
+                                    </button>
+                                    {!partnerMode && (
+                                        <Link
+                                            href="/partner-center"
+                                            className="border-2 border-white/40 text-white hover:bg-white/10 px-10 py-5 rounded-[24px] font-black text-lg transition-all backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] text-center"
                                         >
-                                            {ctaText}
-                                        </button>
-                                    ) : (
-                                        <Link href="/partner/apply" className="bg-white text-sono-primary hover:bg-sono-gold hover:text-white px-10 py-5 rounded-2xl font-bold text-xl active:scale-[0.98] transition-all duration-300 shadow-2xl shadow-black/20 text-center">
-                                            {ctaText}
+                                            파트너센터 바로가기
                                         </Link>
                                     )}
                                 </div>
 
                                 {/* 합리적 선택 박스 - 버튼 아래로 배치 */}
                                 <div className="mt-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                                    <div className="relative group inline-flex flex-col gap-4 bg-white/10 backdrop-blur-md border border-white/20 p-6 md:p-8 rounded-[32px] shadow-2xl max-w-lg animate-neon-blink overflow-hidden">
+                                    <div className="relative group inline-flex flex-col gap-3 bg-white/10 backdrop-blur-md border border-white/20 p-5 md:p-8 rounded-[28px] md:rounded-[32px] shadow-2xl max-w-lg animate-neon-blink overflow-hidden">
                                         {/* 내부 빛나는 효과 */}
                                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-flash-smooth"></div>
                                         
-                                        <div className="flex items-start gap-5">
-                                            <div className="w-14 h-14 rounded-2xl bg-sono-gold text-sono-dark flex items-center justify-center font-black text-2xl shadow-lg flex-shrink-0 animate-bounce-short">
-                                                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" /><path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" /></svg>
-                                            </div>
-                                            <div>
-                                                <h3 className="text-sono-gold text-lg md:text-xl font-black tracking-tight mb-2 flex items-center gap-2">
+                                        <div className="flex flex-col gap-2 sm:gap-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-sono-gold text-sono-dark flex items-center justify-center font-black text-lg sm:text-2xl shadow-lg shrink-0 animate-bounce-short">
+                                                    <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" /><path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" /></svg>
+                                                </div>
+                                                <h3 className="text-sono-gold text-base sm:text-xl font-black tracking-tight flex items-center gap-2">
                                                     제휴카드 파격 할인 혜택
                                                     <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full animate-pulse">HOT</span>
                                                 </h3>
-                                                <p className="text-white font-black text-[16px] md:text-[18px] leading-snug break-keep">
-                                                    발급 후 자동이체 시 첫 달 <span className="text-sono-gold underline underline-offset-4 decoration-2">무조건 12,000원 할인!!</span>
+                                            </div>
+                                            <p className="text-white font-black text-sm sm:text-[18px] leading-snug break-keep">
+                                                발급 후 자동이체 시 첫 달 <span className="text-sono-gold underline underline-offset-4 decoration-2">무조건 12,000원 할인!!</span>
+                                            </p>
+                                            <div className="mt-1 flex items-center justify-between gap-2">
+                                                <p className="text-white/60 font-bold text-[10px] sm:text-xs break-keep">
+                                                    자세한 내용은 제휴카드 안내에서 확인하세요.
                                                 </p>
-                                                <div className="mt-4 flex items-center justify-between gap-4">
-                                                    <p className="text-white/60 font-bold text-[11px] md:text-xs break-keep">
-                                                        자세한 내용은 제휴카드 안내에서 확인하세요.
-                                                    </p>
-                                                    <a href="#affiliate-card" className="shrink-0 bg-white/20 hover:bg-white text-white hover:text-sono-primary px-3 py-1.5 rounded-full text-[11px] font-black transition-all border border-white/30 flex items-center gap-1">
-                                                        바로가기
-                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>
-                                                    </a>
-                                                </div>
+                                                <a href="#affiliate-card" className="shrink-0 bg-white/20 hover:bg-white text-white hover:text-sono-primary px-3 py-1.5 rounded-full text-[10px] sm:text-[11px] font-black transition-all border border-white/30 flex items-center gap-1">
+                                                    바로가기
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -116,25 +122,25 @@ export default function Happy450Content({
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         <div className="text-center mb-16 md:mb-24">
                             <span className="badge-primary mb-6 px-4 py-2">BENEFITS</span>
-                            <h2 className="section-title">3가지 핵심 혜택</h2>
+                            <h2 className="section-title">{hasPointBenefit ? "3가지 핵심 혜택" : "핵심 혜택"}</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-10">
+                        <div className={`grid grid-cols-1 ${hasPointBenefit ? "md:grid-cols-3" : "md:grid-cols-2 max-w-4xl mx-auto"} gap-4 md:gap-10`}>
                             {[
-                                {
+                                ...(hasPointBenefit ? [{
                                     title: "BENEFIT 01",
                                     name: "제휴몰 포인트 증정",
                                     desc: "계약과 동시에 제휴 쇼핑몰에서 사용 가능한 포인트를 지급받습니다.",
                                     icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />,
-                                },
+                                }] : []),
                                 {
-                                    title: "BENEFIT 02",
+                                    title: hasPointBenefit ? "BENEFIT 02" : "BENEFIT 01",
                                     name: "제휴카드 파격 할인",
                                     desc: "제휴카드를 발급받고 자동이체 신청 시, 첫달은 실적 없이도 12,000원 할인받을 수 있습니다.",
                                     icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z" />,
                                 },
                                 {
-                                    title: "SPECIAL",
+                                    title: hasPointBenefit ? "SPECIAL" : "BENEFIT 02",
                                     name: "납입금 100% 환급",
                                     desc: "만기 납입 후 익월 해약 시",
                                     icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />,
@@ -293,14 +299,14 @@ export default function Happy450Content({
                                         <p className="text-[#f59e0b] font-bold text-lg whitespace-nowrap">최대 <span className="text-2xl md:text-3xl">1.7만원</span> 할인</p>
                                     </div>
                                     <div className="space-y-4 mb-8 flex-grow">
-                                        <div className="bg-amber-50/50 rounded-2xl p-5 border border-amber-50">
-                                            <div className="flex justify-between items-center mb-3">
-                                                <span className="text-[#8b95a1] font-bold text-[11px] md:text-xs shrink-0">전월 30만원 실적 시</span>
-                                                <span className="text-sono-dark font-black text-xs md:text-sm">12,000원 할인</span>
+                                        <div className="bg-amber-50/50 rounded-2xl p-3 sm:p-5 border border-amber-50">
+                                            <div className="flex justify-between items-center mb-2 sm:mb-3 gap-1">
+                                                <span className="text-[#8b95a1] font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">전월 30만원 실적 시</span>
+                                                <span className="text-sono-dark font-black text-[11px] sm:text-sm whitespace-nowrap">12,000원 할인</span>
                                             </div>
-                                            <div className="flex justify-between items-center text-[#f59e0b]">
-                                                <span className="font-bold text-[11px] md:text-xs shrink-0">첫 달 실적 없어도</span>
-                                                <span className="font-black text-xs md:text-sm underline underline-offset-4 decoration-2">12,000원 할인</span>
+                                            <div className="flex justify-between items-center text-[#f59e0b] gap-1">
+                                                <span className="font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">첫 달 실적 없어도</span>
+                                                <span className="font-black text-[11px] sm:text-sm underline underline-offset-4 decoration-2 whitespace-nowrap">12,000원 할인</span>
                                             </div>
                                         </div>
 
@@ -346,14 +352,14 @@ export default function Happy450Content({
                                         <p className="text-red-500 font-bold text-lg whitespace-nowrap">최대 <span className="text-2xl md:text-3xl">1.9만원</span> 할인</p>
                                     </div>
                                     <div className="space-y-4 mb-8 flex-grow">
-                                        <div className="bg-red-50/50 rounded-2xl p-5 border border-red-50">
-                                            <div className="flex justify-between items-center mb-3">
-                                                <span className="text-[#8b95a1] font-bold text-[11px] md:text-xs shrink-0">전월 30만원 실적 시</span>
-                                                <span className="text-sono-dark font-black text-xs md:text-sm">12,000원 할인</span>
+                                        <div className="bg-red-50/50 rounded-2xl p-3 sm:p-5 border border-red-50">
+                                            <div className="flex justify-between items-center mb-2 sm:mb-3 gap-1">
+                                                <span className="text-[#8b95a1] font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">전월 30만원 실적 시</span>
+                                                <span className="text-sono-dark font-black text-[11px] sm:text-sm whitespace-nowrap">12,000원 할인</span>
                                             </div>
-                                            <div className="flex justify-between items-center text-red-500">
-                                                <span className="font-bold text-[11px] md:text-xs shrink-0">첫 달 실적 없어도</span>
-                                                <span className="font-black text-xs md:text-sm underline underline-offset-4 decoration-2">12,000원 할인</span>
+                                            <div className="flex justify-between items-center text-red-500 gap-1">
+                                                <span className="font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">첫 달 실적 없어도</span>
+                                                <span className="font-black text-[11px] sm:text-sm underline underline-offset-4 decoration-2 whitespace-nowrap">12,000원 할인</span>
                                             </div>
                                         </div>
 

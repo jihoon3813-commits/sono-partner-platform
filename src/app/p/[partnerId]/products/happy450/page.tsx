@@ -7,6 +7,7 @@ interface PartnerData {
     customUrl: string;
     name: string;
     partnerId: string;
+    pointInfo?: string;
 }
 
 export default function PartnerHappy450Page({ params }: { params: Promise<{ partnerId: string }> }) {
@@ -58,6 +59,7 @@ export default function PartnerHappy450Page({ params }: { params: Promise<{ part
             partnerUrl={partner?.customUrl || resolvedParams.partnerId}
             partnerName={partner?.name || ""}
             partnerId={partner?.partnerId || resolvedParams.partnerId}
+            pointInfo={partner?.pointInfo}
         />
     );
 }
