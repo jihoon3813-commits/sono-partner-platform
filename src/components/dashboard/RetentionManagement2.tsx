@@ -776,7 +776,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
         return sortedRecords;
     }, [periodFilteredRecords, searchTerm, productFilter, partnerFilter, statusFilter, paymentStatusFilter, methodFilter, cancelFilter, paymentCountFilter, refundFilter, revivalFilter, delinquencyFilter, sortField, sortOrder, activeStatFilter, allApplications, partners, allowedCompanyNames, isAdmin, partnerId]);
 
-    // 중복 고객 그룹화 데이터 생성
+    // 중복 고객 그룹화 데이터 생성 (고객별 명확한 배경색 할당)
     const groupedData = useMemo(() => {
         const counts: Record<string, number> = {};
         filteredRecords.forEach((r: any) => {
@@ -784,13 +784,23 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
             counts[key] = (counts[key] || 0) + 1;
         });
 
-        // 색상 구분을 위한 시퀀스 생성
+        // 색상 구분을 위한 시퀀스 생성 (더 진하고 명확한 파스텔 톤 8가지)
         const groupColors: Record<string, string> = {};
         let colorIdx = 0;
-        const colorList = ["bg-blue-50/50", "bg-emerald-50/50", "bg-purple-50/50", "bg-amber-50/50", "bg-rose-50/50"];
+        const colorList = [
+            "bg-blue-100/70",
+            "bg-emerald-100/70",
+            "bg-purple-100/70",
+            "bg-amber-100/70",
+            "bg-rose-100/70",
+            "bg-indigo-100/70",
+            "bg-teal-100/70",
+            "bg-orange-100/70",
+        ];
 
-        Object.keys(counts).forEach(key => {
-            if (counts[key] > 1) {
+        filteredRecords.forEach((r: any) => {
+            const key = `${r.displayCustomerName}_${r.birth}_${r.displayPhone}`;
+            if (counts[key] > 1 && !groupColors[key]) {
                 groupColors[key] = colorList[colorIdx % colorList.length];
                 colorIdx++;
             }

@@ -402,13 +402,23 @@ const formatDateForDisplay = (val: string | number | undefined): string => {
                 counts[key] = (counts[key] || 0) + 1;
             });
 
-            // 색상 구분을 위한 시퀀스 생성
+            // 색상 구분을 위한 시퀀스 생성 (더 진하고 명확한 파스텔 톤 8가지)
             const groupColors: Record<string, string> = {};
             let colorIdx = 0;
-            const colorList = ["bg-blue-50/50", "bg-emerald-50/50", "bg-purple-50/50", "bg-amber-50/50", "bg-rose-50/50"];
+            const colorList = [
+                "bg-blue-100/70",
+                "bg-emerald-100/70",
+                "bg-purple-100/70",
+                "bg-amber-100/70",
+                "bg-rose-100/70",
+                "bg-indigo-100/70",
+                "bg-teal-100/70",
+                "bg-orange-100/70",
+            ];
 
-            Object.keys(counts).forEach(key => {
-                if (counts[key] > 1) {
+            filteredRecords.forEach((r: any) => {
+                const key = `${r.customerName}_${r.birth}_${r.phone}`;
+                if (counts[key] > 1 && !groupColors[key]) {
                     groupColors[key] = colorList[colorIdx % colorList.length];
                     colorIdx++;
                 }
