@@ -129,12 +129,9 @@ export default function PartnerDashboard() {
         setIsRefreshing(true);
         if (typeof window !== "undefined") {
             sessionStorage.setItem("activeDashboardTab", activeTab);
-            router.refresh();
-            setTimeout(() => {
-                window.location.reload();
-            }, 100);
+            window.location.reload();
         }
-    }, [activeTab, router]);
+    }, [activeTab]);
 
     const handleCopyUrl = () => {
         if (!partner?.customUrl || partner.customUrl === "admin") return;
@@ -289,12 +286,13 @@ export default function PartnerDashboard() {
                                 <button
                                     onClick={() => fetchData()}
                                     disabled={isRefreshing}
-                                    className="p-1.5 bg-gray-50 text-gray-400 rounded-lg border border-gray-100 hover:bg-sono-primary/10 hover:text-sono-primary transition-all disabled:opacity-50"
+                                    className="px-2.5 py-1.5 bg-white text-gray-600 rounded-xl border border-gray-200 hover:bg-sono-primary/10 hover:border-sono-primary hover:text-sono-primary transition-all flex items-center gap-1.5 text-xs font-bold shadow-sm active:scale-95 cursor-pointer disabled:opacity-50"
                                     title="새로고침"
                                 >
-                                    <svg className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-sono-primary" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-sono-primary" : "text-gray-500"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                     </svg>
+                                    <span className="hidden sm:inline">새로고침</span>
                                 </button>
                             </div>
 
@@ -391,12 +389,13 @@ export default function PartnerDashboard() {
                                 <button
                                     onClick={() => fetchData()}
                                     disabled={isRefreshing}
-                                    className="p-1.5 bg-gray-50 text-gray-400 rounded-lg border border-gray-100 hover:bg-sono-primary/10 hover:text-sono-primary transition-all disabled:opacity-50"
+                                    className="px-2.5 py-1.5 bg-white text-gray-600 rounded-xl border border-gray-200 hover:bg-sono-primary/10 hover:border-sono-primary hover:text-sono-primary transition-all flex items-center gap-1.5 text-xs font-bold shadow-sm active:scale-95 cursor-pointer disabled:opacity-50"
                                     title="새로고침"
                                 >
-                                    <svg className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-sono-primary" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-sono-primary" : "text-gray-500"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                     </svg>
+                                    <span className="hidden sm:inline">새로고침</span>
                                 </button>
                                 <div className="h-4 w-px bg-gray-200 hidden sm:block"></div>
                                 {(partner?.companyName || partner?.name || partner?.managerName) && (
