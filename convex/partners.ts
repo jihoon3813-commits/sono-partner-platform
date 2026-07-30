@@ -12,10 +12,23 @@ export const getAllPartners = query({
 export const getPartnerById = query({
     args: { partnerId: v.string() },
     handler: async (ctx, args) => {
-        return await ctx.db
+        let p = await ctx.db
             .query("partners")
             .withIndex("by_partnerId", (q) => q.eq("partnerId", args.partnerId))
             .unique();
+        if (!p) {
+            p = await ctx.db
+                .query("partners")
+                .withIndex("by_loginId", (q) => q.eq("loginId", args.partnerId))
+                .unique();
+        }
+        if (!p) {
+            p = await ctx.db
+                .query("partners")
+                .withIndex("by_customUrl", (q) => q.eq("customUrl", args.partnerId))
+                .unique();
+        }
+        return p;
     },
 });
 
@@ -139,12 +152,31 @@ export const updatePartner = mutation({
         updates: v.any(),
     },
     handler: async (ctx, args) => {
-        const partner = await ctx.db
+        let partner = await ctx.db
             .query("partners")
             .withIndex("by_partnerId", (q) => q.eq("partnerId", args.partnerId))
             .unique();
+        if (!partner) {
+            partner = await ctx.db
+                .query("partners")
+                .withIndex("by_loginId", (q) => q.eq("loginId", args.partnerId))
+                .unique();
+        }
+        if (!partner) {
+            partner = await ctx.db
+                .query("partners")
+                .withIndex("by_customUrl", (q) => q.eq("customUrl", args.partnerId))
+                .unique();
+        }
         if (!partner) return false;
-        await ctx.db.patch(partner._id, args.updates);
+
+        // Ensure showLandingUrl is converted to boolean if passed as boolean/string/undefined
+        const patchData = { ...args.updates };
+        if (patchData.showLandingUrl !== undefined) {
+            patchData.showLandingUrl = patchData.showLandingUrl === true || patchData.showLandingUrl === 'true';
+        }
+
+        await ctx.db.patch(partner._id, patchData);
         return true;
     }
 });
@@ -152,10 +184,22 @@ export const updatePartner = mutation({
 export const deletePartner = mutation({
     args: { partnerId: v.string() },
     handler: async (ctx, args) => {
-        const partner = await ctx.db
+        let partner = await ctx.db
             .query("partners")
             .withIndex("by_partnerId", (q) => q.eq("partnerId", args.partnerId))
             .unique();
+        if (!partner) {
+            partner = await ctx.db
+                .query("partners")
+                .withIndex("by_loginId", (q) => q.eq("loginId", args.partnerId))
+                .unique();
+        }
+        if (!partner) {
+            partner = await ctx.db
+                .query("partners")
+                .withIndex("by_customUrl", (q) => q.eq("customUrl", args.partnerId))
+                .unique();
+        }
         if (!partner) return false;
         await ctx.db.delete(partner._id);
         return true;

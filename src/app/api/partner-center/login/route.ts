@@ -30,7 +30,9 @@ export async function POST(request: Request) {
                     pointInfo: String(partner.pointInfo),
                     level: 'partner',
                     loginId: String(partner.loginId),
-                    role: String(partner.role || 'master')
+                    role: String(partner.role || 'master'),
+                    showLandingUrl: partner.showLandingUrl !== undefined ? partner.showLandingUrl : true,
+                    partnerGroup: partner.partnerGroup || '전체 상품 판매',
                 };
 
                 return NextResponse.json({
@@ -65,7 +67,9 @@ export async function POST(request: Request) {
                 pointInfo: String(partner.pointInfo),
                 level: 'partner',
                 loginId: String(partner.loginId),
-                role: String(partner.role || 'master')
+                role: String(partner.role || 'master'),
+                showLandingUrl: partner.showLandingUrl !== undefined ? partner.showLandingUrl : true,
+                partnerGroup: partner.partnerGroup || '전체 상품 판매',
             };
 
             return NextResponse.json({

@@ -121,9 +121,48 @@ export default function PartnerDashboard() {
         pendingRequests: realTimeData?.pendingRequests || []
     };
 
-    const currentPartner = dashboardData.partners.find((p: any) => p.partnerId === partner?.partnerId) || partner;
+    const currentPartner = dashboardData.partners.find((p: any) => 
+        (partner?.partnerId && (p.partnerId === partner.partnerId || p.loginId === partner.partnerId || p.customUrl === partner.partnerId)) ||
+        (partner?.loginId && (p.loginId === partner.loginId || p.partnerId === partner.loginId || p.customUrl === partner.loginId)) ||
+        (partner?.customUrl && (p.customUrl === partner.customUrl || p.partnerId === partner.customUrl || p.loginId === partner.customUrl))
+    ) || partner;
 
     const isLoading = !realTimeData || !partner;
+
+    // 실시간 데이터 수신 시 세션 데이터(showLandingUrl, partnerGroup 등) 최신화하여 초기 로딩 플리커(깜빡임) 방지
+    useEffect(() => {
+        if (realTimeData?.partners && partner?.partnerId) {
+            const found = dashboardData.partners.find((p: any) => 
+                (partner?.partnerId && (p.partnerId === partner.partnerId || p.loginId === partner.partnerId || p.customUrl === partner.partnerId)) ||
+                (partner?.loginId && (p.loginId === partner.loginId || p.partnerId === partner.loginId || p.customUrl === partner.loginId)) ||
+                (partner?.customUrl && (p.customUrl === partner.customUrl || p.partnerId === partner.customUrl || p.loginId === partner.customUrl))
+            );
+            if (found && (found.showLandingUrl !== partner.showLandingUrl || found.partnerGroup !== partner.partnerGroup)) {
+                const updated = {
+                    ...partner,
+                    showLandingUrl: found.showLandingUrl,
+                    partnerGroup: found.partnerGroup
+                };
+                setPartner(updated);
+                if (typeof window !== "undefined") {
+                    if (sessionStorage.getItem("partnerSession")) {
+                        sessionStorage.setItem("partnerSession", JSON.stringify(updated));
+                    }
+                    if (localStorage.getItem("partnerSession")) {
+                        localStorage.setItem("partnerSession", JSON.stringify(updated));
+                    }
+                }
+            }
+        }
+    }, [realTimeData, partner]);
+
+    const isLandingHidden = 
+        currentPartner?.showLandingUrl === false || 
+        currentPartner?.showLandingUrl === "false" || 
+        partner?.showLandingUrl === false || 
+        partner?.showLandingUrl === "false";
+
+    const isLandingUrlVisible = Boolean(realTimeData) && !isLandingHidden;
 
     const fetchData = useCallback(() => {
         setIsRefreshing(true);
@@ -437,7 +476,7 @@ export default function PartnerDashboard() {
 
             <main className={`${activeTab === 'retention2' ? 'max-w-[1600px]' : 'max-w-7xl'} mx-auto p-4 md:p-8`}>
                 {/* URL Display - Only visible on Dashboard (overview) tab when showLandingUrl is not false */}
-                {activeTab === "overview" && partner.customUrl && partner.customUrl !== "admin" && currentPartner.showLandingUrl !== false && (
+                {activeTab === "overview" && partner.customUrl && partner.customUrl !== "admin" && isLandingUrlVisible && (
                     <div className="flex flex-col gap-4 mb-6">
                         {/* Landing URL */}
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 md:p-6 rounded-[24px] md:rounded-[32px] shadow-sm border border-gray-100">
