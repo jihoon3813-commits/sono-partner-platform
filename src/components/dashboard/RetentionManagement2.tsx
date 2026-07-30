@@ -6,42 +6,66 @@ import { Partner } from "@/lib/types";
 
 // 날짜 포맷 표준화 (Excel 시리얼 번호 및 다양한 포맷 지원)
 const normalizeDate = (val: string | number | undefined): string => {
-    if (!val) return "";
+    if (val === undefined || val === null) return "";
     const strVal = String(val).trim();
-    if (!strVal) return "";
+    if (!strVal || strVal === "-") return "";
     
-    // 숫자만 남기기 (8자리 미만은 일반 숫자/일자이므로 날짜 변환 시도하지 않음)
-    const clean = strVal.replace(/[^0-9]/g, '');
-    if (clean.length < 8) {
-        return strVal;
-    }
-
-    // Excel 시리얼 번호 형식 (예: 46106)
+    // 1. Excel 시리얼 번호 형식 (예: 45891, 45905, 45908 -> 20250822 등)
     const serial = parseFloat(strVal);
     if (!isNaN(serial) && serial > 30000 && serial < 60000) {
         const date = new Date(Math.round((serial - 25569) * 86400 * 1000));
-        const yyyy = date.getFullYear();
-        const mm = String(date.getMonth() + 1).padStart(2, '0');
-        const dd = String(date.getDate()).padStart(2, '0');
-        return `${yyyy}${mm}${dd}`;
+        if (!isNaN(date.getTime())) {
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            return `${yyyy}${mm}${dd}`;
+        }
     }
-    
+
+    // 2. 숫자만 남겨서 8자리 YYYYMMDD 확인
+    const clean = strVal.replace(/[^0-9]/g, '');
     if (clean.length === 8) {
         return clean;
     }
-    
+
+    // 3. YYYY-M-D, YYYY.M.D 구문 해석
+    const parts = strVal.split(/[-./\s]+/);
+    if (parts.length === 3) {
+        let [y, m, d] = parts;
+        if (y.length === 4 && m.length >= 1 && d.length >= 1) {
+            m = m.padStart(2, '0');
+            d = d.padStart(2, '0');
+            if (m.length === 2 && d.length === 2) {
+                return `${y}${m}${d}`;
+            }
+        }
+    }
+
     return strVal;
 };
 
-// 화면 표시용 날짜 포맷 (YYYYMMDD -> YYYY-MM-DD)
-const formatDateForDisplay = (val: string | undefined): string => {
-    if (!val) return "-";
+// 화면 표시용 날짜 포맷 (YYYYMMDD / Excel 시리얼 -> YYYY-MM-DD)
+const formatDateForDisplay = (val: string | number | undefined): string => {
+    if (val === undefined || val === null) return "-";
     const strVal = String(val).trim();
-    if (strVal.length === 8 && /^\d{8}$/.test(strVal)) {
-        return `${strVal.substring(0, 4)}-${strVal.substring(4, 6)}-${strVal.substring(6, 8)}`;
+    if (!strVal || strVal === "-") return "-";
+
+    const normalized = normalizeDate(strVal);
+    if (normalized.length === 8 && /^\d{8}$/.test(normalized)) {
+        return `${normalized.substring(0, 4)}-${normalized.substring(4, 6)}-${normalized.substring(6, 8)}`;
     }
     return strVal;
 };
+
+// 레코드 수동 수정 발생 여부 (연체해결, 환수여부, 부활여부)
+const isRecordModified = (r: any): boolean => {
+    const isDelinquencyModified = Boolean(r.delinquencyResolveStatus && r.delinquencyResolveStatus !== "미해결");
+    const isRefundModified = Boolean(r.refundStatus && r.refundStatus !== "선택없음");
+    const isRevivalModified = Boolean(r.revivalStatus && r.revivalStatus !== "선택없음");
+    const hasTimestamp = Boolean(r.delinquencyResolveUpdatedAt || r.refundUpdatedAt || r.revivalUpdatedAt);
+    return isDelinquencyModified || isRefundModified || isRevivalModified || hasTimestamp;
+};
+
 
 // 화면 표시용 이체일자 포맷 (10 -> 10일, 25 -> 25일, 기존 20011001 복원 포함)
 const formatTransferDateForDisplay = (val: string | number | undefined): string => {
@@ -638,8 +662,20 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
             return true;
         });
 
-        // 정렬 적용
-        return result.sort((a: any, b: any) => {
+        // 고객 묶음 기준 그룹화 및 수정된 고객 최상단 자동 배치 정렬
+        const groupsMap = new Map<string, any[]>();
+        const groupKeysInOrder: string[] = [];
+
+        result.forEach((r: any) => {
+            const key = `${r.displayCustomerName}_${r.birth}_${r.displayPhone}`;
+            if (!groupsMap.has(key)) {
+                groupsMap.set(key, []);
+                groupKeysInOrder.push(key);
+            }
+            groupsMap.get(key)!.push(r);
+        });
+
+        const compareRecords = (a: any, b: any) => {
             // 헤더 클릭 / 드롭다운에 의한 개별 필드 정렬
             if (sortField === "customerName") {
                 const nameA = a.displayCustomerName || a.customerName || "";
@@ -683,7 +719,61 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
             const nameA = a.displayCustomerName || a.customerName || "";
             const nameB = b.displayCustomerName || b.customerName || "";
             return nameA.localeCompare(nameB, "ko-KR");
+        };
+
+        const customerGroups = groupKeysInOrder.map((key) => {
+            const records = groupsMap.get(key)!;
+            records.sort((a, b) => {
+                const dateA = a.joinDate.replace(/[^0-9]/g, '');
+                const dateB = b.joinDate.replace(/[^0-9]/g, '');
+                return dateA.localeCompare(dateB);
+            });
+
+            const isModified = records.some((r) => isRecordModified(r));
+
+            let latestUpdatedAt = "";
+            records.forEach((r) => {
+                const times = [r.delinquencyResolveUpdatedAt, r.refundUpdatedAt, r.revivalUpdatedAt].filter(Boolean);
+                times.forEach((t) => {
+                    if (t && t > latestUpdatedAt) latestUpdatedAt = t;
+                });
+            });
+
+            return {
+                key,
+                records,
+                isModified,
+                latestUpdatedAt,
+            };
         });
+
+        customerGroups.sort((gA, gB) => {
+            // 1순위: 수정이 일어난 고객 묶음(isModified) 최상단 배치
+            if (gA.isModified && !gB.isModified) return -1;
+            if (!gA.isModified && gB.isModified) return 1;
+
+            // 둘 다 수정된 고객 묶음인 경우: 최근 수정일자 최우선 정렬
+            if (gA.isModified && gB.isModified) {
+                if (gA.latestUpdatedAt && gB.latestUpdatedAt && gA.latestUpdatedAt !== gB.latestUpdatedAt) {
+                    return gB.latestUpdatedAt.localeCompare(gA.latestUpdatedAt);
+                }
+            }
+
+            // 대표 레코드 정렬 비교
+            return compareRecords(gA.records[0], gB.records[0]);
+        });
+
+        const sortedRecords: any[] = [];
+        customerGroups.forEach((g) => {
+            g.records.forEach((r) => {
+                sortedRecords.push({
+                    ...r,
+                    isCustomerModified: g.isModified,
+                });
+            });
+        });
+
+        return sortedRecords;
     }, [periodFilteredRecords, searchTerm, productFilter, partnerFilter, statusFilter, paymentStatusFilter, methodFilter, cancelFilter, paymentCountFilter, refundFilter, revivalFilter, delinquencyFilter, sortField, sortOrder, activeStatFilter, allApplications, partners, allowedCompanyNames, isAdmin, partnerId]);
 
     // 중복 고객 그룹화 데이터 생성
@@ -1178,7 +1268,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                             return (
                                                 <tr key={r._id || i} className={`hover:bg-gray-100/80 transition-colors group ${groupBg}`}>
                                                     <td className="px-3 py-4 text-[11px] text-gray-500 text-center border-b border-gray-50 relative">
-                                                        <div className="flex items-center justify-center gap-1">
+                                                        <div className="flex items-center justify-center gap-1.5">
                                                             {isDuplicate && (
                                                                 <div className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center">
                                                                     <div className={`w-[2px] bg-sono-primary/40 h-full relative
@@ -1190,7 +1280,12 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                                                                     </div>
                                                                 </div>
                                                             )}
-                                                            <span className={isDuplicate ? "ml-4" : ""}>{r.joinDate}</span>
+                                                            <div className={`flex items-center justify-center gap-1.5 ${isDuplicate ? "ml-4" : ""}`}>
+                                                                {r.isCustomerModified && (
+                                                                    <span className="w-2 h-2 rounded-full bg-red-500 shrink-0 inline-block" title="수정된 고객" />
+                                                                )}
+                                                                <span>{formatDateForDisplay(r.joinDate)}</span>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                     <td className="px-3 py-4 text-xs font-bold text-sono-primary text-center border-b border-gray-50">{r.partnerName}</td>

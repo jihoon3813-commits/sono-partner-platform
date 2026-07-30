@@ -43,12 +43,15 @@ const normalizeDate = (val: string | number | undefined): string => {
     return strVal;
 };
 
-// 화면 표시용 날짜 포맷 (YYYYMMDD -> YYYY-MM-DD)
-const formatDateForDisplay = (val: string | undefined): string => {
-    if (!val) return "-";
+// 화면 표시용 날짜 포맷 (YYYYMMDD / Excel 시리얼 -> YYYY-MM-DD)
+const formatDateForDisplay = (val: string | number | undefined): string => {
+    if (val === undefined || val === null) return "-";
     const strVal = String(val).trim();
-    if (strVal.length === 8 && /^\d{8}$/.test(strVal)) {
-        return `${strVal.substring(0, 4)}-${strVal.substring(4, 6)}-${strVal.substring(6, 8)}`;
+    if (!strVal || strVal === "-") return "-";
+
+    const normalized = normalizeDate(strVal);
+    if (normalized.length === 8 && /^\d{8}$/.test(normalized)) {
+        return `${normalized.substring(0, 4)}-${normalized.substring(4, 6)}-${normalized.substring(6, 8)}`;
     }
     return strVal;
 };
