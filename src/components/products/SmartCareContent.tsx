@@ -1441,18 +1441,15 @@ export default function SmartCareContent({
             {!isModalOpen && !pickedAppliance && (
                 <div className="fixed bottom-0 left-0 right-0 z-40 bg-sono-dark/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-10px_35px_rgba(0,0,0,0.3)] py-2.5 px-4 sm:py-3.5 sm:px-8">
                     <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                            <a href="tel:1899-0077" className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-xl text-xs sm:text-sm font-bold border border-white/15 transition-all">
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                                <span>📞 1899-0077</span>
-                            </a>
-                            <span className="hidden sm:inline-block text-white/50 text-xs font-medium">전화/온라인 무료 상담 대기 중</span>
+                        <div className="flex items-center gap-2.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span className="text-xs sm:text-sm font-bold text-gray-200">온라인 무료 상담 대기 중</span>
                         </div>
                         <button
                             onClick={() => setIsModalOpen(true)}
                             className="flex-1 sm:flex-initial bg-gradient-to-r from-sono-primary to-blue-600 hover:from-blue-600 hover:to-indigo-600 text-white font-black text-xs sm:text-base px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl shadow-lg shadow-sono-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 whitespace-nowrap"
                         >
-                            <span>⚡ {isPremiumMallMode ? "프리미엄몰 접수" : (partnerMode ? "가입 상담 신청하기" : "제휴 상담 신청하기")}</span>
+                            <span>⚡ 빠른 상담 신청하기</span>
                         </button>
                     </div>
                 </div>
