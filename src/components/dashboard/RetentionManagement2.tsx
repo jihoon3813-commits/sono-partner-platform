@@ -910,7 +910,7 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
                             &quot;당월미납&quot;은 연체가 아닙니다.
                         </p>
                         <p className="text-amber-800/90 font-medium">
-                            당월 납부 결과는 익월에 반영됩니다.
+                            단, 고객별 이체일자가 지난 날짜 기준 &quot;당월미납&quot;은 당월연체가 맞습니다.
                         </p>
                     </div>
                 </div>
