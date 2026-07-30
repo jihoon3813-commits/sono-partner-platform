@@ -621,7 +621,7 @@ export default function InquiryModal({
                             </div>
                         )}
 
-                        <button type="submit" disabled={isSubmitting} className="btn-primary w-full py-5 text-xl shadow-xl shadow-sono-primary/20 disabled:opacity-50">
+                        <button type="submit" disabled={isSubmitting} className="btn-primary w-full py-3 sm:py-4.5 text-base sm:text-xl shadow-xl shadow-sono-primary/20 disabled:opacity-50">
                             {isSubmitting ? "데이터 저장 중..." : (isPremiumMallMode ? "프리미엄몰 접수 바로가기" : "상담 신청하기")}
                         </button>
                     </form>

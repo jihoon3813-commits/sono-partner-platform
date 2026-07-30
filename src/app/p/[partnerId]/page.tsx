@@ -321,6 +321,8 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
         );
     }
 
+    const hasPointBenefit = Boolean(partner?.pointInfo && partner.pointInfo.trim() !== "" && !partner.pointInfo.includes("없음") && partner.pointInfo !== "0P" && partner.pointInfo !== "0포인트");
+
     return (
         <>
             {!isInquiryModalOpen && (
@@ -335,7 +337,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
             <main className="min-h-screen bg-[#f2f4f6]">
                 {/* 히어로 */}
                 <section
-                    className="relative py-20 md:py-40 overflow-hidden pt-12 bg-sono-dark flex items-center min-h-[60vh]"
+                    className="relative py-12 sm:py-20 md:py-40 overflow-hidden pt-12 bg-sono-dark flex items-center min-h-[50vh] sm:min-h-[60vh]"
                     style={{
                         backgroundImage: 'url("https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/Generated%20Image%20January%2024,%202026%20-%2010_30AM.jpeg")',
                         backgroundSize: 'cover',
@@ -346,39 +348,44 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                     <div className="absolute inset-0 bg-sono-dark/70 z-0"></div>
                     <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/20 z-0"></div>
 
-                    <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-                        <div className="flex flex-col items-center justify-center mb-12 animate-fade-in">
-                            {/* Logo Container: Horizontal Glass Container - Reduced size (70%) */}
-                            <div className="bg-white/95 backdrop-blur-md rounded-[32px] px-6 py-3 sm:px-9 sm:py-4.5 flex items-center justify-center gap-3 sm:gap-7 shadow-2xl shadow-black/30 border border-white/20">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
+                        <div className="flex flex-col items-center justify-center mb-6 sm:mb-12 animate-fade-in">
+                            {/* Logo Container: Horizontal Glass Container */}
+                            <div className="bg-white/95 backdrop-blur-md rounded-[20px] sm:rounded-[32px] px-3 py-2 sm:px-9 sm:py-4.5 flex items-center justify-center gap-2 sm:gap-7 shadow-2xl shadow-black/30 border border-white/20 max-w-full overflow-hidden">
                                 {/* Partner Logo/Text */}
-                                <div className="flex items-center justify-center">
+                                <div className="flex items-center justify-center shrink-0">
                                     {partner.logoUrl ? (
-                                        <img src={partner.logoUrl} alt={partner.name} className="h-9 sm:h-12 w-auto object-contain max-w-[200px]" />
+                                        <img src={partner.logoUrl} alt={partner.name} className="h-6 sm:h-12 w-auto object-contain max-w-[120px] sm:max-w-[200px]" />
                                     ) : (
-                                        <span className="text-sono-primary font-bold text-2xl sm:text-3xl tracking-tighter">{partner.logoText || partner.name}</span>
+                                        <span className="text-sono-primary font-bold text-sm sm:text-3xl tracking-tighter whitespace-nowrap">{partner.logoText || partner.name}</span>
                                     )}
                                 </div>
-                                <span className="text-2xl sm:text-4xl text-[#adb5bd] font-light">×</span>
+                                <span className="text-base sm:text-4xl text-[#adb5bd] font-light shrink-0">×</span>
                                 {/* Sono Logo */}
-                                <div className="flex items-center justify-center">
+                                <div className="flex items-center justify-center shrink-0">
                                     <img
                                         src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA.png"
                                         alt="Sono I'M READY"
-                                        className="h-9 sm:h-12 w-auto object-contain max-w-[200px]"
+                                        className="h-6 sm:h-12 w-auto object-contain max-w-[120px] sm:max-w-[200px]"
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-8 tracking-tighter leading-[1.1] filter drop-shadow-2xl animate-fade-in">
+                        <h1 className="text-2xl sm:text-4xl md:text-6xl font-extrabold text-white mb-4 sm:mb-8 tracking-tighter leading-[1.25] filter drop-shadow-2xl animate-fade-in">
                             {partner.landingTitle || `${partner.name} 회원`}님을 위한<br />특별한 라이프 케어 솔루션
                         </h1>
-                        <p className="text-xl md:text-2xl text-white/90 font-bold mb-12 leading-relaxed break-keep max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                            소노아임레디 공식총판과 함께하는 프리미엄 혜택<br />
-                            <span className="text-sono-gold underline underline-offset-8 decoration-sono-gold/40">{partner.pointInfo}</span>
+                        <p className="text-sm sm:text-xl md:text-2xl text-white/90 font-bold mb-6 sm:mb-12 leading-relaxed break-keep max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                            소노아임레디 공식총판과 함께하는 프리미엄 혜택
+                            {hasPointBenefit && (
+                                <>
+                                    <br />
+                                    <span className="text-sono-gold underline underline-offset-8 decoration-sono-gold/40">{partner.pointInfo}</span>
+                                </>
+                            )}
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-5 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                            <a href="#product-selection" className="bg-white text-sono-primary hover:bg-sono-gold hover:text-white px-12 py-5 rounded-2xl font-bold text-xl active:scale-[0.98] transition-all duration-300 shadow-2xl shadow-black/20">
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                            <a href="#product-selection" className="bg-white text-sono-primary hover:bg-sono-gold hover:text-white px-6 sm:px-12 py-3 sm:py-4.5 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-xl active:scale-[0.98] transition-all duration-300 shadow-2xl shadow-black/20">
                                 혜택 자세히 보기
                             </a>
                             <button
@@ -386,7 +393,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                     setModalProduct("");
                                     setIsInquiryModalOpen(true);
                                 }}
-                                className="border-2 border-white/60 bg-white/10 text-white hover:bg-white/20 px-12 py-5 rounded-2xl font-bold text-xl active:scale-[0.98] transition-all duration-300 backdrop-blur-md"
+                                className="border-2 border-white/60 bg-white/10 text-white hover:bg-white/20 px-6 sm:px-12 py-3 sm:py-4.5 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-xl active:scale-[0.98] transition-all duration-300 backdrop-blur-md"
                             >
                                 간편 상담문의
                             </button>
@@ -395,35 +402,35 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                 </section>
                 
                 {/* 상품 카테고리 퀵링크 */}
-                <section className="bg-white py-12 md:py-20 border-b border-gray-100">
-                    <div className="max-w-7xl mx-auto px-6">
-                        <div className="grid grid-cols-2 gap-4 md:gap-8">
-                            <a href="#happy450" className="group p-8 rounded-[32px] bg-[#f9fafb] border border-gray-100 hover:border-sono-primary/30 hover:bg-white hover:shadow-xl transition-all duration-500 flex flex-col items-center text-center">
-                                <div className="w-16 h-16 rounded-[22px] bg-sono-primary/10 text-sono-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <section className="bg-white py-6 sm:py-12 md:py-20 border-b border-gray-100">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-8">
+                            <a href="#happy450" className="group p-4 sm:p-8 rounded-[24px] sm:rounded-[32px] bg-[#f9fafb] border border-gray-100 hover:border-sono-primary/30 hover:bg-white hover:shadow-xl transition-all duration-500 flex flex-col items-center text-center">
+                                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-[22px] bg-sono-primary/10 text-sono-primary flex items-center justify-center mb-3 sm:mb-6 group-hover:scale-110 transition-transform">
+                                    <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-xl md:text-2xl font-black text-sono-dark mb-2 tracking-tight">더 해피 450 ONE</h3>
-                                <p className="text-[#8b95a1] text-sm md:text-base font-bold">실속형 라이프케어 솔루션</p>
-                                <div className="mt-6 flex items-center gap-1.5 text-sono-primary font-bold text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                                <h3 className="text-sm sm:text-xl md:text-2xl font-black text-sono-dark mb-1 sm:mb-2 tracking-tight whitespace-nowrap">더 해피 450 ONE</h3>
+                                <p className="text-[#8b95a1] text-xs sm:text-base font-bold whitespace-nowrap">실속형 라이프케어 솔루션</p>
+                                <div className="mt-3 sm:mt-6 flex items-center gap-1.5 text-sono-primary font-bold text-xs sm:text-sm opacity-0 group-hover:opacity-100 transition-opacity">
                                     상품보기
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </div>
                             </a>
-                            <a href="#smartcare" className="group p-8 rounded-[32px] bg-[#f9fafb] border border-gray-100 hover:border-sono-gold/30 hover:bg-white hover:shadow-xl transition-all duration-500 flex flex-col items-center text-center">
-                                <div className="w-16 h-16 rounded-[22px] bg-sono-gold/10 text-sono-gold flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <a href="#smartcare" className="group p-4 sm:p-8 rounded-[24px] sm:rounded-[32px] bg-[#f9fafb] border border-gray-100 hover:border-sono-gold/30 hover:bg-white hover:shadow-xl transition-all duration-500 flex flex-col items-center text-center">
+                                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-[22px] bg-sono-gold/10 text-sono-gold flex items-center justify-center mb-3 sm:mb-6 group-hover:scale-110 transition-transform">
+                                    <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-xl md:text-2xl font-black text-sono-dark mb-2 tracking-tight">스마트케어</h3>
-                                <p className="text-[#8b95a1] text-sm md:text-base font-bold">프리미엄 가전 결합 솔루션</p>
-                                <div className="mt-6 flex items-center gap-1.5 text-sono-gold font-bold text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                                <h3 className="text-sm sm:text-xl md:text-2xl font-black text-sono-dark mb-1 sm:mb-2 tracking-tight whitespace-nowrap">스마트케어</h3>
+                                <p className="text-[#8b95a1] text-xs sm:text-base font-bold whitespace-nowrap">프리미엄 가전 결합 솔루션</p>
+                                <div className="mt-3 sm:mt-6 flex items-center gap-1.5 text-sono-gold font-bold text-xs sm:text-sm opacity-0 group-hover:opacity-100 transition-opacity">
                                     상품보기
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </div>
@@ -434,21 +441,19 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
 
 
                 {/* 회사소개 섹션 */}
-                <section className="py-16 md:py-32 bg-[#f2f4f6] relative overflow-hidden">
-                    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
-                        <div className="text-center mb-24">
-                            <span className="badge-primary mb-6 px-4 py-2">ABOUT US</span>
-                            <h2 className="section-title">대명소노그룹의<br className="md:hidden" /> 라이프케어 브랜드</h2>
-                            <p className="section-subtitle max-w-3xl md:max-w-5xl mx-auto">
+                <section className="py-10 sm:py-16 md:py-32 bg-[#f2f4f6] relative overflow-hidden">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 relative z-10">
+                        <div className="text-center mb-10 sm:mb-24">
+                            <span className="badge-primary mb-4 sm:mb-6 px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm">ABOUT US</span>
+                            <h2 className="section-title text-2xl sm:text-4xl md:text-5xl">대명소노그룹의<br className="md:hidden" /> 라이프케어 브랜드</h2>
+                            <p className="section-subtitle text-xs sm:text-base max-w-3xl md:max-w-5xl mx-auto">
                                 &quot;인생의 모든 순간이 준비될 때까지&quot;<br />
                                 40년 이상의 레저 사업 노하우를 바탕으로 고객의 삶을 더욱 풍요롭게 만드는 토탈 라이프케어 서비스를 제공합니다.
                             </p>
                         </div>
 
-
-
                         {/* 주요 성과 카드 */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-24 max-w-6xl mx-auto">
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-8 mb-10 sm:mb-24 max-w-6xl mx-auto">
                             {[
                                 {
                                     image: "https://www.sonoimready.com/assets/images/cs/photo_story_company01.jpg",
@@ -475,17 +480,17 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                     <div className="aspect-[4/3] relative overflow-hidden">
                                         <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                     </div>
-                                    <div className="p-6 bg-white flex-1 flex flex-col">
-                                        <p className="font-bold text-sono-dark text-lg mb-1 leading-tight">{item.title}</p>
-                                        <p className="text-xs text-[#8b95a1] font-medium leading-relaxed mt-auto">{item.subtitle}</p>
+                                    <div className="p-3 sm:p-6 bg-white flex-1 flex flex-col">
+                                        <p className="font-bold text-sono-dark text-xs sm:text-lg mb-1 leading-tight">{item.title}</p>
+                                        <p className="text-[10px] sm:text-xs text-[#8b95a1] font-medium leading-relaxed mt-auto">{item.subtitle}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
                         {/* 브랜드 소개 텍스트 */}
-                        <div className="max-w-4xl mx-auto mb-24 text-center">
-                            <p className="text-[#4e5968] text-lg md:text-xl leading-relaxed font-medium break-keep">
+                        <div className="max-w-4xl mx-auto mb-10 sm:mb-24 text-center px-2">
+                            <p className="text-[#4e5968] text-xs sm:text-lg md:text-xl leading-relaxed font-medium break-keep">
                                 지난 40년 이상 국내 레저사업을 이끌어온 대명소노그룹의 서비스 노하우를 바탕으로 설립된 (주)소노스테이션의 대표 브랜드 소노아임레디.
                                 소노아임레디는 상조 서비스를 중심으로 여행, 교육, 웨딩 등 삶에 필요한 서비스를 제공하고 있습니다.
                                 다양한 라이프케어 서비스를 소비자가 원하는 시점에 선택하여 이용할 수 있도록 항상 준비되어 있습니다.
@@ -493,9 +498,8 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                             </p>
                         </div>
 
-
                         {/* 주요 사업 영역 */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12 max-w-6xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12 max-w-6xl mx-auto">
                             {[
                                 {
                                     category: "LIFE STYLE",
@@ -516,14 +520,14 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                     logo: "https://www.sonoimready.com/assets/images/cs/logo_vivaldi_park.png"
                                 }
                             ].map((item, i) => (
-                                <div key={i} className="bg-white rounded-[24px] md:rounded-[32px] p-8 md:p-10 border border-gray-100 shadow-sm flex flex-col min-h-[280px] text-left relative group hover:shadow-md transition-all">
+                                <div key={i} className="bg-white rounded-[20px] sm:rounded-[32px] p-4 sm:p-8 md:p-10 border border-gray-100 shadow-sm flex flex-col min-h-0 sm:min-h-[280px] text-left relative group hover:shadow-md transition-all">
                                     <div className="flex-1">
-                                        <p className="text-sono-primary font-bold text-xs md:text-sm tracking-wider mb-3 leading-none">{item.category}</p>
-                                        <h4 className="text-xl md:text-2xl font-black text-sono-dark mb-4 break-keep leading-tight">{item.title}</h4>
-                                        <p className="text-[#8b95a1] text-xs md:text-sm font-medium leading-relaxed whitespace-pre-line break-keep">{item.desc}</p>
+                                        <p className="text-sono-primary font-bold text-[10px] sm:text-xs md:text-sm tracking-wider mb-1.5 sm:mb-3 leading-none">{item.category}</p>
+                                        <h4 className="text-lg sm:text-xl md:text-2xl font-black text-sono-dark mb-2 sm:mb-4 break-keep leading-tight">{item.title}</h4>
+                                        <p className="text-[#8b95a1] text-xs sm:text-sm font-medium leading-relaxed whitespace-pre-line break-keep">{item.desc}</p>
                                     </div>
-                                    <div className="mt-8 flex justify-end">
-                                        <img src={item.logo} alt={item.title} className="h-6 md:h-8 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity" />
+                                    <div className="mt-3 sm:mt-8 flex justify-end">
+                                        <img src={item.logo} alt={item.title} className="h-5 sm:h-6 md:h-8 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity" />
                                     </div>
                                 </div>
                             ))}
@@ -532,67 +536,70 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                 </section>
 
                 {/* 상품 선택 */}
-                <section id="product-selection" className="py-12 md:py-24 scroll-mt-24 bg-gradient-to-b from-[#f2f4f6] to-white relative overflow-hidden">
+                <section id="product-selection" className="py-8 sm:py-12 md:py-24 scroll-mt-24 bg-gradient-to-b from-[#f2f4f6] to-white relative overflow-hidden">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
 
-                    <div className="max-w-7xl mx-auto px-6 relative z-10">
-                        <div className="text-center mb-20 md:mb-28">
-                            <span className="badge-primary mb-6 px-5 py-2 text-base">CHOOSE YOUR VALUE</span>
-                            <h2 className="section-title text-5xl md:text-6xl mb-8">나에게 꼭 맞는<br />라이프 솔루션 선택</h2>
-                            <p className="section-subtitle text-xl max-w-2xl mx-auto">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+                        <div className="text-center mb-8 sm:mb-20 md:mb-28">
+                            <span className="badge-primary mb-3 sm:mb-6 px-3 py-1 sm:px-5 sm:py-2 text-xs sm:text-base">CHOOSE YOUR VALUE</span>
+                            <h2 className="section-title text-2xl sm:text-5xl md:text-6xl mb-3 sm:mb-8 tracking-tight">
+                                <span className="block">나에게 꼭 맞는</span>
+                                <span className="block whitespace-nowrap">라이프 솔루션 선택</span>
+                            </h2>
+                            <p className="section-subtitle text-xs sm:text-xl max-w-2xl mx-auto">
                                 파트너사 회원님만을 위한 특별한 구성과 혜택을 확인하시고<br className="hidden md:block" />
                                 원하시는 미래의 가치를 선택해주세요.
                             </p>
                         </div>
 
-                        <div className="grid lg:grid-cols-2 gap-10 md:gap-16 max-w-6xl mx-auto">
+                        <div className="grid lg:grid-cols-2 gap-6 sm:gap-10 md:gap-16 max-w-6xl mx-auto">
                             {/* 더 해피 450 ONE */}
                             <div id="happy450" className="group relative card !p-0 transition-all duration-500 overflow-hidden border-2 border-transparent bg-white/80 backdrop-blur-sm hover:shadow-2xl hover:scale-[1.01] hover:border-gray-200 scroll-mt-32">
-                                <div className="p-6 md:p-14">
-                                    <div className="flex items-start justify-between mb-10">
+                                <div className="p-4 sm:p-6 md:p-14">
+                                    <div className="flex items-start justify-between mb-4 sm:mb-10">
                                         <div>
-                                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-[#8b95a1] text-xs font-bold mb-4">
+                                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-[#8b95a1] text-xs font-bold mb-2 sm:mb-4">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
                                                 SINGLE SOLUTION
                                             </div>
-                                            <h3 className="text-4xl font-black text-sono-dark tracking-tighter leading-tight mb-2">더 해피 450 ONE</h3>
-                                            <p className="text-sono-primary font-bold">실속과 가성비를 모두 잡은 베이직 모델</p>
+                                            <h3 className="text-2xl sm:text-4xl font-black text-sono-dark tracking-tighter leading-tight mb-1 sm:mb-2">더 해피 450 ONE</h3>
+                                            <p className="text-sono-primary text-xs sm:text-base font-bold">실속과 가성비를 모두 잡은 베이직 모델</p>
                                         </div>
                                     </div>
                                     {[
-                                        { text: partner.pointInfo, sub: "가입 즉시 제휴몰 포인트 적립" },
+                                        ...(hasPointBenefit ? [{ text: partner.pointInfo, sub: "가입 즉시 제휴몰 포인트 적립" }] : []),
                                         { text: "납입금 100% 전액 환급", sub: "미이용 시 만기에 전액 돌려받는 안심 환급" },
                                         { text: "소노그룹 멤버십 제공", sub: "전국 리조트 및 레저 시설 우대 혜택" }
                                     ].map((item, i) => (
-                                        <div key={i} className="flex gap-4">
-                                            <div className="w-6 h-6 rounded-full bg-sono-success/10 text-sono-success flex items-center justify-center flex-shrink-0 mt-1">
-                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <div key={i} className="flex gap-3 sm:gap-4 mb-3 sm:mb-4">
+                                            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-sono-success/10 text-sono-success flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                 </svg>
                                             </div>
                                             <div>
-                                                <p className="font-bold text-sono-dark text-lg leading-tight">{item.text}</p>
-                                                <p className="text-sm text-[#8b95a1] mt-1">{item.sub}</p>
+                                                <p className="font-bold text-sono-dark text-sm sm:text-lg leading-tight">{item.text}</p>
+                                                <p className="text-xs sm:text-sm text-[#8b95a1] mt-0.5 sm:mt-1">{item.sub}</p>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
 
-                                <div className="pt-8 md:pt-10 border-t border-gray-100 mb-8 md:mb-10">
-                                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                                        <div className="text-[#8b95a1] font-bold text-lg mb-1">매월 납입금</div>
+                                <div className="pt-4 sm:pt-8 md:pt-10 border-t border-gray-100 mb-4 sm:mb-8 md:mb-10 px-4 sm:px-6 md:px-14">
+                                    <div className="flex flex-row items-baseline justify-between gap-2">
+                                        <div className="text-[#8b95a1] font-bold text-xs sm:text-lg">매월 납입금</div>
                                         <div className="flex items-baseline gap-1">
-                                            <span className="text-5xl font-black text-sono-primary tracking-tighter">18,000</span>
-                                            <span className="text-2xl font-bold text-[#8b95a1]">원</span>
-                                            <span className="text-sm font-bold text-[#8b95a1] ml-1">부터~</span>
+                                            <span className="text-2xl sm:text-5xl font-black text-sono-primary tracking-tighter">18,000</span>
+                                            <span className="text-base sm:text-2xl font-bold text-[#8b95a1]">원</span>
+                                            <span className="text-xs sm:text-sm font-bold text-[#8b95a1] ml-0.5">부터~</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-2 sm:gap-4 p-4 sm:p-6 md:p-14 pt-0 sm:pt-0 md:pt-0">
                                     <Link
                                         href={`/p/${resolvedParams.partnerId}/products/happy450`}
-                                        className="flex items-center justify-center py-4 rounded-xl border-2 border-gray-100 text-sono-dark font-bold hover:bg-gray-50 transition-colors"
+                                        className="flex items-center justify-center py-2.5 sm:py-4 rounded-lg sm:rounded-xl border-2 border-gray-100 text-sono-dark text-xs sm:text-base font-bold hover:bg-gray-50 transition-colors whitespace-nowrap"
                                     >
                                         상품 자세히 보기
                                     </Link>
@@ -603,7 +610,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                             setModalProduct("happy450");
                                             setIsInquiryModalOpen(true);
                                         }}
-                                        className="flex items-center justify-center py-4 rounded-xl font-bold transition-all bg-sono-dark text-white hover:bg-black"
+                                        className="flex items-center justify-center py-2.5 sm:py-4 rounded-lg sm:rounded-xl text-xs sm:text-base font-bold transition-all bg-sono-dark text-white hover:bg-black whitespace-nowrap"
                                     >
                                         가입 신청하기
                                     </button>
@@ -612,56 +619,56 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
 
                             {/* 스마트케어 */}
                             <div id="smartcare" className="group relative card !p-0 transition-all duration-500 overflow-hidden border-2 border-transparent bg-white/80 backdrop-blur-sm hover:shadow-2xl hover:scale-[1.01] hover:border-gray-200 scroll-mt-32">
-                                <div className="absolute top-8 -right-12 bg-sono-gold text-white font-black text-xs py-2 w-48 text-center rotate-45 shadow-lg z-20">
+                                <div className="absolute top-6 -right-12 bg-sono-gold text-white font-black text-[10px] sm:text-xs py-1.5 sm:py-2 w-40 sm:w-48 text-center rotate-45 shadow-lg z-20">
                                     RECOMMENDED
                                 </div>
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-sono-primary/5 to-transparent"></div>
 
-                                <div className="p-6 md:p-14 relative z-10">
-                                    <div className="flex items-start justify-between mb-10">
+                                <div className="p-4 sm:p-6 md:p-14 relative z-10">
+                                    <div className="flex items-start justify-between mb-4 sm:mb-10">
                                         <div>
-                                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-white text-xs font-black mb-4 animate-neon-blink" style={{ '--neon-color': '49, 130, 246' } as React.CSSProperties}>
+                                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-white text-xs font-black mb-2 sm:mb-4 animate-neon-blink" style={{ '--neon-color': '49, 130, 246' } as React.CSSProperties}>
                                                 <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                                                 BEST CHOICE
                                             </div>
-                                            <h3 className="text-4xl font-black text-sono-dark tracking-tighter leading-tight mb-2">스마트케어</h3>
-                                            <p className="text-sono-gold font-bold">삼성/LG 최신가전 렌탈(금) 전액지원</p>
+                                            <h3 className="text-2xl sm:text-4xl font-black text-sono-dark tracking-tighter leading-tight mb-1 sm:mb-2">스마트케어</h3>
+                                            <p className="text-sono-gold text-xs sm:text-base font-bold">삼성/LG 최신가전 렌탈(금) 전액지원</p>
                                         </div>
                                     </div>
                                     {[
                                         { text: "삼성/LG 최신가전 렌탈(금) 전액 지원", sub: "내가 원하는 가전을 가입 즉시 배송/설치" },
-                                        { text: partner.pointInfo, sub: "가입 즉시 제휴몰 포인트 추가 적립" },
+                                        ...(hasPointBenefit ? [{ text: partner.pointInfo, sub: "가입 즉시 제휴몰 포인트 추가 적립" }] : []),
                                         { text: "납입금 100% 전액 환급", sub: "만기 시 가전 가격 포함 납입금 100% 환급" }
                                     ].map((item, i) => (
-                                        <div key={i} className="flex gap-4">
-                                            <div className="w-6 h-6 rounded-full bg-sono-primary/10 text-sono-primary flex items-center justify-center flex-shrink-0 mt-1">
-                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <div key={i} className="flex gap-3 sm:gap-4 mb-3 sm:mb-4">
+                                            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-sono-primary/10 text-sono-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                 </svg>
                                             </div>
                                             <div>
-                                                <p className="font-bold text-sono-dark text-lg leading-tight">{item.text}</p>
-                                                <p className="text-sm text-[#8b95a1] mt-1">{item.sub}</p>
+                                                <p className="font-bold text-sono-dark text-sm sm:text-lg leading-tight">{item.text}</p>
+                                                <p className="text-xs sm:text-sm text-[#8b95a1] mt-0.5 sm:mt-1">{item.sub}</p>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
 
-                                <div className="pt-10 border-t border-gray-100 mb-10">
-                                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                                        <div className="text-[#8b95a1] font-bold text-lg mb-1">매월 납입금</div>
+                                <div className="pt-4 sm:pt-8 md:pt-10 border-t border-gray-100 mb-4 sm:mb-8 md:mb-10 px-4 sm:px-6 md:px-14">
+                                    <div className="flex flex-row items-baseline justify-between gap-2">
+                                        <div className="text-[#8b95a1] font-bold text-xs sm:text-lg">매월 납입금</div>
                                         <div className="flex items-baseline gap-1">
-                                            <span className="text-5xl font-black text-sono-primary tracking-tighter">33,000</span>
-                                            <span className="text-2xl font-bold text-[#8b95a1]">원</span>
-                                            <span className="text-sm font-bold text-[#8b95a1] ml-1">부터~</span>
+                                            <span className="text-2xl sm:text-5xl font-black text-sono-primary tracking-tighter">33,000</span>
+                                            <span className="text-base sm:text-2xl font-bold text-[#8b95a1]">원</span>
+                                            <span className="text-xs sm:text-sm font-bold text-[#8b95a1] ml-0.5">부터~</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-2 sm:gap-4 p-4 sm:p-6 md:p-14 pt-0 sm:pt-0 md:pt-0">
                                     <Link
                                         href={`/p/${resolvedParams.partnerId}/products/smartcare`}
-                                        className="flex items-center justify-center py-4 rounded-xl border-2 border-gray-100 text-sono-dark font-bold hover:bg-gray-50 transition-colors"
+                                        className="flex items-center justify-center py-2.5 sm:py-4 rounded-lg sm:rounded-xl border-2 border-gray-100 text-sono-dark text-xs sm:text-base font-bold hover:bg-gray-50 transition-colors whitespace-nowrap"
                                     >
                                         상품 자세히 보기
                                     </Link>
@@ -672,7 +679,7 @@ export default function PartnerPage({ params }: { params: Promise<{ partnerId: s
                                             setModalProduct("smartcare");
                                             setIsInquiryModalOpen(true);
                                         }}
-                                        className="flex items-center justify-center py-4 rounded-xl font-bold transition-all bg-sono-dark text-white hover:bg-black"
+                                        className="flex items-center justify-center py-2.5 sm:py-4 rounded-lg sm:rounded-xl text-xs sm:text-base font-bold transition-all bg-sono-dark text-white hover:bg-black whitespace-nowrap"
                                     >
                                         가입 신청하기
                                     </button>
