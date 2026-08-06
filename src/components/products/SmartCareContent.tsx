@@ -810,7 +810,7 @@ export default function SmartCareContent({
                                             key={i} 
                                             onClick={() => setSelectedPlanId(plan._id)}
                                             style={{ scrollSnapStop: 'always' }}
-                                            className={`relative !p-6 md:!p-8 flex flex-col justify-between transition-all rounded-none snap-align-center snap-stop-always shrink-0 w-[78vw] max-w-[280px] sm:w-[320px] md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] text-white cursor-pointer select-none ${
+                                            className={`relative !p-6 md:!p-8 flex flex-col justify-between transition-all rounded-none snap-center snap-always [scroll-snap-stop:always] shrink-0 w-[78vw] max-w-[280px] sm:w-[320px] md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] text-white cursor-pointer select-none ${
                                                 isActive 
                                                     ? "bg-[#0f172a] shadow-[0_20px_50px_rgba(0,0,0,0.3)] md:scale-105 border-[3px] border-[#2563eb] z-10" 
                                                     : "bg-slate-900/90 border border-slate-800 hover:border-slate-700 shadow-xl hover:-translate-y-1"
@@ -1302,7 +1302,7 @@ export default function SmartCareContent({
                                     img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932608/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_09_20_04_3_1_whaflz.png"
                                 },
                             ].map((item, index) => (
-                                <div key={index} style={{ scrollSnapStop: 'always' }} className="flex flex-col text-center group snap-align-center snap-stop-always shrink-0 w-full md:w-auto">
+                                <div key={index} style={{ scrollSnapStop: 'always' }} className="flex flex-col text-center group snap-center snap-always [scroll-snap-stop:always] shrink-0 w-full md:w-auto">
                                     <div className="relative aspect-[4/3] rounded-none overflow-hidden bg-gray-100 mb-6 md:mb-10 shadow-sm transition-all duration-500 hover:shadow-2xl">
                                         {item.img ? (
                                             <img src={item.img} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -2003,50 +2003,72 @@ export default function SmartCareContent({
                                 제휴사 사정에 따라 예약가능 리조트는 사전 고지 없이 변경됩니다.
                             </p>
 
-                            <div className="relative group lg:block"><button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: -w, behavior: 'smooth' }); }}} className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none lg:hidden" aria-label="Previous"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg></button><div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto lg:overflow-visible lg:grid lg:grid-cols-4 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-6 pb-6 lg:pt-6 lg:pb-0 px-0 lg:px-0 scroll-px-0 lg:scroll-px-0 gap-6">
-                                {[
-                                    {
-                                        step: "STEP 1",
-                                        title: "소노아임레디 홈페이지 '개인정보 제공 동의하기' 동의 후 '소노호텔앤리조트 가기'",
-                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913594/reserve_step_01_x5sksh.jpg"
-                                    },
-                                    {
-                                        step: "STEP 2",
-                                        title: "소노호텔앤리조트 My SONO → MENU → 회원권 연동",
-                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913596/reserve_step_02_wk7wd2.jpg"
-                                    },
-                                    {
-                                        step: "STEP 3",
-                                        title: "라이프웨이 회원권 연동 클릭 후 연동",
-                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913596/reserve_step_03_gjehmo.jpg"
-                                    },
-                                    {
-                                        step: "STEP 4",
-                                        title: "리조트 예약 및 결제",
-                                        sub: "* 레디캐쉬로 결제 원할 시, 선 결제 후 리조트에서 결제수단 변경",
-                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785981110/reserve_step_04_eycfpo.jpg"
-                                    }
-                                ].map((item, idx) => (
-                                    <div key={idx} style={{ scrollSnapStop: 'always' }} className="bg-white border border-slate-200 p-5 shadow flex flex-col justify-between snap-align-center snap-stop-always shrink-0 w-full lg:w-auto">
-                                        <div>
-                                            <div className="aspect-square w-[70%] mx-auto overflow-hidden mb-4 shadow-sm bg-slate-100 rounded-lg">
-                                                <img src={item.img} alt={item.step} className="w-full h-full object-cover" />
+                            <div className="relative group lg:block">
+                                <button 
+                                    onClick={(e) => { 
+                                        const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
+                                        if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: -w, behavior: 'smooth' }); }
+                                    }} 
+                                    className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none lg:hidden" 
+                                    aria-label="Previous"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                                    </svg>
+                                </button>
+                                <div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto lg:overflow-visible lg:grid lg:grid-cols-4 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-6 pb-6 lg:pt-6 lg:pb-0 px-0 lg:px-0 scroll-px-0 lg:scroll-px-0 gap-6">
+                                    {[
+                                        {
+                                            step: "STEP 1",
+                                            title: "소노아임레디 홈페이지 '개인정보 제공 동의하기' 동의 후 '소노호텔앤리조트 가기'",
+                                            img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913594/reserve_step_01_x5sksh.jpg"
+                                        },
+                                        {
+                                            step: "STEP 2",
+                                            title: "소노호텔앤리조트 My SONO → MENU → 회원권 연동",
+                                            img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913596/reserve_step_02_wk7wd2.jpg"
+                                        },
+                                        {
+                                            step: "STEP 3",
+                                            title: "라이프웨이 회원권 연동 클릭 후 연동",
+                                            img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913596/reserve_step_03_gjehmo.jpg"
+                                        },
+                                        {
+                                            step: "STEP 4",
+                                            title: "리조트 예약 및 결제",
+                                            sub: "* 레디캐쉬로 결제 원할 시, 선 결제 후 리조트에서 결제수단 변경",
+                                            img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785981110/reserve_step_04_eycfpo.jpg"
+                                        }
+                                    ].map((item, idx) => (
+                                        <div key={idx} style={{ scrollSnapStop: 'always' }} className="bg-white border border-slate-200 p-5 shadow flex flex-col justify-between snap-center snap-always [scroll-snap-stop:always] shrink-0 w-full lg:w-auto">
+                                            <div>
+                                                <div className="aspect-square w-[70%] mx-auto overflow-hidden mb-4 shadow-sm bg-slate-100 rounded-lg">
+                                                    <img src={item.img} alt={item.step} className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="text-xs font-black text-sono-primary mb-1.5 tracking-wider">{item.step}</div>
+                                                <p className="text-slate-800 text-xs sm:text-sm font-bold leading-relaxed break-keep">{item.title}</p>
                                             </div>
-                                            <div className="text-xs font-black text-sono-primary mb-1.5 tracking-wider">{item.step}</div>
-                                            <p className="text-slate-800 text-xs sm:text-sm font-bold leading-relaxed break-keep">{item.title}</p>
+                                            {item.sub && (
+                                                <div className="text-[10px] sm:text-xs font-semibold text-slate-400 mt-2 text-left leading-relaxed break-keep">
+                                                    {item.sub}
+                                                </div>
+                                            )}
                                         </div>
-                                        {item.sub && (
-                                            <div className="text-[10px] sm:text-xs font-semibold text-slate-400 mt-2 text-left leading-relaxed break-keep">
-                                                {item.sub}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* 리조트 예약방법 섹션 밑에 배치된 단일 공식홈페이지 바로가기 버튼 */}
-<button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: w, behavior: 'smooth' }); }}} className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none lg:hidden" aria-label="Next"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg></button></div>                        <div className="flex justify-center mt-16">
+                                    ))}
+                                </div>
+                                <button 
+                                    onClick={(e) => { 
+                                        const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
+                                        if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: w, behavior: 'smooth' }); }
+                                    }} 
+                                    className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none lg:hidden" 
+                                    aria-label="Next"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                    </svg>
+                                </button>
+                            </div>                        <div className="flex justify-center mt-16">
                             <a 
                                 href="https://www.sonoimready.com/submain/sc/chgServMain?pageType=member" 
                                 target="_blank" 

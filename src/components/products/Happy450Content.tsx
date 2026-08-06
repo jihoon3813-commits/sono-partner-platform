@@ -491,83 +491,103 @@ export default function Happy450Content({
                             <p className="text-slate-600 text-base md:text-xl font-medium">부담 없는 납입금으로<br className="md:hidden" /> 미래의 상조 서비스를 준비하세요.</p>
                         </div>
 
-                        <div className="relative group md:block"><button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' }); }} className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none md:hidden" aria-label="Previous"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg></button><div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto md:overflow-visible md:grid md:grid-cols-3 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-10 md:py-16 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-6 md:gap-10 max-w-5xl mx-auto items-stretch">
-                            {[
-                                { name: "실속형", units: "더 해피450 ONE 1구좌", price: "18,000", desc: "가장 기본적인 상조 서비스" },
-                                { name: "인기형", units: "더 해피450 ONE 2구좌", price: "36,000", desc: "더 풍성한 서비스 구성", popular: true },
-                                { name: "베스트", units: "더 해피450 ONE 3구좌", price: "54,000", desc: "프리미엄 서비스 구성" },
-                            ].map((plan, index) => (
-                                <div 
-                                    key={index} 
-                                    style={{ scrollSnapStop: 'always' }} className={`relative !p-6 md:!p-10 flex flex-col h-full transition-all rounded-none text-white snap-align-center snap-stop-always shrink-0 w-full md:w-auto ${
-                                        plan.popular 
-                                            ? 'bg-slate-950 border-2 border-amber-400 shadow-[0_10px_30px_rgba(0,0,0,0.3)] md:scale-105 z-10' 
-                                            : 'bg-slate-900 border border-slate-800 shadow-xl hover:border-slate-700'
-                                    }`}
-                                >
-                                    {plan.popular && (
-                                        <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                                            <span className="bg-amber-400 text-slate-950 text-xs font-black px-5 py-1.5 rounded-none shadow-md tracking-wider whitespace-nowrap">MOST POPULAR</span>
-                                        </div>
-                                    )}
-                                    <div className="text-center mb-6 md:mb-8">
-                                        <h3 className="text-xl md:text-2xl font-black text-white mb-1 md:mb-2">{plan.name}</h3>
-                                        <span className="text-slate-400 font-bold text-xs md:text-sm">{plan.units}</span>
-                                        <div className="my-4 md:my-6">
-                                            <span className={`text-3xl md:text-4xl font-black tracking-tight ${plan.popular ? 'text-amber-400' : 'text-blue-400'}`}>{plan.price}</span>
-                                            <span className="text-slate-400 font-bold ml-1 text-sm md:text-base">원/월</span>
-                                        </div>
-
-                                        {/* 제휴카드 할인 가격 안내 */}
-                                        <div className="mt-4 space-y-2 pt-4 border-t border-slate-800">
-                                            <div className="flex justify-between items-center bg-slate-950/80 border border-slate-800 rounded-none px-4 py-3 transition-colors">
-                                                <div className="text-left">
-                                                    <p className="text-[11px] font-black text-blue-400 leading-none mb-1.5">제휴카드 할인</p>
-                                                    <p className="text-[10px] font-bold text-slate-400 leading-none">30만원 실적 시</p>
-                                                </div>
-                                                <div className="text-right flex items-baseline gap-0.5">
-                                                    <span className="text-lg md:text-xl font-black text-blue-400 whitespace-nowrap">
-                                                        {Math.max(0, Number(plan.price.replace(/,/g, '')) - 12000).toLocaleString()}
-                                                    </span>
-                                                    <span className="text-[10px] md:text-xs font-bold text-slate-400 whitespace-nowrap">원</span>
-                                                </div>
+                        <div className="relative group md:block">
+                            <button 
+                                onClick={(e) => { 
+                                    const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
+                                    if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: -w, behavior: 'smooth' }); }
+                                }} 
+                                className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none md:hidden" 
+                                aria-label="Previous"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                            </button>
+                            <div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto md:overflow-visible md:grid md:grid-cols-3 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-10 md:py-16 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-6 md:gap-10 max-w-5xl mx-auto items-stretch">
+                                {[
+                                    { name: "실속형", units: "더 해피450 ONE 1구좌", price: "18,000", desc: "가장 기본적인 상조 서비스" },
+                                    { name: "인기형", units: "더 해피450 ONE 2구좌", price: "36,000", desc: "더 풍성한 서비스 구성", popular: true },
+                                    { name: "베스트", units: "더 해피450 ONE 3구좌", price: "54,000", desc: "프리미엄 서비스 구성" },
+                                ].map((plan, index) => (
+                                    <div 
+                                        key={index} 
+                                        style={{ scrollSnapStop: 'always' }} className={`relative !p-6 md:!p-10 flex flex-col h-full transition-all rounded-none text-white snap-center snap-always [scroll-snap-stop:always] shrink-0 w-full md:w-auto ${
+                                            plan.popular 
+                                                ? 'bg-slate-950 border-2 border-amber-400 shadow-[0_10px_30px_rgba(0,0,0,0.3)] md:scale-105 z-10' 
+                                                : 'bg-slate-900 border border-slate-800 shadow-xl hover:border-slate-700'
+                                        }`}
+                                    >
+                                        {plan.popular && (
+                                            <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                                                <span className="bg-amber-400 text-slate-950 text-xs font-black px-5 py-1.5 rounded-none shadow-md tracking-wider whitespace-nowrap">MOST POPULAR</span>
+                                            </div>
+                                        )}
+                                        <div className="text-center mb-6 md:mb-8">
+                                            <h3 className="text-xl md:text-2xl font-black text-white mb-1 md:mb-2">{plan.name}</h3>
+                                            <span className="text-slate-400 font-bold text-xs md:text-sm">{plan.units}</span>
+                                            <div className="my-4 md:my-6">
+                                                <span className={`text-3xl md:text-4xl font-black tracking-tight ${plan.popular ? 'text-amber-400' : 'text-blue-400'}`}>{plan.price}</span>
+                                                <span className="text-slate-400 font-bold ml-1 text-sm md:text-base">원/월</span>
                                             </div>
 
-                                            <div className="flex justify-between items-center bg-slate-950/80 border border-amber-500/20 rounded-none px-4 py-3 transition-colors">
-                                                <div className="text-left">
-                                                    <p className="text-[11px] font-black text-amber-400 leading-none mb-1.5">제휴카드 최대할인</p>
-                                                    <p className="text-[10px] font-bold text-slate-400 leading-none">150만원 실적 시</p>
+                                            {/* 제휴카드 할인 가격 안내 */}
+                                            <div className="mt-4 space-y-2 pt-4 border-t border-slate-800">
+                                                <div className="flex justify-between items-center bg-slate-950/80 border border-slate-800 rounded-none px-4 py-3 transition-colors">
+                                                    <div className="text-left">
+                                                        <p className="text-[11px] font-black text-blue-400 leading-none mb-1.5">제휴카드 할인</p>
+                                                        <p className="text-[10px] font-bold text-slate-400 leading-none">30만원 실적 시</p>
+                                                    </div>
+                                                    <div className="text-right flex items-baseline gap-0.5">
+                                                        <span className="text-lg md:text-xl font-black text-blue-400 whitespace-nowrap">
+                                                            {Math.max(0, Number(plan.price.replace(/,/g, '')) - 12000).toLocaleString()}
+                                                        </span>
+                                                        <span className="text-[10px] md:text-xs font-bold text-slate-400 whitespace-nowrap">원</span>
+                                                    </div>
                                                 </div>
-                                                <div className="text-right flex items-baseline gap-0.5">
-                                                    <span className="text-lg md:text-xl font-black text-amber-400 whitespace-nowrap">
-                                                        {Math.max(0, Number(plan.price.replace(/,/g, '')) - 25000).toLocaleString()}
-                                                    </span>
-                                                    <span className="text-[10px] md:text-xs font-bold text-slate-400 whitespace-nowrap">원</span>
+
+                                                <div className="flex justify-between items-center bg-slate-950/80 border border-amber-500/20 rounded-none px-4 py-3 transition-colors">
+                                                    <div className="text-left">
+                                                        <p className="text-[11px] font-black text-amber-400 leading-none mb-1.5">제휴카드 최대할인</p>
+                                                        <p className="text-[10px] font-bold text-slate-400 leading-none">150만원 실적 시</p>
+                                                    </div>
+                                                    <div className="text-right flex items-baseline gap-0.5">
+                                                        <span className="text-lg md:text-xl font-black text-amber-400 whitespace-nowrap">
+                                                            {Math.max(0, Number(plan.price.replace(/,/g, '')) - 25000).toLocaleString()}
+                                                        </span>
+                                                        <span className="text-[10px] md:text-xs font-bold text-slate-400 whitespace-nowrap">원</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <p className="text-slate-400 text-center font-medium mb-6 flex-grow text-sm md:text-base">{plan.desc}</p>
+                                        <ul className="space-y-3 text-sm font-bold mb-4 pt-4 border-t border-slate-800">
+                                            {[
+                                                "제휴몰 포인트 지급",
+                                                "레디캐시 전환",
+                                                "소노그룹 멤버십",
+                                                "납입금 100% 환급"
+                                            ].map((text, i) => (
+                                                <li key={i} className="flex items-center gap-3 text-slate-200">
+                                                    <svg className="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                    </svg>
+                                                    {text}
+                                                </li>
+                                            ))}
+                                        </ul>
                                     </div>
-                                    <p className="text-slate-400 text-center font-medium mb-6 flex-grow text-sm md:text-base">{plan.desc}</p>
-                                    <ul className="space-y-3 text-sm font-bold mb-4 pt-4 border-t border-slate-800">
-                                        {[
-                                            "제휴몰 포인트 지급",
-                                            "레디캐시 전환",
-                                            "소노그룹 멤버십",
-                                            "납입금 100% 환급"
-                                        ].map((text, i) => (
-                                            <li key={i} className="flex items-center gap-3 text-slate-200">
-                                                <svg className="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                </svg>
-                                                {text}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            ))}
-                        </div>
-
-<button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) el.scrollBy({ left: el.clientWidth, behavior: 'smooth' }); }} className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none md:hidden" aria-label="Next"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg></button></div>                        <div className="mt-12 max-w-5xl mx-auto">
+                                ))}
+                            </div>
+                            <button 
+                                onClick={(e) => { 
+                                    const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
+                                    if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: w, behavior: 'smooth' }); }
+                                }} 
+                                className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none md:hidden" 
+                                aria-label="Next"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                            </button>
+                        </div>                        <div className="mt-12 max-w-5xl mx-auto">
                             <div className="bg-slate-900 border border-slate-800 rounded-none p-6 md:p-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 shadow-2xl text-white">
                                 <div className="w-16 h-16 md:w-20 md:h-20 rounded-none bg-amber-400 text-slate-950 flex items-center justify-center flex-shrink-0 shadow-lg font-black">
                                     <svg className="w-10 h-10 md:w-12 md:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
@@ -607,115 +627,136 @@ export default function Happy450Content({
                                 <p className="text-slate-400 text-base md:text-xl font-medium">제휴카드로 결제 시 매월 납입금 부담을 더 줄여드립니다.</p>
                             </div>
 
-                            <div className="relative group md:block"><button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' }); }} className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none md:hidden" aria-label="Previous"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg></button><div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto md:overflow-visible md:grid md:grid-cols-2 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-8 pb-6 md:pt-6 md:pb-0 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-8 md:gap-10 mb-16 max-w-5xl mx-auto">
-                                {/* 카드 1: KB국민카드 */}
-                                <div style={{ scrollSnapStop: 'always' }} className="relative bg-slate-100 rounded-none p-5 sm:p-8 md:p-10 shadow-sm border border-slate-200 flex flex-col hover:shadow-xl hover:border-slate-400 transition-all duration-300 text-slate-900 snap-align-center snap-stop-always shrink-0 w-full md:w-auto">
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#f59e0b] text-white text-[11px] font-black px-4 py-1.5 rounded-none shadow-lg whitespace-nowrap z-10">연회비 가장 저렴</div>
-                                    <div className="aspect-[1.58/1] mb-8 flex items-center justify-center">
-                                        <img 
-                                            src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097491/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_KB%EC%B9%B4%EB%93%9C_ffyvb2_zql90f.png" 
-                                            alt="소노아임레디 KB국민카드"
-                                            className="w-full h-full object-contain"
-                                        />
-                                    </div>
-                                    <div className="mb-8 text-center md:text-left">
-                                        <h3 className="text-[16px] sm:text-xl md:text-2xl font-black text-slate-900 mb-2 tracking-tighter whitespace-nowrap">소노아임레디 KB국민카드</h3>
-                                        <p className="text-[#f59e0b] font-bold text-lg whitespace-nowrap">최대 <span className="text-2xl md:text-3xl">1.7만원</span> 할인</p>
-                                    </div>
-                                    <div className="space-y-4 mb-8 flex-grow">
-                                        <div className="bg-white rounded-none p-3 sm:p-5 border border-slate-200">
-                                            <div className="flex justify-between items-center mb-2 sm:mb-3 gap-1">
-                                                <span className="text-slate-500 font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">전월 30만원 실적 시</span>
-                                                <span className="text-slate-900 font-black text-[11px] sm:text-sm whitespace-nowrap">12,000원 할인</span>
-                                            </div>
-                                            <div className="flex justify-between items-center text-[#f59e0b] gap-1">
-                                                <span className="font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">첫 달 실적 없어도</span>
-                                                <span className="font-black text-[11px] sm:text-sm underline underline-offset-4 decoration-2 whitespace-nowrap">12,000원 할인</span>
-                                            </div>
+                            <div className="relative group md:block">
+                                <button 
+                                    onClick={(e) => { 
+                                        const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
+                                        if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 32 : el.clientWidth; el.scrollBy({ left: -w, behavior: 'smooth' }); }
+                                    }} 
+                                    className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none md:hidden" 
+                                    aria-label="Previous"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                                </button>
+                                <div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto md:overflow-visible md:grid md:grid-cols-2 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-8 pb-6 md:pt-6 md:pb-0 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-8 md:gap-10 mb-16 max-w-5xl mx-auto">
+                                    {/* 카드 1: KB국민카드 */}
+                                    <div style={{ scrollSnapStop: 'always' }} className="relative bg-slate-100 rounded-none p-5 sm:p-8 md:p-10 shadow-sm border border-slate-200 flex flex-col hover:shadow-xl hover:border-slate-400 transition-all duration-300 text-slate-900 snap-center snap-always [scroll-snap-stop:always] shrink-0 w-full md:w-auto">
+                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#f59e0b] text-white text-[11px] font-black px-4 py-1.5 rounded-none shadow-lg whitespace-nowrap z-10">연회비 가장 저렴</div>
+                                        <div className="aspect-[1.58/1] mb-8 flex items-center justify-center">
+                                            <img 
+                                                src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097491/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_KB%EC%B9%B4%EB%93%9C_ffyvb2_zql90f.png" 
+                                                alt="소노아임레디 KB국민카드"
+                                                className="w-full h-full object-contain"
+                                            />
                                         </div>
+                                        <div className="mb-8 text-center md:text-left">
+                                            <h3 className="text-[16px] sm:text-xl md:text-2xl font-black text-slate-900 mb-2 tracking-tighter whitespace-nowrap">소노아임레디 KB국민카드</h3>
+                                            <p className="text-[#f59e0b] font-bold text-lg whitespace-nowrap">최대 <span className="text-2xl md:text-3xl">1.7만원</span> 할인</p>
+                                        </div>
+                                        <div className="space-y-4 mb-8 flex-grow">
+                                            <div className="bg-white rounded-none p-3 sm:p-5 border border-slate-200">
+                                                <div className="flex justify-between items-center mb-2 sm:mb-3 gap-1">
+                                                    <span className="text-slate-500 font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">전월 30만원 실적 시</span>
+                                                    <span className="text-slate-900 font-black text-[11px] sm:text-sm whitespace-nowrap">12,000원 할인</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-[#f59e0b] gap-1">
+                                                    <span className="font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">첫 달 실적 없어도</span>
+                                                    <span className="font-black text-[11px] sm:text-sm underline underline-offset-4 decoration-2 whitespace-nowrap">12,000원 할인</span>
+                                                </div>
+                                            </div>
 
-                                        <div className="space-y-3 px-1">
-                                            <div className="flex justify-between items-center text-[11px] md:text-xs font-bold">
-                                                <span className="text-slate-500">전월 30만원 ↑</span>
-                                                <span className="text-slate-900">12,000원</span>
+                                            <div className="space-y-3 px-1">
+                                                <div className="flex justify-between items-center text-[11px] md:text-xs font-bold">
+                                                    <span className="text-slate-500">전월 30만원 ↑</span>
+                                                    <span className="text-slate-900">12,000원</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-[11px] md:text-xs font-bold">
+                                                    <span className="text-slate-500">전월 70만원 ↑</span>
+                                                    <span className="text-slate-900">17,000원</span>
+                                                </div>
                                             </div>
-                                            <div className="flex justify-between items-center text-[11px] md:text-xs font-bold">
-                                                <span className="text-slate-500">전월 70만원 ↑</span>
-                                                <span className="text-slate-900">17,000원</span>
+
+                                            <div className="flex justify-between items-center py-4 border-t border-slate-300 mt-4">
+                                                <span className="text-slate-500 font-bold text-xs">연회비</span>
+                                                <span className="text-xs font-bold text-slate-900 text-right">국내외겸용 15,000원</span>
                                             </div>
                                         </div>
-
-                                        <div className="flex justify-between items-center py-4 border-t border-slate-300 mt-4">
-                                            <span className="text-slate-500 font-bold text-xs">연회비</span>
-                                            <span className="text-xs font-bold text-slate-900 text-right">국내외겸용 15,000원</span>
+                                        <div className="grid grid-cols-1 gap-3 mt-auto">
+                                            <a href="tel:1899-0077" className="flex items-center justify-center gap-2 bg-slate-900 text-white font-bold py-4 rounded-none hover:bg-black transition-all text-sm">
+                                                <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 004.587 4.587l.773-1.548a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
+                                                1899-0077 전화 신청
+                                            </a>
+                                            <a href="https://card.kbcard.com/CRD/DVIEW/HCAMCXPRICAC0076?cooperationcode=04342&mainCC=a&solicitorcode=7030201000" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-sono-primary text-white font-bold py-4 rounded-none hover:bg-blue-600 transition-all text-sm">
+                                                온라인 신청
+                                            </a>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-1 gap-3 mt-auto">
-                                        <a href="tel:1899-0077" className="flex items-center justify-center gap-2 bg-slate-900 text-white font-bold py-4 rounded-none hover:bg-black transition-all text-sm">
-                                            <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 004.587 4.587l.773-1.548a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
-                                            1899-0077 전화 신청
-                                        </a>
-                                        <a href="https://card.kbcard.com/CRD/DVIEW/HCAMCXPRICAC0076?cooperationcode=04342&mainCC=a&solicitorcode=7030201000" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-sono-primary text-white font-bold py-4 rounded-none hover:bg-blue-600 transition-all text-sm">
-                                            온라인 신청
-                                        </a>
+
+                                    {/* 카드 2: 하나카드 */}
+                                    <div style={{ scrollSnapStop: 'always' }} className="relative bg-slate-100 rounded-none p-5 sm:p-8 md:p-10 shadow-sm border border-slate-200 flex flex-col hover:shadow-xl hover:border-slate-400 transition-all duration-300 text-slate-900 snap-center snap-always [scroll-snap-stop:always] shrink-0 w-full md:w-auto">
+                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[11px] font-black px-4 py-1.5 rounded-none shadow-lg whitespace-nowrap z-10">빠른 신청(전용번호)</div>
+                                        <div className="aspect-[1.58/1] mb-8 flex items-center justify-center">
+                                            <img 
+                                                src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097508/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_%ED%94%8C%EB%9F%AC%EC%8A%A4_%ED%95%98%EB%82%98%EC%B9%B4%EB%93%9C_nyopom_delgx0.png" 
+                                                alt="소노아임레디 플러스 하나카드"
+                                                className="w-full h-full object-contain"
+                                            />
+                                        </div>
+                                        <div className="mb-8 text-center md:text-left">
+                                            <h3 className="text-[15px] sm:text-xl md:text-2xl font-black text-slate-900 mb-2 tracking-tighter whitespace-nowrap">소노아임레디 플러스 하나카드</h3>
+                                            <p className="text-red-500 font-bold text-lg whitespace-nowrap">최대 <span className="text-2xl md:text-3xl">1.9만원</span> 할인</p>
+                                        </div>
+                                        <div className="space-y-4 mb-8 flex-grow">
+                                            <div className="bg-white rounded-none p-3 sm:p-5 border border-slate-200">
+                                                <div className="flex justify-between items-center mb-2 sm:mb-3 gap-1">
+                                                    <span className="text-slate-500 font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">전월 30만원 실적 시</span>
+                                                    <span className="text-slate-900 font-black text-[11px] sm:text-sm whitespace-nowrap">12,000원 할인</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-red-500 gap-1">
+                                                    <span className="font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">첫 달 실적 없어도</span>
+                                                    <span className="font-black text-[11px] sm:text-sm underline underline-offset-4 decoration-2 whitespace-nowrap">12,000원 할인</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3 px-1">
+                                                <div className="flex justify-between items-center text-[11px] md:text-xs font-bold">
+                                                    <span className="text-slate-500">전월 30만원 ↑</span>
+                                                    <span className="text-slate-900">12,000원</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-[11px] md:text-xs font-bold">
+                                                    <span className="text-slate-500">전월 100만원 ↑</span>
+                                                    <span className="text-slate-900">19,000원</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex justify-between items-center py-4 border-t border-slate-300 mt-4">
+                                                <span className="text-slate-500 font-bold text-xs">연회비</span>
+                                                <span className="text-xs font-bold text-slate-900 text-right">국내외겸용 20,000원</span>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-3 mt-auto">
+                                            <a href="tel:1800-0672" className="flex items-center justify-center gap-2 bg-slate-900 text-white font-bold py-4 rounded-none hover:bg-black transition-all text-sm">
+                                                <svg className="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 004.587 4.587l.773-1.548a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
+                                                1800-0672 전화 신청
+                                            </a>
+                                            <a href="https://m.hanacard.co.kr/MPACMM101M.web?CD_PD_SEQ=13910" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-sono-primary text-white font-bold py-4 rounded-none hover:bg-blue-600 transition-all text-sm">
+                                                온라인 신청
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-
-                                {/* 카드 2: 하나카드 */}
-                                <div style={{ scrollSnapStop: 'always' }} className="relative bg-slate-100 rounded-none p-5 sm:p-8 md:p-10 shadow-sm border border-slate-200 flex flex-col hover:shadow-xl hover:border-slate-400 transition-all duration-300 text-slate-900 snap-align-center snap-stop-always shrink-0 w-full md:w-auto">
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[11px] font-black px-4 py-1.5 rounded-none shadow-lg whitespace-nowrap z-10">빠른 신청(전용번호)</div>
-                                    <div className="aspect-[1.58/1] mb-8 flex items-center justify-center">
-                                        <img 
-                                            src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781097508/%EC%86%8C%EB%85%B8%EC%95%84%EC%9E%84%EB%A0%88%EB%94%94_%ED%94%8C%EB%9F%AC%EC%8A%A4_%ED%95%98%EB%82%98%EC%B9%B4%EB%93%9C_nyopom_delgx0.png" 
-                                            alt="소노아임레디 플러스 하나카드"
-                                            className="w-full h-full object-contain"
-                                        />
-                                    </div>
-                                    <div className="mb-8 text-center md:text-left">
-                                        <h3 className="text-[15px] sm:text-xl md:text-2xl font-black text-slate-900 mb-2 tracking-tighter whitespace-nowrap">소노아임레디 플러스 하나카드</h3>
-                                        <p className="text-red-500 font-bold text-lg whitespace-nowrap">최대 <span className="text-2xl md:text-3xl">1.9만원</span> 할인</p>
-                                    </div>
-                                    <div className="space-y-4 mb-8 flex-grow">
-                                        <div className="bg-white rounded-none p-3 sm:p-5 border border-slate-200">
-                                            <div className="flex justify-between items-center mb-2 sm:mb-3 gap-1">
-                                                <span className="text-slate-500 font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">전월 30만원 실적 시</span>
-                                                <span className="text-slate-900 font-black text-[11px] sm:text-sm whitespace-nowrap">12,000원 할인</span>
-                                            </div>
-                                            <div className="flex justify-between items-center text-red-500 gap-1">
-                                                <span className="font-bold text-[10px] sm:text-xs shrink-0 whitespace-nowrap">첫 달 실적 없어도</span>
-                                                <span className="font-black text-[11px] sm:text-sm underline underline-offset-4 decoration-2 whitespace-nowrap">12,000원 할인</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-3 px-1">
-                                            <div className="flex justify-between items-center text-[11px] md:text-xs font-bold">
-                                                <span className="text-slate-500">전월 30만원 ↑</span>
-                                                <span className="text-slate-900">12,000원</span>
-                                            </div>
-                                            <div className="flex justify-between items-center text-[11px] md:text-xs font-bold">
-                                                <span className="text-slate-500">전월 100만원 ↑</span>
-                                                <span className="text-slate-900">19,000원</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex justify-between items-center py-4 border-t border-slate-300 mt-4">
-                                            <span className="text-slate-500 font-bold text-xs">연회비</span>
-                                            <span className="text-xs font-bold text-slate-900 text-right">국내외겸용 20,000원</span>
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-1 gap-3 mt-auto">
-                                        <a href="tel:1800-0672" className="flex items-center justify-center gap-2 bg-slate-900 text-white font-bold py-4 rounded-none hover:bg-black transition-all text-sm">
-                                            <svg className="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 004.587 4.587l.773-1.548a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
-                                            1800-0672 전화 신청
-                                        </a>
-                                        <a href="https://m.hanacard.co.kr/MPACMM101M.web?CD_PD_SEQ=13910" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-sono-primary text-white font-bold py-4 rounded-none hover:bg-blue-600 transition-all text-sm">
-                                            온라인 신청
-                                        </a>
-                                    </div>
-                                </div>
+                                <button 
+                                    onClick={(e) => { 
+                                        const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
+                                        if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 32 : el.clientWidth; el.scrollBy({ left: w, behavior: 'smooth' }); }
+                                    }} 
+                                    className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none md:hidden" 
+                                    aria-label="Next"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                                </button>
                             </div>
-
-<button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) el.scrollBy({ left: el.clientWidth, behavior: 'smooth' }); }} className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none md:hidden" aria-label="Next"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg></button></div>                            <div className="w-full">
+                            <div className="w-full mt-16">
                                 <div className="bg-slate-900 p-6 md:p-10 rounded-none border border-slate-800 shadow-xl text-white">
                                     <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                                         <div className="text-left">
@@ -751,40 +792,59 @@ export default function Happy450Content({
                             </p>
                         </div>
 
-                        <div className="relative group md:block"><button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' }); }} className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none md:hidden" aria-label="Previous"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg></button><div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto md:overflow-visible md:grid md:grid-cols-3 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-6 pb-6 md:pt-6 md:pb-0 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-8 md:gap-10 mb-20 md:mb-32">
-                            {[
-                                {
-                                    title: "정성을 다하는 서비스",
-                                    desc: "고인을 위한 관과 수의를 정직하게 정성을 다합니다.",
-                                    img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932612/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_09_20_03_1_1_uk04ro.png"
-                                },
-                                {
-                                    title: "고객님을 위로하는 마음",
-                                    desc: "전문 장례지도사가 모든 예법주관부터 행정업무까지 편리하게 지원합니다.",
-                                    img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932613/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_09_20_04_2_1_dqziit.png"
-                                },
-                                {
-                                    title: "전문가의 따뜻한 손길",
-                                    desc: "필요한 장의용품부터 고인 전용 차량까지 모두 제공합니다.",
-                                    img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932608/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_09_20_04_3_1_whaflz.png"
-                                },
-                            ].map((item, index) => (
-                                <div key={index} style={{ scrollSnapStop: 'always' }} className="flex flex-col text-center group snap-align-center snap-stop-always shrink-0 w-full md:w-auto">
-                                    <div className="relative aspect-[4/3] rounded-none overflow-hidden bg-gray-100 mb-6 md:mb-10 shadow-sm transition-all duration-500 hover:shadow-2xl">
-                                        {item.img ? (
-                                            <img src={item.img} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-[#8b95a1] font-bold">이미지 준비중</div>
-                                        )}
+                        <div className="relative group md:block">
+                            <button 
+                                onClick={(e) => { 
+                                    const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
+                                    if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 32 : el.clientWidth; el.scrollBy({ left: -w, behavior: 'smooth' }); }
+                                }} 
+                                className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none md:hidden" 
+                                aria-label="Previous"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                            </button>
+                            <div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto md:overflow-visible md:grid md:grid-cols-3 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-6 pb-6 md:pt-6 md:pb-0 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-8 md:gap-10 mb-20 md:mb-32">
+                                {[
+                                    {
+                                        title: "정성을 다하는 서비스",
+                                        desc: "고인을 위한 관과 수의를 정직하게 정성을 다합니다.",
+                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932612/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_09_20_03_1_1_uk04ro.png"
+                                    },
+                                    {
+                                        title: "고객님을 위로하는 마음",
+                                        desc: "전문 장례지도사가 모든 예법주관부터 행정업무까지 편리하게 지원합니다.",
+                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932613/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_09_20_04_2_1_dqziit.png"
+                                    },
+                                    {
+                                        title: "전문가의 따뜻한 손길",
+                                        desc: "필요한 장의용품부터 고인 전용 차량까지 모두 제공합니다.",
+                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932608/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_09_20_04_3_1_whaflz.png"
+                                    },
+                                ].map((item, index) => (
+                                    <div key={index} style={{ scrollSnapStop: 'always' }} className="flex flex-col text-center group snap-center snap-always [scroll-snap-stop:always] shrink-0 w-full md:w-auto">
+                                        <div className="relative aspect-[4/3] rounded-none overflow-hidden bg-gray-100 mb-6 md:mb-10 shadow-sm transition-all duration-500 hover:shadow-2xl">
+                                            {item.img ? (
+                                                <img src={item.img} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-[#8b95a1] font-bold">이미지 준비중</div>
+                                            )}
+                                        </div>
+                                        <h3 className="text-xl md:text-2xl font-bold text-sono-dark mb-3 md:mb-4 tracking-tight group-hover:text-sono-primary transition-colors leading-tight">{item.title}</h3>
+                                        <p className="text-[#6b7684] text-sm md:text-lg font-medium leading-relaxed break-keep px-4">{item.desc}</p>
                                     </div>
-                                    <h3 className="text-xl md:text-2xl font-bold text-sono-dark mb-3 md:mb-4 tracking-tight group-hover:text-sono-primary transition-colors leading-tight">{item.title}</h3>
-                                    <p className="text-[#6b7684] text-sm md:text-lg font-medium leading-relaxed break-keep px-4">{item.desc}</p>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* 소노아임레디 상조 서비스만의 특별함 (1x3 이미지/텍스트 박스 형태) */}
-<button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) el.scrollBy({ left: el.clientWidth, behavior: 'smooth' }); }} className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none md:hidden" aria-label="Next"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg></button></div>                        <div className="w-full animate-fade-in mt-16">
+                                ))}
+                            </div>
+                            <button 
+                                onClick={(e) => { 
+                                    const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
+                                    if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 32 : el.clientWidth; el.scrollBy({ left: w, behavior: 'smooth' }); }
+                                }} 
+                                className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none md:hidden" 
+                                aria-label="Next"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                            </button>
+                        </div>                        <div className="w-full animate-fade-in mt-16">
                             <div className="relative bg-slate-900 text-white py-5 px-6 rounded-none mb-10 shadow-md w-full">
                                 <h3 className="text-amber-300 text-lg md:text-2xl font-black text-center tracking-tight">
                                     ★ 소노아임레디 상조 서비스만의 시그니처 특별함
@@ -1052,7 +1112,7 @@ export default function Happy450Content({
                             </h2>
                         </div>
 
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                             {[
                                 { 
                                     title: "여유롭고 편안한 세계 여행", 
@@ -1729,50 +1789,72 @@ export default function Happy450Content({
                                 제휴사 사정에 따라 예약가능 리조트는 사전 고지 없이 변경됩니다.
                             </p>
 
-                            <div className="relative group lg:block"><button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' }); }} className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none lg:hidden" aria-label="Previous"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg></button><div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto lg:overflow-visible lg:grid lg:grid-cols-4 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-6 pb-6 lg:pt-6 lg:pb-0 px-0 lg:px-0 scroll-px-0 lg:scroll-px-0 gap-6">
-                                {[
-                                    {
-                                        step: "STEP 1",
-                                        title: "소노아임레디 홈페이지 '개인정보 제공 동의하기' 동의 후 '소노호텔앤리조트 가기'",
-                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913594/reserve_step_01_x5sksh.jpg"
-                                    },
-                                    {
-                                        step: "STEP 2",
-                                        title: "소노호텔앤리조트 My SONO → MENU → 회원권 연동",
-                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913596/reserve_step_02_wk7wd2.jpg"
-                                    },
-                                    {
-                                        step: "STEP 3",
-                                        title: "라이프웨이 회원권 연동 클릭 후 연동",
-                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913596/reserve_step_03_gjehmo.jpg"
-                                    },
-                                    {
-                                        step: "STEP 4",
-                                        title: "리조트 예약 및 결제",
-                                        sub: "* 레디캐쉬로 결제 원할 시, 선 결제 후 리조트에서 결제수단 변경",
-                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913595/reserve_step_04_fjfusc.jpg"
-                                    }
-                                ].map((item, idx) => (
-                                    <div key={idx} style={{ scrollSnapStop: 'always' }} className="bg-white border border-slate-200 p-5 shadow flex flex-col justify-between snap-align-center snap-stop-always shrink-0 w-full lg:w-auto">
-                                        <div>
-                                            <div className="aspect-square w-full overflow-hidden mb-4 shadow-sm bg-slate-100 rounded-lg">
-                                                <img src={item.img} alt={item.step} className="w-full h-full object-cover" />
+                            <div className="relative group lg:block">
+                                <button 
+                                    onClick={(e) => { 
+                                        const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
+                                        if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: -w, behavior: 'smooth' }); }
+                                    }} 
+                                    className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none lg:hidden" 
+                                    aria-label="Previous"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                                    </svg>
+                                </button>
+                                <div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto lg:overflow-visible lg:grid lg:grid-cols-4 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-6 pb-6 lg:pt-6 lg:pb-0 px-0 lg:px-0 scroll-px-0 lg:scroll-px-0 gap-6">
+                                    {[
+                                        {
+                                            step: "STEP 1",
+                                            title: "소노아임레디 홈페이지 '개인정보 제공 동의하기' 동의 후 '소노호텔앤리조트 가기'",
+                                            img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913594/reserve_step_01_x5sksh.jpg"
+                                        },
+                                        {
+                                            step: "STEP 2",
+                                            title: "소노호텔앤리조트 My SONO → MENU → 회원권 연동",
+                                            img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913596/reserve_step_02_wk7wd2.jpg"
+                                        },
+                                        {
+                                            step: "STEP 3",
+                                            title: "라이프웨이 회원권 연동 클릭 후 연동",
+                                            img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913596/reserve_step_03_gjehmo.jpg"
+                                        },
+                                        {
+                                            step: "STEP 4",
+                                            title: "리조트 예약 및 결제",
+                                            sub: "* 레디캐쉬로 결제 원할 시, 선 결제 후 리조트에서 결제수단 변경",
+                                            img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785981110/reserve_step_04_eycfpo.jpg"
+                                        }
+                                    ].map((item, idx) => (
+                                        <div key={idx} style={{ scrollSnapStop: 'always' }} className="bg-white border border-slate-200 p-5 shadow flex flex-col justify-between snap-center snap-always [scroll-snap-stop:always] shrink-0 w-full lg:w-auto">
+                                            <div>
+                                                <div className="aspect-square w-[70%] mx-auto overflow-hidden mb-4 shadow-sm bg-slate-100 rounded-lg">
+                                                    <img src={item.img} alt={item.step} className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="text-xs font-black text-sono-primary mb-1.5 tracking-wider">{item.step}</div>
+                                                <p className="text-slate-800 text-xs sm:text-sm font-bold leading-relaxed break-keep">{item.title}</p>
                                             </div>
-                                            <div className="text-xs font-black text-sono-primary mb-1.5 tracking-wider">{item.step}</div>
-                                            <p className="text-slate-800 text-xs sm:text-sm font-bold leading-relaxed break-keep">{item.title}</p>
+                                            {item.sub && (
+                                                <div className="text-[10px] sm:text-xs font-semibold text-slate-400 mt-2 text-left leading-relaxed break-keep">
+                                                    {item.sub}
+                                                </div>
+                                            )}
                                         </div>
-                                        {item.sub && (
-                                            <div className="text-[10px] sm:text-xs font-semibold text-slate-400 mt-2 text-left leading-relaxed break-keep">
-                                                {item.sub}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* 리조트 예약방법 섹션 밑에 배치된 단일 공식홈페이지 바로가기 버튼 */}
-<button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) el.scrollBy({ left: el.clientWidth, behavior: 'smooth' }); }} className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none lg:hidden" aria-label="Next"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg></button></div>                        <div className="flex justify-center mt-16">
+                                    ))}
+                                </div>
+                                <button 
+                                    onClick={(e) => { 
+                                        const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
+                                        if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: w, behavior: 'smooth' }); }
+                                    }} 
+                                    className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none lg:hidden" 
+                                    aria-label="Next"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                    </svg>
+                                </button>
+                            </div>                        <div className="flex justify-center mt-16">
                             <a 
                                 href="https://www.sonoimready.com/submain/sc/chgServMain?pageType=member" 
                                 target="_blank" 
