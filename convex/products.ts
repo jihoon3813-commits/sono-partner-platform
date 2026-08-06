@@ -117,12 +117,53 @@ function determineCategory(modelName: string, model: string, categoryCode: strin
 }
 
 // 모든 상품 조회 (클라이언트 호환성을 위해 인자 제거)
+function escapeRegex(str: string) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export function cleanBrandDeduplication(rawProdName: string, brandName: string): string {
+    if (!rawProdName) return "";
+    let name = rawProdName.trim();
+    const brand = (brandName || "").trim();
+
+    // 1. 이미 [브랜드] 태그가 포함된 경우 (예: [삼성] 삼성 85인치... -> [삼성] 85인치...)
+    if (name.startsWith("[")) {
+        const match = name.match(/^\[([^\]]+)\]\s*(.*)/);
+        if (match) {
+            const tag = match[1].trim();
+            let rest = match[2].trim();
+            if (tag) {
+                const regex = new RegExp(`^${escapeRegex(tag)}\\s*`, 'i');
+                if (regex.test(rest)) {
+                    rest = rest.replace(regex, '');
+                }
+            }
+            return `[${tag}] ${rest}`;
+        }
+    }
+
+    // 2. [브랜드] 태그가 없는 경우 (예: 삼성 85인치... -> [삼성] 85인치...)
+    if (brand && brand !== "기타") {
+        const regex = new RegExp(`^${escapeRegex(brand)}\\s*`, 'i');
+        if (regex.test(name)) {
+            name = name.replace(regex, '');
+        }
+        return `[${brand}] ${name}`;
+    }
+
+    return name;
+}
+
 export const get = query({
     args: {},
     handler: async (ctx) => {
         const all = await ctx.db.query("products").collect();
+        const cleaned = all.map(p => ({
+            ...p,
+            name: cleanBrandDeduplication(p.name, p.brand)
+        }));
         // Sort by order (ascending), then by name as fallback
-        return all.sort((a, b) => {
+        return cleaned.sort((a, b) => {
             if ((a.order ?? 0) !== (b.order ?? 0)) {
                 return (a.order ?? 0) - (b.order ?? 0);
             }
@@ -625,13 +666,15 @@ export const syncProductsForPlan = action({
             : (existingProducts.find(p => p.slotCount === slotCount && p.cardDiscountPayment)?.cardDiscountPayment || 0);
 
         const products = uniqueCombinedLists.map((item: any, i: number) => {
-            const brandMatch = item.model_name?.match(/^\[(.*?)\]/);
+            const rawName = item.model_name || "상품명 없음";
+            const brandMatch = rawName.match(/^\[(.*?)\]/);
             const brand = brandMatch ? brandMatch[1] : "기타";
+            const cleanedName = cleanBrandDeduplication(rawName, brand);
             
             // 카테고리 판별 로직
             const code = item.primary_category_code || "";
             const category = determineCategory(
-                item.model_name || "",
+                cleanedName,
                 item.model || "",
                 code,
                 item.ca_name || ""
@@ -640,7 +683,7 @@ export const syncProductsForPlan = action({
             return {
                 brand: brand,
                 model: item.model || "모델명 없음",
-                name: item.model_name || "상품명 없음",
+                name: cleanedName,
                 category: category,
                 slotCount: slotCount,
                 monthlyPayment: plan.monthlyPayment, // 플랜에 지정된 월납입금 대입
