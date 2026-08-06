@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Application, ApplicationStatus } from "@/lib/types";
-import { getStatusStyles as getDynamicStatusStyles } from "@/lib/statusUtils";
+import { getStatusBadgeProps } from "@/lib/statusUtils";
 
 interface CustomerDetailModalProps {
     application: Application;
@@ -19,9 +19,8 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
     const statusHistory = useQuery(api.applications.getStatusHistory, { applicationNo: application.applicationNo });
 
-
-    const getStatusStyles = (status: string) => {
-        return getDynamicStatusStyles(status, dbStatuses);
+    const getStatusBadge = (status: string) => {
+        return getStatusBadgeProps(status, dbStatuses);
     };
 
     const getDisplayStatus = (statusVal: string) => {
@@ -264,9 +263,17 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             </div>
                         ) : (
                             <div className="flex items-center">
-                                <span className={`px-3 py-1.5 rounded-lg text-sm font-bold ${getStatusStyles(getDisplayStatus(application.status))}`}>
-                                    {getDisplayStatus(application.status)}
-                                </span>
+                                {(() => {
+                                    const badge = getStatusBadge(getDisplayStatus(application.status));
+                                    return (
+                                        <span 
+                                            className={`px-3 py-1.5 rounded-lg text-sm font-bold ${badge.className}`}
+                                            style={badge.style}
+                                        >
+                                            {getDisplayStatus(application.status)}
+                                        </span>
+                                    );
+                                })()}
                             </div>
                         )}
                     </div>
@@ -451,9 +458,17 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                             <div className="absolute -left-[9px] top-1.5 w-3 h-3 rounded-full bg-gray-200 border-2 border-white" />
                                             <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
                                                 <div className="flex justify-between items-start mb-1">
-                                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${getDynamicStatusStyles(getDisplayStatus(history.newStatus), dbStatuses)}`}>
-                                                        {getDisplayStatus(history.newStatus)}
-                                                    </span>
+                                                    {(() => {
+                                                        const badge = getStatusBadge(getDisplayStatus(history.newStatus));
+                                                        return (
+                                                            <span 
+                                                                className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${badge.className}`}
+                                                                style={badge.style}
+                                                            >
+                                                                {getDisplayStatus(history.newStatus)}
+                                                            </span>
+                                                        );
+                                                    })()}
                                                     <span className="text-[10px] text-gray-400 font-medium">
                                                         {formatHistoryDate(history.changedAt)}
                                                     </span>

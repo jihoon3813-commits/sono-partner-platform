@@ -5,7 +5,7 @@ import { Application, Partner, ApplicationStatus } from "@/lib/types";
 import CustomerDetailModal from "./CustomerDetailModal";
 import CustomerRegistrationModal from "./CustomerRegistrationModal";
 import BulkUploadModal from "./BulkUploadModal";
-import { getStatusStyles as getDynamicStatusStyles } from "@/lib/statusUtils";
+import { getStatusBadgeProps } from "@/lib/statusUtils";
 import { getKSTDateString, getKSTMonthsAgoDateString, getKSTLastMonthRange } from "@/lib/dateUtils";
 
 interface CustomerManagementProps {
@@ -42,8 +42,8 @@ export default function CustomerManagement({
 }: CustomerManagementProps) {
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
 
-    const getStatusStyles = (status: string) => {
-        return getDynamicStatusStyles(status, dbStatuses);
+    const getStatusBadge = (status: string) => {
+        return getStatusBadgeProps(status, dbStatuses);
     };
 
 
@@ -906,9 +906,17 @@ export default function CustomerManagement({
                                                 {((app.productType || "").toLowerCase().includes("smart") || (app.productType || "").includes("스마트")) ? (app.products || "-") : "-"}
                                             </td>
                                             <td className="px-2 py-4 text-center whitespace-nowrap">
-                                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyles(getDisplayStatus(app.status))}`}>
-                                                    {getDisplayStatus(app.status)}
-                                                </span>
+                                                {(() => {
+                                                    const badge = getStatusBadge(getDisplayStatus(app.status));
+                                                    return (
+                                                        <span 
+                                                            className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${badge.className}`}
+                                                            style={badge.style}
+                                                        >
+                                                            {getDisplayStatus(app.status)}
+                                                        </span>
+                                                    );
+                                                })()}
                                             </td>
                                         </tr>
                                     );

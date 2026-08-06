@@ -21,6 +21,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { PartnerRequest } from "@/lib/types";
 import { Footer } from "@/components/layout";
+import { getStatusBadgeProps } from "@/lib/statusUtils";
 
 
 type Tab = "overview" | "partners" | "products" | "promotions" | "customers" | "requests" | "library" | "stats" | "settings" | "retention" | "retention2" | "tms";
@@ -966,16 +967,21 @@ export default function PartnerDashboard() {
 
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 animate-slide-up">
                             {/* Status Stats */}
-                            {statusList.map((status) => (
-                                <div
-                                    key={status}
-                                    onClick={() => setSelectedOverviewStatus(status)}
-                                    className={`bg-white p-4 rounded-2xl shadow-sm border border-gray-100 transition-all cursor-pointer hover:shadow-md hover:-translate-y-1 ${selectedOverviewStatus === status ? "ring-2 ring-sono-primary ring-offset-2 bg-sono-primary/[0.02]" : ""}`}
-                                >
-                                    <div className="flex justify-between items-start mb-2">
-                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-50 ${getStatusColor(status).replace('text-', 'bg-').replace('-500', '-50')} ${getStatusColor(status)}`}>
-                                            {status}
-                                        </span>
+                            {statusList.map((status) => {
+                                const badge = getStatusBadgeProps(status, dbStatuses);
+                                return (
+                                    <div
+                                        key={status}
+                                        onClick={() => setSelectedOverviewStatus(status)}
+                                        className={`bg-white p-4 rounded-2xl shadow-sm border border-gray-100 transition-all cursor-pointer hover:shadow-md hover:-translate-y-1 ${selectedOverviewStatus === status ? "ring-2 ring-sono-primary ring-offset-2 bg-sono-primary/[0.02]" : ""}`}
+                                    >
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span 
+                                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${badge.className}`}
+                                                style={badge.style}
+                                            >
+                                                {status}
+                                            </span>
                                         <div className="p-1.5 bg-gray-50 rounded-lg">
                                             <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -989,7 +995,8 @@ export default function PartnerDashboard() {
                                         <span className="text-gray-400 font-bold text-[10px]">건</span>
                                     </div>
                                 </div>
-                            ))}
+                            );
+                        })}
                         </div>
 
                         {/* Filtered Customer List Widget */}
