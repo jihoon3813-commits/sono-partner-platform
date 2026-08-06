@@ -785,12 +785,12 @@ export default function SmartCareContent({
                             <button 
                                 onClick={(e) => { 
                                     const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
-                                    if (el) el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' }); 
+                                    if (el) { const card = el.querySelector(':scope > div, :scope > a'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: -w, behavior: 'smooth' }); }
                                 }} 
-                                className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-none shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none md:hidden" 
+                                className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-none shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none md:hidden" 
                                 aria-label="Previous"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
                             </button>
 
                             <div 
@@ -883,12 +883,12 @@ export default function SmartCareContent({
                             <button 
                                 onClick={(e) => { 
                                     const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
-                                    if (el) el.scrollBy({ left: el.clientWidth, behavior: 'smooth' }); 
+                                    if (el) { const card = el.querySelector(':scope > div, :scope > a'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: w, behavior: 'smooth' }); }
                                 }} 
-                                className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-none shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none md:hidden" 
+                                className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-none shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none md:hidden" 
                                 aria-label="Next"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                             </button>
                         </div>
                     </div>
@@ -1284,7 +1284,7 @@ export default function SmartCareContent({
                             </p>
                         </div>
 
-                        <div className="relative group md:block"><button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' }); }} className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none md:hidden" aria-label="Previous"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg></button><div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto md:overflow-visible md:grid md:grid-cols-3 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-6 pb-6 md:pt-6 md:pb-0 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-8 md:gap-10 mb-20 md:mb-32">
+                        <div className="relative group md:block"><button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 32 : el.clientWidth; el.scrollBy({ left: -w, behavior: 'smooth' }); }}} className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none md:hidden" aria-label="Previous"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg></button><div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto md:overflow-visible md:grid md:grid-cols-3 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-6 pb-6 md:pt-6 md:pb-0 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-8 md:gap-10 mb-20 md:mb-32">
                             {[
                                 {
                                     title: "정성을 다하는 서비스",
@@ -1317,7 +1317,7 @@ export default function SmartCareContent({
                         </div>
 
                         {/* 소노아임레디 상조 서비스만의 특별함 (1x3 이미지/텍스트 박스 형태) */}
-<button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) el.scrollBy({ left: el.clientWidth, behavior: 'smooth' }); }} className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none md:hidden" aria-label="Next"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg></button></div>                        <div className="w-full animate-fade-in mt-16">
+<button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 32 : el.clientWidth; el.scrollBy({ left: w, behavior: 'smooth' }); }}} className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none md:hidden" aria-label="Next"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg></button></div>                        <div className="w-full animate-fade-in mt-16">
                             <div className="relative bg-slate-900 text-white py-5 px-6 rounded-none mb-10 shadow-md w-full">
                                 <h3 className="text-amber-300 text-lg md:text-2xl font-black text-center tracking-tight">
                                     ★ 소노아임레디 상조 서비스만의 시그니처 특별함
@@ -2003,7 +2003,7 @@ export default function SmartCareContent({
                                 제휴사 사정에 따라 예약가능 리조트는 사전 고지 없이 변경됩니다.
                             </p>
 
-                            <div className="relative group lg:block"><button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' }); }} className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none lg:hidden" aria-label="Previous"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg></button><div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto lg:overflow-visible lg:grid lg:grid-cols-4 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-6 pb-6 lg:pt-6 lg:pb-0 px-0 lg:px-0 scroll-px-0 lg:scroll-px-0 gap-6">
+                            <div className="relative group lg:block"><button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: -w, behavior: 'smooth' }); }}} className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none lg:hidden" aria-label="Previous"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg></button><div style={{ scrollSnapType: 'x mandatory' }} className="flex w-full overflow-x-auto lg:overflow-visible lg:grid lg:grid-cols-4 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-6 pb-6 lg:pt-6 lg:pb-0 px-0 lg:px-0 scroll-px-0 lg:scroll-px-0 gap-6">
                                 {[
                                     {
                                         step: "STEP 1",
@@ -2024,12 +2024,12 @@ export default function SmartCareContent({
                                         step: "STEP 4",
                                         title: "리조트 예약 및 결제",
                                         sub: "* 레디캐쉬로 결제 원할 시, 선 결제 후 리조트에서 결제수단 변경",
-                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913595/reserve_step_04_fjfusc.jpg"
+                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785981110/reserve_step_04_eycfpo.jpg"
                                     }
                                 ].map((item, idx) => (
                                     <div key={idx} style={{ scrollSnapStop: 'always' }} className="bg-white border border-slate-200 p-5 shadow flex flex-col justify-between snap-align-center snap-stop-always shrink-0 w-full lg:w-auto">
                                         <div>
-                                            <div className="aspect-square w-full overflow-hidden mb-4 shadow-sm bg-slate-100 rounded-lg">
+                                            <div className="aspect-square w-[70%] mx-auto overflow-hidden mb-4 shadow-sm bg-slate-100 rounded-lg">
                                                 <img src={item.img} alt={item.step} className="w-full h-full object-cover" />
                                             </div>
                                             <div className="text-xs font-black text-sono-primary mb-1.5 tracking-wider">{item.step}</div>
@@ -2046,7 +2046,7 @@ export default function SmartCareContent({
                         </div>
 
                         {/* 리조트 예약방법 섹션 밑에 배치된 단일 공식홈페이지 바로가기 버튼 */}
-<button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) el.scrollBy({ left: el.clientWidth, behavior: 'smooth' }); }} className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-slate-950/80 hover:bg-slate-950 text-amber-500 hover:text-amber-400 p-2 rounded-full shadow-lg border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 focus:outline-none lg:hidden" aria-label="Next"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg></button></div>                        <div className="flex justify-center mt-16">
+<button onClick={(e) => { const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: w, behavior: 'smooth' }); }}} className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-full shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none lg:hidden" aria-label="Next"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg></button></div>                        <div className="flex justify-center mt-16">
                             <a 
                                 href="https://www.sonoimready.com/submain/sc/chgServMain?pageType=member" 
                                 target="_blank" 

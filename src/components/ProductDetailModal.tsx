@@ -133,10 +133,10 @@ export default function ProductDetailModal({
     if (!isOpen || !appliance) return null;
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center overflow-hidden bg-black/70 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center overflow-hidden bg-black/70 backdrop-blur-sm animate-fade-in py-4 sm:py-6" onClick={onClose}>
             {/* 모달 창 메인 컨테이너 */}
             <div 
-                className="relative bg-white text-slate-900 w-[calc(100%-32px)] sm:w-[calc(100%-48px)] max-w-4xl max-h-[92vh] sm:max-h-[90vh] overflow-hidden shadow-2xl border border-gray-300 rounded-none flex flex-col z-10 mx-auto my-auto min-w-0 shrink-0"
+                className="relative bg-white text-slate-900 w-[calc(100%-32px)] sm:w-[calc(100%-48px)] max-w-4xl max-h-[85vh] sm:max-h-[88vh] overflow-hidden shadow-2xl border border-gray-300 rounded-none flex flex-col z-10 mx-auto my-auto min-w-0 shrink-0"
                 onClick={(e) => e.stopPropagation()}
             >
                 
