@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import type { Metadata } from "next";
 import "./globals.css";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
+import PartnerTracker from "@/components/analytics/PartnerTracker";
 
 export const metadata: Metadata = {
     metadataBase: new URL("https://sono-partners.com"),
@@ -44,6 +45,7 @@ export default function RootLayout({
         <html lang="ko">
             <body className="antialiased min-h-screen bg-sono-light">
                 <ConvexClientProvider>
+                    <PartnerTracker />
                     {children}
                 </ConvexClientProvider>
             </body>

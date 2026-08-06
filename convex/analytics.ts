@@ -20,8 +20,21 @@ export const recordHit = mutation({
         const now = new Date();
         const kstDate = getKSTDateStr(now); // 대한민국 표준시 기준 YYYY-MM-DD
 
+        let partnerId = (args.partnerId || "main").trim();
+
+        // customUrl이 전달되었을 경우 정규 partnerId로 변환
+        if (partnerId !== "main") {
+            const partner = await ctx.db
+                .query("partners")
+                .withIndex("by_customUrl", (q) => q.eq("customUrl", partnerId))
+                .first();
+            if (partner) {
+                partnerId = partner.partnerId;
+            }
+        }
+
         await ctx.db.insert("analytics", {
-            partnerId: args.partnerId,
+            partnerId: partnerId,
             date: kstDate,
             path: args.path,
             visitorId: args.visitorId,
