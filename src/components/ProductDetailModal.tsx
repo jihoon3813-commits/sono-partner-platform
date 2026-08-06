@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { cleanProductName } from "@/lib/productUtils";
 
 interface Appliance {
     _id?: string;
@@ -214,7 +215,7 @@ export default function ProductDetailModal({
                                                     [{item.brand}] {item.category}
                                                 </span>
                                                 <h2 className="text-base sm:text-lg md:text-xl font-extrabold text-[#0c2340] leading-snug sm:leading-tight break-keep">
-                                                    {item.name}
+                                                    {cleanProductName(item.name, item.brand)}
                                                 </h2>
                                                 
                                                 {/* 모델명 + 복사 + 인증 배지 */}

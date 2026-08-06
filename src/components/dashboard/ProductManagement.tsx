@@ -5,6 +5,7 @@ import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 import sampleProducts from "@/lib/seedData";
+import { cleanProductName } from "@/lib/productUtils";
 
 interface Product {
     _id: Id<"products">;
@@ -532,7 +533,7 @@ export default function ProductManagement() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm font-black text-sono-dark leading-tight">{product.name}</span>
+                                                    <span className="text-sm font-black text-sono-dark leading-tight">{cleanProductName(product.name, product.brand)}</span>
                                                     <span className="text-xs font-bold text-gray-400 mt-1 uppercase">{product.model}</span>
                                                 </div>
                                             </td>

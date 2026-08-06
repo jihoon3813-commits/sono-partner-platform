@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import InquiryModal from "@/components/InquiryModal";
 import ProductDetailModal from "@/components/ProductDetailModal";
 import ImportantNotice from "@/components/common/ImportantNotice";
+import { cleanProductName } from "@/lib/productUtils";
 
 interface HybridItem {
     name: string;
@@ -1212,7 +1213,7 @@ export default function SmartCareContent({
                                                         }}
                                                         className={`text-sono-dark font-black text-xs md:text-sm leading-tight tracking-tight group-hover:text-sono-primary transition-all cursor-pointer ${expandedProductNames.has(item.name) ? "line-clamp-none" : "line-clamp-2 min-h-[1.75rem] md:min-h-[2.25rem]"}`}
                                                     >
-                                                        {item.name}
+                                                        {cleanProductName(item.name, item.brand)}
                                                     </h3>
                                                     <p className="text-gray-400 font-bold text-[9px] md:text-xs mt-0.5 md:mt-1 uppercase truncate">{item.model}</p>
                                                 </div>
