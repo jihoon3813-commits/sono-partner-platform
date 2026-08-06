@@ -2068,18 +2068,7 @@ export default function SmartCareContent({
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                     </svg>
                                 </button>
-                            </div>                        <div className="flex justify-center mt-16">
-                            <a 
-                                href="https://www.sonoimready.com/submain/sc/chgServMain?pageType=member" 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="flex items-center justify-center gap-2 bg-[#c5a059] hover:bg-[#b08b47] text-white font-black text-base px-12 py-4 shadow-lg transition-all rounded"
-                            >
-                                <span>공식홈페이지 바로가기</span>
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                            </a>
+                            </div>
                         </div>
                     </div>
                 </section>
