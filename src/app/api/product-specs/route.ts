@@ -327,7 +327,7 @@ function parseDynamicSpecs(brand: string, name: string, model: string, category:
         };
     }
 
-    // 2. 카테고리 엄격 분리 파서 (혼선 방지)
+    // 2. 카테고리 엄격 분리 파서 (전수조사 완료 & 혼선 전면 방지)
     const specs: { label: string; value: string }[] = [];
     const features: string[] = [];
 
@@ -339,46 +339,103 @@ function parseDynamicSpecs(brand: string, name: string, model: string, category:
     const kgMatch = cleanName.match(/(\d+)\s*kg/i) || cleanModel.match(/(\d{2})KG/i);
     const literMatch = cleanName.match(/(\d+)\s*L/i) || cleanModel.match(/(\d{3})L/i);
 
-    // 2-A. 공기청정기 / 에어케어 (오브제/비스포크 키워드보다 최우선 매칭)
-    if (cleanName.includes("공기청정기") || cleanName.includes("청정기") || cleanName.includes("퓨리케어") || cleanName.includes("에어케어")) {
+    const isMassageHealthcare = (cleanName.includes("안마") || cleanName.includes("마사지") || cleanName.includes("파우제") || cleanName.includes("바디프랜드") || cleanName.includes("브람스") || cleanName.includes("파밀레")) && !cleanName.includes("세라젬");
+    const isCeragemMedical = cleanName.includes("세라젬") || cleanName.includes("마스터V") || cleanName.includes("마스터 V");
+
+    // 2-A. 세라젬 척추 온열 의료기기
+    if (isCeragemMedical) {
+        specs.push({ label: "제품 품목", value: "척추 온열 의료기기 / 척추 케어기기" });
+        specs.push({ label: "온열 케어", value: "최대 65℃ 척추 온열 집중 지압 케어" });
+        specs.push({ label: "척추 스캔 기술", value: "사용자 척추 길이 및 굴곡도 3D 입체 스캔" });
+        specs.push({ label: "마사지 강도 / 코스", value: "6단계 강도 조절 및 18가지 맞춤 힐링 모드" });
+        specs.push({ label: "안전 & 위생 인증", value: "식약처 허가 4대 의료기기 목적으로 케어" });
+
+        features.push(
+            "사용자 척추 라인 3D 입체 스캔 밀착 지압 케어",
+            "최대 65℃ 딥 온열 시트로 피로 완화 및 열 에너지 전달",
+            "식약처 인증 전신 척추 의료기기 전문 케어 모드"
+        );
+    }
+    // 2-B. 안마의자 / 마사지 소파 (바디프랜드, 브람스, 파우제 등)
+    else if (isMassageHealthcare) {
+        specs.push({ label: "제품 품목", value: "마사지 소파 / 안마의자" });
+        specs.push({ label: "마사지 모듈", value: "3D 미세 입체 안마 모듈 (목/어깨/허리/골반)" });
+        specs.push({ label: "마사지 코스", value: "자동 힐링 케어 모드 & 부위별 집중 수동 모드" });
+        specs.push({ label: "온열 케어", value: "등 & 허리 45℃ 온열 시트 패드" });
+        specs.push({ label: "체형 인식 센서", value: "어깨 높이 자동 인식 및 무중력 각도 케어" });
+
+        features.push(
+            "거실 인테리어와 조화되는 감각적인 마사지 소파 디자인",
+            "3D 입체 안마 모듈 정밀 주무름 & 두드림 케어",
+            "등/허리 온열 시트로 피로 이완 효과"
+        );
+    }
+    // 2-C. 일반 가구 / 소파 (아츠아크, 소노시즌, 코멜리, 엘핀 등)
+    else if (cleanName.includes("소파") || cleanName.includes("쇼파") || cleanName.includes("아츠아크") || cleanName.includes("리클라이너")) {
+        specs.push({ label: "제품 품목", value: "프리미엄 거실 소파 / 라이프스타일 가구" });
+        specs.push({ label: "원단 & 마감 소재", value: "프리미엄 패브릭 / 이지클린 에코 원단 (오염 방지 & 생활 방수)" });
+        specs.push({ label: "쿠션 & 내장재", value: "고밀도 HR 폼 & 인체공학 듀얼 레이어 좌방석" });
+        specs.push({ label: "프레임 구조", value: "건조 원목 프레임 & 고강도 S자 스프링" });
+        specs.push({ label: "안전 & 위생 인증", value: "친환경 폼 인증 & 라돈 안심 검증 완료" });
+
+        features.push(
+            "모던하고 세련된 인테리어를 연출하는 디자인 소파",
+            "이지클린 패브릭 원단으로 관리가 쉽고 유해물질 안심 사용",
+            "인체공학 쿠션 설계로 오래 앉아도 편안한 착석감"
+        );
+    }
+    // 2-D. 공기청정기 / 에어케어
+    else if (cleanName.includes("공기청정기") || cleanName.includes("청정기") || cleanName.includes("퓨리케어") || cleanName.includes("에어케어") || cleanName.includes("바스에어")) {
         const pyung = pyungMatch ? pyungMatch[1] : "34";
         const sqm = Math.round(Number(pyung) * 3.3);
         specs.push({ label: "청정 면적", value: `${sqm} ㎡ (${pyung}평형 대용량)` });
         specs.push({ label: "소비 전력", value: "65 W (1등급 고효율)" });
         specs.push({ label: "제품 크기(WxHxD)", value: "376 x 1073 x 376 mm" });
-        specs.push({ label: "제품 무게", value: "약 19 kg" });
         specs.push({ label: "필터 시스템", value: "G필터 + V펫필터 + 탈취/항균 360도 토탈 케어" });
         specs.push({ label: "센서 기술", value: "PM 1.0 극초미세먼지 센서 & 가스 오염도 센서" });
-        specs.push({ label: "바람 구동 기술", value: "클린부스터 360도 회전 서큘레이터" });
-        specs.push({ label: "스마트 기능", value: `${cleanBrand} 앱 스마트 케어 & 실시간 공기질 모니터링` });
 
         features.push(
             "360도 전 방향 입체 청정으로 집안 구석구석 초미세먼지 제거",
-            "상단 클린부스터로 먼 거리까지 빠른 생생 청정 바람 전달",
-            "유해 가스 및 냄새를 99.9% 강력하게 없애는 토탈 탈취 필터",
-            "스마트폰 전용 앱 연동 실시간 공기 상태 알림"
+            "상단 클린부스터로 먼 거리까지 빠른 생생 청정 바람 전달"
         );
     }
-    // 2-B. TV / 디스플레이
-    else if (cleanName.includes("TV") || cleanName.includes("티비") || cleanName.includes("UHD") || cleanName.includes("OLED") || cleanName.includes("QLED") || cleanName.includes("크리스탈")) {
+    // 2-E. TV / 디스플레이
+    else if (cleanName.includes("TV") || cleanName.includes("티비") || cleanName.includes("UHD") || cleanName.includes("OLED") || cleanName.includes("QLED") || cleanName.includes("크리스탈") || cleanName.includes("나노셀")) {
         const inch = inchMatch ? inchMatch[1] : "75";
         specs.push({ label: "화면 크기", value: `${inch}인치 (${Math.round(Number(inch) * 2.54)} cm 대화면)` });
         specs.push({ label: "해상도", value: "4K Ultra HD (3840 x 2160)" });
         specs.push({ label: "화질 엔진", value: "4K AI 딥러닝 업스케일링 칩셋 프로세서" });
-        specs.push({ label: "HDR 기술", value: "HDR10+ 다이내믹 명암비 & 에어슬림 베젤" });
-        specs.push({ label: "음향 출력", value: "20W 2.0채널 (무빙 사운드 OTS 지원)" });
         specs.push({ label: "스마트 OS", value: "스마트 TV OS (유튜브, 넷플릭스 OTT 완벽 연동)" });
-        specs.push({ label: "에너지 소비효율", value: "1등급 (소비전력 최적화)" });
-        specs.push({ label: "제품 크기(WxHxD)", value: "1676 x 960 x 26.6 mm (스탠드 제외)" });
 
         features.push(
             "4K AI 업스케일링 프로세서로 고화질 생생한 대화면 표현",
-            "슬림 베젤 디자인으로 극대화된 몰입감 선사",
-            "스마트 TV OS 탑재로 다양한 OTT 콘텐츠 간편 감상",
-            "화면 속 움직임에 맞추어 소리가 움직이는 입체 사운드"
+            "슬림 베젤 디자인으로 극대화된 몰입감 선사"
         );
     }
-    // 2-C. 매트리스 / 침대 (타 브랜드 보증 문구 오염 전면 금지)
+    // 2-F. 로봇청소기 / 무선청소기 (드리미, 로보락, 코드제로, 제트 등)
+    else if (cleanName.includes("로봇청소기") || cleanName.includes("로보락") || cleanName.includes("드리미") || cleanName.includes("청소기")) {
+        specs.push({ label: "제품 품목", value: "올인원 로봇청소기 / 무선 청소기" });
+        specs.push({ label: "흡입 모듈", value: "최첨단 초강력 스테이션 흡입 모터" });
+        specs.push({ label: "주행 & 센서", value: "LiDAR 3D 센서 & AI 장애물 정밀 회피" });
+        specs.push({ label: "자동 케어 기능", value: "자동 먼지 비움 & 물걸레 온수 세척 및 열풍 건조" });
+
+        features.push(
+            "손댈 필요 없는 올인원 자동 먼지 비움 & 물걸레 건조 시스템",
+            "LiDAR 3D AI 센서로 정밀 사물 인식 및 최적 동선 청소"
+        );
+    }
+    // 2-G. 프로젝터 스크린 (블룸즈베리 등)
+    else if (cleanName.includes("스크린") || cleanName.includes("프로젝터") || cleanName.includes("블룸즈베리")) {
+        specs.push({ label: "제품 품목", value: "고화질 전동 / 노출형 스크린" });
+        specs.push({ label: "스크린 원단", value: "광학 실버 / 매트 화이트 고선명 광시야각 원단" });
+        specs.push({ label: "제어 방식", value: "저소음 전동 모터 & 무선 리모컨 제어" });
+
+        features.push(
+            "광시야각 원단으로 어느 각도에서나 시원한 고화질 제공",
+            "저소음 전동 모터로 부드러운 스크린 昇降 조작"
+        );
+    }
+    // 2-H. 매트리스 / 침대 (소노시즌, 레스티노, 쿠쿠 등)
     else if (cleanName.includes("매트리스") || cleanName.includes("침대") || cleanName.includes("레스티노")) {
         const isKing = cleanName.includes("K") || cleanModel.includes("K") || cleanName.includes("킹");
         const isQueen = cleanName.includes("Q") || cleanModel.includes("Q") || cleanName.includes("퀸");
@@ -397,110 +454,69 @@ function parseDynamicSpecs(brand: string, name: string, model: string, category:
         specs.push({ label: "내장재 구성", value: "고밀도 유로탑 메모리폼 + 7존 인체공학 스프링" });
         specs.push({ label: "커버 소재", value: "Tencel™ 텐셀 친환경 3D 에코 원단 (지퍼 분리형)" });
         specs.push({ label: "위생 & 안전 인증", value: "OEKO-TEX Class 1 (유아용 1등급) & 라돈 안심 인증" });
-        specs.push({ label: "품질 보증", value: `${cleanBrand} 공식 무상 품질 보증 서비스` });
 
         features.push(
             "체중을 입체적으로 분산하는 고밀도 폼 메모리 레이어",
-            "OEKO-TEX Class 1 유아용 기준 최상위 세탁 커버 인증",
-            "친환경 텐셀 분리 세탁 커버 적용으로 상쾌한 피부 감촉",
-            `${cleanBrand} 공식 품질 보증 서비스 제공`
+            "OEKO-TEX Class 1 유아용 기준 최상위 세탁 커버 인증"
         );
     }
-    // 2-D. 에어컨 / 스탠드
+    // 2-I. 에어컨 / 스탠드
     else if (cleanName.includes("에어컨") || cleanName.includes("Q9000")) {
         const pyung = pyungMatch ? pyungMatch[1] : "19";
         const sqm = Math.round(Number(pyung) * 3.3);
         specs.push({ label: "냉방 면적", value: `${sqm} ㎡ (${pyung}평형)` });
         specs.push({ label: "냉방 능력", value: `정격 ${((Number(pyung) * 0.4)).toFixed(1)} kW / 최소 2.1 kW` });
         specs.push({ label: "소비 전력", value: `정격 ${((Number(pyung) * 0.11)).toFixed(2)} kW (스마트 인버터)` });
-        specs.push({ label: "에너지 소비효율", value: "1등급 (초고효율)" });
-        specs.push({ label: "실내기 크기(WxHxD)", value: "360 x 1847 x 269 mm" });
-        specs.push({ label: "실외기 크기(WxHxD)", value: "880 x 798 x 310 mm" });
-        specs.push({ label: "바람 구동 기술", value: "2개 독립 회전 바람문 (하이패스 회전 냉방)" });
-        specs.push({ label: "위생 / 필터", value: "극세 필터 & 제습 & 자동 건조 청정 케어" });
 
         features.push(
             `${pyung}평형 대용량 입체 회전 바람문`,
-            "스마트 인버터 컴프레서 적용 전기료 저감",
-            "냉방 후 자동 건조로 청결 습기 관리"
+            "스마트 인버터 컴프레서 적용 전기료 저감"
         );
     }
-    // 2-E. 노트북 / 컴퓨터
-    else if (cleanName.includes("노트북") || cleanName.includes("그램") || cleanName.includes("맥북")) {
+    // 2-J. 노트북 / 컴퓨터 / 맥북 / 아이패드
+    else if (cleanName.includes("노트북") || cleanName.includes("그램") || cleanName.includes("맥북") || cleanName.includes("아이패드") || cleanName.includes("태블릿")) {
         const inch = inchMatch ? inchMatch[1] : "15.6";
-        specs.push({ label: "프로세서(CPU)", value: "인텔 코어 Ultra 5 프로세서 125H (14코어, 18스레드)" });
-        specs.push({ label: "디스플레이", value: `${inch}인치 FHD (1920 x 1080) IPS 안티글레어 (300nits)` });
-        specs.push({ label: "메모리(RAM)", value: "16GB LPDDR5x 7467MHz (초고속 온보드)" });
-        specs.push({ label: "저장장치(SSD)", value: "256GB NVMe M.2 SSD (듀얼 확장 지원)" });
-        specs.push({ label: "제품 크기 / 무게", value: "356 x 227 x 17.4 mm / 1,290g (1.29kg 초경량)" });
-        specs.push({ label: "배터리 / 전원", value: "72 Wh 대용량 리튬이온 (65W 고속 충전)" });
+        specs.push({ label: "프로세서(CPU)", value: "인텔 코어 Ultra / Apple 칩셋 프로세서" });
+        specs.push({ label: "디스플레이", value: `${inch}인치 고화질 IPS / Liquid Retina 디스플레이` });
+        specs.push({ label: "메모리 / 저장장치", value: "16GB 초고속 메모리 & 256GB NVMe SSD" });
 
         features.push(
-            "인텔 코어 Ultra 5 AI 인공지능 지원 프로세서",
-            "1.29kg 초경량 Slim 고강도 바디 디자인",
-            "72Wh 대용량 배터리 장시간 사용 가능"
+            "최신 AI 인공지능 지원 프로세서 탑재",
+            "초경량 슬림 바디로 뛰어난 휴대성 제공"
         );
     }
-    // 2-F. 마사지 소파 / 안마의자
-    else if (cleanName.includes("소파") || cleanName.includes("안마의자") || cleanName.includes("파밀레")) {
-        specs.push({ label: "제품 품목", value: "마사지 소파 / 안마의자" });
-        specs.push({ label: "마사지 모듈", value: "3D 미세 안마 모듈 (목/어깨/허리/골반 입체 안마)" });
-        specs.push({ label: "마사지 코스", value: "6가지 자동 케어 모드 & 3가지 부위별 수동 모드" });
-        specs.push({ label: "온열 케어", value: "등 & 허리 45℃ 온열 시트 패드" });
-        specs.push({ label: "세운 상태 크기(WxHxD)", value: "700 x 1120 x 1000 mm" });
-        specs.push({ label: "제품 무게 / 소비전력", value: "약 55 kg / 100 W (고효율 저전력)" });
-
-        features.push(
-            "거실 인테리어와 조화되는 소파형 디자인",
-            "3D 입체 안마 모듈 정밀 주무름 케어",
-            "등/허리 온열 시트 피로 이완 효과"
-        );
-    }
-    // 2-G. 냉장고 (명확히 냉장고/김치냉장고일 때만 진입)
-    else if (cleanName.includes("냉장고") || cleanName.includes("김치냉장고")) {
+    // 2-K. 냉장고 / 김치냉장고 / 냉동고
+    else if (cleanName.includes("냉장고") || cleanName.includes("김치냉장고") || cleanName.includes("냉동고")) {
         const capacity = literMatch ? `${literMatch[1]}L` : "852L";
         specs.push({ label: "전체 유효 내용적", value: capacity });
         specs.push({ label: "에너지 소비효율", value: "1등급 (AI 절약 모드 지원)" });
-        specs.push({ label: "제품 크기(WxHxD)", value: "912 x 1853 x 915 mm" });
-        specs.push({ label: "제품 무게", value: "약 138 kg" });
         specs.push({ label: "냉각 기술", value: "독립 냉각 & 스마트 인버터 컴프레서 (미세 정온)" });
-        specs.push({ label: "탈취 / 위생", value: "UV 안심 탈취+ 바이러스 탈취 필터" });
 
         features.push(
-            "독립 냉각 시스템으로 냄새 섞임 방지",
+            "독립 냉각 시스템으로 신선함 보존",
             "스마트 인버터 컴프레서 미세 정온 보관"
         );
     }
-    // 2-H. 세탁기 / 건조기
+    // 2-L. 세탁기 / 건조기
     else if (cleanName.includes("세탁기") || cleanName.includes("건조기")) {
         const cap = kgMatch ? `${kgMatch[1]}kg` : "21kg";
         specs.push({ label: "세탁/건조 용량", value: cap });
-        specs.push({ label: "에너지 소비효율", value: "1등급 (최고 효율 등급)" });
-        specs.push({ label: "제품 크기(WxHxD)", value: "686 x 984 x 844 mm" });
-        specs.push({ label: "제품 무게", value: "약 74 kg" });
         specs.push({ label: "구동 기술", value: "인버터 히트펌프 / DD 모터 10년 보증" });
-        specs.push({ label: "위생 케어", value: "Direct 스팀 살균 및 통세척+" });
 
         features.push(
             "AI 맞춤 센서가 무게/습도 분석 최적 케어",
             "고온 스팀 살균 유해균 99.9% 살균"
         );
     }
-    // 2-I. 기타 일반 가전
+    // 2-M. 기타 일반 가전
     else {
         specs.push({ label: "제품 카테고리", value: category || "프리미엄 최신 라인업" });
-        specs.push({ label: "제품 규격 크기(WxHxD)", value: "680 x 1850 x 700 mm (표준 대형 규격)" });
         specs.push({ label: "에너지 소비효율", value: "1등급 (고효율 저전력 구동)" });
-        specs.push({ label: "소비 전력 / 전원", value: "220V / 60Hz (정격 1200W)" });
-        specs.push({ label: "제품 무게", value: "약 45 kg ~ 80 kg" });
-        specs.push({ label: "위생 & 안전 기술", value: "유해균 99.9% 살균 & 세라믹 케어" });
-        specs.push({ label: "스마트 연동", value: `${cleanBrand} 스마트 전용 앱 연동` });
         specs.push({ label: "품질 보증", value: `${cleanBrand} 공식 전국 무상 A/S 지원` });
 
         features.push(
             `${cleanBrand} 정품 프리미엄 최신형 모델`,
-            "소노 아임레디 렌탈비 전액 지원",
-            "고효율 인버터 구동으로 소비전력 최적화"
+            "소노 아임레디 렌탈비 전액 지원"
         );
     }
 
