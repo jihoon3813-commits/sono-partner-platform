@@ -1,26 +1,26 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "소노아임레디 더 해피 450 ONE - 니오라",
-    description: "소노아임레디 더 해피450 ONE - 니오라 파트너 전용 특별한 혜택과 함께 최고의 라이프 서비스를 제공합니다.",
+    title: "소노아임레디 | 일반 상조 서비스",
+    description: "더 해피 450one - 호텔&리조트 혜택부터 헬스케어 서비스까지 이용하고도 만기 시 납입금 100% 환급 보장",
     openGraph: {
-        title: "소노아임레디 더 해피 450 ONE - 니오라",
-        description: "소노아임레디 더 해피450 ONE - 니오라 파트너 전용 특별한 혜택과 함께 최고의 라이프 서비스를 제공합니다.",
+        title: "소노아임레디 | 일반 상조 서비스",
+        description: "더 해피 450one - 호텔&리조트 혜택부터 헬스케어 서비스까지 이용하고도 만기 시 납입금 100% 환급 보장",
         images: [
             {
-                url: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EB%8C%80%ED%91%9C%EC%9D%B4%EB%AF%B8%EC%A7%80_%EB%8D%94%ED%95%B4%ED%94%BC450.png",
+                url: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785994218/%EC%86%8C%EB%85%B8_%EB%8C%80%ED%91%9C_bm0blg.png",
                 width: 1200,
                 height: 630,
-                alt: "소노아임레디 더 해피 450 ONE",
+                alt: "소노아임레디 | 일반 상조 서비스",
             }
         ],
         type: "website",
     },
     twitter: {
         card: "summary_large_image",
-        title: "소노아임레디 더 해피 450 ONE - 니오라",
-        description: "소노아임레디 더 해피450 ONE - 니오라 파트너 전용 특별한 혜택과 함께 최고의 라이프 서비스를 제공합니다.",
-        images: ["https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EB%8C%80%ED%91%9C%EC%9D%B4%EB%AF%B8%EC%A7%80_%EB%8D%94%ED%95%B4%ED%94%BC450.png"],
+        title: "소노아임레디 | 일반 상조 서비스",
+        description: "더 해피 450one - 호텔&리조트 혜택부터 헬스케어 서비스까지 이용하고도 만기 시 납입금 100% 환급 보장",
+        images: ["https://res.cloudinary.com/lyjyvy54/image/upload/v1785994218/%EC%86%8C%EB%85%B8_%EB%8C%80%ED%91%9C_bm0blg.png"],
     },
 };
 

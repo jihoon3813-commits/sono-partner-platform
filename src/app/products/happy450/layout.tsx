@@ -6,7 +6,6 @@ export const metadata: Metadata = {
     openGraph: {
         title: "소노아임레디 | 일반 상조 서비스",
         description: "더 해피 450one - 호텔&리조트 혜택부터 헬스케어 서비스까지 이용하고도 만기 시 납입금 100% 환급 보장",
-        url: "./",
         images: [
             {
                 url: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785994218/%EC%86%8C%EB%85%B8_%EB%8C%80%ED%91%9C_bm0blg.png",
@@ -25,7 +24,7 @@ export const metadata: Metadata = {
     },
 };
 
-export default function Happy450Layout({
+export default function Happy450ProductLayout({
     children,
 }: {
     children: React.ReactNode;

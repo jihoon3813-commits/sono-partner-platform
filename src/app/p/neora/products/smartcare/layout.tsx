@@ -1,26 +1,26 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "소노아임레디 스마트케어 - 니오라",
-    description: "소노아임레디 스마트케어 - 니오라 파트너 전용 특별한 혜택과 함께 최고의 라이프 서비스를 제공합니다.",
+    title: "소노아임레디 | 결합 상조 서비스",
+    description: "스마트케어 - 최신가전 렌탈금 전액 지원과 만기 시 납입금 100% 환급 보장",
     openGraph: {
-        title: "소노아임레디 스마트케어 - 니오라",
-        description: "소노아임레디 스마트케어 - 니오라 파트너 전용 특별한 혜택과 함께 최고의 라이프 서비스를 제공합니다.",
+        title: "소노아임레디 | 결합 상조 서비스",
+        description: "스마트케어 - 최신가전 렌탈금 전액 지원과 만기 시 납입금 100% 환급 보장",
         images: [
             {
-                url: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EB%8C%80%ED%91%9C%EC%9D%B4%EB%AF%B8%EC%A7%80_%ED%8C%8C%ED%8A%B8%EB%84%88%EB%B3%84%EC%82%AC%EC%9D%B4%ED%8A%B8%20%EB%A9%94%EC%9D%B8.png",
+                url: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785994215/%EC%86%8C%EB%85%B8_%EB%8C%80%ED%91%9C_1_moatcv.png",
                 width: 1200,
                 height: 630,
-                alt: "소노아임레디 스마트케어",
+                alt: "소노아임레디 | 결합 상조 서비스",
             }
         ],
         type: "website",
     },
     twitter: {
         card: "summary_large_image",
-        title: "소노아임레디 스마트케어 - 니오라",
-        description: "소노아임레디 스마트케어 - 니오라 파트너 전용 특별한 혜택과 함께 최고의 라이프 서비스를 제공합니다.",
-        images: ["https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EB%8C%80%ED%91%9C%EC%9D%B4%EB%AF%B8%EC%A7%80_%ED%8C%8C%ED%8A%B8%EB%84%88%EB%B3%84%EC%82%AC%EC%9D%B4%ED%8A%B8%20%EB%A9%94%EC%9D%B8.png"],
+        title: "소노아임레디 | 결합 상조 서비스",
+        description: "스마트케어 - 최신가전 렌탈금 전액 지원과 만기 시 납입금 100% 환급 보장",
+        images: ["https://res.cloudinary.com/lyjyvy54/image/upload/v1785994215/%EC%86%8C%EB%85%B8_%EB%8C%80%ED%91%9C_1_moatcv.png"],
     },
 };
 
