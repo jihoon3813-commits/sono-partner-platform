@@ -559,7 +559,7 @@ export default function SmartCareContent({
             <main className="pb-32"> {/* Add padding for fixed bottom bar */}
                 {/* 히어로 섹션 */}
                 <section
-                    className="relative min-h-[75vh] flex items-center bg-sono-dark overflow-hidden pt-12 bg-cover bg-center bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785975702/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_6%EC%9D%BC_%EC%98%A4%EC%A0%84_01_26_52_nl5poy.png')]"
+                    className="relative min-h-[75vh] flex items-center bg-sono-dark overflow-hidden pt-12 bg-cover bg-center bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785980602/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_6%EC%9D%BC_%EC%98%A4%EC%A0%84_10_12_51_fvzqk5.png')] md:bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785975702/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_6%EC%9D%BC_%EC%98%A4%EC%A0%84_01_26_52_nl5poy.png')]"
                     style={{
                         backgroundSize: 'cover',
                         backgroundPosition: 'center'
