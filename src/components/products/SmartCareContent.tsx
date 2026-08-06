@@ -798,10 +798,11 @@ export default function SmartCareContent({
                                 className="flex w-full overflow-x-auto md:overflow-visible snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-10 md:py-16 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-6 md:gap-10 max-w-7xl mx-auto flex-row md:flex-wrap md:justify-center items-stretch justify-start"
                             >
                                 {(careProductsData && careProductsData.length > 0 ? careProductsData : [
-                                    { name: "스마트케어330", slotCount: 2, monthlyPayment: 33000, target: "1인 가구 / 소형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급"], paymentCount: "1~150회", defermentPeriod: "151~180회", maturityCount: "180회" },
-                                    { name: "스마트케어330", slotCount: 3, monthlyPayment: 49500, target: "신혼 부부 / 중형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급"], paymentCount: "1~150회", defermentPeriod: "151~180회", maturityCount: "180회" },
-                                    { name: "스마트케어330", slotCount: 4, monthlyPayment: 66000, target: "일반 가전 / 대형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급"], paymentCount: "1~150회", defermentPeriod: "151~180회", maturityCount: "180회" },
-                                    { name: "스마트케어330", slotCount: 6, monthlyPayment: 99000, target: "대가족 / 프리미엄 가전 패키지", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급"], paymentCount: "1~150회", defermentPeriod: "151~180회", maturityCount: "180회" },
+                                    { name: "스마트케어 4더블", slotCount: 2, monthlyPayment: 55200, cardDiscountPayment: 35000, target: "1인 가구 / 소형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~179회(180회:79,200원)", defermentPeriod: "181~200회", maturityCount: "200회" },
+                                    { name: "스마트케어 5", slotCount: 1, monthlyPayment: 33000, cardDiscountPayment: 25000, target: "1인 가구 / 소형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
+                                    { name: "스마트케어 5더블", slotCount: 2, monthlyPayment: 66000, cardDiscountPayment: 42000, target: "신혼 부부 / 중형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
+                                    { name: "스마트케어 5트리플", slotCount: 3, monthlyPayment: 99000, cardDiscountPayment: 42000, target: "일반 가전 / 대형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
+                                    { name: "스마트케어 5쿼드", slotCount: 4, monthlyPayment: 132000, cardDiscountPayment: 42000, target: "대가족 / 프리미엄 가전 패키지", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
                                 ]).map((plan: any, i) => {
                                     const isBest = plan.slotCount === 4 || (careProductsData && careProductsData.length > 0 ? i === 2 : i === 2);
                                     const isActive = selectedPlanId === plan._id || (selectedPlanId === "" && isBest);
@@ -810,67 +811,97 @@ export default function SmartCareContent({
                                             key={i} 
                                             onClick={() => setSelectedPlanId(plan._id)}
                                             style={{ scrollSnapStop: 'always' }}
-                                            className={`relative !p-6 md:!p-8 flex flex-col justify-between transition-all rounded-none snap-center snap-always [scroll-snap-stop:always] shrink-0 w-[78vw] max-w-[280px] sm:w-[320px] md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] text-white cursor-pointer select-none ${
+                                            className={`relative !p-6 md:!p-8 flex flex-col justify-between transition-all rounded-[24px] snap-center snap-always [scroll-snap-stop:always] shrink-0 w-[82vw] max-w-[320px] sm:w-[330px] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] cursor-pointer select-none ${
                                                 isActive 
-                                                    ? "bg-[#0f172a] shadow-[0_20px_50px_rgba(0,0,0,0.3)] md:scale-105 border-[3px] border-[#2563eb] z-10" 
-                                                    : "bg-slate-900/90 border border-slate-800 hover:border-slate-700 shadow-xl hover:-translate-y-1"
+                                                    ? "bg-white text-slate-900 shadow-[0_25px_60px_rgba(37,99,235,0.22)] md:scale-105 border-[3px] border-[#2563eb] ring-4 ring-blue-500/15 z-10" 
+                                                    : "bg-white/95 text-slate-900 border border-slate-200 hover:border-blue-300 shadow-xl hover:shadow-2xl hover:-translate-y-1.5"
                                             }`}
                                         >
                                             {/* Tag/Badge at the Top */}
                                             <div className="flex justify-between items-start mb-6">
-                                                <span className={`text-[10px] font-black tracking-wider px-3 py-1.5 rounded-none ${getPlanTagStyle(plan.name, plan.slotCount)}`}>
+                                                <span className={`text-[11px] font-black tracking-wider px-3.5 py-1.5 rounded-full shadow-xs ${getPlanTagStyle(plan.name, plan.slotCount)}`}>
                                                     {plan.name}
                                                 </span>
                                                 {isBest && (
-                                                    <span className="bg-[#2563eb] text-white text-[9px] font-black px-2.5 py-1 rounded-none shadow-md tracking-wider flex items-center gap-1">
+                                                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-md tracking-wider flex items-center gap-1">
                                                         ★ BEST
                                                     </span>
                                                 )}
                                             </div>
 
                                             {/* Plan Header */}
-                                            <div className="mb-6 text-left">
-                                                <h3 className="text-3xl font-black tracking-tight leading-none text-white flex items-baseline gap-0.5">
+                                            <div className="mb-4 text-left">
+                                                <h3 className="text-3xl md:text-4xl font-black tracking-tight leading-none text-slate-900 flex items-baseline gap-1">
                                                     {plan.slotCount}
-                                                    <span className="text-lg font-bold opacity-70">구좌</span>
+                                                    <span className="text-lg font-extrabold text-slate-500">구좌</span>
                                                 </h3>
-                                                <p className="text-xs font-bold mt-2 text-slate-400">{plan.target}</p>
+                                                <p className="text-xs font-bold mt-2 text-slate-500">{plan.target}</p>
                                             </div>
 
                                             {/* Price block */}
-                                            <div className="py-5 border-t border-slate-800">
-                                                <div className="flex items-baseline gap-1 text-left">
-                                                    <span className="text-3xl md:text-4xl font-black text-white">
-                                                        {plan.monthlyPayment.toLocaleString()}
-                                                    </span>
-                                                    <span className="text-xs font-bold opacity-60 text-slate-400">원 ~</span>
+                                            <div className="pt-4 border-t border-slate-100">
+                                                <div className="text-left">
+                                                    <span className="text-[11px] font-bold text-slate-400 block mb-1">기본 월 납입금</span>
+                                                    <div className="flex items-baseline gap-0.5">
+                                                        <span className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+                                                            {plan.monthlyPayment.toLocaleString()}
+                                                        </span>
+                                                        <span className="text-xs font-bold text-slate-500">원 ~</span>
+                                                    </div>
                                                 </div>
+
+                                                {/* 제휴카드 할인 가격 안내 박스 */}
+                                                {(() => {
+                                                    const cardDiscount = plan.cardDiscountPayment || (plan.slotCount >= 4 ? 42000 : 25000);
+                                                    const discountedPrice = Math.max(0, plan.monthlyPayment - cardDiscount);
+                                                    return (
+                                                        <div className="mt-3.5 p-3.5 bg-gradient-to-br from-blue-50/90 via-indigo-50/60 to-blue-50/90 border border-blue-200/80 rounded-2xl text-left shadow-xs">
+                                                            <div className="flex items-center justify-between mb-1">
+                                                                <span className="text-[11px] font-extrabold text-blue-700 flex items-center gap-1">
+                                                                    💳 제휴카드 적용 시
+                                                                </span>
+                                                                <span className="text-[10px] font-extrabold bg-blue-600 text-white px-2 py-0.5 rounded-full shadow-xs">
+                                                                    -{cardDiscount.toLocaleString()}원 할인
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-baseline justify-between pt-1">
+                                                                <span className="text-[11px] font-bold text-slate-500">할인 적용가</span>
+                                                                <div className="flex items-baseline gap-0.5">
+                                                                    <span className="text-xl md:text-2xl font-black text-blue-600">
+                                                                        {discountedPrice.toLocaleString()}
+                                                                    </span>
+                                                                    <span className="text-xs font-bold text-blue-600">원 ~</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })()}
                                             </div>
 
                                             {/* Details schedule card */}
-                                            <div className="my-5 p-4 rounded-none text-[11px] font-bold flex flex-col gap-2.5 text-left bg-slate-950/70 border border-slate-800/80 text-slate-350">
+                                            <div className="my-5 p-4 rounded-2xl text-[11px] font-bold flex flex-col gap-2.5 text-left bg-slate-50 border border-slate-200/80 text-slate-600">
                                                 <div className="flex justify-between items-center">
-                                                    <span className="opacity-50 font-medium">납입회차</span>
-                                                    <span className="font-bold">{plan.paymentCount}</span>
+                                                    <span className="text-slate-400 font-medium">납입회차</span>
+                                                    <span className="font-bold text-slate-800">{plan.paymentCount}</span>
                                                 </div>
-                                                <div className="flex justify-between items-center border-t border-slate-800/60 pt-2.5">
-                                                    <span className="opacity-50 font-medium">거치기간</span>
-                                                    <span className="font-bold">{plan.defermentPeriod}</span>
+                                                <div className="flex justify-between items-center border-t border-slate-200/60 pt-2.5">
+                                                    <span className="text-slate-400 font-medium">거치기간</span>
+                                                    <span className="font-bold text-slate-800">{plan.defermentPeriod}</span>
                                                 </div>
-                                                <div className="flex justify-between items-center border-t border-slate-800/60 pt-2.5">
-                                                    <span className="opacity-50 font-medium">만기회차</span>
-                                                    <span className="font-black text-blue-400">{plan.maturityCount}</span>
+                                                <div className="flex justify-between items-center border-t border-slate-200/60 pt-2.5">
+                                                    <span className="text-slate-400 font-medium">만기회차</span>
+                                                    <span className="font-black text-blue-600">{plan.maturityCount}</span>
                                                 </div>
                                             </div>
 
                                             {/* Features list */}
-                                            <ul className="space-y-3 text-xs font-bold text-left mb-4">
+                                            <ul className="space-y-3 text-xs font-bold text-left mb-2">
                                                 {(plan.features || []).map((feat: any, fidx: number) => (
                                                     <li key={fidx} className="flex items-start gap-2.5">
-                                                        <svg className="w-4 h-4 shrink-0 text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <svg className="w-4 h-4 shrink-0 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                                         </svg>
-                                                        <span className="text-slate-300 leading-snug break-keep">{feat}</span>
+                                                        <span className="text-slate-700 leading-snug break-keep">{feat}</span>
                                                     </li>
                                                 ))}
                                             </ul>
@@ -994,12 +1025,12 @@ export default function SmartCareContent({
                         )}
 
                         {/* 필터 시스템 */}
-                        <div className="flex flex-col gap-4 md:gap-8">
+                        <div className="flex flex-col gap-4 md:gap-6">
                             {/* 1. 요금제 상품 필터 */}
                             <div className="flex flex-wrap justify-center gap-2 pb-2 px-4 md:px-0">
                                 <button
                                     onClick={() => { setSelectedPlanId(""); setSelectedCategory("전체"); }}
-                                    className={`px-5 py-2.5 rounded-none font-black text-xs md:text-sm transition-all duration-300 border whitespace-nowrap shadow-sm ${selectedPlanId === ""
+                                    className={`px-5 py-2.5 rounded-none font-black text-xs md:text-sm transition-all duration-300 border whitespace-nowrap shadow-xs ${selectedPlanId === ""
                                         ? "bg-slate-900 text-white border-slate-900 shadow-md"
                                         : "bg-white text-slate-600 border-slate-200 hover:border-slate-400 hover:text-slate-900"
                                         }`}
@@ -1010,7 +1041,7 @@ export default function SmartCareContent({
                                     <button
                                         key={plan._id}
                                         onClick={() => { setSelectedPlanId(plan._id); setSelectedCategory("전체"); }}
-                                        className={`px-5 py-2.5 rounded-none font-black text-xs md:text-sm transition-all duration-300 border whitespace-nowrap shadow-sm ${selectedPlanId === plan._id
+                                        className={`px-5 py-2.5 rounded-none font-black text-xs md:text-sm transition-all duration-300 border whitespace-nowrap shadow-xs ${selectedPlanId === plan._id
                                             ? "bg-slate-900 text-white border-slate-900 shadow-md"
                                             : "bg-white text-slate-600 border-slate-200 hover:border-slate-400 hover:text-slate-900"
                                             }`}
@@ -1026,14 +1057,70 @@ export default function SmartCareContent({
                                     <button
                                         key={cat}
                                         onClick={() => setSelectedCategory(cat)}
-                                        className={`px-4 py-2 rounded-none border text-xs md:text-sm font-black whitespace-nowrap transition-all shadow-sm ${selectedCategory === cat
+                                        className={`px-4 py-2 rounded-none border text-xs md:text-sm font-black whitespace-nowrap transition-all shadow-xs ${selectedCategory === cat
                                             ? "bg-slate-900 text-white border-slate-900 shadow-sm"
-                                            : "bg-white border-slate-250 text-slate-600 hover:border-slate-400 hover:text-slate-900"
+                                            : "bg-white border-slate-200 text-slate-600 hover:border-slate-400 hover:text-slate-900"
                                         }`}
                                     >
                                         {cat}
                                     </button>
                                 ))}
+                            </div>
+                        </div>
+
+                        {/* 표시 가전 개수 요약 카운터 바 */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 my-4 sm:my-6 px-1 border-b border-slate-200/80 pb-3 sm:pb-4">
+                            {/* 타이틀 및 개수 배지 */}
+                            <div className="flex items-center gap-2 whitespace-nowrap">
+                                <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse shrink-0"></span>
+                                <h3 className="text-sm sm:text-base font-black text-slate-900 whitespace-nowrap">
+                                    {selectedCategory === "전체" ? "전체 가전" : `${selectedCategory}`} 목록
+                                </h3>
+                                <span className="text-[11px] sm:text-xs font-extrabold bg-blue-50 text-blue-600 border border-blue-200/80 px-2 py-0.5 rounded-full shadow-2xs whitespace-nowrap">
+                                    총 {displayAppliances.length.toLocaleString()}개
+                                </span>
+                            </div>
+
+                            {/* 우측 라인업 정보 & 동기화 날짜 */}
+                            <div className="flex items-center justify-between sm:justify-end gap-2 whitespace-nowrap">
+                                {selectedPlanId !== "" && (
+                                    <span className="text-[11px] sm:text-xs font-bold text-slate-400 truncate max-w-[140px] sm:max-w-none">
+                                        {careProductsData?.find(cp => cp._id === selectedPlanId)?.name || `${filteredAppliances[0]?.slotCount || 4}구좌`} 전용
+                                    </span>
+                                )}
+                                {(() => {
+                                    let dateStr: string | undefined = undefined;
+                                    if (selectedPlanId) {
+                                        const plan = careProductsData?.find(cp => cp._id === selectedPlanId);
+                                        dateStr = plan?.lastSyncedAt || plan?.updatedAt;
+                                    } else {
+                                        const dates = (careProductsData || [])
+                                            .map(p => p.lastSyncedAt || p.updatedAt)
+                                            .filter((d): d is string => !!d)
+                                            .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+                                        if (dates.length > 0) dateStr = dates[0];
+                                    }
+
+                                    if (!dateStr) return null;
+
+                                    try {
+                                        const d = new Date(dateStr);
+                                        if (isNaN(d.getTime())) return null;
+                                        const year = d.getFullYear();
+                                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                                        const day = String(d.getDate()).padStart(2, '0');
+                                        const formattedDate = `${year}.${month}.${day}`;
+
+                                        return (
+                                            <span className="inline-flex items-center gap-1.5 bg-emerald-50/90 border border-emerald-200/80 text-emerald-700 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full whitespace-nowrap shadow-2xs">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                                                <span className="font-mono">{formattedDate} 동기화</span>
+                                            </span>
+                                        );
+                                    } catch {
+                                        return null;
+                                    }
+                                })()}
                             </div>
                         </div>
 

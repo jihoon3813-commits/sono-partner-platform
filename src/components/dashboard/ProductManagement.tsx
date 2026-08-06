@@ -39,6 +39,9 @@ interface CareProduct {
     defermentPeriod?: string;
     maturityCount?: string;
     order?: number;
+    autoUpdate?: boolean;
+    autoUpdateSchedule?: string;
+    lastSyncedAt?: string;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -63,6 +66,7 @@ export default function ProductManagement() {
     const upsertCareProduct = useMutation(api.careProducts.upsert);
     const removeCareProduct = useMutation(api.careProducts.remove);
     const updateCareOrder = useMutation(api.careProducts.updateOrder);
+    const toggleCareAutoUpdate = useMutation(api.careProducts.toggleAutoUpdate);
     const syncProductsForPlan = useAction(api.products.syncProductsForPlan);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,6 +82,65 @@ export default function ProductManagement() {
     const [isCareModalOpen, setIsCareModalOpen] = useState(false);
     const [editingCareProduct, setEditingCareProduct] = useState<Partial<CareProduct> | null>(null);
     const [syncingPlanId, setSyncingPlanId] = useState<string | null>(null);
+
+    // Product Drag & Drop Reordering states
+    const reorderProducts = useMutation(api.products.reorderProducts);
+    const [draggedProductId, setDraggedProductId] = useState<Id<"products"> | null>(null);
+    const [dragOverProductId, setDragOverProductId] = useState<Id<"products"> | null>(null);
+
+    const handleDragStart = (e: React.DragEvent, id: Id<"products">) => {
+        setDraggedProductId(id);
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", id);
+    };
+
+    const handleDragOver = (e: React.DragEvent, id: Id<"products">) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        if (dragOverProductId !== id) {
+            setDragOverProductId(id);
+        }
+    };
+
+    const handleDragLeave = () => {
+        setDragOverProductId(null);
+    };
+
+    const handleDrop = async (e: React.DragEvent, targetId: Id<"products">) => {
+        e.preventDefault();
+        setDragOverProductId(null);
+        if (!draggedProductId || draggedProductId === targetId) return;
+
+        const currentList = [...filteredProducts];
+        const dragIndex = currentList.findIndex(p => p._id === draggedProductId);
+        const targetIndex = currentList.findIndex(p => p._id === targetId);
+
+        if (dragIndex === -1 || targetIndex === -1) return;
+
+        const [movedItem] = currentList.splice(dragIndex, 1);
+        currentList.splice(targetIndex, 0, movedItem);
+
+        const orderedIds = currentList.map(p => p._id);
+        setDraggedProductId(null);
+
+        await reorderProducts({ orderedIds });
+    };
+
+    const formatSimpleDate = (dateStr?: string) => {
+        if (!dateStr) return "-";
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            return `${year}.${month}.${day} ${hours}:${minutes}`;
+        } catch {
+            return dateStr;
+        }
+    };
 
     const categories = products
         ? (Array.from(new Set(products.map(p => p.category).filter(Boolean))) as string[]).sort((a, b) => {
@@ -231,15 +294,20 @@ export default function ProductManagement() {
     };
 
     const handleCareSync = async (plan: CareProduct) => {
-        if (!plan.syncUrl) {
+        const urls = (plan.syncUrl || "").split(/[\n,]+/).map(u => u.trim()).filter(Boolean);
+        if (urls.length === 0) {
             alert("동기화 URL이 등록되지 않은 상품입니다.");
             return;
         }
-        if (confirm(`"${plan.name}" 상품의 동기화 URL에서 제품 데이터를 실시간 동기화하시겠습니까?\n(해당 구좌(${plan.slotCount}구좌)의 기존 제품 정보가 초기화 됩니다.)`)) {
+        const urlMessage = urls.length > 1
+            ? `등록된 ${urls.length}개의 동기화 URL에서`
+            : `동기화 URL에서`;
+
+        if (confirm(`"${plan.name}" 상품의 ${urlMessage} 제품 데이터를 실시간 동기화하시겠습니까?\n(해당 구좌(${plan.slotCount}구좌)의 기존 제품 정보가 초기화 후 새로 동기화됩니다.)`)) {
             try {
                 setSyncingPlanId(plan._id);
                 await syncProductsForPlan({ planId: plan._id });
-                alert("실시간 제품 동기화가 완료되었습니다.");
+                alert(`"${plan.name}" 상품의 실시간 제품 동기화가 완료되었습니다.`);
             } catch (error: any) {
                 console.error(error);
                 alert(`동기화 중 오류가 발생했습니다: ${error.message || error}`);
@@ -398,7 +466,8 @@ export default function ProductManagement() {
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="bg-gray-50 border-b border-gray-100">
-                                        <th className="px-6 py-4 w-12 text-center">
+                                        <th className="px-3 py-4 w-10 text-center text-gray-400 text-xs">드래그</th>
+                                        <th className="px-4 py-4 w-10 text-center">
                                             <input
                                                 type="checkbox"
                                                 checked={filteredProducts.length > 0 && filteredProducts.every(p => selectedIds.has(p._id))}
@@ -419,16 +488,37 @@ export default function ProductManagement() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
-                                    {filteredProducts.map((product) => (
-                                        <tr key={product._id} className="hover:bg-gray-50/50 transition-colors">
-                                            <td className="px-6 py-4 text-center">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedIds.has(product._id)}
-                                                    onChange={() => handleSelectProduct(product._id)}
-                                                    className="w-4 h-4 rounded border-gray-300 text-sono-primary focus:ring-sono-primary cursor-pointer"
-                                                />
-                                            </td>
+                                    {filteredProducts.map((product) => {
+                                        const isDragging = draggedProductId === product._id;
+                                        const isDragOver = dragOverProductId === product._id;
+                                        return (
+                                            <tr
+                                                key={product._id}
+                                                draggable={sortBy === "order"}
+                                                onDragStart={(e) => handleDragStart(e, product._id)}
+                                                onDragOver={(e) => handleDragOver(e, product._id)}
+                                                onDragLeave={handleDragLeave}
+                                                onDrop={(e) => handleDrop(e, product._id)}
+                                                className={`transition-all duration-150 ${
+                                                    isDragging ? "opacity-30 bg-indigo-50/50" : ""
+                                                } ${
+                                                    isDragOver ? "bg-indigo-50 border-t-2 border-t-indigo-600 ring-2 ring-indigo-500/20" : "hover:bg-gray-50/50"
+                                                }`}
+                                            >
+                                                {/* 드래그 핸들 */}
+                                                <td className="px-3 py-4 text-center cursor-grab active:cursor-grabbing text-gray-400 hover:text-indigo-600 transition-colors" title="드래그하여 순서 변경">
+                                                    <svg className="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M9 7a2 2 0 11-4 0 2 2 0 014 0zM9 12a2 2 0 11-4 0 2 2 0 014 0zM9 17a2 2 0 11-4 0 2 2 0 014 0zM19 7a2 2 0 11-4 0 2 2 0 014 0zM19 12a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                    </svg>
+                                                </td>
+                                                <td className="px-4 py-4 text-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedIds.has(product._id)}
+                                                        onChange={() => handleSelectProduct(product._id)}
+                                                        className="w-4 h-4 rounded border-gray-300 text-sono-primary focus:ring-sono-primary cursor-pointer"
+                                                    />
+                                                </td>
                                             <td className="px-6 py-4">
                                                 <div className="w-12 h-12 rounded-lg bg-gray-50 border border-gray-100 p-1">
                                                     <img src={product.image} alt="" className="w-full h-full object-contain" />
@@ -524,14 +614,15 @@ export default function ProductManagement() {
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))}
-                                    {filteredProducts.length === 0 && (
-                                        <tr>
-                                            <td colSpan={11} className="px-6 py-20 text-center text-gray-400 font-bold">
-                                                검색된 제품이 없습니다.
-                                            </td>
-                                        </tr>
-                                    )}
+                                    );
+                                })}
+                                {filteredProducts.length === 0 && (
+                                    <tr>
+                                        <td colSpan={12} className="px-6 py-20 text-center text-gray-400 font-bold">
+                                            검색된 제품이 없습니다.
+                                        </td>
+                                    </tr>
+                                )}
                                 </tbody>
                             </table>
                         </div>
@@ -558,7 +649,9 @@ export default function ProductManagement() {
                                     syncUrl: "",
                                     paymentCount: "",
                                     defermentPeriod: "",
-                                    maturityCount: ""
+                                    maturityCount: "",
+                                    autoUpdate: true,
+                                    autoUpdateSchedule: "00:00"
                                 });
                                 setIsCareModalOpen(true);
                             }}
@@ -574,52 +667,176 @@ export default function ProductManagement() {
                             <table className="w-full text-left min-w-[1200px] table-fixed">
                                 <thead>
                                     <tr className="bg-gray-50 border-b border-gray-100">
-                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-48">상품명</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-24">구좌수</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-44">대상</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-40">납입 정보</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-right w-32">월 납입금</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-right w-36">제휴카드 할인금액</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-64">특장점 3개</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-60">동기화 URL</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-20">순서</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-48">관리</th>
+                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-44">상품명</th>
+                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-20">구좌수</th>
+                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-right w-28">월 납입금</th>
+                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-48">자동 업데이트 설정</th>
+                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-40">최근 동기화</th>
+                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-48">동기화 URL</th>
+                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-16">순서</th>
+                                        <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-44">관리</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
                                     {(careProducts || []).map((plan) => (
                                         <tr key={plan._id} className="hover:bg-gray-50/50 transition-colors">
-                                            <td className="px-6 py-4 font-black text-sono-dark text-sm truncate" title={plan.name}>{plan.name}</td>
+                                            <td className="px-6 py-4 font-black text-sono-dark text-sm truncate" title={plan.name}>
+                                                <div className="flex flex-col">
+                                                    <span>{plan.name}</span>
+                                                    <span className="text-[11px] font-bold text-gray-400">{plan.target}</span>
+                                                </div>
+                                            </td>
                                             <td className="px-6 py-4 text-center">
                                                 <span className="inline-block bg-gray-100 text-gray-600 text-[11px] font-black px-2 py-1 rounded-md whitespace-nowrap">
                                                     {plan.slotCount}구좌
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-gray-500 font-bold text-xs truncate" title={plan.target}>{plan.target}</td>
-                                            <td className="px-6 py-4 text-gray-500 font-bold text-xs whitespace-nowrap">
-                                                <div className="flex flex-col gap-0.5 text-xs text-gray-500 font-bold">
-                                                    <span>납입: {plan.paymentCount || "-"}</span>
-                                                    <span>거치: {plan.defermentPeriod || "-"}</span>
-                                                    <span>만기: {plan.maturityCount || "-"}</span>
+                                            <td className="px-6 py-4 text-right whitespace-nowrap">
+                                                <div className="flex flex-col text-right">
+                                                    <span className="font-black text-sono-dark text-sm">{plan.monthlyPayment.toLocaleString()}원</span>
+                                                    {plan.cardDiscountPayment ? (
+                                                        <span className="text-[11px] font-bold text-sono-primary">card -{plan.cardDiscountPayment.toLocaleString()}원</span>
+                                                    ) : null}
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-right font-black text-sono-dark text-sm whitespace-nowrap">
-                                                {plan.monthlyPayment.toLocaleString()}원
+
+                                            {/* 자동 업데이트 설정 컬럼 */}
+                                            <td className="px-6 py-4 text-center">
+                                                <div className="flex flex-col items-center gap-1.5">
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            onClick={async () => {
+                                                                const nextState = !(plan.autoUpdate ?? false);
+                                                                await toggleCareAutoUpdate({
+                                                                    id: plan._id,
+                                                                    autoUpdate: nextState
+                                                                });
+                                                            }}
+                                                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                                                plan.autoUpdate ? "bg-emerald-500" : "bg-gray-200"
+                                                            }`}
+                                                            title={plan.autoUpdate ? "자동 업데이트 사용 중 (클릭 시 끄기)" : "자동 업데이트 꺼짐 (클릭 시 켜기)"}
+                                                        >
+                                                            <span
+                                                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                                                    plan.autoUpdate ? "translate-x-5" : "translate-x-0"
+                                                                }`}
+                                                            />
+                                                        </button>
+                                                        <span className={`text-xs font-black px-2 py-0.5 rounded-md ${
+                                                            plan.autoUpdate 
+                                                                ? "bg-emerald-50 text-emerald-600 border border-emerald-200" 
+                                                                : "bg-gray-100 text-gray-400"
+                                                        }`}>
+                                                            {plan.autoUpdate ? "자동 켜짐" : "꺼짐"}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* 주기 선택 및 분단위 직접 지정 */}
+                                                    <div className="flex flex-col items-center gap-1.5 mt-1">
+                                                        <select
+                                                            value={["00:00", "12:00", "both"].includes(plan.autoUpdateSchedule || "") ? plan.autoUpdateSchedule : "custom"}
+                                                            onChange={async (e) => {
+                                                                const val = e.target.value;
+                                                                if (val === "custom") {
+                                                                    await toggleCareAutoUpdate({
+                                                                        id: plan._id,
+                                                                        autoUpdateSchedule: "09:00"
+                                                                    });
+                                                                } else {
+                                                                    await toggleCareAutoUpdate({
+                                                                        id: plan._id,
+                                                                        autoUpdateSchedule: val
+                                                                    });
+                                                                }
+                                                            }}
+                                                            disabled={!plan.autoUpdate}
+                                                            className={`text-[11px] font-bold px-2 py-1 rounded-lg border transition-all ${
+                                                                plan.autoUpdate 
+                                                                    ? "bg-white border-gray-200 text-gray-700 hover:border-gray-300" 
+                                                                    : "bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed"
+                                                            }`}
+                                                        >
+                                                            <option value="00:00">매일 00:00 (AM 0시)</option>
+                                                            <option value="12:00">매일 12:00 (PM 12시)</option>
+                                                            <option value="both">매일 0시 & 12시</option>
+                                                            <option value="custom">⏱️ 분단위 직접설정</option>
+                                                        </select>
+
+                                                        {plan.autoUpdate && !["00:00", "12:00", "both"].includes(plan.autoUpdateSchedule || "") && (
+                                                            <div className="flex items-center gap-1 bg-indigo-50/80 border border-indigo-200/90 px-2 py-1 rounded-lg shadow-2xs">
+                                                                <span className="text-[10px] font-bold text-indigo-700">시간:</span>
+                                                                <input
+                                                                    type="time"
+                                                                    value={plan.autoUpdateSchedule || "09:00"}
+                                                                    onChange={async (e) => {
+                                                                        if (e.target.value) {
+                                                                            await toggleCareAutoUpdate({
+                                                                                id: plan._id,
+                                                                                autoUpdateSchedule: e.target.value
+                                                                            });
+                                                                        }
+                                                                    }}
+                                                                    className="text-xs font-black text-indigo-900 bg-white border border-indigo-200 rounded px-1.5 py-0.5 font-mono focus:ring-1 focus:ring-indigo-500 cursor-pointer"
+                                                                    title="분단위 시간 설정 (HH:mm)"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </td>
-                                            <td className="px-6 py-4 text-right font-black text-sono-primary text-sm whitespace-nowrap">
-                                                {plan.cardDiscountPayment ? `${plan.cardDiscountPayment.toLocaleString()}원` : "-"}
+
+                                            {/* 최근 업데이트 간략날짜 컬럼 */}
+                                            <td className="px-6 py-4 text-center whitespace-nowrap">
+                                                <div className="flex flex-col items-center">
+                                                    {plan.lastSyncedAt ? (
+                                                        <div className="flex flex-col items-center gap-0.5">
+                                                            <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
+                                                                동기화 완료
+                                                            </span>
+                                                            <span className="text-xs font-mono font-bold text-gray-700">
+                                                                {formatSimpleDate(plan.lastSyncedAt)}
+                                                            </span>
+                                                        </div>
+                                                    ) : plan.updatedAt ? (
+                                                        <div className="flex flex-col items-center gap-0.5">
+                                                            <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                                                                수정일
+                                                            </span>
+                                                            <span className="text-xs font-mono text-gray-500">
+                                                                {formatSimpleDate(plan.updatedAt)}
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-xs font-bold text-gray-300">미동기화</span>
+                                                    )}
+                                                </div>
                                             </td>
+
                                             <td className="px-6 py-4">
-                                                <div className="flex flex-col gap-0.5 text-xs text-gray-500 font-medium">
-                                                    {(plan.features || []).map((feat, idx) => (
-                                                        <span key={idx} className="truncate block" title={feat}>• {feat || "-"}</span>
-                                                    ))}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="text-xs font-mono text-sono-primary truncate" title={plan.syncUrl}>
-                                                    {plan.syncUrl || "미등록"}
-                                                </div>
+                                                {(() => {
+                                                    const urls = (plan.syncUrl || "").split(/[\n,]+/).map(u => u.trim()).filter(Boolean);
+                                                    if (urls.length === 0) {
+                                                        return <div className="text-xs font-mono text-gray-400">미등록</div>;
+                                                    }
+                                                    if (urls.length === 1) {
+                                                        return (
+                                                            <div className="text-xs font-mono text-sono-primary truncate max-w-[150px]" title={urls[0]}>
+                                                                {urls[0]}
+                                                            </div>
+                                                        );
+                                                    }
+                                                    return (
+                                                        <div className="flex flex-col gap-0.5">
+                                                            <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full w-fit">
+                                                                {urls.length}개 URL 등록됨
+                                                            </span>
+                                                            <div className="text-[10px] font-mono text-gray-400 truncate max-w-[150px]" title={urls.join("\n")}>
+                                                                {urls[0]} 외 {urls.length - 1}개
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })()}
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <div className="flex justify-center gap-1">
@@ -680,7 +897,7 @@ export default function ProductManagement() {
                                     ))}
                                     {(!careProducts || careProducts.length === 0) && (
                                         <tr>
-                                            <td colSpan={8} className="px-6 py-20 text-center text-gray-400 font-bold">
+                                            <td colSpan={10} className="px-6 py-20 text-center text-gray-400 font-bold">
                                                 등록된 상품 정보가 없습니다.
                                             </td>
                                         </tr>
@@ -989,14 +1206,92 @@ export default function ProductManagement() {
                                     </div>
                                 </div>
                                 <div className="col-span-2">
-                                    <label className="text-xs font-bold text-[#8b95a1] mb-2 block ml-1">제품 동기화 URL</label>
-                                    <input
-                                        type="text"
+                                    <div className="flex justify-between items-center mb-2 ml-1">
+                                        <label className="text-xs font-bold text-[#8b95a1]">제품 동기화 URL (다중 등록 지원)</label>
+                                        <span className="text-[11px] text-indigo-500 font-medium">엔터(줄바꿈) 또는 쉼표로 구분</span>
+                                    </div>
+                                    <textarea
+                                        rows={3}
                                         value={editingCareProduct.syncUrl || ""}
                                         onChange={(e) => setEditingCareProduct({ ...editingCareProduct, syncUrl: e.target.value })}
-                                        className="w-full bg-[#f9fafb] border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary"
-                                        placeholder="https://..."
+                                        className="w-full bg-[#f9fafb] border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary resize-y font-mono"
+                                        placeholder={`https://domain.com/api/v2/models?code=008001\nhttps://domain.com/api/v2/models?code=008002`}
                                     />
+                                    <p className="text-[11px] text-gray-400 mt-1 ml-1 font-medium">
+                                        * 여러 동기화 URL을 등록하면 해당 URL들의 제품 데이터가 자동으로 하나로 합쳐져 동기화됩니다.
+                                    </p>
+                                </div>
+
+                                {/* 자동 동기화 업데이트 설정 */}
+                                <div className="col-span-2 bg-indigo-50/40 p-5 rounded-[24px] border border-indigo-100/60 space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <h4 className="text-sm font-black text-indigo-950 flex items-center gap-2">
+                                                <span>🔄 자동 동기화 업데이트 설정</span>
+                                            </h4>
+                                            <p className="text-[11px] text-gray-500 font-medium mt-0.5">
+                                                등록된 동기화 URL에서 지정된 시간(한국시각)마다 자동으로 최신 가전을 가져옵니다.
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setEditingCareProduct({ ...editingCareProduct, autoUpdate: !editingCareProduct.autoUpdate })}
+                                                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                                                    editingCareProduct.autoUpdate ? "bg-emerald-500" : "bg-gray-200"
+                                                }`}
+                                            >
+                                                <span
+                                                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                                        editingCareProduct.autoUpdate ? "translate-x-5" : "translate-x-0"
+                                                    }`}
+                                                />
+                                            </button>
+                                            <span className={`text-xs font-black px-2.5 py-1 rounded-lg ${
+                                                editingCareProduct.autoUpdate ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-400"
+                                            }`}>
+                                                {editingCareProduct.autoUpdate ? "자동 켜짐" : "꺼짐"}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {editingCareProduct.autoUpdate && (
+                                        <div className="pt-3 border-t border-indigo-100/80 space-y-3">
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                <label className="text-xs font-bold text-indigo-900">업데이트 주기 (한국시각 KST)</label>
+                                                <select
+                                                    value={["00:00", "12:00", "both"].includes(editingCareProduct.autoUpdateSchedule || "") ? editingCareProduct.autoUpdateSchedule : "custom"}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        if (val === "custom") {
+                                                            setEditingCareProduct({ ...editingCareProduct, autoUpdateSchedule: "09:00" });
+                                                        } else {
+                                                            setEditingCareProduct({ ...editingCareProduct, autoUpdateSchedule: val });
+                                                        }
+                                                    }}
+                                                    className="bg-white border border-indigo-200 rounded-xl py-2 px-3 text-xs font-bold text-gray-800 focus:ring-2 focus:ring-indigo-500"
+                                                >
+                                                    <option value="00:00">매일 00:00 (한국시각 AM 0시)</option>
+                                                    <option value="12:00">매일 12:00 (한국시각 PM 12시)</option>
+                                                    <option value="both">매일 00시 & 12시 (1일 2회)</option>
+                                                    <option value="custom">⏱️ 사용자 지정 분단위 시간</option>
+                                                </select>
+                                            </div>
+
+                                            {!["00:00", "12:00", "both"].includes(editingCareProduct.autoUpdateSchedule || "") && (
+                                                <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-indigo-200">
+                                                    <span className="text-xs font-bold text-gray-600">희망 시간 (분단위 선택):</span>
+                                                    <input
+                                                        type="time"
+                                                        value={editingCareProduct.autoUpdateSchedule || "09:00"}
+                                                        onChange={(e) => setEditingCareProduct({ ...editingCareProduct, autoUpdateSchedule: e.target.value })}
+                                                        className="bg-indigo-50 border border-indigo-300 text-indigo-900 rounded-lg px-3 py-1.5 text-sm font-black font-mono focus:ring-2 focus:ring-indigo-500"
+                                                    />
+                                                    <span className="text-[11px] text-gray-400 font-medium">예: 09:30, 14:15, 23:45</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

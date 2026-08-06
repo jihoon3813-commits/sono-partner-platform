@@ -39,6 +39,9 @@ export const upsert = mutation({
         defermentPeriod: v.optional(v.string()),
         maturityCount: v.optional(v.string()),
         order: v.optional(v.number()),
+        autoUpdate: v.optional(v.boolean()),
+        autoUpdateSchedule: v.optional(v.string()),
+        lastSyncedAt: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const { id, ...data } = args;
@@ -57,6 +60,8 @@ export const upsert = mutation({
             careProductId = await ctx.db.insert("careProducts", {
                 ...data,
                 order: finalOrder,
+                autoUpdate: data.autoUpdate ?? false,
+                autoUpdateSchedule: data.autoUpdateSchedule ?? "00:00",
                 createdAt: now,
                 updatedAt: now,
             });
@@ -117,5 +122,30 @@ export const updateOrder = mutation({
             order: args.order,
             updatedAt: new Date().toISOString(),
         });
+    },
+});
+
+// 자동 업데이트 설정 토글 및 주기 변경
+export const toggleAutoUpdate = mutation({
+    args: {
+        id: v.id("careProducts"),
+        autoUpdate: v.optional(v.boolean()),
+        autoUpdateSchedule: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const product = await ctx.db.get(args.id);
+        if (!product) throw new Error("상품을 찾을 수 없습니다.");
+        
+        const now = new Date().toISOString();
+        const patchData: any = { updatedAt: now };
+
+        if (args.autoUpdate !== undefined) {
+            patchData.autoUpdate = args.autoUpdate;
+        }
+        if (args.autoUpdateSchedule !== undefined) {
+            patchData.autoUpdateSchedule = args.autoUpdateSchedule;
+        }
+
+        await ctx.db.patch(args.id, patchData);
     },
 });

@@ -13,6 +13,7 @@ import type * as analytics from "../analytics.js";
 import type * as applicationStatuses from "../applicationStatuses.js";
 import type * as applications from "../applications.js";
 import type * as careProducts from "../careProducts.js";
+import type * as crons from "../crons.js";
 import type * as dashboard from "../dashboard.js";
 import type * as partners from "../partners.js";
 import type * as products from "../products.js";
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   applicationStatuses: typeof applicationStatuses;
   applications: typeof applications;
   careProducts: typeof careProducts;
+  crons: typeof crons;
   dashboard: typeof dashboard;
   partners: typeof partners;
   products: typeof products;

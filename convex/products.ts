@@ -1,4 +1,4 @@
-import { query, mutation, action, internalMutation } from "./_generated/server";
+import { query, mutation, action, internalMutation, internalAction } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { v } from "convex/values";
 
@@ -182,11 +182,36 @@ export const toggleGift = mutation({
     },
 });
 
-// 베스트 여부 토글
+// 베스트 여부 토글 (베스트 선택 시 목록 맨 위로 자동 이동)
 export const toggleBest = mutation({
     args: { id: v.id("products"), isBest: v.boolean() },
     handler: async (ctx, args) => {
-        await ctx.db.patch(args.id, { isBest: args.isBest, updatedAt: new Date().toISOString() });
+        const product = await ctx.db.get(args.id);
+        if (!product) return;
+
+        const now = new Date().toISOString();
+
+        if (args.isBest) {
+            // 동일 그룹(동일 플랜 또는 구좌)의 제품 목록 가져오기
+            const allProducts = await ctx.db.query("products").collect();
+            const sameGroup = allProducts
+                .filter(p => {
+                    if (product.careProductId && p.careProductId) return p.careProductId === product.careProductId;
+                    return (p.slotCount || 4) === (product.slotCount || 4);
+                })
+                .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+
+            // 다른 제품들의 order를 2부터 순차 할당하고 선택된 제품을 order: 1로 맨 위 배치
+            let nextOrder = 2;
+            for (const p of sameGroup) {
+                if (p._id === args.id) continue;
+                await ctx.db.patch(p._id, { order: nextOrder++, updatedAt: now });
+            }
+
+            await ctx.db.patch(args.id, { isBest: true, order: 1, updatedAt: now });
+        } else {
+            await ctx.db.patch(args.id, { isBest: false, updatedAt: now });
+        }
     },
 });
 
@@ -201,6 +226,22 @@ export const updateOrder = mutation({
             order: args.order, 
             updatedAt: new Date().toISOString() 
         });
+    },
+});
+
+// 여러 제품 순서 일괄 업데이트 (드래그앤드롭 순서 변경)
+export const reorderProducts = mutation({
+    args: {
+        orderedIds: v.array(v.id("products")),
+    },
+    handler: async (ctx, args) => {
+        const now = new Date().toISOString();
+        for (let i = 0; i < args.orderedIds.length; i++) {
+            await ctx.db.patch(args.orderedIds[i], {
+                order: i + 1,
+                updatedAt: now,
+            });
+        }
     },
 });
 
@@ -399,54 +440,191 @@ export const syncProductsForPlan = action({
             throw new Error("동기화 URL이 등록되지 않은 상품입니다.");
         }
         
-        // 2. URL 호출 및 자동 보정
-        let syncUrl = plan.syncUrl.trim();
-        
-        // 사용자가 웹페이지 주소(list.php)를 잘못 기입한 경우 API 엔드포인트로 자동 전환 지원
-        if (syncUrl.includes("model/list.php")) {
-            syncUrl = syncUrl.replace("model/list.php", "api/v2/models");
-            if (!syncUrl.includes("section=models")) {
-                syncUrl += (syncUrl.includes("?") ? "&" : "?") + "section=models&list_size=200";
+        // 2. URL 수집 및 다중 URL 분리 처리
+        const rawSyncUrl = plan.syncUrl || "";
+        const syncUrls = rawSyncUrl.split(/[\n,]+/).map(u => u.trim()).filter(Boolean);
+
+        if (syncUrls.length === 0) {
+            throw new Error("동기화 URL이 등록되지 않은 상품입니다.");
+        }
+
+        console.log(`Fetching ${syncUrls.length} syncUrl(s) for plan:`, plan.name);
+
+        let combinedLists: any[] = [];
+        let errorMessages: string[] = [];
+
+        const requestHeaders = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"
+        };
+
+        for (let idx = 0; idx < syncUrls.length; idx++) {
+            const rawUrl = syncUrls[idx];
+            
+            // Candidate URL 목록 생성 (사용자가 웹페이지 주소나 bizinno.kr 등을 입력한 경우 API 엔드포인트 자동 변환)
+            const trimmedUrl = rawUrl.trim();
+
+            // 0) bizinno.kr 전용 Supabase REST API 직접 연동 (정확한 bizinno.kr 실제 데이터 수집)
+            if (trimmedUrl.includes("bizinno.kr") || trimmedUrl.includes("tvtpvecnjyjnvjhbozks.supabase.co")) {
+                const supabaseUrl = "https://tvtpvecnjyjnvjhbozks.supabase.co";
+                const apiKey = "sb_publishable_bgd5nh-qDblE3CfK6SbJXw_brkDvmXC";
+                
+                const queryStr = trimmedUrl.includes("?") ? trimmedUrl.split("?")[1] : "";
+                const params = new URLSearchParams(queryStr);
+                const accountsParam = params.get("accounts");
+                const targetSlotCount = accountsParam ? Number(accountsParam) : plan.slotCount;
+
+                try {
+                    console.log(`[Bizinno Supabase Fetch] URL ${idx + 1}/${syncUrls.length}: fetching slotCount ${targetSlotCount}`);
+                    const res = await fetch(`${supabaseUrl}/rest/v1/products?select=*&order=노출_순위.asc.nullslast`, {
+                        headers: {
+                            "apikey": apiKey,
+                            "Authorization": `Bearer ${apiKey}`
+                        }
+                    });
+
+                    if (res.ok) {
+                        const rawList = await res.json();
+                        if (Array.isArray(rawList)) {
+                            // 공개 여부가 true(공개)이고 해당 구좌수에 일치하는 제품만 정확하게 필터링
+                            const filtered = rawList.filter(p => {
+                                const matchSlot = p["구좌수"] === targetSlotCount || p.slotCount === targetSlotCount || p.accounts === targetSlotCount;
+                                const isPublic = p["공개_여부"] === true || p.isPublic === true || p.isVisible === true || p["공개_여부"] === "Y" || p["공개_여부"] === undefined;
+                                return matchSlot && isPublic;
+                            });
+                            
+                            const bizinnoProducts = filtered.map(p => {
+                                const brandName = p["브랜드"] || p.brand || "기타";
+                                const rawProdName = p["제품명"] || p.name || p.model_name || "상품명 없음";
+                                const formattedName = rawProdName.startsWith("[") ? rawProdName : `[${brandName}] ${rawProdName}`;
+                                
+                                return {
+                                    model_name: formattedName,
+                                    model: p["모델명"] || p.model || "모델명 없음",
+                                    ca_name: p["카테고리"] || p.category || "",
+                                    primary_category_code: "",
+                                    model_thumnail_url: p["메인_썸네일(목록용)"] || p.image || ""
+                                };
+                            });
+
+                            if (bizinnoProducts.length > 0) {
+                                combinedLists.push(...bizinnoProducts);
+                                console.log(`[Bizinno Supabase] Successfully fetched ${bizinnoProducts.length} public products for accounts=${targetSlotCount}`);
+                                continue;
+                            }
+                        }
+                    }
+                } catch (err: any) {
+                    console.error("[Bizinno Supabase Fetch Failed]", err);
+                }
+            }
+
+            // Candidate URL 목록 생성 (일반 타사 API 서버 또는 릴레이 서버)
+            const candidates: string[] = [];
+
+            // 1) dasonin / 다소닌 API 서버(xn--299ar6vqrd.com) 지원
+            if (trimmedUrl.includes("xn--299ar6vqrd.com") || trimmedUrl.includes("dasonin")) {
+                const queryStr = trimmedUrl.includes("?") ? trimmedUrl.split("?")[1] : "";
+                const params = new URLSearchParams(queryStr);
+                if (!params.has("section")) params.set("section", "models");
+                if (!params.has("list_size")) params.set("list_size", "200");
+                candidates.push(`https://xn--299ar6vqrd.com/api/v2/models?${params.toString()}`);
+            }
+
+            // 2) model/list.php URL ➔ api/v2/models 변환
+            if (trimmedUrl.includes("model/list.php")) {
+                let apiU = trimmedUrl.replace("model/list.php", "api/v2/models");
+                if (!apiU.includes("section=models")) {
+                    apiU += (apiU.includes("?") ? "&" : "?") + "section=models&list_size=200";
+                }
+                candidates.push(apiU);
+            } else if (!trimmedUrl.includes("api/v2/models") && !trimmedUrl.includes(".json")) {
+                // 3) 메인 웹페이지 주소 (예: https://domain.com/?accounts=2) ➔ api/v2/models 변환
+                const queryStr = trimmedUrl.includes("?") ? trimmedUrl.split("?")[1] : "";
+                const baseUrl = trimmedUrl.split("?")[0].replace(/\/$/, "");
+                let apiU = `${baseUrl}/api/v2/models`;
+                if (queryStr) {
+                    apiU += `?${queryStr}` + (queryStr.includes("section=models") ? "" : "&section=models&list_size=200");
+                } else {
+                    apiU += "?section=models&list_size=200";
+                }
+                candidates.push(apiU);
+            }
+
+            candidates.push(trimmedUrl);
+            const uniqueCandidates = Array.from(new Set(candidates));
+
+            let success = false;
+            let lastError = "";
+
+            for (const candUrl of uniqueCandidates) {
+                try {
+                    console.log(`[URL ${idx + 1}/${syncUrls.length}] Trying:`, candUrl);
+                    const res = await fetch(candUrl, { headers: requestHeaders });
+                    
+                    if (!res.ok) {
+                        lastError = `HTTP ${res.status} 응답`;
+                        continue;
+                    }
+
+                    const contentType = res.headers.get("content-type") || "";
+                    const bodyText = await res.text();
+
+                    if (!bodyText.trim().startsWith("{") && !bodyText.trim().startsWith("[")) {
+                        lastError = `JSON API가 아닌 HTML 웹페이지 응답 (Content-Type: ${contentType})`;
+                        continue;
+                    }
+
+                    const data = JSON.parse(bodyText);
+                    if (data.Lists && Array.isArray(data.Lists)) {
+                        combinedLists.push(...data.Lists);
+                        success = true;
+                        console.log(`[URL ${idx + 1}/${syncUrls.length}] Success from ${candUrl}: ${data.Lists.length} products`);
+                        break;
+                    } else if (Array.isArray(data)) {
+                        combinedLists.push(...data);
+                        success = true;
+                        console.log(`[URL ${idx + 1}/${syncUrls.length}] Success from ${candUrl}: ${data.length} products`);
+                        break;
+                    } else {
+                        lastError = `응답에 제품 목록(Lists) 배열이 없습니다.`;
+                    }
+                } catch (err: any) {
+                    lastError = err.message || String(err);
+                }
+            }
+
+            if (!success) {
+                errorMessages.push(`URL ${idx + 1} (${rawUrl}): ${lastError}`);
             }
         }
 
-        console.log("Fetching syncUrl:", syncUrl);
-        const res = await fetch(syncUrl);
-        if (!res.ok) {
-            throw new Error(`동기화 API 호출 실패 (HTTP ${res.status})`);
+        if (combinedLists.length === 0) {
+            throw new Error(`동기화 실패: 등록된 URL에서 유효한 제품 데이터를 가져올 수 없습니다.\n${errorMessages.join("\n")}`);
         }
 
-        const contentType = res.headers.get("content-type") || "";
-        const bodyText = await res.text();
-        console.log("Response Content-Type:", contentType);
-        console.log("Response Body Snippet:", bodyText.substring(0, 500));
-
-        if (!contentType.includes("application/json")) {
-            throw new Error(`동기화 URL이 올바른 JSON API 주소가 아닙니다. (Content-Type: ${contentType}) 일반 웹페이지 주소 대신 데이터 API 주소를 입력해주세요.`);
+        // 중복 모델 제거 (페이지/URL 간 동일 제품 중복 방지)
+        const seenKeys = new Set<string>();
+        const uniqueCombinedLists: any[] = [];
+        for (const item of combinedLists) {
+            const key = `${item.model || ''}_${item.model_name || ''}`;
+            if (!seenKeys.has(key)) {
+                seenKeys.add(key);
+                uniqueCombinedLists.push(item);
+            }
         }
 
-        let data;
-        try {
-            data = JSON.parse(bodyText);
-        } catch (err) {
-            throw new Error("API 응답 JSON 파싱에 실패했습니다. (유효하지 않은 JSON 형식)");
-        }
-        
-        // 빌리고 API 형식 검증
-        if (!data.Lists || !Array.isArray(data.Lists)) {
-            throw new Error("올바르지 않은 API 응답 형식입니다. (Lists 배열 없음)");
-        }
-        
-        // 3. 제품 데이터 파싱
+        // 3. 제품 데이터 파싱 및 통합
         const slotCount = plan.slotCount;
 
-        // 제휴카드 요금 기본값 가져오기 (플랜에 정의되어 있으면 우선 사용, 없으면 기존 제품에서 가져옴)
+        // 제휴카드 요금 기본값 가져오기
         const existingProducts = await ctx.runQuery(api.products.get);
         const defaultCardDiscount = (plan as any).cardDiscountPayment !== undefined && (plan as any).cardDiscountPayment !== null
             ? Math.max(0, plan.monthlyPayment - ((plan as any).cardDiscountPayment || 0))
             : (existingProducts.find(p => p.slotCount === slotCount && p.cardDiscountPayment)?.cardDiscountPayment || 0);
 
-        const products = data.Lists.map((item: any, i: number) => {
+        const products = uniqueCombinedLists.map((item: any, i: number) => {
             const brandMatch = item.model_name?.match(/^\[(.*?)\]/);
             const brand = brandMatch ? brandMatch[1] : "기타";
             
@@ -570,6 +748,50 @@ export const replaceProductsForPlan = internalMutation({
                 createdAt: now,
                 updatedAt: now,
             });
+        }
+
+        // 해당 플랜의 최근 동기화 시각(lastSyncedAt) 업데이트
+        await ctx.db.patch(args.planId, {
+            lastSyncedAt: now,
+            updatedAt: now,
+        });
+    }
+});
+
+// 자동 업데이트 Cron 전용 internal action (분단위 시각 대조)
+export const runAutoUpdateCron = internalAction({
+    args: { targetTime: v.optional(v.string()) },
+    handler: async (ctx, args) => {
+        const careProducts: any[] = await ctx.runQuery(api.careProducts.get);
+        
+        // 현재 한국 시각 KST (UTC + 9) HH:mm 계산
+        const now = new Date();
+        const kstDate = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+        const kstHours = String(kstDate.getUTCHours()).padStart(2, '0');
+        const kstMinutes = String(kstDate.getUTCMinutes()).padStart(2, '0');
+        const currentKstTime = `${kstHours}:${kstMinutes}`;
+
+        const checkTime = args.targetTime || currentKstTime;
+
+        const activePlans = careProducts.filter(p => {
+            if (!p.autoUpdate || !p.syncUrl) return false;
+            const sched = p.autoUpdateSchedule || "00:00";
+            if (sched === "both") {
+                return checkTime === "00:00" || checkTime === "12:00";
+            }
+            return sched === checkTime;
+        });
+
+        if (activePlans.length > 0) {
+            console.log(`[Auto-Update Cron] Executing for ${activePlans.length} plan(s) at KST ${checkTime}`);
+            for (const plan of activePlans) {
+                try {
+                    await ctx.runAction(api.products.syncProductsForPlan, { planId: plan._id });
+                    console.log(`[Auto-Update Cron] Successfully synced plan: ${plan.name}`);
+                } catch (err: any) {
+                    console.error(`[Auto-Update Cron Error] Plan ${plan.name} (${plan._id}):`, err);
+                }
+            }
         }
     }
 });

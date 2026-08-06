@@ -372,6 +372,9 @@ export default defineSchema({
         defermentPeriod: v.optional(v.string()), // 거치기간
         maturityCount: v.optional(v.string()), // 만기회차
         order: v.optional(v.number()), // 정렬 순서
+        autoUpdate: v.optional(v.boolean()), // 자동 업데이트 On/Off
+        autoUpdateSchedule: v.optional(v.string()), // "00:00" (매일 0시) | "12:00" (매일 12시) | "both" (0시 & 12시)
+        lastSyncedAt: v.optional(v.string()), // 최근 동기화 수행 시각
         createdAt: v.optional(v.string()),
         updatedAt: v.optional(v.string()),
     }).index("by_slotCount", ["slotCount"]),
