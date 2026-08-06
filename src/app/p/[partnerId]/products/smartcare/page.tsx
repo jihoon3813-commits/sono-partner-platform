@@ -15,33 +15,46 @@ export default function PartnerSmartCarePage({ params }: { params: Promise<{ par
     const [partner, setPartner] = useState<PartnerData | null>(null);
 
     useEffect(() => {
-        // 파트너 정보 조회
+        let isMounted = true;
         async function fetchPartner() {
             try {
                 setIsLoading(true);
-                const response = await fetch(`/api/partners/${resolvedParams.partnerId}`);
-                const data = await response.json();
-                if (data.success && data.data) {
-                    setPartner(data.data);
-                } else {
+                const response = await fetch(`/api/partners/${encodeURIComponent(resolvedParams.partnerId)}`, {
+                    cache: 'no-store'
+                }).catch(() => null);
+
+                if (!isMounted) return;
+
+                if (response && response.ok) {
+                    const data = await response.json().catch(() => null);
+                    if (data && data.success && data.data) {
+                        setPartner(data.data);
+                        return;
+                    }
+                }
+
+                setPartner({
+                    customUrl: resolvedParams.partnerId,
+                    name: "소노 파트너",
+                    partnerId: `P-TEMP-${resolvedParams.partnerId}`
+                });
+            } catch (error) {
+                console.warn("Partner fetch handled gracefully:", error);
+                if (isMounted) {
                     setPartner({
                         customUrl: resolvedParams.partnerId,
                         name: "소노 파트너",
                         partnerId: `P-TEMP-${resolvedParams.partnerId}`
                     });
                 }
-            } catch (error) {
-                console.error("Partner fetch error:", error);
-                setPartner({
-                    customUrl: resolvedParams.partnerId,
-                    name: "소노 파트너",
-                    partnerId: `P-TEMP-${resolvedParams.partnerId}`
-                });
             } finally {
-                setIsLoading(false);
+                if (isMounted) {
+                    setIsLoading(false);
+                }
             }
         }
         fetchPartner();
+        return () => { isMounted = false; };
     }, [resolvedParams.partnerId]);
 
     if (isLoading) {
@@ -61,3 +74,5 @@ export default function PartnerSmartCarePage({ params }: { params: Promise<{ par
         />
     );
 }
+
+export const dynamic = 'force-dynamic';

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use, useRef } from "react";
+import { useState, useEffect, use, useRef, Suspense } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { useSearchParams } from "next/navigation";
@@ -24,7 +24,7 @@ interface PartnerData {
     customUrl: string;
 }
 
-export default function PartnerInquiryPage({ params }: { params: Promise<{ partnerId: string }> }) {
+function InquiryPageContent({ params }: { params: Promise<{ partnerId: string }> }) {
     const resolvedParams = use(params);
     const searchParams = useSearchParams();
     const [partner, setPartner] = useState<PartnerData | null>(null);
@@ -54,18 +54,38 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
     const [isSubmitted, setIsSubmitted] = useState(false);
     const productListRef = useRef<HTMLDivElement>(null);
 
+    const formatApplianceText = (brand?: string, name?: string, model?: string) => {
+        const cleanBrand = (brand || "").trim();
+        let cleanName = (name || "").trim();
+        
+        if (cleanBrand) {
+            const bracketBrand = `[${cleanBrand}]`;
+            if (cleanName.startsWith(bracketBrand)) {
+                cleanName = cleanName.slice(bracketBrand.length).trim();
+            } else if (cleanName.startsWith(cleanBrand)) {
+                cleanName = cleanName.slice(cleanBrand.length).trim();
+            }
+        }
+        
+        const brandPrefix = cleanBrand ? `[${cleanBrand}] ` : "";
+        const modelSuffix = model ? ` (${model})` : "";
+        return `${brandPrefix}${cleanName}${modelSuffix}`;
+    };
+
     useEffect(() => {
         async function fetchPartner() {
             try {
-                const response = await fetch(`/api/partners/${resolvedParams.partnerId}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && data.data) {
+                const response = await fetch(`/api/partners/${encodeURIComponent(resolvedParams.partnerId)}`, {
+                    cache: 'no-store'
+                }).catch(() => null);
+                if (response && response.ok) {
+                    const data = await response.json().catch(() => null);
+                    if (data && data.success && data.data) {
                         setPartner(data.data);
                     }
                 }
             } catch (err) {
-                console.error("Partner fetch failed:", err);
+                console.warn("Partner fetch handled gracefully:", err);
             } finally {
                 setIsLoadingPartner(false);
             }
@@ -218,7 +238,7 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
     return (
         <main className="min-h-screen bg-[#f2f4f6] flex items-center justify-center py-10 md:py-20">
             <div className="max-w-2xl w-full px-6">
-                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
+                <div className="bg-white rounded-none shadow-sm border border-gray-100 overflow-hidden">
                     <div className="bg-sono-dark px-8 py-10 text-center">
                         <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">상담 신청</h1>
                         <p className="text-gray-400 font-medium">
@@ -228,7 +248,7 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
 
                     {isSubmitted ? (
                         <div className="p-12 text-center">
-                            <div className="w-20 h-20 rounded-[28px] bg-[#00d084]/10 mx-auto mb-8 flex items-center justify-center text-[#00d084]">
+                            <div className="w-20 h-20 rounded-none bg-[#00d084]/10 mx-auto mb-8 flex items-center justify-center text-[#00d084]">
                                 <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
@@ -240,7 +260,7 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                             </p>
                             <button
                                 onClick={() => window.location.href = `/p/${resolvedParams.partnerId}`}
-                                className="btn-primary w-full py-4 !rounded-2xl"
+                                className="bg-[#0c2340] hover:bg-[#0a1f38] text-white w-full py-4 rounded-none font-bold transition-colors shadow-lg"
                             >
                                 확인
                             </button>
@@ -263,7 +283,7 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                                                 if (opt.value === "happy450") setSelectedUnit("1");
                                                 else if (opt.value === "smartcare") setSelectedUnit("4");
                                             }}
-                                            className={`p-6 rounded-[24px] text-left transition-all border-2 ${formData.selectedProduct === opt.value
+                                            className={`p-6 rounded-none text-left transition-all border-2 ${formData.selectedProduct === opt.value
                                                 ? "border-sono-primary bg-sono-primary/5 shadow-lg shadow-sono-primary/10"
                                                 : "border-gray-50 bg-[#f9fafb] text-[#6b7684] hover:bg-gray-100"}`}
                                         >
@@ -276,10 +296,10 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
 
                             {/* 스마트케어 상세 설정 */}
                             {formData.selectedProduct === "smartcare" && (
-                                <div className="space-y-6 animate-fade-in bg-gray-50 p-6 rounded-[24px]">
+                                <div className="space-y-6 animate-fade-in bg-gray-50 p-6 rounded-none">
                                     <div>
                                         <label className="input-label !text-[#4e5968] !font-bold mb-3 block">가입 구좌 선택</label>
-                                        <div className="flex bg-white p-1 rounded-xl shadow-sm">
+                                        <div className="flex bg-[#f2f4f6] border border-gray-300 p-1 rounded-none gap-1">
                                             {["2", "3", "4", "6"].map((u) => (
                                                 <button
                                                     key={u}
@@ -288,7 +308,7 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                                                         setSelectedUnit(u);
                                                         setSelectedAppliance("상담 시 결정");
                                                     }}
-                                                    className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${selectedUnit === u ? "bg-sono-primary text-white shadow-md" : "text-gray-400"}`}
+                                                    className={`flex-1 py-2 rounded-none text-sm font-bold transition-all ${selectedUnit === u ? "bg-[#0c2340] text-white shadow-md font-bold" : "bg-white text-[#4e5968] hover:bg-gray-50"}`}
                                                 >
                                                     {u}구좌
                                                 </button>
@@ -300,46 +320,44 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                                         <label className="input-label !text-[#4e5968] !font-bold mb-3 block">가전제품 선택</label>
                                         <div
                                             ref={productListRef}
-                                            className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-2 no-scrollbar"
+                                            className="flex flex-col h-[380px] overflow-y-auto border border-gray-400 bg-white rounded-none divide-y divide-gray-300 no-scrollbar"
                                         >
                                             <button
                                                 type="button"
                                                 onClick={() => setSelectedAppliance("상담 시 결정")}
-                                                className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all bg-white text-left ${selectedAppliance === "상담 시 결정" ? "border-sono-primary shadow-sm" : "border-transparent"}`}
+                                                className={`w-full py-2.5 px-4 text-xs font-bold transition-all text-left flex items-center justify-between ${selectedAppliance === "상담 시 결정" ? "bg-[#fff3cd] text-[#0c2340] font-extrabold" : "bg-white text-gray-700 hover:bg-gray-50"}`}
                                             >
-                                                <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 text-xs font-bold leading-tight text-center">상담 시<br />결정</div>
-                                                <span className="font-bold text-sono-dark text-sm">상담 시 결정</span>
+                                                <span>상담 시 결정</span>
+                                                {selectedAppliance === "상담 시 결정" && (
+                                                    <span className="text-[#0c2340] text-xs shrink-0 font-bold ml-2">✓ 선택됨</span>
+                                                )}
                                             </button>
                                             {allAppliances
                                                 .filter(item => item.tag && item.tag.includes(`${selectedUnit}구좌`))
                                                 .map((item, idx) => {
-                                                    const applianceValue = item.model
-                                                        ? `${item.brand} ${item.name} (${item.model})`
-                                                        : `${item.brand} ${item.name}`;
+                                                    const displayLabel = formatApplianceText(item.brand, item.name, item.model);
+                                                    const applianceValue = formatApplianceText(item.brand, item.name, item.model);
 
                                                     return (
                                                         <button
                                                             key={idx}
                                                             type="button"
                                                             onClick={() => setSelectedAppliance(applianceValue)}
-                                                            className={`flex items-start gap-3 p-4 rounded-2xl border-2 transition-all bg-white text-left w-full ${selectedAppliance === applianceValue ? "border-sono-primary shadow-sm" : "border-transparent"}`}
+                                                            className={`w-full py-2.5 px-4 text-xs font-bold transition-all text-left flex items-center justify-between ${selectedAppliance === applianceValue ? "bg-[#fff3cd] text-[#0c2340] font-extrabold" : "bg-white text-gray-700 hover:bg-gray-50"}`}
                                                         >
-                                                            <div className="flex-shrink-0 bg-white rounded-xl p-1 border border-gray-100">
-                                                                <img src={item.image} alt={item.name} className="w-12 h-12 object-contain" />
-                                                            </div>
-                                                            <div className="flex flex-col min-w-0">
-                                                                <span className="text-[10px] text-[#8b95a1] font-bold uppercase">{item.brand}</span>
-                                                                <span className="font-bold text-sono-dark text-xs leading-tight break-keep">{item.name}</span>
-                                                            </div>
+                                                            <span className="truncate">{displayLabel}</span>
+                                                            {selectedAppliance === applianceValue && (
+                                                                <span className="text-[#0c2340] text-xs shrink-0 font-bold ml-2">✓ 선택됨</span>
+                                                            )}
                                                         </button>
                                                     )
                                                 })
                                             }
                                         </div>
                                         {selectedAppliance !== "상담 시 결정" && (
-                                            <div className="mt-3 p-4 bg-white border border-sono-primary/20 rounded-2xl shadow-sm">
-                                                <span className="text-[10px] font-bold text-sono-primary block mb-1">선택 제품</span>
-                                                <div className="font-bold text-sono-dark text-sm break-keep">{selectedAppliance}</div>
+                                            <div className="mt-3 p-4 bg-[#fff3cd] border border-[#d69e2e] rounded-none shadow-sm animate-fade-in">
+                                                <span className="text-[10px] font-bold text-[#0c2340] block mb-1">선택 제품</span>
+                                                <div className="font-bold text-sono-dark text-sm break-keep leading-snug">{selectedAppliance}</div>
                                             </div>
                                         )}
                                     </div>
@@ -348,16 +366,16 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
 
                             {/* 더 해피 450 상세 설정 */}
                             {formData.selectedProduct === "happy450" && (
-                                <div className="space-y-6 animate-fade-in bg-gray-50 p-6 rounded-[24px]">
+                                <div className="space-y-6 animate-fade-in bg-gray-50 p-6 rounded-none">
                                     <div>
                                         <label className="input-label !text-[#4e5968] !font-bold mb-3 block">가입 구좌 선택</label>
-                                        <div className="flex bg-white p-1 rounded-xl shadow-sm">
+                                        <div className="flex bg-[#f2f4f6] border border-gray-300 p-1 rounded-none gap-1">
                                             {["1", "2", "3"].map((u) => (
                                                 <button
                                                     key={u}
                                                     type="button"
                                                     onClick={() => setSelectedUnit(u)}
-                                                    className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${selectedUnit === u ? "bg-sono-primary text-white shadow-md" : "text-gray-400"}`}
+                                                    className={`flex-1 py-2.5 rounded-none text-sm font-bold transition-all ${selectedUnit === u ? "bg-[#0c2340] text-white shadow-md font-bold" : "bg-white text-[#4e5968] hover:bg-gray-50"}`}
                                                 >
                                                     {u}구좌
                                                 </button>
@@ -372,27 +390,27 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="input-label !text-[#4e5968] !font-bold mb-2 block ml-1">성함 <span className="text-sono-primary">*</span></label>
-                                        <input type="text" name="name" value={formData.name} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="홍길동" required />
+                                        <input type="text" name="name" value={formData.name} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4" placeholder="홍길동" required />
                                     </div>
                                     <div>
                                         <label className="input-label !text-[#4e5968] !font-bold mb-2 block ml-1">연락처 <span className="text-sono-primary">*</span></label>
-                                        <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="010-1234-5678" required />
+                                        <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4" placeholder="010-1234-5678" required />
                                     </div>
                                     {["smartcare", "스마트케어"].includes(formData.selectedProduct) && (
                                         <>
                                             <div>
                                                 <label className="input-label !text-[#4e5968] !font-bold mb-2 block ml-1">생년월일 <span className="text-sono-primary">*</span></label>
-                                                <input type="tel" name="birthdate" value={formData.birthdate} onChange={handleBirthdateChange} inputMode="numeric" maxLength={10} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="1980-01-01" required />
+                                                <input type="tel" name="birthdate" value={formData.birthdate} onChange={handleBirthdateChange} inputMode="numeric" maxLength={10} className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4" placeholder="1980-01-01" required />
                                             </div>
                                             <div>
                                                 <label className="input-label !text-[#4e5968] !font-bold mb-2 block ml-1">성별 <span className="text-sono-primary">*</span></label>
-                                                <div className="flex bg-[#f9fafb] p-1 rounded-2xl h-[56px]">
+                                                <div className="flex bg-[#f9fafb] p-1 rounded-none h-[56px]">
                                                     {["남", "여"].map((g) => (
                                                         <button
                                                             key={g}
                                                             type="button"
                                                             onClick={() => setFormData(prev => ({ ...prev, gender: g === "남" ? "남성" : "여성" }))}
-                                                            className={`flex-1 rounded-xl text-sm font-bold transition-all ${formData.gender === (g === "남" ? "남성" : "여성") ? "bg-white text-sono-primary shadow-sm" : "text-gray-400"}`}
+                                                            className={`flex-1 rounded-none text-sm font-bold transition-all ${formData.gender === (g === "남" ? "남성" : "여성") ? "bg-white text-sono-primary shadow-sm" : "text-gray-400"}`}
                                                         >
                                                             {g}
                                                         </button>
@@ -407,7 +425,7 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                                             name="preferredTime"
                                             value={formData.preferredTime}
                                             onChange={handleChange}
-                                            className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 w-full cursor-pointer text-[#4e5968] font-medium"
+                                            className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4 w-full cursor-pointer text-[#4e5968] font-medium"
                                             required
                                         >
                                             <option value="">통화가능 시간을 선택해주세요</option>
@@ -425,11 +443,11 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                                     <div>
                                         <label className="input-label !text-[#4e5968] !font-bold mb-2 block ml-1">주소 <span className="text-sono-primary">*</span></label>
                                         <div className="flex gap-2 mb-2">
-                                            <input type="text" value={formData.zonecode} readOnly className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 flex-1" placeholder="우편번호" required />
-                                            <button type="button" onClick={openAddressSearch} className="bg-sono-dark text-white font-bold px-6 rounded-2xl text-sm">검색</button>
+                                            <input type="text" value={formData.zonecode} readOnly className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4 flex-1" placeholder="우편번호" required />
+                                            <button type="button" onClick={openAddressSearch} className="bg-[#0c2340] hover:bg-[#0a1f38] text-white font-bold px-6 rounded-none text-sm transition-colors">검색</button>
                                         </div>
-                                        <input type="text" value={formData.address} readOnly className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 mb-2" placeholder="기본 주소" required />
-                                        <input type="text" name="addressDetail" value={formData.addressDetail} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4" placeholder="상세 주소" required />
+                                        <input type="text" value={formData.address} readOnly className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4 mb-2" placeholder="기본 주소" required />
+                                        <input type="text" name="addressDetail" value={formData.addressDetail} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4" placeholder="상세 주소" required />
                                     </div>
                                 )}
 
@@ -439,7 +457,7 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                                         name="inquiry"
                                         value={formData.inquiry}
                                         onChange={handleChange}
-                                        className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4 min-h-[120px]"
+                                        className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4 min-h-[120px]"
                                         placeholder="상담 받고 싶으신 시간대나 궁금하신 점을 남겨주세요."
                                     />
                                 </div>
@@ -447,7 +465,7 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
 
                             {/* 약관 동의 */}
                             <div className="space-y-4">
-                                <div className="bg-[#f9fafb] border border-gray-100 rounded-[24px] p-6 text-[11px] text-[#8b95a1] leading-relaxed max-h-[160px] overflow-y-auto no-scrollbar">
+                                <div className="bg-[#f9fafb] border border-gray-100 rounded-none p-6 text-[11px] text-[#8b95a1] leading-relaxed max-h-[160px] overflow-y-auto no-scrollbar">
                                     {(() => {
                                         const currentProd = formData.selectedProduct;
                                         const isSmartCare = ["smartcare", "스마트케어", "스마트 케어"].includes(currentProd);
@@ -480,14 +498,14 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                                     })()}
                                 </div>
 
-                                <div className="bg-[#f9fafb] rounded-[24px] p-6 border border-gray-100">
+                                <div className="bg-[#f9fafb] rounded-none p-6 border border-gray-100">
                                     <label className="flex items-center gap-3 cursor-pointer">
                                         <input
                                             type="checkbox"
                                             checked={formData.privacyAgreed}
                                             onChange={handleChange}
                                             name="privacyAgreed"
-                                            className="w-6 h-6 rounded-lg border-gray-300 text-sono-primary focus:ring-sono-primary"
+                                            className="w-6 h-6 rounded-none border-gray-300 text-sono-primary focus:ring-sono-primary"
                                             required
                                         />
                                         <span className="text-sm font-bold text-[#4e5968]">개인정보 활용 동의 <span className="text-sono-primary">(필수)</span></span>
@@ -498,7 +516,7 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="btn-primary w-full py-5 text-xl shadow-xl shadow-sono-primary/20 disabled:opacity-50 !rounded-[24px]"
+                                className="bg-[#0c2340] hover:bg-[#0a1f38] text-white w-full py-5 text-xl font-bold transition-colors disabled:opacity-50 rounded-none shadow-xl shadow-[#0c2340]/10"
                             >
                                 {isSubmitting ? "접수 중..." : "상담 신청 완료하기"}
                             </button>
@@ -509,3 +527,17 @@ export default function PartnerInquiryPage({ params }: { params: Promise<{ partn
         </main>
     );
 }
+
+export default function PartnerInquiryPage({ params }: { params: Promise<{ partnerId: string }> }) {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-sono-light flex items-center justify-center">
+                <div className="animate-spin w-10 h-10 border-4 border-sono-primary border-t-transparent rounded-full"></div>
+            </div>
+        }>
+            <InquiryPageContent params={params} />
+        </Suspense>
+    );
+}
+
+export const dynamic = 'force-dynamic';

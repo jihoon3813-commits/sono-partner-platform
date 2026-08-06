@@ -6,6 +6,7 @@ import CustomerDetailModal from "./CustomerDetailModal";
 import CustomerRegistrationModal from "./CustomerRegistrationModal";
 import BulkUploadModal from "./BulkUploadModal";
 import { getStatusStyles as getDynamicStatusStyles } from "@/lib/statusUtils";
+import { getKSTDateString, getKSTMonthsAgoDateString, getKSTLastMonthRange } from "@/lib/dateUtils";
 
 interface CustomerManagementProps {
     applications: Application[];
@@ -150,19 +151,14 @@ export default function CustomerManagement({
     ];
 
     // KST 기준 오늘 및 이번 달 계산
-    const kstNow = new Date(new Date().getTime() + (new Date().getTimezoneOffset() + 540) * 60000);
-    const today = kstNow.toISOString().slice(0, 10);
-    const thisMonth = kstNow.toISOString().slice(0, 7);
+    const today = getKSTDateString();
+    const thisMonth = today.slice(0, 7);
 
     const getStartDateStr = (filter: string) => {
-        const d = new Date(kstNow);
-        switch (filter) {
-            case '3months': d.setMonth(kstNow.getMonth() - 3); break;
-            case '6months': d.setMonth(kstNow.getMonth() - 6); break;
-            case '1year': d.setFullYear(kstNow.getFullYear() - 1); break;
-            default: return "";
-        }
-        return d.toISOString().slice(0, 10);
+        if (filter === '3months') return getKSTMonthsAgoDateString(3);
+        if (filter === '6months') return getKSTMonthsAgoDateString(6);
+        if (filter === '1year') return getKSTMonthsAgoDateString(12);
+        return "";
     };
 
     // 1. Initial filtered applications based on search, date, and basic criteria
@@ -198,36 +194,29 @@ export default function CustomerManagement({
             // 기준 날짜: 가입일(registrationDate)이 있으면 우선 사용, 없으면 신청일(createdAt) 사용
             let refDateStr = app.registrationDate || app.createdAt || "";
             
-            // Excel 시리얼 번호 등 비표준 형식 처리 (formatDate 헬퍼와 유사한 로직)
+            // Excel 시리얼 번호 등 비표준 형식 처리
             if (app.registrationDate && !app.registrationDate.includes('-')) {
                 const serial = parseFloat(String(app.registrationDate));
                 if (!isNaN(serial) && serial > 30000 && serial < 60000) {
                     const d = new Date((serial - 25569) * 86400 * 1000);
-                    refDateStr = d.toISOString().slice(0, 10);
+                    refDateStr = getKSTDateString(d);
                 }
             }
 
-            // KST 날짜 부분 추출 (YYYY-MM-DD)
-            const kstDatePart = refDateStr.includes('T') 
-                ? refDateStr.slice(0, 10) 
-                : refDateStr.split(' ')[0].replace(/\./g, '-').trim();
+            // KST 날짜 변환 (YYYY-MM-DD)
+            const kstDatePart = getKSTDateString(refDateStr);
 
             if (dateFilter === "today") {
                 if (kstDatePart !== today) return false;
             } else if (dateFilter === "yesterday") {
-                const d = new Date(kstNow);
-                d.setDate(d.getDate() - 1);
-                const yesterday = d.toISOString().slice(0, 10);
+                const yesterday = getKSTDateString(new Date(Date.now() - 86400000));
                 if (kstDatePart !== yesterday) return false;
             } else if (dateFilter === "month") {
                 if (kstDatePart.slice(0, 7) !== thisMonth) return false;
             } else if (dateFilter === "lastMonth") {
-                const d = new Date(kstNow);
-                d.setMonth(d.getMonth() - 1);
-                const lastMonth = d.toISOString().slice(0, 7);
-                if (kstDatePart.slice(0, 7) !== lastMonth) return false;
+                const lastMonthRange = getKSTLastMonthRange();
+                if (kstDatePart < lastMonthRange.start || kstDatePart > lastMonthRange.end) return false;
             } else if (dateFilter === 'custom') {
-                // 기간 선택 시에도 표시되는 날짜(기준일)를 기준으로 비교
                 if (customStartDate && kstDatePart < customStartDate) return false;
                 if (customEndDate && kstDatePart > customEndDate) return false;
             } else {

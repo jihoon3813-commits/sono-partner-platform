@@ -3,14 +3,20 @@
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useState } from "react";
+import { 
+    getKSTDateString, 
+    getKSTFirstDayOfMonth, 
+    getKSTLastMonthRange, 
+    getKSTMonthsAgoDateString 
+} from "@/lib/dateUtils";
 
 export default function AnalyticsDashboard() {
     const [startDate, setStartDate] = useState(() => {
-        const d = new Date();
-        d.setDate(d.getDate() - 7);
-        return d.toISOString().split("T")[0];
+        const now = new Date();
+        const d = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+        return getKSTDateString(d);
     });
-    const [endDate, setEndDate] = useState(() => new Date().toISOString().split("T")[0]);
+    const [endDate, setEndDate] = useState(() => getKSTDateString());
     const [selectedPartner, setSelectedPartner] = useState("");
 
     const stats = useQuery(api.analytics.getStatsSummary, {
@@ -31,7 +37,7 @@ export default function AnalyticsDashboard() {
             {/* Filters */}
             <div className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex flex-wrap gap-4 items-end">
                     <div className="flex-1">
-                        <label className="block text-[11px] font-bold text-gray-400 mb-1 ml-1">기간 설정</label>
+                        <label className="block text-[11px] font-bold text-gray-400 mb-1 ml-1">기간 설정 (대한민국 표준시 KST 기준)</label>
                         <div className="flex flex-wrap gap-2 mb-3">
                             {[
                                 { label: "당일", range: "today" },
@@ -43,30 +49,25 @@ export default function AnalyticsDashboard() {
                                 <button
                                     key={btn.range}
                                     onClick={() => {
-                                        const now = new Date();
-                                        const kstNow = new Date(now.getTime() + (now.getTimezoneOffset() + 540) * 60000);
-                                        const format = (d: Date) => d.toISOString().split('T')[0];
-                                        
-                                        let start = format(kstNow);
-                                        let end = format(kstNow);
+                                        const today = getKSTDateString();
+                                        let start = today;
+                                        let end = today;
                                         
                                         if (btn.range === 'yesterday') {
-                                            const d = new Date(kstNow);
+                                            const d = new Date();
                                             d.setDate(d.getDate() - 1);
-                                            start = format(d);
-                                            end = format(d);
+                                            start = getKSTDateString(d);
+                                            end = getKSTDateString(d);
                                         } else if (btn.range === 'thisMonth') {
-                                            const d = new Date(kstNow.getFullYear(), kstNow.getMonth(), 1, 12);
-                                            start = format(d);
+                                            start = getKSTFirstDayOfMonth();
+                                            end = today;
                                         } else if (btn.range === 'lastMonth') {
-                                            const s = new Date(kstNow.getFullYear(), kstNow.getMonth() - 1, 1, 12);
-                                            const e = new Date(kstNow.getFullYear(), kstNow.getMonth(), 0, 12);
-                                            start = format(s);
-                                            end = format(e);
+                                            const range = getKSTLastMonthRange();
+                                            start = range.start;
+                                            end = range.end;
                                         } else if (btn.range === '3months') {
-                                            const d = new Date(kstNow);
-                                            d.setMonth(d.getMonth() - 3);
-                                            start = format(d);
+                                            start = getKSTMonthsAgoDateString(3);
+                                            end = today;
                                         }
                                         
                                         setStartDate(start);

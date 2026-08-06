@@ -184,7 +184,6 @@ export default function PartnerCenterLoginPage() {
                     </div>
                 </div>
             </div>
-            <Footer />
         </div>
     );
 

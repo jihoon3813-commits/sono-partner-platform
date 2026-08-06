@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import LectureViewer from "@/components/LectureViewer";
+import ImportantNotice from "@/components/common/ImportantNotice";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 
@@ -944,6 +945,46 @@ export default function SmartCareLecturePage() {
                                 </li>
                             </ul>
                         </div>
+
+                        {/* 24시간 긴급 장례 접수 안내 배너 */}
+                        <div className="mt-8 max-w-4xl mx-auto bg-gradient-to-r from-[#2c0d12] via-[#0f172a] to-[#0f172a] border border-red-500/15 rounded-2xl p-6 flex flex-col lg:flex-row justify-between items-center gap-6 shadow-2xl relative overflow-hidden text-left">
+                            <div className="absolute top-0 left-0 w-32 h-32 bg-red-600/5 rounded-full blur-2xl pointer-events-none"></div>
+                            <div className="absolute bottom-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full blur-2xl pointer-events-none"></div>
+
+                            <div className="flex-grow">
+                                <div className="inline-flex items-center gap-1.5 bg-red-600/10 text-red-400 border border-red-500/20 text-[10px] sm:text-xs font-black px-3 py-1 rounded-full mb-3">
+                                    <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>24시간 365일 연중무휴 긴급 상황실</span>
+                                </div>
+                                <h3 className="text-xl sm:text-2xl font-black text-white leading-tight mb-2 tracking-tight break-keep">
+                                    갑작스러운 임종 시 <span className="text-[#ff4d4f]">24시간 긴급 장례 접수</span>
+                                </h3>
+                                <p className="text-slate-400 text-xs font-bold leading-relaxed mb-4 break-keep max-w-xl">
+                                    당황하지 마시고 바로 전화 주십시오. 국가공인 장례지도사가 즉시 현장으로 출동하여 수의, 관, 차량 및 식장 수급을 진정성 있게 케어합니다.
+                                </p>
+                                <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-slate-300">
+                                    <span className="flex items-center gap-1 bg-white/5 border border-white/10 px-2.5 py-1 rounded">
+                                        <span className="text-red-400">🛡️</span> 전국 소노 전문 장례식장 연계 우대
+                                    </span>
+                                    <span className="flex items-center gap-1 bg-white/5 border border-white/10 px-2.5 py-1 rounded">
+                                        <span className="text-red-400">👥</span> 지도사 2인 & 의전도우미 4인 밀착 케어
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="w-full lg:w-64 shrink-0 bg-white/5 border border-white/10 rounded-xl p-4 text-center shadow-inner flex flex-col justify-center">
+                                <div className="text-white/60 text-[10px] font-bold tracking-wide mb-1">24시간 긴급 장례 접수 전용</div>
+                                <a href="tel:1588-2227" className="text-2xl font-black text-white hover:text-red-400 transition-colors tracking-widest block mb-3">1588-2227</a>
+                                <a href="tel:1588-2227" className="flex items-center justify-center gap-2 bg-[#ff4d4f] hover:bg-[#e03f41] text-white font-black text-xs py-2.5 px-4 rounded-lg transition-all shadow-md">
+                                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                        <path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57a1.02 1.02 0 00-1.02.24l-2.2 2.2a15.045 15.045 0 01-6.59-6.59l2.2-2.2a1 1 0 00.25-1.02A11.36 11.36 0 018.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z" />
+                                    </svg>
+                                    <span>지금 긴급 출동 요청</span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )
@@ -1188,86 +1229,8 @@ export default function SmartCareLecturePage() {
         {
             id: "disclosure-info",
             content: (
-                <div className="h-full bg-[#f8f9fb] p-10 flex flex-col justify-center">
-                    <div className="max-w-[1250px] mx-auto w-full space-y-10">
-                        <div className="text-center">
-                            <h2 className="text-5xl font-black text-sono-dark tracking-tighter">중요정보 고지사항</h2>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-8 flex-grow">
-                            {/* Section 1 */}
-                            <div className="bg-white rounded-[40px] p-10 shadow-sm border border-gray-100 flex flex-col">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-1.5 h-8 bg-[#3b82f6] rounded-full"></div>
-                                    <h3 className="text-2xl font-black text-sono-dark">환급기준 및 환급시기</h3>
-                                </div>
-                                <div className="space-y-4 text-gray-500 font-bold text-lg leading-relaxed">
-                                    <div className="flex gap-2">
-                                        <span className="text-[#3b82f6] mt-1.5">•</span>
-                                        <p className="break-keep">중도해약에 대한 환급 기준은 상조서비스 약관 규정에 의해 환급됩니다.</p>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <span className="text-[#3b82f6] mt-1.5">•</span>
-                                        <p className="break-keep">환급금은 신청완료일로부터 3영업일 이내에 수령하실 수 있습니다.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Section 2 */}
-                            <div className="bg-white rounded-[40px] p-10 shadow-sm border border-gray-100 flex flex-col">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-1.5 h-8 bg-[#3b82f6] rounded-full"></div>
-                                    <h3 className="text-2xl font-black text-sono-dark">총 고객환급의무액 및 자산 현황</h3>
-                                </div>
-                                <div className="bg-[#f8f9fb] rounded-3xl p-6 mb-4 grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                        <p className="text-xs font-black text-gray-400">총 고객환급의무액</p>
-                                        <p className="text-xl font-black text-[#3b82f6]">1,129,868,124천원</p>
-                                    </div>
-                                    <div className="space-y-1 border-l border-gray-200 pl-6">
-                                        <p className="text-xs font-black text-gray-400">상조 관련 자산</p>
-                                        <p className="text-xl font-black text-[#3b82f6]">1,230,275,029천원</p>
-                                    </div>
-                                </div>
-                                <p className="text-sm font-bold text-gray-400 text-center">
-                                    (주)소노스테이션은 성지회계법인의 공인회계사를 통해 회계감사를 받고 있습니다.
-                                </p>
-                            </div>
-
-                            {/* Section 3 */}
-                            <div className="bg-white rounded-[40px] p-10 shadow-sm border border-gray-100 flex flex-col">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-1.5 h-8 bg-[#3b82f6] rounded-full"></div>
-                                    <h3 className="text-2xl font-black text-sono-dark">고객 불입금 관리방법</h3>
-                                </div>
-                                <p className="text-gray-500 font-bold text-lg leading-relaxed break-keep">
-                                    [할부거래에 관한 법률] 제18조에 의거 선불식 할부거래업 등록하였으며, 동법 제27조에 따라 고객 불입금의 50%는 상조보증공제조합에 소비자피해보상을 위한 공제계약을 체결하고 있습니다.
-                                </p>
-                            </div>
-
-                            {/* Section 4 */}
-                            <div className="bg-white rounded-[40px] p-10 shadow-sm border border-gray-100 flex flex-col">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-1.5 h-8 bg-[#3b82f6] rounded-full"></div>
-                                    <h3 className="text-2xl font-black text-sono-dark">소비자 유의사항</h3>
-                                </div>
-                                <div className="space-y-4 text-gray-500 font-bold text-lg leading-relaxed">
-                                    <div className="flex gap-2">
-                                        <span className="text-[#3b82f6] mt-1.5">•</span>
-                                        <p className="break-keep">장의차량 운행 시 발생되는 도로공사 비용(통행료) 및 주차비 등은 고객 부담입니다.</p>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <span className="text-[#3b82f6] mt-1.5">•</span>
-                                        <p className="break-keep">장례식장 임대료 및 접객용 음식료 등은 상품 구성에서 제외되어 있습니다.</p>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <span className="text-[#3b82f6] mt-1.5">•</span>
-                                        <p className="break-keep">회비 납입 도중 행사 발생 시, 할인 전까지 잔여 회비를 일시납 하셔야 합니다.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div className="h-full bg-[#f8f9fb] p-6 md:p-10 flex flex-col justify-center overflow-y-auto">
+                    <ImportantNotice className="py-4 bg-transparent border-none" />
                 </div>
             )
         },

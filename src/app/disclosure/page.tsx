@@ -30,14 +30,14 @@ export default function DisclosurePage() {
 
     return (
         <div className="min-h-screen bg-sono-light flex flex-col">
-            <Header productType="smartcare" />
+            <Header productType="smartcare" forceWhiteBg={true} />
 
             {/* Main Content Area */}
             <main className="flex-grow pt-28 pb-20">
                 <div className="max-w-[1000px] mx-auto px-6">
                     {/* Header Title */}
                     <div className="text-center mb-12 animate-fade-in">
-                        <span className="badge-primary mb-4 px-5 py-2">PUBLIC DISCLOSURE</span>
+                        <span className="badge-primary mb-4 px-5 py-2 !rounded-none">PUBLIC DISCLOSURE</span>
                         <h1 className="text-3xl md:text-4xl font-black text-sono-dark tracking-tight mb-4">
                             중요정보 고시사항 및 해약환급금표
                         </h1>
@@ -47,14 +47,14 @@ export default function DisclosurePage() {
                     </div>
 
                     {/* Tab Navigation */}
-                    <div className="bg-white rounded-[24px] border border-gray-100 p-2 shadow-sm flex flex-col md:flex-row gap-1 mb-8 animate-fade-in">
+                    <div className="bg-white rounded-none border border-gray-100 p-2 shadow-sm flex flex-col md:flex-row gap-1 mb-8 animate-fade-in">
                         {(Object.keys(images) as TabType[]).map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`flex-1 py-4 px-6 rounded-[18px] text-sm md:text-base font-black transition-all ${
+                                className={`flex-1 py-4 px-6 rounded-none text-sm md:text-base font-black transition-all ${
                                     activeTab === tab
-                                        ? "bg-sono-primary text-white shadow-lg shadow-sono-primary/10 scale-[1.01]"
+                                        ? "bg-blue-800 text-white shadow-lg shadow-blue-800/10 scale-[1.01]"
                                         : "text-gray-400 hover:text-sono-dark hover:bg-gray-50"
                                 }`}
                             >
@@ -64,7 +64,7 @@ export default function DisclosurePage() {
                     </div>
 
                     {/* Image Viewer Container */}
-                    <div className="bg-white rounded-[32px] border border-gray-100 p-6 md:p-10 shadow-xl flex flex-col items-center animate-fade-in relative group">
+                    <div className="bg-white rounded-none border border-gray-100 p-6 md:p-10 shadow-xl flex flex-col items-center animate-fade-in relative group">
                         {/* Action buttons */}
                         <div className="w-full flex justify-between items-center mb-6">
                             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
@@ -73,7 +73,7 @@ export default function DisclosurePage() {
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setIsLightboxOpen(true)}
-                                    className="px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-xl text-xs font-black transition-all flex items-center gap-1.5"
+                                    className="px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-none text-xs font-black transition-all flex items-center gap-1.5"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
@@ -84,7 +84,7 @@ export default function DisclosurePage() {
                                     href={images[activeTab].url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="px-4 py-2 bg-sono-primary/5 hover:bg-sono-primary/10 text-sono-primary rounded-xl text-xs font-black transition-all flex items-center gap-1.5"
+                                    className="px-4 py-2 bg-sono-primary/5 hover:bg-sono-primary/10 text-sono-primary rounded-none text-xs font-black transition-all flex items-center gap-1.5"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -97,7 +97,7 @@ export default function DisclosurePage() {
                         {/* Interactive Image Frame */}
                         <div 
                             onClick={() => setIsLightboxOpen(true)}
-                            className="w-full border border-gray-100 rounded-2xl overflow-hidden cursor-zoom-in relative group max-h-[800px] flex justify-center bg-gray-50/50"
+                            className="w-full border border-gray-100 rounded-none overflow-hidden cursor-zoom-in relative group max-h-[800px] flex justify-center bg-gray-50/50"
                         >
                             <img
                                 src={images[activeTab].url}
@@ -106,7 +106,7 @@ export default function DisclosurePage() {
                             />
                             {/* Hover overlay hint */}
                             <div className="absolute inset-0 bg-sono-dark/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                                <div className="bg-white/95 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-sono-dark font-black text-sm">
+                                <div className="bg-white/95 backdrop-blur-sm px-5 py-3 rounded-none shadow-xl flex items-center gap-2 text-sono-dark font-black text-sm">
                                     <svg className="w-5 h-5 text-sono-primary animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
                                     </svg>
@@ -139,13 +139,13 @@ export default function DisclosurePage() {
 
                     {/* Zoomable Image Container */}
                     <div 
-                        className="max-w-full max-h-full overflow-auto flex justify-center items-start p-4 cursor-zoom-out"
+                        className="w-full h-[calc(100%-80px)] mt-16 overflow-auto p-4 cursor-zoom-out flex justify-center items-start"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <img
                             src={images[activeTab].url}
                             alt={images[activeTab].title}
-                            className="max-h-[90vh] w-auto object-contain rounded-lg shadow-2xl"
+                            className="min-w-[800px] md:min-w-[1400px] max-w-[1600px] w-full h-auto object-contain rounded-none shadow-2xl"
                             onClick={() => setIsLightboxOpen(false)}
                         />
                     </div>

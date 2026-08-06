@@ -70,3 +70,40 @@ export const createAdmin = mutation({
         });
     }
 });
+
+export const updateAdmin = mutation({
+    args: {
+        adminId: v.string(),
+        updates: v.any(),
+    },
+    handler: async (ctx, args) => {
+        let admin = await ctx.db
+            .query("admins")
+            .withIndex("by_adminId", (q) => q.eq("adminId", args.adminId))
+            .first();
+
+        if (!admin) {
+            admin = await ctx.db
+                .query("admins")
+                .withIndex("by_email", (q) => q.eq("email", args.adminId))
+                .first();
+        }
+
+        if (!admin) {
+            // If admin table is empty/not seeded yet, create master admin record
+            const newId = await ctx.db.insert("admins", {
+                adminId: args.adminId || "admin",
+                email: args.updates.email || "admin@sono.com",
+                password: args.updates.password || "admin1234",
+                adminName: args.updates.adminName || "본사 관리자",
+                role: "admin",
+            });
+            await ctx.db.patch(newId, args.updates);
+            return true;
+        }
+
+        await ctx.db.patch(admin._id, args.updates);
+        return true;
+    }
+});
+

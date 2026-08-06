@@ -1,6 +1,6 @@
 "use client";
 
-import Happy450Content from "@/components/products/Happy450Content";
+import SmartCareContent from "@/components/products/SmartCareContent";
 import { useState, useEffect, use } from "react";
 
 interface PartnerData {
@@ -9,7 +9,7 @@ interface PartnerData {
     partnerId: string;
 }
 
-export default function PartnerHappy450Page({ params }: { params: Promise<{ partnerId: string }> }) {
+export default function PartnerSmartCareDirectPage({ params }: { params: Promise<{ partnerId: string }> }) {
     const resolvedParams = use(params);
     const [isLoading, setIsLoading] = useState(true);
     const [partner, setPartner] = useState<PartnerData | null>(null);
@@ -66,7 +66,7 @@ export default function PartnerHappy450Page({ params }: { params: Promise<{ part
     }
 
     return (
-        <Happy450Content
+        <SmartCareContent
             partnerMode={true}
             partnerUrl={partner?.customUrl || resolvedParams.partnerId}
             partnerName={partner?.name || ""}

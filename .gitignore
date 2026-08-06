@@ -42,3 +42,7 @@ sono-partner-platform-ffc72a7c5075.json
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Scratch
+scratch/
+

@@ -25,9 +25,27 @@ export const getStatusStyles = (statusLabel: string, dbStatuses: any[] | undefin
         return getLegacyStatusStyles(statusLabel);
     }
 
+    if (statusInfo.color.startsWith('#')) {
+        // Return inline style compatible representation or standard badge fallback
+        return `status-custom-color`;
+    }
+
     const colorConfig = STATUS_COLORS.find(c => c.color === statusInfo.color) || STATUS_COLORS[1];
     return `${colorConfig.bg} ${colorConfig.color} ${colorConfig.border}`;
 };
+
+export const getStatusInlineStyle = (colorStr: string | undefined) => {
+    if (!colorStr) return {};
+    if (colorStr.startsWith('#')) {
+        return {
+            backgroundColor: `${colorStr}15`,
+            color: colorStr,
+            borderColor: `${colorStr}40`
+        };
+    }
+    return {};
+};
+
 
 export const getLegacyStatusStyles = (status: string) => {
     switch (status) {

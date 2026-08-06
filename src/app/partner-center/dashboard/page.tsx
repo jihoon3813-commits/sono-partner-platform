@@ -16,6 +16,7 @@ import IndividualPageManagement from "@/components/dashboard/IndividualPageManag
 import RetentionManagement from "@/components/dashboard/RetentionManagement";
 import RetentionManagement2 from "@/components/dashboard/RetentionManagement2";
 import TMManagement from "@/components/dashboard/TMManagement";
+import AccountManagement from "@/components/dashboard/AccountManagement";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { PartnerRequest } from "@/lib/types";
@@ -43,15 +44,30 @@ export default function PartnerDashboard() {
     };
 
     const [baseUrl, setBaseUrl] = useState("");
-    const [copySuccess, setCopySuccess] = useState(false);
+    const [copySuccessSmartCare, setCopySuccessSmartCare] = useState(false);
+    const [copySuccessHappy450, setCopySuccessHappy450] = useState(false);
+    const [copySuccessInquiry, setCopySuccessInquiry] = useState(false);
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
     const [selectedRequest, setSelectedRequest] = useState<PartnerRequest | null>(null);
-    const [settingsSubTab, setSettingsSubTab] = useState<"status" | "individual">("status");
+    const [settingsSubTab, setSettingsSubTab] = useState<"status" | "individual" | "account">("status");
+    const [hqAdminSession, setHqAdminSession] = useState<any>(null);
 
     // Filter States (Lifted from CustomerManagement)
     const [dateFilter, setDateFilter] = useState("all");
     const [customStartDate, setCustomStartDate] = useState("");
     const [customEndDate, setCustomEndDate] = useState("");
+
+    const handleReturnToHqAdmin = () => {
+        if (typeof window !== "undefined") {
+            const savedHq = localStorage.getItem("hqAdminSession");
+            if (savedHq) {
+                sessionStorage.setItem("partnerSession", savedHq);
+                localStorage.setItem("partnerSession", savedHq);
+                setPartner(JSON.parse(savedHq));
+                window.location.href = "/partner-center/dashboard";
+            }
+        }
+    };
 
     // 네비게이션 헬퍼 컴포넌트
     const NavButton = ({ id, label, icon, count }: { id: string; label: string; icon: string; count?: number }) => (
@@ -76,6 +92,17 @@ export default function PartnerDashboard() {
 
     // 세션 로드 (컴포넌트 마운트 시 한 번만 실행)
     useEffect(() => {
+        if (typeof window !== "undefined") {
+            const savedHq = localStorage.getItem("hqAdminSession");
+            if (savedHq) {
+                try {
+                    setHqAdminSession(JSON.parse(savedHq));
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+
         // sessionStorage 우선 확인 (관리자 바로가기 등 탭 격리 세션)
         let session = sessionStorage.getItem("partnerSession");
         
@@ -97,6 +124,13 @@ export default function PartnerDashboard() {
             }
             const partnerInfo = JSON.parse(session);
             setPartner(partnerInfo);
+
+            // 본사 어드민 로그인일 경우 hqAdminSession 보존
+            if (partnerInfo.role === 'admin' || partnerInfo.level === 'admin' || partnerInfo.customUrl === 'admin' || partnerInfo.loginId === 'admin') {
+                localStorage.setItem("hqAdminSession", JSON.stringify(partnerInfo));
+                setHqAdminSession(partnerInfo);
+            }
+
             setBaseUrl(window.location.origin);
         } catch (e) {
             console.error("Session parse error:", e);
@@ -174,10 +208,10 @@ export default function PartnerDashboard() {
 
     const handleCopyUrl = () => {
         if (!partner?.customUrl || partner.customUrl === "admin") return;
-        const url = `${baseUrl}/p/${partner.customUrl}`;
+        const url = `${baseUrl}/${partner.customUrl}/smartcare`;
         navigator.clipboard.writeText(url).then(() => {
-            setCopySuccess(true);
-            setTimeout(() => setCopySuccess(false), 2000);
+            setCopySuccessSmartCare(true);
+            setTimeout(() => setCopySuccessSmartCare(false), 2000);
         });
     };
 
@@ -313,6 +347,29 @@ export default function PartnerDashboard() {
 
     return (
         <div className="min-h-screen bg-[#f2f4f6]">
+            {/* 본사 어드민 파트너 접속 상태 배너 */}
+            {hqAdminSession && !isAdmin && (
+                <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white px-4 py-2.5 shadow-md flex items-center justify-between text-xs font-bold relative z-50">
+                    <div className="flex items-center gap-2 max-w-4xl">
+                        <span className="bg-indigo-500 text-white px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-black shrink-0">
+                            HQ ADMIN IMPERSONATION
+                        </span>
+                        <span className="truncate">
+                            🛡️ 본사 관리자 권한으로 접속 중입니다. (현재 파트너: <strong className="text-amber-400">{partner?.companyName || partner?.name || partner?.loginId}</strong>)
+                        </span>
+                    </div>
+                    <button
+                        onClick={handleReturnToHqAdmin}
+                        className="bg-amber-400 hover:bg-amber-300 text-slate-950 px-3 py-1 rounded-lg text-xs font-black transition-all shadow-sm shrink-0 flex items-center gap-1 cursor-pointer"
+                    >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0" />
+                        </svg>
+                        본사 어드민 복귀
+                    </button>
+                </div>
+            )}
+
             {/* Header */}
             <header className="relative z-50 bg-white border-b border-gray-100 px-4 md:px-8 py-3 md:py-4">
                 {isAdmin ? (
@@ -420,6 +477,7 @@ export default function PartnerDashboard() {
                                         <NavButton id="tms" label="상담원 관리" icon="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a2 2 0 11-4 0 2 2 0 014 0z" />
                                     )}
                                     <NavButton id="library" label="자료실" icon="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.247 18.477 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    <NavButton id="settings" label="환경설정" icon="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </nav>
                             </div>
 
@@ -444,8 +502,15 @@ export default function PartnerDashboard() {
                                 )}
                                 <button
                                     onClick={() => { 
+                                        if (hqAdminSession && !isAdmin) {
+                                            if (confirm("본사 어드민 계정으로 복귀하시겠습니까?\n('취소'를 누르시면 전체 로그아웃됩니다)")) {
+                                                handleReturnToHqAdmin();
+                                                return;
+                                            }
+                                        }
                                         sessionStorage.removeItem("partnerSession");
                                         localStorage.removeItem("partnerSession"); 
+                                        localStorage.removeItem("hqAdminSession");
                                         router.push("/partner-center"); 
                                     }}
                                     className="bg-gray-100 text-gray-500 px-2 py-1.5 rounded-lg text-[10px] font-black hover:bg-red-50 hover:text-red-500 transition-all whitespace-nowrap"
@@ -468,6 +533,7 @@ export default function PartnerDashboard() {
                                     <NavButton id="tms" label="상담원 관리" icon="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a2 2 0 11-4 0 2 2 0 014 0z" />
                                 )}
                                 <NavButton id="library" label="자료실" icon="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.247 18.477 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                <NavButton id="settings" label="환경설정" icon="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             </nav>
                         </div>
                     </div>
@@ -475,90 +541,375 @@ export default function PartnerDashboard() {
             </header>
 
             <main className={`${activeTab === 'retention2' ? 'max-w-[1600px]' : 'max-w-7xl'} mx-auto p-4 md:p-8`}>
-                {/* URL Display - Only visible on Dashboard (overview) tab when showLandingUrl is not false */}
-                {activeTab === "overview" && partner.customUrl && partner.customUrl !== "admin" && isLandingUrlVisible && (
-                    <div className="flex flex-col gap-4 mb-6">
-                        {/* Landing URL */}
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 md:p-6 rounded-[24px] md:rounded-[32px] shadow-sm border border-gray-100">
-                            <div className="flex-1 flex flex-col gap-1 w-full overflow-hidden">
-                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                                    {currentPartner.partnerGroup === "결합 상품 판매" ? "결합상품 페이지 랜딩 URL" : "내 파트너 페이지 랜딩 URL"}
-                                </span>
-                                <span className="text-sm md:text-lg font-mono text-sono-primary truncate">
-                                    {baseUrl.replace(/^https?:\/\//, "")}/p/{partner.customUrl}{currentPartner.partnerGroup === "결합 상품 판매" ? "/products/smartcare" : ""}
-                                </span>
-                            </div>
-                            <div className="flex gap-2 w-full md:w-auto">
-                                <button
-                                    onClick={() => {
-                                        const url = `${baseUrl}/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/products/smartcare" : ""}`;
-                                        navigator.clipboard.writeText(url).then(() => {
-                                            setCopySuccess(true);
-                                            setTimeout(() => setCopySuccess(false), 2000);
-                                        });
-                                    }}
-                                    className={`flex-1 md:flex-none flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-bold px-3 sm:px-6 py-3.5 rounded-2xl transition-all whitespace-nowrap ${copySuccess
-                                        ? "bg-green-500 text-white animate-bounce-short"
-                                        : "bg-sono-primary/10 text-sono-primary hover:bg-sono-primary hover:text-white"
-                                        }`}
-                                >
-                                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                    </svg>
-                                    <span>{copySuccess ? "주소 복사됨" : "랜딩 URL 복사"}</span>
-                                </button>
-                                <a
-                                    href={`/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/products/smartcare" : ""}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex-1 md:flex-none flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-bold px-3 sm:px-6 py-3.5 rounded-2xl bg-gray-100 text-gray-500 hover:bg-sono-dark hover:text-white transition-all shadow-sm whitespace-nowrap"
-                                >
-                                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                    </svg>
-                                    <span>페이지 이동</span>
-                                </a>
-                            </div>
-                        </div>
+                {/* URL Display - Visible on Dashboard (overview) tab for BOTH HQ Admin and Partners */}
+                {activeTab === "overview" && (
+                    <div className="mb-8 space-y-4">
+                        {isAdmin || partner?.customUrl === "admin" ? (
+                            <>
+                                {/* Section Header (HQ Admin) */}
+                                <div className="flex items-center justify-between px-1">
+                                    <div>
+                                        <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+                                            <span className="w-2.5 h-2.5 bg-sono-primary inline-block rounded-full"></span>
+                                            공식 상품 대표 랜딩 연결 URL 바로가기
+                                        </h3>
+                                        <p className="text-xs text-slate-500 font-medium mt-0.5">
+                                            고객 및 파트너사 문의 시 안내할 수 있는 소노 공식 대표 상품별 연결 URL입니다.
+                                        </p>
+                                    </div>
+                                </div>
 
-                        {/* Inquiry URL */}
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 md:p-6 rounded-[24px] md:rounded-[32px] shadow-sm border border-gray-100">
-                            <div className="flex-1 flex flex-col gap-1 w-full overflow-hidden">
-                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                                    {currentPartner.partnerGroup === "결합 상품 판매" ? "결합상품 상담전용 URL" : "상담신청 전용 URL"}
-                                </span>
-                                <span className="text-sm md:text-lg font-mono text-purple-600 truncate">
-                                    {baseUrl.replace(/^https?:\/\//, "")}/p/{partner.customUrl}{currentPartner.partnerGroup === "결합 상품 판매" ? "/inquiry?product=smartcare" : "/inquiry"}
-                                </span>
-                            </div>
-                            <div className="flex gap-2 w-full md:w-auto">
-                                <button
-                                    onClick={() => {
-                                        const url = `${baseUrl}/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/inquiry?product=smartcare" : "/inquiry"}`;
-                                        navigator.clipboard.writeText(url).then(() => {
-                                            alert("상담신청 URL이 복사되었습니다.");
-                                        });
-                                    }}
-                                    className="flex-1 md:flex-none flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-bold px-3 sm:px-6 py-3.5 rounded-2xl bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all whitespace-nowrap"
-                                >
-                                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                    </svg>
-                                    <span>URL 복사</span>
-                                </button>
-                                <a
-                                    href={`/p/${partner.customUrl}${currentPartner.partnerGroup === "결합 상품 판매" ? "/inquiry?product=smartcare" : "/inquiry"}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex-1 md:flex-none flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-bold px-3 sm:px-6 py-3.5 rounded-2xl bg-gray-100 text-gray-500 hover:bg-sono-dark hover:text-white transition-all shadow-sm whitespace-nowrap"
-                                >
-                                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                    </svg>
-                                    <span>페이지 이동</span>
-                                </a>
-                            </div>
-                        </div>
+                                {/* 1. 상품 2종 공식 대표 URL 카드 박스 (2 Columns Grid) */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                    {/* Product Card 1: 스마트케어 (SmartCare) */}
+                                    <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-sono-primary/40 transition-all flex flex-col justify-between">
+                                        <div>
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="bg-sono-gold text-slate-900 text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase">
+                                                        BEST POPULAR
+                                                    </span>
+                                                    <span className="bg-sono-primary text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                        가전 결합 상품
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-3.5 items-start mb-4">
+                                                <img 
+                                                    src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785825079/2024112600085_0_vbmtin.jpg" 
+                                                    alt="스마트케어" 
+                                                    className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl shrink-0 border border-slate-100 shadow-sm"
+                                                />
+                                                <div>
+                                                    <h4 className="text-base md:text-lg font-black text-slate-900 mb-1">스마트케어 (SmartCare)</h4>
+                                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                                        삼성/LG 최신 가전 렌탈 지원금 전액 제공, 만기 100% 전액 환급 베스트셀러 결합 상품
+                                                    </p>
+                                                    <p className="text-xs font-bold text-sono-primary mt-1.5">월 33,000원부터</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl mb-4 font-mono text-xs text-slate-700 truncate">
+                                                <span className="text-slate-400 font-sans block text-[10px] font-bold uppercase mb-0.5">스마트케어 공식 대표 URL</span>
+                                                <span className="font-bold text-sono-primary truncate block">{baseUrl.replace(/^https?:\/\//, "")}/products/smartcare</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                                            <button
+                                                onClick={() => {
+                                                    const url = `${baseUrl}/products/smartcare`;
+                                                    navigator.clipboard.writeText(url).then(() => {
+                                                        setCopySuccessSmartCare(true);
+                                                        setTimeout(() => setCopySuccessSmartCare(false), 2000);
+                                                    });
+                                                }}
+                                                className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+                                                    copySuccessSmartCare 
+                                                    ? "bg-emerald-500 text-white" 
+                                                    : "bg-sono-primary/10 text-sono-primary hover:bg-sono-primary hover:text-white"
+                                                }`}
+                                            >
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                </svg>
+                                                <span>{copySuccessSmartCare ? "복사 완료!" : "URL 복사"}</span>
+                                            </button>
+                                            <a
+                                                href="/products/smartcare"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 text-white hover:bg-sono-primary text-xs font-bold transition-all shadow-sm"
+                                            >
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                                <span>페이지 이동</span>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {/* Product Card 2: 더 해피 450 ONE (Happy450) */}
+                                    <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-slate-400 transition-all flex flex-col justify-between">
+                                        <div>
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="bg-slate-100 text-slate-700 text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                        일반 상조 플랜
+                                                    </span>
+                                                    <span className="bg-slate-800 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                        인증 제휴 전용
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-3.5 items-start mb-4">
+                                                <img 
+                                                    src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785308928/ChatGPT_Image_2026%EB%85%84_7%EC%9B%94_29%EC%9D%BC_%EC%98%A4%ED%9B%84_03_38_13_1_1_mpokg4.png" 
+                                                    alt="더 해피 450 ONE" 
+                                                    className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl shrink-0 border border-slate-100 shadow-sm"
+                                                />
+                                                <div>
+                                                    <h4 className="text-base md:text-lg font-black text-slate-900 mb-1">더 해피 450 ONE</h4>
+                                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                                        기본 상조 서비스, 레디캐시, 만기 100% 전액 환급 스탠다드 상조 전용 플랜
+                                                    </p>
+                                                    <p className="text-xs font-bold text-slate-700 mt-1.5">월 18,000원부터</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl mb-4 font-mono text-xs text-slate-700 truncate">
+                                                <span className="text-slate-400 font-sans block text-[10px] font-bold uppercase mb-0.5">더 해피 450 공식 대표 URL</span>
+                                                <span className="font-bold text-slate-800 truncate block">{baseUrl.replace(/^https?:\/\//, "")}/products/happy450</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                                            <button
+                                                onClick={() => {
+                                                    const url = `${baseUrl}/products/happy450`;
+                                                    navigator.clipboard.writeText(url).then(() => {
+                                                        setCopySuccessHappy450(true);
+                                                        setTimeout(() => setCopySuccessHappy450(false), 2000);
+                                                    });
+                                                }}
+                                                className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+                                                    copySuccessHappy450 
+                                                    ? "bg-emerald-500 text-white" 
+                                                    : "bg-slate-100 text-slate-700 hover:bg-slate-800 hover:text-white"
+                                                }`}
+                                            >
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                </svg>
+                                                <span>{copySuccessHappy450 ? "복사 완료!" : "URL 복사"}</span>
+                                            </button>
+                                            <a
+                                                href="/products/happy450"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-100 text-slate-800 hover:bg-slate-900 hover:text-white text-xs font-bold transition-all shadow-sm"
+                                            >
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                                <span>페이지 이동</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        ) : isLandingUrlVisible && partner?.customUrl ? (
+                            <>
+                                {/* Section Header (Partner) */}
+                                <div className="flex items-center justify-between px-1">
+                                    <div>
+                                        <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+                                            <span className="w-2 h-2 bg-sono-primary inline-block rounded-full"></span>
+                                            파트너 전용 상품 연결 URL 관리
+                                        </h3>
+                                        <p className="text-xs text-slate-500 font-medium mt-0.5">
+                                            고객에게 공유할 상품별 직접 연결 URL 및 상담 전용 주소를 복사하여 홍보에 활용하세요. (URL 경로: /{partner.customUrl}/...)
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* 1. 상품 2종 파트너 전용 URL 카드 박스 (2 Columns Grid - Admin Theme) */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                    {/* Product Card 1: 스마트케어 (SmartCare) */}
+                                    <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-sono-primary/40 transition-all flex flex-col justify-between">
+                                        <div>
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="bg-sono-gold text-slate-900 text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase">
+                                                        BEST POPULAR
+                                                    </span>
+                                                    <span className="bg-sono-primary text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                        가전 결합 상품
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-3.5 items-start mb-4">
+                                                <img 
+                                                    src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785825079/2024112600085_0_vbmtin.jpg" 
+                                                    alt="스마트케어" 
+                                                    className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl shrink-0 border border-slate-100 shadow-sm"
+                                                />
+                                                <div>
+                                                    <h4 className="text-base md:text-lg font-black text-slate-900 mb-1">스마트케어 (SmartCare)</h4>
+                                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                                        삼성/LG 최신 가전 렌탈 지원금 전액 제공, 만기 100% 전액 환급 베스트셀러 결합 상품
+                                                    </p>
+                                                    <p className="text-xs font-bold text-sono-primary mt-1.5">월 33,000원부터</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl mb-4 font-mono text-xs text-slate-700 truncate">
+                                                <span className="text-slate-400 font-sans block text-[10px] font-bold uppercase mb-0.5">스마트케어 파트너 전용 URL</span>
+                                                <span className="font-bold text-sono-primary truncate block">{baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/smartcare</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                                            <button
+                                                onClick={() => {
+                                                    const url = `${baseUrl}/${partner.customUrl}/smartcare`;
+                                                    navigator.clipboard.writeText(url).then(() => {
+                                                        setCopySuccessSmartCare(true);
+                                                        setTimeout(() => setCopySuccessSmartCare(false), 2000);
+                                                    });
+                                                }}
+                                                className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+                                                    copySuccessSmartCare 
+                                                    ? "bg-emerald-500 text-white" 
+                                                    : "bg-sono-primary/10 text-sono-primary hover:bg-sono-primary hover:text-white"
+                                                }`}
+                                            >
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                </svg>
+                                                <span>{copySuccessSmartCare ? "복사 완료!" : "URL 복사"}</span>
+                                            </button>
+                                            <a
+                                                href={`/${partner.customUrl}/smartcare`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 text-white hover:bg-sono-primary text-xs font-bold transition-all shadow-sm"
+                                            >
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                                <span>페이지 이동</span>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {/* Product Card 2: 더 해피 450 ONE (Happy450) */}
+                                    <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-slate-400 transition-all flex flex-col justify-between">
+                                        <div>
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="bg-slate-100 text-slate-700 text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                        일반 상조 플랜
+                                                    </span>
+                                                    <span className="bg-slate-800 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                        인증 제휴 전용
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-3.5 items-start mb-4">
+                                                <img 
+                                                    src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785308928/ChatGPT_Image_2026%EB%85%84_7%EC%9B%94_29%EC%9D%BC_%EC%98%A4%ED%9B%84_03_38_13_1_1_mpokg4.png" 
+                                                    alt="더 해피 450 ONE" 
+                                                    className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl shrink-0 border border-slate-100 shadow-sm"
+                                                />
+                                                <div>
+                                                    <h4 className="text-base md:text-lg font-black text-slate-900 mb-1">더 해피 450 ONE</h4>
+                                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                                        기본 상조 서비스, 레디캐시, 만기 100% 전액 환급 스탠다드 상조 전용 플랜
+                                                    </p>
+                                                    <p className="text-xs font-bold text-slate-700 mt-1.5">월 18,000원부터</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl mb-4 font-mono text-xs text-slate-700 truncate">
+                                                <span className="text-slate-400 font-sans block text-[10px] font-bold uppercase mb-0.5">더 해피 450 파트너 전용 URL</span>
+                                                <span className="font-bold text-slate-800 truncate block">{baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/happy450</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                                            <button
+                                                onClick={() => {
+                                                    const url = `${baseUrl}/${partner.customUrl}/happy450`;
+                                                    navigator.clipboard.writeText(url).then(() => {
+                                                        setCopySuccessHappy450(true);
+                                                        setTimeout(() => setCopySuccessHappy450(false), 2000);
+                                                    });
+                                                }}
+                                                className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+                                                    copySuccessHappy450 
+                                                    ? "bg-emerald-500 text-white" 
+                                                    : "bg-slate-100 text-slate-700 hover:bg-slate-800 hover:text-white"
+                                                }`}
+                                            >
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                </svg>
+                                                <span>{copySuccessHappy450 ? "복사 완료!" : "URL 복사"}</span>
+                                            </button>
+                                            <a
+                                                href={`/${partner.customUrl}/happy450`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-100 text-slate-800 hover:bg-slate-900 hover:text-white text-xs font-bold transition-all shadow-sm"
+                                            >
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                                <span>페이지 이동</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 2. 상담신청 전용 URL 독립 카드 박스 (Full Width Card Box) */}
+                                <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-5 md:p-6 shadow-md flex flex-col md:flex-row items-center justify-between gap-4 border border-indigo-900/60 mt-4">
+                                    <div className="flex items-center gap-3.5 w-full md:w-auto">
+                                        <div className="w-11 h-11 rounded-2xl bg-indigo-500/20 flex items-center justify-center shrink-0 border border-indigo-400/30">
+                                            <svg className="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                            </svg>
+                                        </div>
+                                        <div className="overflow-hidden">
+                                            <span className="bg-indigo-500/30 text-indigo-200 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-0.5 inline-block">
+                                                INQUIRY ONLY
+                                            </span>
+                                            <h4 className="text-base font-black text-white">상담 신청 전용 URL</h4>
+                                            <p className="text-xs text-indigo-200 font-mono mt-0.5 truncate">
+                                                {baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/inquiry
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-2 w-full md:w-auto shrink-0">
+                                        <button
+                                            onClick={() => {
+                                                const url = `${baseUrl}/${partner.customUrl}/inquiry`;
+                                                navigator.clipboard.writeText(url).then(() => {
+                                                    setCopySuccessInquiry(true);
+                                                    setTimeout(() => setCopySuccessInquiry(false), 2000);
+                                                });
+                                            }}
+                                            className={`flex-1 md:flex-none flex items-center justify-center gap-1.5 py-2.5 px-5 rounded-2xl text-xs font-bold transition-all ${
+                                                copySuccessInquiry
+                                                ? "bg-emerald-500 text-white"
+                                                : "bg-white text-slate-900 hover:bg-indigo-100"
+                                            }`}
+                                        >
+                                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                            </svg>
+                                            <span>{copySuccessInquiry ? "복사 완료!" : "상담신청 URL 복사"}</span>
+                                        </button>
+                                        <a
+                                            href={`/${partner.customUrl}/inquiry`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 md:flex-none flex items-center justify-center gap-1.5 py-2.5 px-5 rounded-2xl bg-indigo-950 text-white hover:bg-black text-xs font-bold transition-all border border-indigo-700/60 shadow-sm"
+                                        >
+                                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                            <span>페이지 이동</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </>
+                        ) : null}
                     </div>
                 )}
                 {activeTab === "overview" && (
@@ -706,36 +1057,60 @@ export default function PartnerDashboard() {
                     <AnalyticsDashboard />
                 )}
 
-                {activeTab === "settings" && isAdmin && (
+                {activeTab === "settings" && (
                     <div className="space-y-8">
-                        {/* Sub Navigation */}
-                        <div className="flex items-center gap-1 bg-white/50 p-1.5 rounded-2xl border border-gray-100 w-fit mb-4">
-                            <button
-                                onClick={() => setSettingsSubTab("status")}
-                                className={`px-6 py-2 rounded-xl text-sm font-black transition-all ${
-                                    settingsSubTab === "status"
-                                        ? "bg-white text-sono-primary shadow-sm border border-gray-100"
-                                        : "text-gray-400 hover:text-sono-dark"
-                                }`}
-                            >
-                                진행상태 설정
-                            </button>
-                            <button
-                                onClick={() => setSettingsSubTab("individual")}
-                                className={`px-6 py-2 rounded-xl text-sm font-black transition-all ${
-                                    settingsSubTab === "individual"
-                                        ? "bg-white text-sono-primary shadow-sm border border-gray-100"
-                                        : "text-gray-400 hover:text-sono-dark"
-                                }`}
-                            >
-                                개별페이지 관리
-                            </button>
-                        </div>
+                        {isAdmin ? (
+                            <>
+                                {/* Sub Navigation */}
+                                <div className="flex flex-wrap items-center gap-1 bg-white/50 p-1.5 rounded-2xl border border-gray-100 w-fit mb-4">
+                                    <button
+                                        onClick={() => setSettingsSubTab("status")}
+                                        className={`px-6 py-2 rounded-xl text-sm font-black transition-all ${
+                                            settingsSubTab === "status"
+                                                ? "bg-white text-sono-primary shadow-sm border border-gray-100"
+                                                : "text-gray-400 hover:text-sono-dark"
+                                        }`}
+                                    >
+                                        진행상태 설정
+                                    </button>
+                                    <button
+                                        onClick={() => setSettingsSubTab("individual")}
+                                        className={`px-6 py-2 rounded-xl text-sm font-black transition-all ${
+                                            settingsSubTab === "individual"
+                                                ? "bg-white text-sono-primary shadow-sm border border-gray-100"
+                                                : "text-gray-400 hover:text-sono-dark"
+                                        }`}
+                                    >
+                                        개별페이지 관리
+                                    </button>
+                                    <button
+                                        onClick={() => setSettingsSubTab("account")}
+                                        className={`px-6 py-2 rounded-xl text-sm font-black transition-all ${
+                                            settingsSubTab === "account"
+                                                ? "bg-white text-sono-primary shadow-sm border border-gray-100"
+                                                : "text-gray-400 hover:text-sono-dark"
+                                        }`}
+                                    >
+                                        계정 관리
+                                    </button>
+                                </div>
 
-                        {settingsSubTab === "status" ? (
-                            <StatusManagement />
+                                {settingsSubTab === "status" && <StatusManagement />}
+                                {settingsSubTab === "individual" && <IndividualPageManagement />}
+                                {settingsSubTab === "account" && (
+                                    <AccountManagement
+                                        partner={currentPartner}
+                                        isAdmin={true}
+                                        onRefresh={() => fetchData()}
+                                    />
+                                )}
+                            </>
                         ) : (
-                            <IndividualPageManagement />
+                            <AccountManagement
+                                partner={currentPartner}
+                                isAdmin={false}
+                                onRefresh={() => fetchData()}
+                            />
                         )}
                     </div>
                 )}
@@ -798,7 +1173,6 @@ export default function PartnerDashboard() {
                     </a>
                 </div>
             </main>
-            <Footer />
         </div>
 
     );

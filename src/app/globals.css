@@ -1,4 +1,5 @@
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -21,39 +22,46 @@
 
   html {
     scroll-behavior: smooth;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
   }
 
   body {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
     background-color: #f2f4f6;
     color: #191f28;
     line-height: 1.5;
+    letter-spacing: -0.02em;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  *, ::before, ::after {
+    font-family: inherit;
   }
 }
 
 @layer components {
 
-  /* 버튼 스타일 */
+  /* 버튼 스타일 - 모서리 둥글기 최소화 (샤프 렉탱귤러) */
   .btn-primary {
-    @apply bg-sono-primary text-white px-6 py-3 rounded-lg font-bold hover:brightness-110 active:scale-[0.98] transition-all duration-200 shadow-sm;
+    @apply bg-sono-primary text-white px-6 py-3 rounded-[2px] font-bold hover:brightness-110 active:scale-[0.98] transition-all duration-200 shadow-sm;
   }
 
   .btn-gold {
-    @apply bg-sono-gold text-sono-dark px-6 py-3 rounded-lg font-bold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm;
+    @apply bg-sono-gold text-sono-dark px-6 py-3 rounded-[2px] font-bold hover:brightness-105 active:scale-[0.98] transition-all duration-200 shadow-sm;
   }
 
   .btn-outline {
-    @apply border border-gray-200 bg-white text-sono-dark px-6 py-3 rounded-lg font-bold hover:bg-gray-50 active:scale-[0.98] transition-all duration-200;
+    @apply border border-gray-200 bg-white text-sono-dark px-6 py-3 rounded-[2px] font-bold hover:bg-gray-50 active:scale-[0.98] transition-all duration-200;
   }
 
-  /* 카드 스타일 */
+  /* 카드 스타일 - 샤프 모서리 */
   .card {
-    @apply bg-white rounded-xl p-8 transition-all duration-300;
+    @apply bg-white rounded-[2px] p-8 transition-all duration-300;
   }
 
   .card-premium {
-    @apply bg-sono-primary text-white rounded-xl p-8 shadow-lg shadow-sono-primary/20 transition-all duration-300 hover:brightness-105;
+    @apply bg-sono-primary text-white rounded-[2px] p-8 shadow-lg shadow-sono-primary/20 transition-all duration-300 hover:brightness-105;
   }
 
   /* 섹션 스타일 */
@@ -67,7 +75,7 @@
 
   /* 입력 필드 스타일 */
   .input-field {
-    @apply w-full px-5 py-4 bg-[#f9fafb] border-none rounded-lg placeholder:text-[#adb5bd] text-sono-dark focus:bg-white focus:ring-2 focus:ring-sono-primary/20 outline-none transition-all duration-200;
+    @apply w-full px-5 py-4 bg-[#f9fafb] border-none rounded-[2px] placeholder:text-[#adb5bd] text-sono-dark focus:bg-white focus:ring-2 focus:ring-sono-primary/20 outline-none transition-all duration-200;
   }
 
   .input-label {
@@ -76,7 +84,7 @@
 
   /* 배지 스타일 */
   .badge {
-    @apply inline-block px-3 py-1 rounded-md text-xs font-bold;
+    @apply inline-block px-3 py-1 rounded-[2px] text-xs font-bold;
   }
 
   .badge-gold {
@@ -106,12 +114,12 @@
 
   /* 글래스모피즘 */
   .glass {
-    @apply bg-white/70 backdrop-blur-xl border border-white/40 rounded-xl;
+    @apply bg-white/70 backdrop-blur-xl border border-white/40 rounded-[2px];
   }
 
   /* 상태 배지 */
   .status-badge {
-    @apply px-3 py-1 rounded-md text-xs font-bold;
+    @apply px-3 py-1 rounded-[2px] text-xs font-bold;
   }
 
   .status-접수 {

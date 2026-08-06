@@ -9,7 +9,7 @@ interface PartnerData {
     partnerId: string;
 }
 
-export default function PartnerHappy450Page({ params }: { params: Promise<{ partnerId: string }> }) {
+export default function PartnerHappy450DirectPage({ params }: { params: Promise<{ partnerId: string }> }) {
     const resolvedParams = use(params);
     const [isLoading, setIsLoading] = useState(true);
     const [partner, setPartner] = useState<PartnerData | null>(null);

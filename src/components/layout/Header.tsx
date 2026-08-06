@@ -13,6 +13,7 @@ interface HeaderProps {
     partnerLogo?: string;
     productType?: string;
     isPremiumMallMode?: boolean;
+    forceWhiteBg?: boolean;
 }
 
 export default function Header({
@@ -22,7 +23,8 @@ export default function Header({
     partnerId = "",
     partnerLogo = "",
     productType = "",
-    isPremiumMallMode = false
+    isPremiumMallMode = false,
+    forceWhiteBg = false
 }: HeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,16 +33,26 @@ export default function Header({
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20);
+        handleScroll();
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // 파트너 모드일 때 로고 클릭 시 이동할 URL
-    const logoHref = partnerMode && partnerUrl ? `/p/${partnerUrl}` : "/";
+    // 파트너 모드일 때 로고 클릭 시 해당 상품 페이지로 이동 (본사 페이지는 기존 대로 "/" 유지)
+    let logoHref = "/";
+    if (partnerMode && partnerUrl) {
+        if (productType === "happy450") {
+            logoHref = `/${partnerUrl}/happy450`;
+        } else if (productType === "smartcare") {
+            logoHref = `/${partnerUrl}/smartcare`;
+        } else {
+            logoHref = `/${partnerUrl}/smartcare`;
+        }
+    }
 
-    // 상품 페이지 경로
-    const happy450Href = partnerMode && partnerUrl ? `/p/${partnerUrl}/products/happy450` : "/products/happy450";
-    const smartcareHref = partnerMode && partnerUrl ? `/p/${partnerUrl}/products/smartcare` : "/products/smartcare";
+    // 파트너 상품 메뉴 페이지 경로 (/p/ 가 제거된 파트너 URL 체계)
+    const happy450Href = partnerMode && partnerUrl ? `/${partnerUrl}/happy450` : "/products/happy450";
+    const smartcareHref = partnerMode && partnerUrl ? `/${partnerUrl}/smartcare` : "/products/smartcare";
 
     const handleRestrictedProductClick = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -59,7 +71,7 @@ export default function Header({
 
     return (
         <>
-            <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "bg-white/80 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-5"} border-b ${scrolled ? "border-gray-100/50" : "border-transparent"}`}>
+            <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${(scrolled || forceWhiteBg) ? "bg-white/80 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-5"} border-b ${(scrolled || forceWhiteBg) ? "border-gray-100/50" : "border-transparent"}`}>
                 <div className="max-w-[1200px] mx-auto px-6 flex items-center justify-between">
                     {/* 로고 */}
                     <Link href={logoHref} className="flex items-center group">
@@ -73,7 +85,7 @@ export default function Header({
                             <img
                                 src="https://res.cloudinary.com/dfkntvpmv/image/upload/v1781096692/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90_BI_%EA%B0%80%EB%A1%9CA_ouqjzl.png"
                                 alt="SONO I'M READY"
-                                className={`h-7 md:h-[34px] w-auto object-contain transition-all duration-300 group-hover:scale-105 ${scrolled ? "brightness-0" : "brightness-0 invert"}`}
+                                className={`h-7 md:h-[34px] w-auto object-contain transition-all duration-300 group-hover:scale-105 ${(scrolled || forceWhiteBg) ? "brightness-0" : "brightness-0 invert"}`}
                             />
                         )}
                     </Link>
@@ -82,14 +94,14 @@ export default function Header({
                     <nav className="hidden md:flex items-center gap-10 relative z-10">
                         {partnerMode ? (
                             <>
-                                <Link href={happy450Href} className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>더 해피 450 ONE</Link>
-                                <Link href={smartcareHref} className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>스마트케어</Link>
+                                <Link href={happy450Href} className={`${(scrolled || forceWhiteBg) ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>더 해피 450 ONE</Link>
+                                <Link href={smartcareHref} className={`${(scrolled || forceWhiteBg) ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>스마트케어</Link>
                             </>
                         ) : (
                             <>
-                                <Link href="/" className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>제휴 안내</Link>
-                                <Link href="/products/happy450" onClick={handleRestrictedProductClick} className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>더 해피 450 ONE</Link>
-                                <Link href="/products/smartcare" className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>스마트케어</Link>
+                                <Link href="/" className={`${(scrolled || forceWhiteBg) ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>제휴 안내</Link>
+                                <Link href="/products/happy450" onClick={handleRestrictedProductClick} className={`${(scrolled || forceWhiteBg) ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>더 해피 450 ONE</Link>
+                                <Link href="/products/smartcare" className={`${(scrolled || forceWhiteBg) ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold transition-colors cursor-pointer`}>스마트케어</Link>
                             </>
                         )}
                     </nav>
@@ -99,7 +111,7 @@ export default function Header({
                         {/* 자주하는질문 버튼 */}
                         <button
                             onClick={handleFaqClick}
-                            className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80"} font-bold text-sm px-4 transition-colors cursor-pointer`}
+                            className={`${(scrolled || forceWhiteBg) ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80"} font-bold text-sm px-4 transition-colors cursor-pointer`}
                         >
                             자주하는질문
                         </button>
@@ -107,18 +119,18 @@ export default function Header({
                         {partnerMode ? (
                             <button
                                 onClick={handleInquiryClick}
-                                className={`${scrolled ? "btn-primary" : "bg-white text-sono-primary hover:bg-gray-100"} px-8 py-2.5 !rounded-2xl text-sm font-bold transition-all duration-200 shadow-sm cursor-pointer`}
+                                className={`${(scrolled || forceWhiteBg) ? "bg-sono-dark text-white hover:bg-slate-800" : "bg-white text-sono-dark hover:bg-gray-100"} px-8 py-2.5 !rounded-none text-sm font-black transition-all duration-200 shadow-sm cursor-pointer`}
                             >
                                 {isPremiumMallMode ? "프리미엄몰 접수" : "가입신청"}
                             </button>
                         ) : (
                             <>
-                                <Link href="/partner-center" target="_blank" className={`${scrolled ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold text-sm px-4 cursor-pointer`}>
+                                <Link href="/partner-center" target="_blank" className={`${(scrolled || forceWhiteBg) ? "text-[#4e5968] hover:text-sono-primary" : "text-white hover:text-white/80 text-shadow-sm"} font-bold text-sm px-4 cursor-pointer`}>
                                     파트너센터
                                 </Link>
                                 <Link
                                     href="/partner/apply"
-                                    className={`${scrolled ? "btn-primary" : "bg-white text-sono-primary hover:bg-gray-100"} px-8 py-2.5 !rounded-2xl text-sm font-bold transition-all duration-200 shadow-sm cursor-pointer`}
+                                    className={`${(scrolled || forceWhiteBg) ? "bg-sono-dark text-white hover:bg-slate-800" : "bg-white text-sono-dark hover:bg-gray-100"} px-8 py-2.5 !rounded-none text-sm font-black transition-all duration-200 shadow-sm cursor-pointer`}
                                 >
                                     제휴신청
                                 </Link>
@@ -131,7 +143,7 @@ export default function Header({
                         className="md:hidden p-2 rounded-xl transition-colors relative z-10"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                     >
-                        <svg className={`w-8 h-8 ${scrolled ? "text-sono-dark" : "text-white"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className={`w-8 h-8 ${(scrolled || forceWhiteBg) ? "text-sono-dark" : "text-white"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             {isMenuOpen ? (
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                             ) : (
@@ -157,7 +169,7 @@ export default function Header({
                                     <Link href={smartcareHref} className="text-xl text-sono-dark" onClick={() => setIsMenuOpen(false)}>스마트케어</Link>
                                     <button
                                         onClick={handleInquiryClick}
-                                        className="btn-primary w-full py-4 text-lg mt-4"
+                                        className="btn-primary w-full py-4 text-lg mt-4 !rounded-none"
                                     >
                                         {isPremiumMallMode ? "프리미엄몰 접수" : "가입신청"}
                                     </button>
@@ -171,14 +183,14 @@ export default function Header({
                                         <Link
                                             href="/partner-center"
                                             target="_blank"
-                                            className="btn-outline text-center py-4"
+                                            className="btn-outline text-center py-4 !rounded-none"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             파트너센터
                                         </Link>
                                         <Link
                                             href="/partner/apply"
-                                            className="btn-primary text-center py-4"
+                                            className="btn-primary text-center py-4 !rounded-none"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             제휴신청

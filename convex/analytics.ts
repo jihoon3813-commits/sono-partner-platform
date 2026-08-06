@@ -1,6 +1,13 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+// 대한민국 표준시(KST, Asia/Seoul, UTC+9) YYYY-MM-DD 날짜 추출 헬퍼
+function getKSTDateStr(dateInput?: Date | string | number): string {
+    const d = dateInput ? new Date(dateInput) : new Date();
+    if (isNaN(d.getTime())) return String(dateInput).substring(0, 10);
+    return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(d);
+}
+
 // 페이지뷰/방문 기록
 export const recordHit = mutation({
     args: {
@@ -11,11 +18,11 @@ export const recordHit = mutation({
     },
     handler: async (ctx, args) => {
         const now = new Date();
-        const date = now.toISOString().split("T")[0]; // YYYY-MM-DD
+        const kstDate = getKSTDateStr(now); // 대한민국 표준시 기준 YYYY-MM-DD
 
         await ctx.db.insert("analytics", {
             partnerId: args.partnerId,
-            date: date,
+            date: kstDate,
             path: args.path,
             visitorId: args.visitorId,
             userAgent: args.userAgent,
@@ -24,11 +31,11 @@ export const recordHit = mutation({
     },
 });
 
-// 통계 데이터 조회 (관리자용)
+// 통계 데이터 조회 (관리자용 - 한국시간 KST 적용)
 export const getStatsSummary = query({
     args: {
-        startDate: v.optional(v.string()), // YYYY-MM-DD
-        endDate: v.optional(v.string()),   // YYYY-MM-DD
+        startDate: v.optional(v.string()), // YYYY-MM-DD (KST)
+        endDate: v.optional(v.string()),   // YYYY-MM-DD (KST)
         partnerId: v.optional(v.string()), // 특정 파트너 필터
     },
     handler: async (ctx, args) => {
@@ -53,13 +60,13 @@ export const getStatsSummary = query({
         const dailyStats: Record<string, { pv: number, uv: Set<string> }> = {};
         const partnerStats: Record<string, { pv: number, uv: Set<string> }> = {};
         const pathStats: Record<string, { pv: number, uv: Set<string> }> = {};
-        const applicationStats: Record<string, number> = {}; // daily app count
+        const applicationStats: Record<string, number> = {}; // daily app count (KST)
         const partnerAppStats: Record<string, number> = {}; // partner total app count
         let totalPv = 0;
         let totalApps = 0;
         const totalUvSet = new Set<string>();
 
-        // 시작일/종료일 기준 모든 날짜 초기화 (데이터가 없어도 차트에 표시되도록)
+        // 시작일/종료일 기준 모든 날짜 KST 기준 연속 초기화
         if (args.startDate && args.endDate) {
             const startParts = args.startDate.split("-").map(Number);
             const endParts = args.endDate.split("-").map(Number);
@@ -69,7 +76,11 @@ export const getStatsSummary = query({
             
             let count = 0;
             while (curr <= end && count < 60) {
-                const dStr = curr.toISOString().split("T")[0];
+                const year = curr.getUTCFullYear();
+                const month = String(curr.getUTCMonth() + 1).padStart(2, "0");
+                const day = String(curr.getUTCDate()).padStart(2, "0");
+                const dStr = `${year}-${month}-${day}`;
+                
                 dailyStats[dStr] = { pv: 0, uv: new Set() };
                 curr.setUTCDate(curr.getUTCDate() + 1);
                 count++;
@@ -77,8 +88,12 @@ export const getStatsSummary = query({
         }
 
         rawLogs.forEach(log => {
-            // 날짜 범위 확인 (endDate 필터링)
-            if (args.endDate && log.date > args.endDate) return;
+            // log.date (KST 저장분) 또는 log.createdAt KST 변환
+            const logKstDate = log.date && log.date.length === 10 ? log.date : getKSTDateStr(log.createdAt);
+
+            // 날짜 범위 확인 (endDate 필터링 - KST 기준)
+            if (args.endDate && logKstDate > args.endDate) return;
+            if (args.startDate && logKstDate < args.startDate) return;
 
             // 파트너 ID 정규화
             const logId = log.partnerId.trim().toLowerCase();
@@ -90,10 +105,10 @@ export const getStatsSummary = query({
             totalPv++;
             totalUvSet.add(log.visitorId);
 
-            // 일별 통계
-            if (!dailyStats[log.date]) dailyStats[log.date] = { pv: 0, uv: new Set() };
-            dailyStats[log.date].pv++;
-            dailyStats[log.date].uv.add(log.visitorId);
+            // 일별 통계 (KST 기준)
+            if (!dailyStats[logKstDate]) dailyStats[logKstDate] = { pv: 0, uv: new Set() };
+            dailyStats[logKstDate].pv++;
+            dailyStats[logKstDate].uv.add(log.visitorId);
 
             // 파트너별 통계
             if (!partnerStats[normalizedPid]) partnerStats[normalizedPid] = { pv: 0, uv: new Set() };
@@ -107,23 +122,27 @@ export const getStatsSummary = query({
             pathStats[path].uv.add(log.visitorId);
         });
 
-        // 4. 신청 통계 수집
+        // 4. 신청 통계 수집 (대한민국 표준시 KST 변환 기준)
         const allApps = await ctx.db.query("applications").collect();
         allApps.forEach(app => {
-            const appDate = app.createdAt.substring(0, 10);
-            if (args.startDate && appDate < args.startDate) return;
-            if (args.endDate && appDate > args.endDate) return;
+            // app.createdAt을 KST (Asia/Seoul) YYYY-MM-DD로 변환
+            const appDateKST = getKSTDateStr(app.createdAt || app.registrationDate);
+
+            if (args.startDate && appDateKST < args.startDate) return;
+            if (args.endDate && appDateKST > args.endDate) return;
             
             // 파트너 필터 확인
-            const appPartnerId = app.partnerId.trim(); // In applications, this is always the normalized ID (loginId)
+            const appPartnerId = app.partnerId ? app.partnerId.trim() : "";
             if (args.partnerId && appPartnerId !== args.partnerId) return;
 
             totalApps++;
-            applicationStats[appDate] = (applicationStats[appDate] || 0) + 1;
-            partnerAppStats[appPartnerId] = (partnerAppStats[appPartnerId] || 0) + 1;
+            applicationStats[appDateKST] = (applicationStats[appDateKST] || 0) + 1;
+            if (appPartnerId) {
+                partnerAppStats[appPartnerId] = (partnerAppStats[appPartnerId] || 0) + 1;
+            }
         });
 
-        // 3. 결과 포맷팅
+        // 5. 결과 포맷팅
         const daily = Object.entries(dailyStats).map(([date, stats]) => ({
             date,
             pv: stats.pv,

@@ -18,7 +18,8 @@ function PartnerRow({
     childrenPartners,
     onEdit,
     allPartners,
-    onEditChild
+    onEditChild,
+    isAdmin = false
 }: {
     partner: Partner;
     level?: number;
@@ -26,6 +27,7 @@ function PartnerRow({
     onEdit: (p: Partner) => void;
     allPartners: Partner[];
     onEditChild: (p: Partner) => void;
+    isAdmin?: boolean;
 }) {
     const [isExpanded, setIsExpanded] = useState(true);
 
@@ -86,6 +88,16 @@ function PartnerRow({
                     >
                         상세/수정
                     </button>
+                    {isAdmin && partner.loginId && (
+                        <a
+                            href={`/partner-center?id=${partner.loginId}&k=${process.env.NEXT_PUBLIC_ADMIN_SECRET_KEY || ''}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-gray-500 hover:text-gray-800 text-xs font-bold"
+                        >
+                            어드민
+                        </a>
+                    )}
                 </td>
             </tr>
 
@@ -102,6 +114,7 @@ function PartnerRow({
                         onEdit={onEditChild}
                         allPartners={allPartners}
                         onEditChild={onEditChild}
+                        isAdmin={isAdmin}
                     />
                 );
             })}
@@ -115,7 +128,8 @@ function MobilePartnerRow({
     childrenPartners,
     onEdit,
     allPartners,
-    onEditChild
+    onEditChild,
+    isAdmin = false
 }: {
     partner: Partner;
     level?: number;
@@ -123,6 +137,7 @@ function MobilePartnerRow({
     onEdit: (p: Partner) => void;
     allPartners: Partner[];
     onEditChild: (p: Partner) => void;
+    isAdmin?: boolean;
 }) {
     const [isExpanded, setIsExpanded] = useState(true);
     const hasChildren = childrenPartners.length > 0;
@@ -148,48 +163,60 @@ function MobilePartnerRow({
                                 </button>
                             )}
                             <div>
-                                <div className="text-lg font-bold text-sono-dark flex items-center gap-2">
+                                <div className="font-bold text-sono-dark text-base flex items-center gap-2">
                                     {partner.companyName}
-                                    {level === 0 && <span className="text-[10px] bg-sono-primary/10 text-sono-primary px-1.5 py-0.5 rounded">Master</span>}
+                                    {level === 0 && <span className="text-[10px] bg-sono-primary/10 text-sono-primary px-2 py-0.5 rounded font-black">Master</span>}
                                 </div>
-                                <div className="text-xs text-gray-400 flex flex-wrap items-center gap-1 mt-0.5">
-                                    <span>ID: {partner.loginId}</span>
-                                    <span>•</span>
-                                    <span>{partner.shopType}</span>
-                                    <span>•</span>
-                                    <span>{partner.partnerGroup || '전체 상품 판매'}</span>
-                                </div>
+                                <div className="text-xs text-gray-400 mt-0.5">{partner.shopType} • {partner.partnerGroup || '전체 상품 판매'}</div>
                             </div>
                         </div>
-                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${partner.status === 'active' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${partner.status === 'active' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'
+                            }`}>
                             {partner.status === 'active' ? '정상' : '중지'}
                         </span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm mb-5 bg-[#f9fafb] p-4 rounded-xl">
-                        <div className="col-span-1">
-                            <span className="text-xs text-[#8b95a1] block mb-1">담당자</span>
-                            <span className="font-bold text-sono-dark">{partner.managerName}</span>
+                    <div className="space-y-2 bg-[#f9fafb] p-3.5 rounded-xl mb-4 text-xs border border-gray-100">
+                        <div className="flex justify-between">
+                            <span className="text-gray-400">아이디</span>
+                            <span className="font-bold text-sono-dark">{partner.loginId}</span>
                         </div>
-                        <div className="col-span-1">
-                            <span className="text-xs text-[#8b95a1] block mb-1">연락처</span>
-                            <span className="font-bold text-sono-dark">{partner.managerPhone}</span>
+                        <div className="flex justify-between">
+                            <span className="text-gray-400">고유 ID</span>
+                            <span className="font-mono text-gray-500 text-[11px]">{partner.partnerId}</span>
                         </div>
-                        <div className="col-span-2 border-t border-gray-100 mt-1 pt-2">
-                            <div className="flex justify-between items-center">
-                                <span className="text-xs text-[#8b95a1]">전용 URL</span>
-                                <span className="font-mono text-xs text-sono-primary bg-sono-primary/5 px-2 py-1 rounded">/p/{partner.customUrl}</span>
-                            </div>
+                        <div className="flex justify-between">
+                            <span className="text-gray-400">담당자</span>
+                            <span className="font-medium text-sono-dark">{partner.managerName} ({partner.managerPhone})</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-gray-400">전용 URL</span>
+                            <span className="font-mono text-xs text-sono-primary bg-sono-primary/5 px-2 py-1 rounded">/p/{partner.customUrl}</span>
                         </div>
                     </div>
 
-                    <button
-                        onClick={() => onEdit(partner)}
-                        className="w-full py-3 rounded-xl border border-gray-200 text-sono-dark font-bold text-sm hover:bg-[#f9fafb] hover:border-gray-300 transition-all flex items-center justify-center gap-2"
-                    >
-                        <svg className="w-4 h-4 text-sono-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                        상세 정보 및 수정
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => onEdit(partner)}
+                            className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sono-dark font-bold text-xs hover:bg-[#f9fafb] transition-all flex items-center justify-center gap-1.5"
+                        >
+                            <svg className="w-3.5 h-3.5 text-sono-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                            상세/수정
+                        </button>
+                        {isAdmin && partner.loginId && (
+                            <a
+                                href={`/partner-center?id=${partner.loginId}&k=${process.env.NEXT_PUBLIC_ADMIN_SECRET_KEY || ''}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                            >
+                                <span>어드민 접속</span>
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -204,6 +231,7 @@ function MobilePartnerRow({
                         onEdit={onEditChild}
                         allPartners={allPartners}
                         onEditChild={onEditChild}
+                        isAdmin={isAdmin}
                     />
                 );
             })}
@@ -332,6 +360,7 @@ export default function PartnerManagement({ partners, onRefresh, isAdmin = false
                                             onEdit={handleEdit}
                                             allPartners={partners}
                                             onEditChild={handleEdit}
+                                            isAdmin={isAdmin}
                                         />
                                     );
                                 })
@@ -359,6 +388,7 @@ export default function PartnerManagement({ partners, onRefresh, isAdmin = false
                                 onEdit={handleEdit}
                                 allPartners={partners}
                                 onEditChild={handleEdit}
+                                isAdmin={isAdmin}
                             />
                         );
                     })
