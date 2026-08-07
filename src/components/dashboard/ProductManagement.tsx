@@ -47,6 +47,30 @@ interface CareProduct {
     updatedAt?: string;
 }
 
+type SortField = "brand" | "category" | "model" | "name" | "monthlyPayment" | "order";
+type SortDirection = "asc" | "desc";
+
+interface SortRule {
+    field: SortField;
+    direction: SortDirection;
+}
+
+const DEFAULT_SORT_RULES: SortRule[] = [
+    { field: "brand", direction: "asc" },
+    { field: "category", direction: "asc" },
+    { field: "model", direction: "asc" },
+    { field: "name", direction: "asc" },
+];
+
+const SORT_FIELD_LABELS: Record<SortField, string> = {
+    brand: "브랜드",
+    category: "카테고리",
+    model: "모델명",
+    name: "제품명",
+    monthlyPayment: "월납입금",
+    order: "수동 등록순",
+};
+
 export default function ProductManagement() {
     const [subTab, setSubTab] = useState<"products" | "care">("products");
 
@@ -75,7 +99,7 @@ export default function ProductManagement() {
     const [searchTerm, setSearchTerm] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("all");
     const [planFilter, setPlanFilter] = useState("all");
-    const [sortBy, setSortBy] = useState<"order" | "priceAsc" | "priceDesc">("order");
+    const [sortRules, setSortRules] = useState<SortRule[]>(DEFAULT_SORT_RULES);
     const [isSyncing, setIsSyncing] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<Id<"products">>>(new Set());
 
@@ -156,6 +180,72 @@ export default function ProductManagement() {
         : ["TV/디지털", "냉장가전", "주방가전", "생활가전", "에어컨/에어케어", "세탁가전", "건강/뷰티", "가구/침대", "기타가전"];
     const slots = [1, 2, 3, 4, 6];
 
+    const updateSortRuleField = (index: number, field: SortField) => {
+        setSortRules(prev => {
+            const next = [...prev];
+            next[index] = { ...next[index], field };
+            return next;
+        });
+    };
+
+    const updateSortRuleDirection = (index: number, direction: SortDirection) => {
+        setSortRules(prev => {
+            const next = [...prev];
+            next[index] = { ...next[index], direction };
+            return next;
+        });
+    };
+
+    const resetSortRules = () => {
+        setSortRules([
+            { field: "brand", direction: "asc" },
+            { field: "category", direction: "asc" },
+            { field: "model", direction: "asc" },
+            { field: "name", direction: "asc" },
+        ]);
+    };
+
+    const compareProductsByRules = (a: Product, b: Product, rules: SortRule[]) => {
+        // 1. 베스트 상품 최상단 고정 (베스트 설정 제품은 항상 맨 위)
+        const aBest = !!a.isBest;
+        const bBest = !!b.isBest;
+        if (aBest && !bBest) return -1;
+        if (!aBest && bBest) return 1;
+
+        // 2. 1순위 -> 2순위 -> 3순위 -> 4순위 정렬 순차 적용
+        for (const rule of rules) {
+            let cmp = 0;
+            const dir = rule.direction === "asc" ? 1 : -1;
+
+            switch (rule.field) {
+                case "brand":
+                    cmp = (a.brand || "").localeCompare(b.brand || "", "ko");
+                    break;
+                case "category":
+                    cmp = (a.category || "").localeCompare(b.category || "", "ko");
+                    break;
+                case "model":
+                    cmp = (a.model || "").localeCompare(b.model || "", "ko");
+                    break;
+                case "name":
+                    cmp = (a.name || "").localeCompare(b.name || "", "ko");
+                    break;
+                case "monthlyPayment":
+                    cmp = (a.monthlyPayment ?? 0) - (b.monthlyPayment ?? 0);
+                    break;
+                case "order":
+                    cmp = (a.order ?? 0) - (b.order ?? 0);
+                    break;
+            }
+
+            if (cmp !== 0) {
+                return cmp * dir;
+            }
+        }
+
+        return (a.name || "").localeCompare(b.name || "", "ko");
+    };
+
     const filteredProducts = (products || [])
         .filter(p => {
             const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -167,18 +257,8 @@ export default function ProductManagement() {
                                 (!p.careProductId && (p.slotCount || 4).toString() === planFilter);
             return matchesSearch && matchesCategory && matchesPlan;
         })
-        .sort((a, b) => {
-            if (sortBy === "priceAsc") {
-                return (a.monthlyPayment ?? 0) - (b.monthlyPayment ?? 0);
-            }
-            if (sortBy === "priceDesc") {
-                return (b.monthlyPayment ?? 0) - (a.monthlyPayment ?? 0);
-            }
-            if ((a.order ?? 0) !== (b.order ?? 0)) {
-                return (a.order ?? 0) - (b.order ?? 0);
-            }
-            return a.name.localeCompare(b.name);
-        });
+        .sort((a, b) => compareProductsByRules(a, b, sortRules));
+
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -457,46 +537,99 @@ export default function ProductManagement() {
                         </div>
                     </div>
 
-                    {/* 필터 섹션 */}
-                    <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 flex flex-wrap gap-4">
-                        <div className="flex-1 min-w-[200px]">
-                            <input
-                                type="text"
-                                placeholder="제품명, 모델명, 브랜드 검색..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full bg-[#f9fafb] border-none rounded-xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary"
-                            />
+                    {/* 필터 & 다중 정렬 섹션 */}
+                    <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 space-y-4">
+                        <div className="flex flex-wrap gap-4 items-center">
+                            <div className="flex-1 min-w-[200px]">
+                                <input
+                                    type="text"
+                                    placeholder="제품명, 모델명, 브랜드 검색..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full bg-[#f9fafb] border-none rounded-xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary"
+                                />
+                            </div>
+                            <select
+                                value={categoryFilter}
+                                onChange={(e) => setCategoryFilter(e.target.value)}
+                                className="bg-[#f9fafb] border-none rounded-xl py-3 px-4 text-sm font-bold text-gray-500 focus:ring-2 focus:ring-sono-primary"
+                            >
+                                <option value="all">전체 카테고리</option>
+                                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                            </select>
+                            <select
+                                value={planFilter}
+                                onChange={(e) => setPlanFilter(e.target.value)}
+                                className="bg-[#f9fafb] border-none rounded-xl py-3 px-4 text-sm font-bold text-gray-500 focus:ring-2 focus:ring-sono-primary"
+                            >
+                                <option value="all">전체 상품</option>
+                                {(careProducts || []).map(cp => (
+                                    <option key={cp._id} value={cp._id}>
+                                        {cp.name} ({cp.slotCount}구좌)
+                                    </option>
+                                ))}
+                            </select>
                         </div>
-                        <select
-                            value={categoryFilter}
-                            onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="bg-[#f9fafb] border-none rounded-xl py-3 px-4 text-sm font-bold text-gray-500 focus:ring-2 focus:ring-sono-primary"
-                        >
-                            <option value="all">전체 카테고리</option>
-                            {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                        </select>
-                        <select
-                            value={planFilter}
-                            onChange={(e) => setPlanFilter(e.target.value)}
-                            className="bg-[#f9fafb] border-none rounded-xl py-3 px-4 text-sm font-bold text-gray-500 focus:ring-2 focus:ring-sono-primary"
-                        >
-                            <option value="all">전체 상품</option>
-                            {(careProducts || []).map(cp => (
-                                <option key={cp._id} value={cp._id}>
-                                    {cp.name} ({cp.slotCount}구좌)
-                                </option>
-                            ))}
-                        </select>
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value as any)}
-                            className="bg-[#f9fafb] border-none rounded-xl py-3 px-4 text-sm font-bold text-gray-500 focus:ring-2 focus:ring-sono-primary"
-                        >
-                            <option value="order">기본 정렬 순서</option>
-                            <option value="priceAsc">월납입금 낮은순</option>
-                            <option value="priceDesc">월납입금 높은순</option>
-                        </select>
+
+                        {/* 1순위~4순위 다중 우선순위 정렬 설정 박스 */}
+                        <div className="bg-[#f8fafc] p-4 rounded-2xl border border-gray-100">
+                            <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-black text-sono-dark flex items-center gap-1.5">
+                                        <svg className="w-4 h-4 text-sono-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                                        </svg>
+                                        우선순위 다중 정렬 설정
+                                    </span>
+                                    <span className="bg-sono-gold/20 text-sono-dark text-[10px] font-black px-2 py-0.5 rounded-full border border-sono-gold/40">
+                                        ★ 베스트 제품 최상단 고정
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={resetSortRules}
+                                    className="text-xs font-bold text-gray-500 hover:text-sono-primary underline transition-colors"
+                                >
+                                    기본 정렬로 초기화 (브랜드-카테고리-모델명-제품명)
+                                </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                {([0, 1, 2, 3] as const).map((idx) => {
+                                    const rule = sortRules[idx] || DEFAULT_SORT_RULES[idx];
+                                    return (
+                                        <div key={idx} className="bg-white p-2.5 rounded-xl border border-gray-200/80 shadow-xs flex items-center gap-2">
+                                            <span className="text-xs font-black text-sono-primary shrink-0 whitespace-nowrap bg-sono-primary/10 px-2.5 py-1 rounded-md">
+                                                {idx + 1}순위
+                                            </span>
+                                            <select
+                                                value={rule.field}
+                                                onChange={(e) => updateSortRuleField(idx, e.target.value as SortField)}
+                                                className="bg-transparent text-xs font-bold text-sono-dark border-none focus:ring-0 p-0 flex-1 cursor-pointer"
+                                            >
+                                                {(Object.keys(SORT_FIELD_LABELS) as SortField[]).map((fKey) => (
+                                                    <option key={fKey} value={fKey}>
+                                                        {SORT_FIELD_LABELS[fKey]}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <button
+                                                type="button"
+                                                onClick={() => updateSortRuleDirection(idx, rule.direction === "asc" ? "desc" : "asc")}
+                                                className={`text-xs font-black px-2.5 py-1 rounded-md border transition-all whitespace-nowrap flex items-center gap-1 ${
+                                                    rule.direction === "asc"
+                                                        ? "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
+                                                        : "bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100"
+                                                }`}
+                                                title={rule.direction === "asc" ? "오름차순 (가나다/작은순)" : "내림차순 (다나가/큰순)"}
+                                            >
+                                                {rule.direction === "asc" ? "▲ 오름" : "▼ 내림"}
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     </div>
 
                     {/* 리스트 섹션 */}
@@ -533,7 +666,7 @@ export default function ProductManagement() {
                                         return (
                                             <tr
                                                 key={product._id}
-                                                draggable={sortBy === "order"}
+                                                draggable={sortRules[0]?.field === "order"}
                                                 onDragStart={(e) => handleDragStart(e, product._id)}
                                                 onDragOver={(e) => handleDragOver(e, product._id)}
                                                 onDragLeave={handleDragLeave}
@@ -612,7 +745,7 @@ export default function ProductManagement() {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                {sortBy === "order" ? (
+                                                {sortRules[0]?.field === "order" ? (
                                                     <div className="flex justify-center gap-1">
                                                         <button 
                                                             onClick={() => handleMove(product, 'up')}
