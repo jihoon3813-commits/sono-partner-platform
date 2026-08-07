@@ -704,7 +704,7 @@ export default function ProductManagement() {
                                         return (
                                             <tr
                                                 key={product._id}
-                                                draggable={product.isBest || sortRules[0]?.field === "order"}
+                                                draggable={true}
                                                 onDragStart={(e) => handleDragStart(e, product._id)}
                                                 onDragOver={(e) => handleDragOver(e, product._id)}
                                                 onDragLeave={handleDragLeave}
@@ -783,26 +783,22 @@ export default function ProductManagement() {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                {product.isBest || sortRules[0]?.field === "order" ? (
-                                                    <div className="flex justify-center gap-1">
-                                                        <button 
-                                                            onClick={() => handleMove(product, 'up')}
-                                                            className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-sono-primary transition-colors"
-                                                            title="위로 이동"
-                                                        >
-                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" /></svg>
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => handleMove(product, 'down')}
-                                                            className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-sono-primary transition-colors"
-                                                            title="아래로 이동"
-                                                        >
-                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <span className="text-gray-300 text-xs font-bold">-</span>
-                                                )}
+                                                <div className="flex justify-center gap-1">
+                                                    <button 
+                                                        onClick={() => handleMove(product, 'up')}
+                                                        className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-sono-primary transition-colors"
+                                                        title="위로 이동"
+                                                    >
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" /></svg>
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleMove(product, 'down')}
+                                                        className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-sono-primary transition-colors"
+                                                        title="아래로 이동"
+                                                    >
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+                                                    </button>
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <div className="flex justify-center gap-2">

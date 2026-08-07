@@ -413,41 +413,8 @@ export default function SmartCareContent({
         }
     };
 
-    // Sort and filter appliances for display
-    const displayAppliances = (() => {
-        let list = [...filteredAppliances];
-        list.sort((a, b) => {
-            // 1. 베스트 상품 최상단 배치
-            const aBest = !!a.isBest;
-            const bBest = !!b.isBest;
-            if (aBest && !bBest) return -1;
-            if (!aBest && bBest) return 1;
-
-            // 2. 베스트 상품끼리는 수동 지정 순서(order) 유지
-            if (aBest && bBest) {
-                if ((a.order ?? 0) !== (b.order ?? 0)) {
-                    return (a.order ?? 0) - (b.order ?? 0);
-                }
-                return (a.name || "").localeCompare(b.name || "", 'ko');
-            }
-
-            // 3. 기본 정렬: 브랜드 -> 카테고리 -> 모델명 -> 제품명
-            const cmpBrand = (a.brand || "").localeCompare(b.brand || "", 'ko');
-            if (cmpBrand !== 0) return cmpBrand;
-
-            const cmpCat = (a.category || "").localeCompare(b.category || "", 'ko');
-            if (cmpCat !== 0) return cmpCat;
-
-            const cmpModel = (a.model || "").localeCompare(b.model || "", 'ko');
-            if (cmpModel !== 0) return cmpModel;
-
-            const cmpName = (a.name || "").localeCompare(b.name || "", 'ko');
-            if (cmpName !== 0) return cmpName;
-
-            return (a.order ?? 0) - (b.order ?? 0);
-        });
-        return list;
-    })();
+    // Sort and filter appliances for display (directly uses backend sorted order from api.products.get)
+    const displayAppliances = filteredAppliances;
 
     // Helper for promotion types/colors
     const getPromotionStyle = (promotionId?: string) => {
