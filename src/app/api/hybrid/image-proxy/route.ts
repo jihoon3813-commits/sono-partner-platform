@@ -9,13 +9,12 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: "Missing fileUrl" }, { status: 400 });
         }
 
-        const externalImgUrl = `https://www.sonoimready.com/service/file/fileView?fileUrl=${fileUrl}`;
+        const externalImgUrl = `https://www.sonoimready.com/service/file/fileView?fileUrl=${encodeURIComponent(fileUrl)}`;
         
-        // 소노아임레디 서버에 Referer 헤더를 속여서 이미지 데이터를 요청합니다.
         const res = await fetch(externalImgUrl, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
-                'Referer': 'https://www.sonoimready.com/front/sc/chgServList?prdctCd=%ED%81%AC%EB%A3%A8%EC%A6%88',
+                'Referer': 'https://www.sonoimready.com/',
                 'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
             }
         });
@@ -24,13 +23,22 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: "Failed to fetch image from host" }, { status: res.status });
         }
 
-        const contentType = res.headers.get("content-type") || "image/jpeg";
+        let contentType = res.headers.get("content-type");
+        if (!contentType || contentType === "application/octet-stream" || contentType.includes("text/html")) {
+            const lower = fileUrl.toLowerCase();
+            if (lower.endsWith(".png")) contentType = "image/png";
+            else if (lower.endsWith(".gif")) contentType = "image/gif";
+            else if (lower.endsWith(".webp")) contentType = "image/webp";
+            else if (lower.endsWith(".svg")) contentType = "image/svg+xml";
+            else contentType = "image/jpeg";
+        }
+
         const buffer = await res.arrayBuffer();
 
         return new NextResponse(buffer, {
             headers: {
                 "Content-Type": contentType,
-                "Cache-Control": "public, max-age=86400, must-revalidate" // 하루 동안 이미지 브라우저 캐싱 적용
+                "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800"
             }
         });
     } catch (error: any) {

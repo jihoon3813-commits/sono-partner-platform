@@ -250,26 +250,24 @@ export default function Happy450Content({
         document.body.style.overflow = "hidden";
 
         const detail = hybridDetails[selectedHybrid];
-        // 기본 셋업
+        // 기본 셋업 (로딩 중 임시 정적 셋업)
         setHybridItems(detail?.items || []);
 
-        // 여행이나 크루즈의 경우 실시간 API 동기화 시도
-        if (selectedHybrid) {
-            setIsLoadingItems(true);
-            fetch(`/api/hybrid/${encodeURIComponent(selectedHybrid)}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success && Array.isArray(data.items) && data.items.length > 0) {
-                        setHybridItems(data.items);
-                    }
-                })
-                .catch(err => {
-                    console.error("Failed to load live hybrid products:", err);
-                })
-                .finally(() => {
-                    setIsLoadingItems(false);
-                });
-        }
+        // 모든 전환 서비스 카테고리에 대해 실시간 API 동기화 시도
+        setIsLoadingItems(true);
+        fetch(`/api/hybrid?category=${encodeURIComponent(selectedHybrid)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && Array.isArray(data.items) && data.items.length > 0) {
+                    setHybridItems(data.items);
+                }
+            })
+            .catch(err => {
+                console.error("Failed to load live hybrid products:", err);
+            })
+            .finally(() => {
+                setIsLoadingItems(false);
+            });
 
         return () => {
             document.body.style.overflow = "";
@@ -2148,38 +2146,27 @@ export default function Happy450Content({
 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                                             {hybridItems.map((subItem, subIdx) => {
-                                                // 1순위: API 실시간 이미지, 2순위: 정적 카테고리 임시 맵핑
+                                                // 1순위: API 실시간 이미지, 2순위: 대표 카테고리 고화질 이미지
                                                 let subImg = subItem.img;
                                                 if (!subImg || subImg.includes('img_default_product.svg')) {
-                                                    if (selectedHybrid === "여행") {
-                                                        const travelImgs = [
-                                                            "https://res.cloudinary.com/lyjyvy54/image/upload/v1785829860/e49fa7b1-5c76-4907-9f1d-88a3434c522c.png",
-                                                            "https://res.cloudinary.com/lyjyvy54/image/upload/v1785829883/d38165a5-2e43-4558-939d-6b7ddc6b7bcb.png",
-                                                            "https://res.cloudinary.com/lyjyvy54/image/upload/v1785829867/bb25cad6-e1ad-4b5d-90a0-6190747ebc63.png",
-                                                            "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg",
-                                                            "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product07.jpg",
-                                                            "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product02.jpg"
-                                                        ];
-                                                        subImg = travelImgs[subIdx % travelImgs.length];
-                                                    } else if (selectedHybrid === "크루즈") {
-                                                        const cruiseImgs = [
-                                                            "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product09.jpg",
-                                                            "https://res.cloudinary.com/lyjyvy54/image/upload/v1785829883/d38165a5-2e43-4558-939d-6b7ddc6b7bcb.png",
-                                                            "https://res.cloudinary.com/lyjyvy54/image/upload/v1785829860/e49fa7b1-5c76-4907-9f1d-88a3434c522c.png",
-                                                            "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product09.jpg",
-                                                            "https://res.cloudinary.com/lyjyvy54/image/upload/v1785829867/bb25cad6-e1ad-4b5d-90a0-6190747ebc63.png",
-                                                            "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product02.jpg"
-                                                        ];
-                                                        subImg = cruiseImgs[subIdx % cruiseImgs.length];
-                                                    } else {
-                                                        subImg = detail.img;
-                                                    }
+                                                    subImg = detail?.img || "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg";
                                                 }
 
                                                 return (
                                                     <div key={subIdx} className="bg-white border border-gray-200 rounded overflow-hidden flex flex-col group/item shadow-sm">
-                                                        <div className="relative aspect-[16/10] overflow-hidden bg-gray-55">
-                                                            <img src={subImg} alt={subItem.name} className="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500" />
+                                                        <div className="relative aspect-[16/10] overflow-hidden bg-gray-50">
+                                                            <img 
+                                                                src={subImg} 
+                                                                alt={subItem.name} 
+                                                                onError={(e) => {
+                                                                    const target = e.currentTarget;
+                                                                    const fallback = detail?.img || "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg";
+                                                                    if (target.src !== fallback) {
+                                                                        target.src = fallback;
+                                                                    }
+                                                                }}
+                                                                className="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500" 
+                                                            />
                                                             <div className="absolute top-2 left-2 flex flex-wrap gap-1">
                                                                 {subItem.tags && subItem.tags.map((t: string, ti: number) => (
                                                                     <span key={ti} className="bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-wider">{t}</span>
