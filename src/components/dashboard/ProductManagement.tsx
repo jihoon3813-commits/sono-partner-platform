@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
@@ -85,6 +85,10 @@ export default function ProductManagement() {
     const syncFromBilligo = useAction(api.products.syncFromBilligo);
     const updateOrder = useMutation(api.products.updateOrder);
     const promotions = useQuery(api.promotions.get);
+
+    // System Settings Queries & Mutations
+    const sortRulesSetting = useQuery(api.settings.getSetting, { key: "product_sort_rules" });
+    const updateSetting = useMutation(api.settings.updateSetting);
 
     // Care Products Queries & Mutations
     const careProducts = useQuery(api.careProducts.get);
@@ -180,29 +184,47 @@ export default function ProductManagement() {
         : ["TV/디지털", "냉장가전", "주방가전", "생활가전", "에어컨/에어케어", "세탁가전", "건강/뷰티", "가구/침대", "기타가전"];
     const slots = [1, 2, 3, 4, 6];
 
-    const updateSortRuleField = (index: number, field: SortField) => {
-        setSortRules(prev => {
-            const next = [...prev];
-            next[index] = { ...next[index], field };
-            return next;
+    useEffect(() => {
+        if (sortRulesSetting?.value) {
+            try {
+                const parsed = JSON.parse(sortRulesSetting.value);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    setSortRules(parsed);
+                }
+            } catch (e) {
+                console.error("Failed to parse saved sort rules", e);
+            }
+        }
+    }, [sortRulesSetting]);
+
+    const saveSortRules = (newRules: SortRule[]) => {
+        setSortRules(newRules);
+        updateSetting({
+            key: "product_sort_rules",
+            value: JSON.stringify(newRules),
         });
+    };
+
+    const updateSortRuleField = (index: number, field: SortField) => {
+        const next = [...sortRules];
+        next[index] = { ...next[index], field };
+        saveSortRules(next);
     };
 
     const updateSortRuleDirection = (index: number, direction: SortDirection) => {
-        setSortRules(prev => {
-            const next = [...prev];
-            next[index] = { ...next[index], direction };
-            return next;
-        });
+        const next = [...sortRules];
+        next[index] = { ...next[index], direction };
+        saveSortRules(next);
     };
 
     const resetSortRules = () => {
-        setSortRules([
+        const defaultRules: SortRule[] = [
             { field: "brand", direction: "asc" },
             { field: "category", direction: "asc" },
             { field: "model", direction: "asc" },
             { field: "name", direction: "asc" },
-        ]);
+        ];
+        saveSortRules(defaultRules);
     };
 
     const compareProductsByRules = (a: Product, b: Product, rules: SortRule[]) => {

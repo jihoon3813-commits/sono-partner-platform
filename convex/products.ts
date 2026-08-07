@@ -218,6 +218,30 @@ export const get = query({
             ...p,
             name: cleanBrandDeduplication(p.name, p.brand)
         }));
+
+        // DB에 저장된 product_sort_rules 조회
+        const sortRulesSetting = await ctx.db
+            .query("settings")
+            .withIndex("by_key", (q) => q.eq("key", "product_sort_rules"))
+            .unique();
+
+        let rules: { field: string; direction: string }[] = [
+            { field: "brand", direction: "asc" },
+            { field: "category", direction: "asc" },
+            { field: "model", direction: "asc" },
+            { field: "name", direction: "asc" },
+        ];
+
+        if (sortRulesSetting && sortRulesSetting.value) {
+            try {
+                const parsed = JSON.parse(sortRulesSetting.value);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    rules = parsed;
+                }
+            } catch (e) {
+                console.error("Failed to parse product_sort_rules", e);
+            }
+        }
         
         return cleaned.sort((a, b) => {
             // 1. 베스트 상품 최상단 배치
@@ -234,20 +258,38 @@ export const get = query({
                 return (a.name || "").localeCompare(b.name || "", 'ko');
             }
 
-            // 3. 기본 정렬: 브랜드 -> 카테고리 -> 모델명 -> 제품명
-            const cmpBrand = (a.brand || "").localeCompare(b.brand || "", 'ko');
-            if (cmpBrand !== 0) return cmpBrand;
+            // 3. 일반 상품: DB에 저장된 1~4순위 정렬 규칙 순차 적용
+            for (const rule of rules) {
+                let cmp = 0;
+                const dir = rule.direction === "asc" ? 1 : -1;
 
-            const cmpCat = (a.category || "").localeCompare(b.category || "", 'ko');
-            if (cmpCat !== 0) return cmpCat;
+                switch (rule.field) {
+                    case "brand":
+                        cmp = (a.brand || "").localeCompare(b.brand || "", 'ko');
+                        break;
+                    case "category":
+                        cmp = (a.category || "").localeCompare(b.category || "", 'ko');
+                        break;
+                    case "model":
+                        cmp = (a.model || "").localeCompare(b.model || "", 'ko');
+                        break;
+                    case "name":
+                        cmp = (a.name || "").localeCompare(b.name || "", 'ko');
+                        break;
+                    case "monthlyPayment":
+                        cmp = (a.monthlyPayment ?? 0) - (b.monthlyPayment ?? 0);
+                        break;
+                    case "order":
+                        cmp = (a.order ?? 0) - (b.order ?? 0);
+                        break;
+                }
 
-            const cmpModel = (a.model || "").localeCompare(b.model || "", 'ko');
-            if (cmpModel !== 0) return cmpModel;
+                if (cmp !== 0) {
+                    return cmp * dir;
+                }
+            }
 
-            const cmpName = (a.name || "").localeCompare(b.name || "", 'ko');
-            if (cmpName !== 0) return cmpName;
-
-            return (a.order ?? 0) - (b.order ?? 0);
+            return (a.name || "").localeCompare(b.name || "", 'ko');
         });
     },
 });
