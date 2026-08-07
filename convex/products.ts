@@ -279,7 +279,7 @@ export const toggleGift = mutation({
     },
 });
 
-// 베스트 여부 토글 (베스트 선택 시 목록 맨 위로 자동 이동)
+// 베스트 여부 토글 (기존 목록 순서 및 스크롤 위치 유지)
 export const toggleBest = mutation({
     args: { id: v.id("products"), isBest: v.boolean() },
     handler: async (ctx, args) => {
@@ -287,28 +287,7 @@ export const toggleBest = mutation({
         if (!product) return;
 
         const now = new Date().toISOString();
-
-        if (args.isBest) {
-            // 동일 그룹(동일 플랜 또는 구좌)의 제품 목록 가져오기
-            const allProducts = await ctx.db.query("products").collect();
-            const sameGroup = allProducts
-                .filter(p => {
-                    if (product.careProductId && p.careProductId) return p.careProductId === product.careProductId;
-                    return (p.slotCount || 4) === (product.slotCount || 4);
-                })
-                .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
-
-            // 다른 제품들의 order를 2부터 순차 할당하고 선택된 제품을 order: 1로 맨 위 배치
-            let nextOrder = 2;
-            for (const p of sameGroup) {
-                if (p._id === args.id) continue;
-                await ctx.db.patch(p._id, { order: nextOrder++, updatedAt: now });
-            }
-
-            await ctx.db.patch(args.id, { isBest: true, order: 1, updatedAt: now });
-        } else {
-            await ctx.db.patch(args.id, { isBest: false, updatedAt: now });
-        }
+        await ctx.db.patch(args.id, { isBest: args.isBest, updatedAt: now });
     },
 });
 
