@@ -304,14 +304,17 @@ export default function SmartCareContent({
     const [selectedHybrid, setSelectedHybrid] = useState<string | null>(null);
     const [hybridItems, setHybridItems] = useState<any[]>([]);
     const [isLoadingItems, setIsLoadingItems] = useState(false);
+    const [hybridStatusFilter, setHybridStatusFilter] = useState<"전체" | "접수중" | "접수마감">("전체");
 
     useEffect(() => {
         if (!selectedHybrid) {
             setHybridItems([]);
+            setHybridStatusFilter("전체");
             document.body.style.overflow = "";
             return;
         }
 
+        setHybridStatusFilter("전체");
         document.body.style.overflow = "hidden";
 
         const detail = hybridDetails[selectedHybrid];
@@ -2412,100 +2415,146 @@ export default function SmartCareContent({
                                         <div className="animate-spin w-10 h-10 border-4 border-sono-primary border-t-transparent rounded-full mx-auto"></div>
                                         <p className="text-sm font-bold text-slate-500">실시간 전환 가능 상품을 소노 공식 사이트에서 불러오는 중입니다...</p>
                                     </div>
-                                ) : hybridItems && hybridItems.length > 0 ? (
-                                    <div className="space-y-6 text-left border-t border-gray-200 pt-8">
-                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                                            <h4 className="font-black text-base sm:text-lg md:text-xl text-slate-900">전환 가능 상품 목록 (총 {hybridItems.length}개)</h4>
-                                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-500">
-                                                <span className="font-bold text-sono-primary border-b border-sono-primary">최신순</span>
-                                                <span>•</span>
-                                                <span>마감 임박순</span>
-                                                <span>•</span>
-                                                <span>인기순</span>
-                                            </div>
-                                        </div>
+                                ) : hybridItems && hybridItems.length > 0 ? (() => {
+                                    const filteredHybridItems = hybridItems.filter((subItem) => {
+                                        if (hybridStatusFilter === "전체") return true;
+                                        const isClosed = subItem.status && (subItem.status === "접수마감" || subItem.status === "마감" || subItem.status.includes("마감"));
+                                        if (hybridStatusFilter === "접수마감") return isClosed;
+                                        if (hybridStatusFilter === "접수중") return !isClosed;
+                                        return true;
+                                    });
 
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                                             {hybridItems.map((subItem, subIdx) => {
-                                                // 1순위: direct 소노아임레디 이미지 URL, 2순위: 이미지 프록시, 3순위: 카테고리 대표 고화질 이미지
-                                                let subImg = subItem.img;
-                                                if (!subImg || subImg.includes('img_default_product.svg')) {
-                                                    subImg = detail?.img || "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg";
-                                                }
-
-                                                const targetUrl = subItem.link || `https://www.sonoimready.com/front/sc/chgServList?prdctCd=${encodeURIComponent(selectedHybrid || '')}`;
-
-                                                return (
-                                                    <a 
-                                                        key={subIdx} 
-                                                        href={targetUrl}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="bg-white border border-gray-200 hover:border-blue-500/50 rounded overflow-hidden flex flex-col group/item shadow-sm hover:shadow-md transition-all cursor-pointer text-inherit no-underline"
+                                    return (
+                                        <div className="space-y-6 text-left border-t border-gray-200 pt-8">
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                                                <h4 className="font-black text-base sm:text-lg md:text-xl text-slate-900">전환 가능 상품 목록 (총 {filteredHybridItems.length}개)</h4>
+                                                <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs font-medium">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setHybridStatusFilter("전체")}
+                                                        className={`px-2 py-0.5 rounded cursor-pointer transition-colors ${
+                                                            hybridStatusFilter === "전체"
+                                                                ? "text-blue-600 font-bold underline underline-offset-4"
+                                                                : "text-slate-500 hover:text-slate-900"
+                                                        }`}
                                                     >
-                                                        <div className="relative aspect-[16/10] overflow-hidden bg-gray-50">
-                                                            <img 
-                                                                src={subImg} 
-                                                                alt={subItem.name} 
-                                                                onError={(e) => {
-                                                                    const target = e.currentTarget;
-                                                                    const proxyUrl = subItem.img && subItem.img.includes('/attach') ? `/api/hybrid/image-proxy?fileUrl=${encodeURIComponent(subItem.img.slice(subItem.img.indexOf('/attach')))}` : '';
-                                                                    const defaultFallback = detail?.img || "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg";
+                                                        전체
+                                                    </button>
+                                                    <span className="text-slate-300">•</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setHybridStatusFilter("접수중")}
+                                                        className={`px-2 py-0.5 rounded cursor-pointer transition-colors ${
+                                                            hybridStatusFilter === "접수중"
+                                                                ? "text-blue-600 font-bold underline underline-offset-4"
+                                                                : "text-slate-500 hover:text-slate-900"
+                                                        }`}
+                                                    >
+                                                        접수중
+                                                    </button>
+                                                    <span className="text-slate-300">•</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setHybridStatusFilter("접수마감")}
+                                                        className={`px-2 py-0.5 rounded cursor-pointer transition-colors ${
+                                                            hybridStatusFilter === "접수마감"
+                                                                ? "text-blue-600 font-bold underline underline-offset-4"
+                                                                : "text-slate-500 hover:text-slate-900"
+                                                        }`}
+                                                    >
+                                                        접수마감
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {filteredHybridItems.length === 0 ? (
+                                                <div className="py-12 text-center text-slate-500 font-bold bg-slate-50 border border-gray-200 rounded">
+                                                    해당 상태({hybridStatusFilter})의 상품이 없습니다.
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                                                    {filteredHybridItems.map((subItem, subIdx) => {
+                                                        // 1순위: direct 소노아임레디 이미지 URL, 2순위: 이미지 프록시, 3순위: 카테고리 대표 고화질 이미지
+                                                        let subImg = subItem.img;
+                                                        if (!subImg || subImg.includes('img_default_product.svg')) {
+                                                            subImg = detail?.img || "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg";
+                                                        }
+
+                                                        const targetUrl = subItem.link || `https://www.sonoimready.com/front/sc/chgServList?prdctCd=${encodeURIComponent(selectedHybrid || '')}`;
+
+                                                        return (
+                                                            <a 
+                                                                key={subIdx} 
+                                                                href={targetUrl}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="bg-white border border-gray-200 hover:border-blue-500/50 rounded overflow-hidden flex flex-col group/item shadow-sm hover:shadow-md transition-all cursor-pointer text-inherit no-underline"
+                                                            >
+                                                                <div className="relative aspect-[16/10] overflow-hidden bg-gray-50">
+                                                                    <img 
+                                                                        src={subImg} 
+                                                                        alt={subItem.name} 
+                                                                        onError={(e) => {
+                                                                            const target = e.currentTarget;
+                                                                            const proxyUrl = subItem.img && subItem.img.includes('/attach') ? `/api/hybrid/image-proxy?fileUrl=${encodeURIComponent(subItem.img.slice(subItem.img.indexOf('/attach')))}` : '';
+                                                                            const defaultFallback = detail?.img || "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg";
+                                                                            
+                                                                            if (proxyUrl && !target.src.includes('/api/hybrid/image-proxy')) {
+                                                                                target.src = proxyUrl;
+                                                                            } else if (target.src !== defaultFallback) {
+                                                                                target.src = defaultFallback;
+                                                                            }
+                                                                        }}
+                                                                        className="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500" 
+                                                                    />
+                                                                    <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+                                                                        {subItem.tags && subItem.tags.map((t: string, ti: number) => (
+                                                                            <span key={ti} className="bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-wider">{t}</span>
+                                                                        ))}
+                                                                    </div>
+                                                                    <span className="absolute top-2 right-2 bg-slate-950/80 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
+                                                                        {selectedHybrid}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="p-4 flex flex-col flex-grow text-left">
+                                                                    <h5 className="font-black text-slate-900 text-base mb-1 group-hover/item:text-blue-600 transition-colors leading-snug line-clamp-1 flex items-center justify-between" title={subItem.name}>
+                                                                        <span>{subItem.name}</span>
+                                                                        <svg className="w-4 h-4 text-slate-400 group-hover/item:text-blue-600 transition-colors shrink-0 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                        </svg>
+                                                                    </h5>
+                                                                    <p className="text-slate-500 text-xs font-medium mb-3 flex-grow line-clamp-2" title={subItem.desc}>{subItem.desc}</p>
                                                                     
-                                                                    if (proxyUrl && !target.src.includes('/api/hybrid/image-proxy')) {
-                                                                        target.src = proxyUrl;
-                                                                    } else if (target.src !== defaultFallback) {
-                                                                        target.src = defaultFallback;
-                                                                    }
-                                                                }}
-                                                                className="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500" 
-                                                            />
-                                                            <div className="absolute top-2 left-2 flex flex-wrap gap-1">
-                                                                {subItem.tags && subItem.tags.map((t: string, ti: number) => (
-                                                                    <span key={ti} className="bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-wider">{t}</span>
-                                                                ))}
-                                                            </div>
-                                                            <span className="absolute top-2 right-2 bg-slate-950/80 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
-                                                                {selectedHybrid}
-                                                            </span>
-                                                        </div>
-                                                        <div className="p-4 flex flex-col flex-grow text-left">
-                                                            <h5 className="font-black text-slate-900 text-base mb-1 group-hover/item:text-blue-600 transition-colors leading-snug line-clamp-1 flex items-center justify-between" title={subItem.name}>
-                                                                <span>{subItem.name}</span>
-                                                                <svg className="w-4 h-4 text-slate-400 group-hover/item:text-blue-600 transition-colors shrink-0 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                </svg>
-                                                            </h5>
-                                                            <p className="text-slate-500 text-xs font-medium mb-3 flex-grow line-clamp-2" title={subItem.desc}>{subItem.desc}</p>
-                                                            
-                                                            <div className="flex justify-between items-baseline border-t border-gray-100 pt-3 mt-auto">
-                                                                <span className="text-sono-primary font-black text-base">{subItem.price}</span>
-                                                                <span className="text-[10px] text-slate-400 font-bold">{subItem.period}</span>
-                                                            </div>
-                                                            <div className="mt-3 flex justify-between items-center">
-                                                                {subItem.status && (subItem.status === "접수마감" || subItem.status === "마감" || subItem.status.includes("마감")) ? (
-                                                                    <span className="text-[10px] font-black px-2 py-0.5 rounded bg-gray-100 text-gray-500 border border-gray-300">
-                                                                        {subItem.status}
-                                                                    </span>
-                                                                ) : (
-                                                                    <span className="text-[10px] font-black px-2 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-200/40">
-                                                                        {subItem.status}
-                                                                    </span>
-                                                                )}
-                                                                <span className="text-[11px] font-bold text-blue-600 group-hover/item:underline flex items-center gap-0.5">
-                                                                    자세히보기
-                                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                                                                    </svg>
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </a>
-                                                );
-                                            })}
+                                                                    <div className="flex justify-between items-baseline border-t border-gray-100 pt-3 mt-auto">
+                                                                        <span className="text-sono-primary font-black text-base">{subItem.price}</span>
+                                                                        <span className="text-[10px] text-slate-400 font-bold">{subItem.period}</span>
+                                                                    </div>
+                                                                    <div className="mt-3 flex justify-between items-center">
+                                                                        {subItem.status && (subItem.status === "접수마감" || subItem.status === "마감" || subItem.status.includes("마감")) ? (
+                                                                            <span className="text-[10px] font-black px-2 py-0.5 rounded bg-gray-100 text-gray-500 border border-gray-300">
+                                                                                {subItem.status}
+                                                                            </span>
+                                                                        ) : (
+                                                                            <span className="text-[10px] font-black px-2 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-200/40">
+                                                                                {subItem.status}
+                                                                            </span>
+                                                                        )}
+                                                                        <span className="text-[11px] font-bold text-blue-600 group-hover/item:underline flex items-center gap-0.5">
+                                                                            자세히보기
+                                                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                                                            </svg>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </a>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
                                         </div>
-                                    </div>
-                                ) : null}
+                                    );
+                                })() : null}
                             </div>
 
                             {/* 모달 풋터 */}
