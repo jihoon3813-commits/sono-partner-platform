@@ -1057,7 +1057,7 @@ export default function SmartCareContent({
                                             : "bg-white text-slate-600 border-slate-200 hover:border-slate-400 hover:text-slate-900"
                                             }`}
                                     >
-                                        {plan.name} ({plan.slotCount}구좌)
+                                        {plan.name}
                                     </button>
                                 ))}
                             </div>

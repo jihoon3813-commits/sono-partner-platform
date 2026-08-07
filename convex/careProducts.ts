@@ -150,3 +150,137 @@ export const toggleAutoUpdate = mutation({
         await ctx.db.patch(args.id, patchData);
     },
 });
+
+// 더해피450 ONE 등 기본 careProducts 자동 시딩
+export const seedDefaultCareProducts = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const existing = await ctx.db.query("careProducts").collect();
+        const hasHappy450 = existing.some(p => p.name.includes("더해피450") || p.name.includes("더 해피"));
+
+        const now = new Date().toISOString();
+
+        if (existing.length === 0) {
+            const defaults = [
+                {
+                    name: "더해피450 ONE",
+                    productType: "standard",
+                    slotCount: 1,
+                    target: "일반 상조 및 8가지 라이프케어 전환",
+                    monthlyPayment: 22500,
+                    cardDiscountPayment: 10000,
+                    features: ["만기 200회 납입 시 100% 환급 보장", "여행·크루즈·골프 등 8가지 라이프케어 전환", "소노 멤버십 & GC 헬스케어 특별 혜택"],
+                    paymentCount: "1~150회",
+                    defermentPeriod: "151~200회",
+                    maturityCount: "200회",
+                    order: 1,
+                    autoUpdate: false,
+                },
+                {
+                    name: "스마트케어 4더블",
+                    productType: "combination",
+                    slotCount: 2,
+                    target: "1인 가구 / 소형 가전",
+                    monthlyPayment: 55200,
+                    cardDiscountPayment: 35000,
+                    features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"],
+                    paymentCount: "1~179회(180회:79,200원)",
+                    defermentPeriod: "181~200회",
+                    maturityCount: "200회",
+                    order: 2,
+                    autoUpdate: true,
+                    autoUpdateSchedule: "00:00",
+                },
+                {
+                    name: "스마트케어 5",
+                    productType: "combination",
+                    slotCount: 1,
+                    target: "1인 가구 / 소형 가전",
+                    monthlyPayment: 33000,
+                    cardDiscountPayment: 25000,
+                    features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"],
+                    paymentCount: "1~180회",
+                    defermentPeriod: "181~200회",
+                    maturityCount: "200회",
+                    order: 3,
+                    autoUpdate: true,
+                    autoUpdateSchedule: "00:00",
+                },
+                {
+                    name: "스마트케어 5더블",
+                    productType: "combination",
+                    slotCount: 2,
+                    target: "신혼 부부 / 중형 가전",
+                    monthlyPayment: 66000,
+                    cardDiscountPayment: 42000,
+                    features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"],
+                    paymentCount: "1~180회",
+                    defermentPeriod: "181~200회",
+                    maturityCount: "200회",
+                    order: 4,
+                    autoUpdate: true,
+                    autoUpdateSchedule: "00:00",
+                },
+                {
+                    name: "스마트케어 5트리플",
+                    productType: "combination",
+                    slotCount: 3,
+                    target: "일반 가전 / 대형 가전",
+                    monthlyPayment: 99000,
+                    cardDiscountPayment: 42000,
+                    features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"],
+                    paymentCount: "1~180회",
+                    defermentPeriod: "181~200회",
+                    maturityCount: "200회",
+                    order: 5,
+                    autoUpdate: true,
+                    autoUpdateSchedule: "00:00",
+                },
+                {
+                    name: "스마트케어 5쿼드",
+                    productType: "combination",
+                    slotCount: 4,
+                    target: "대가족 / 프리미엄 가전 패키지",
+                    monthlyPayment: 132000,
+                    cardDiscountPayment: 42000,
+                    features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"],
+                    paymentCount: "1~180회",
+                    defermentPeriod: "181~200회",
+                    maturityCount: "200회",
+                    order: 6,
+                    autoUpdate: true,
+                    autoUpdateSchedule: "00:00",
+                },
+            ];
+
+            for (const item of defaults) {
+                await ctx.db.insert("careProducts", {
+                    ...item,
+                    createdAt: now,
+                    updatedAt: now,
+                });
+            }
+            return { seeded: true, count: defaults.length };
+        } else if (!hasHappy450) {
+            await ctx.db.insert("careProducts", {
+                name: "더해피450 ONE",
+                productType: "standard",
+                slotCount: 1,
+                target: "일반 상조 및 8가지 라이프케어 전환",
+                monthlyPayment: 22500,
+                cardDiscountPayment: 10000,
+                features: ["만기 200회 납입 시 100% 환급 보장", "여행·크루즈·골프 등 8가지 라이프케어 전환", "소노 멤버십 & GC 헬스케어 특별 혜택"],
+                paymentCount: "1~150회",
+                defermentPeriod: "151~200회",
+                maturityCount: "200회",
+                order: 1,
+                autoUpdate: false,
+                createdAt: now,
+                updatedAt: now,
+            });
+            return { seeded: true, count: 1 };
+        }
+
+        return { seeded: false };
+    },
+});

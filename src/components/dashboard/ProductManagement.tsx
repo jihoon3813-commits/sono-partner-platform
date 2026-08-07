@@ -97,7 +97,17 @@ export default function ProductManagement() {
     const removeCareProduct = useMutation(api.careProducts.remove);
     const updateCareOrder = useMutation(api.careProducts.updateOrder);
     const toggleCareAutoUpdate = useMutation(api.careProducts.toggleAutoUpdate);
+    const seedDefaultCareProducts = useMutation(api.careProducts.seedDefaultCareProducts);
     const syncProductsForPlan = useAction(api.products.syncProductsForPlan);
+
+    useEffect(() => {
+        if (careProducts !== undefined) {
+            const hasHappy450 = careProducts.some(p => p.name.includes("더해피450") || p.name.includes("더 해피"));
+            if (!hasHappy450 || careProducts.length === 0) {
+                seedDefaultCareProducts().catch(console.error);
+            }
+        }
+    }, [careProducts, seedDefaultCareProducts]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
@@ -911,9 +921,15 @@ export default function ProductManagement() {
                                                 )}
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <span className="inline-block bg-gray-100 text-gray-600 text-[11px] font-black px-2 py-1 rounded-md whitespace-nowrap">
-                                                    {plan.slotCount}구좌
-                                                </span>
+                                                {plan.productType === "standard" ? (
+                                                    <span className="inline-block bg-purple-50 text-purple-700 border border-purple-200/80 text-[11px] font-black px-2.5 py-1 rounded-md whitespace-nowrap">
+                                                        1, 2, 3구좌
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-block bg-gray-100 text-gray-600 text-[11px] font-black px-2 py-1 rounded-md whitespace-nowrap">
+                                                        {plan.slotCount}구좌
+                                                    </span>
+                                                )}
                                             </td>
                                             <td className="px-6 py-4 text-right whitespace-nowrap">
                                                 <div className="flex flex-col text-right">
@@ -1366,13 +1382,20 @@ export default function ProductManagement() {
                                 </div>
                                 <div className="col-span-2 md:col-span-1">
                                     <label className="text-xs font-bold text-[#8b95a1] mb-2 block ml-1">구좌수</label>
-                                    <select
-                                        value={editingCareProduct.slotCount || 4}
-                                        onChange={(e) => setEditingCareProduct({ ...editingCareProduct, slotCount: Number(e.target.value) })}
-                                        className="w-full bg-[#f9fafb] border-none rounded-2xl py-3 px-4 text-sm font-bold focus:ring-2 focus:ring-sono-primary"
-                                    >
-                                        {slots.map(s => <option key={s} value={s}>{s}구좌</option>)}
-                                    </select>
+                                    {editingCareProduct.productType === "standard" ? (
+                                        <div className="w-full bg-purple-50/70 border border-purple-200/60 rounded-2xl py-3 px-4 text-xs font-black text-purple-800 flex items-center justify-between">
+                                            <span>1, 2, 3구좌 선택 가능</span>
+                                            <span className="text-[10px] font-bold text-purple-600 bg-white px-2 py-0.5 rounded border border-purple-200">신청 시 선택</span>
+                                        </div>
+                                    ) : (
+                                        <select
+                                            value={editingCareProduct.slotCount || 4}
+                                            onChange={(e) => setEditingCareProduct({ ...editingCareProduct, slotCount: Number(e.target.value) })}
+                                            className="w-full bg-[#f9fafb] border-none rounded-2xl py-3 px-4 text-sm font-bold focus:ring-2 focus:ring-sono-primary"
+                                        >
+                                            {slots.map(s => <option key={s} value={s}>{s}구좌</option>)}
+                                        </select>
+                                    )}
                                 </div>
                                 <div className="col-span-2 md:col-span-1">
                                     <label className="text-xs font-bold text-[#8b95a1] mb-2 block ml-1">대상</label>
