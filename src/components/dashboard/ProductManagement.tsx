@@ -262,6 +262,44 @@ export default function ProductManagement() {
         });
     };
 
+    const handleToggleBest = async (e: React.MouseEvent, id: Id<"products">, currentIsBest: boolean) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const currentScrollY = window.scrollY || document.documentElement.scrollTop;
+
+        try {
+            await toggleBest({ id, isBest: !currentIsBest });
+        } finally {
+            const restoreScroll = () => {
+                window.scrollTo({ top: currentScrollY, behavior: "instant" as ScrollBehavior });
+            };
+            restoreScroll();
+            requestAnimationFrame(restoreScroll);
+            setTimeout(restoreScroll, 50);
+            setTimeout(restoreScroll, 150);
+        }
+    };
+
+    const handleToggleVisibility = async (e: React.MouseEvent, id: Id<"products">, currentIsVisible: boolean) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const currentScrollY = window.scrollY || document.documentElement.scrollTop;
+
+        try {
+            await toggleVisibility({ id, isVisible: !currentIsVisible });
+        } finally {
+            const restoreScroll = () => {
+                window.scrollTo({ top: currentScrollY, behavior: "instant" as ScrollBehavior });
+            };
+            restoreScroll();
+            requestAnimationFrame(restoreScroll);
+            setTimeout(restoreScroll, 50);
+            setTimeout(restoreScroll, 150);
+        }
+    };
+
     const handleCareSave = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!editingCareProduct) return;
@@ -552,7 +590,8 @@ export default function ProductManagement() {
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <button
-                                                    onClick={() => toggleVisibility({ id: product._id, isVisible: !product.isVisible })}
+                                                    type="button"
+                                                    onClick={(e) => handleToggleVisibility(e, product._id, product.isVisible ?? true)}
                                                     className={`w-12 h-6 rounded-full p-1 transition-all ${product.isVisible ? "bg-sono-primary" : "bg-gray-200"}`}
                                                 >
                                                     <div className={`w-4 h-4 bg-white rounded-full transition-all ${product.isVisible ? "ml-6" : "ml-0"}`}></div>
@@ -560,7 +599,8 @@ export default function ProductManagement() {
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <button
-                                                    onClick={() => toggleBest({ id: product._id, isBest: !product.isBest })}
+                                                    type="button"
+                                                    onClick={(e) => handleToggleBest(e, product._id, product.isBest ?? false)}
                                                     className={`w-12 h-6 rounded-full p-1 transition-all ${product.isBest ? "bg-sono-gold" : "bg-gray-200"}`}
                                                 >
                                                     <div className={`w-4 h-4 bg-white rounded-full transition-all ${product.isBest ? "ml-6" : "ml-0"}`}></div>
