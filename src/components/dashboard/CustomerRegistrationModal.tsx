@@ -123,60 +123,58 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
         }
         return visible;
     }, [productsData, careProductsData, isSmartCare, currentSlot, manualForm.productType]);
+
+    // Calculate allowed product types for the selected partner (dynamically read from careProductsData)
     const allowedProductOptions = useMemo(() => {
         const selectedP = partners.find(p => p.partnerId === manualForm.selectedPartnerId) || partner;
         const pGroup = selectedP?.partnerGroup || "전체 상품 판매";
 
-        const allOptions = ["더 해피 450 ONE", "스마트케어4", "스마트케어5"];
+        let dbList: { id: string; name: string; productType: string; slotCount: number }[] = [];
+
+        if (careProductsData && careProductsData.length > 0) {
+            dbList = careProductsData.map(cp => ({
+                id: cp._id,
+                name: cp.name,
+                productType: cp.productType || (cp.name.includes("해피") ? "standard" : "combination"),
+                slotCount: cp.slotCount || 1,
+            }));
+        } else {
+            dbList = [
+                { id: "happy450", name: "더 해피 450 ONE", productType: "standard", slotCount: 1 },
+                { id: "smartcare4", name: "스마트케어4", productType: "combination", slotCount: 2 },
+                { id: "smartcare5", name: "스마트케어5", productType: "combination", slotCount: 1 }
+            ];
+        }
 
         if (pGroup === "전체 상품 판매" || !pGroup.trim()) {
-            return allOptions;
+            return dbList;
         }
 
         if (pGroup === "결합 상품 판매") {
-            return ["스마트케어4", "스마트케어5"];
+            const combi = dbList.filter(p => p.productType === "combination" || p.name.includes("스마트"));
+            return combi.length > 0 ? combi : dbList;
         }
 
-        const filtered: string[] = [];
+        const filtered = dbList.filter(p => pGroup.includes(p.name) || (p.productType === "standard" && (pGroup.includes("더해피") || pGroup.includes("해피"))));
 
-        // Check if "더 해피 450 ONE" is allowed
-        if (pGroup.includes("더해피450") || pGroup.includes("더 해피") || pGroup.includes("ONE")) {
-            filtered.push("더 해피 450 ONE");
-        }
-
-        // Check if "스마트케어4" is allowed (4더블, 스마트케어 4)
-        if (pGroup.includes("스마트케어 4") || pGroup.includes("스마트케어4") || pGroup.includes("4더블")) {
-            filtered.push("스마트케어4");
-        }
-
-        // Check if "스마트케어5" is allowed (스마트케어 5, 5더블, 5트리플, 5쿼드)
-        if (
-            pGroup.includes("스마트케어 5") || 
-            pGroup.includes("스마트케어5") ||
-            pGroup.includes("5더블") ||
-            pGroup.includes("트리플") ||
-            pGroup.includes("쿼드")
-        ) {
-            filtered.push("스마트케어5");
-        }
-
-        return filtered.length > 0 ? filtered : allOptions;
-    }, [partners, manualForm.selectedPartnerId, partner]);
+        return filtered.length > 0 ? filtered : dbList;
+    }, [careProductsData, partners, manualForm.selectedPartnerId, partner]);
 
     // Keep manualForm.productType aligned with allowedProductOptions
     useEffect(() => {
-        if (allowedProductOptions.length > 0 && !allowedProductOptions.includes(manualForm.productType)) {
-            const nextProd = allowedProductOptions[0];
+        const optionNames = allowedProductOptions.map(o => o.name);
+        if (optionNames.length > 0 && !optionNames.includes(manualForm.productType)) {
+            const nextItem = allowedProductOptions[0];
             let defaultPlan = "1";
-            if (nextProd === "스마트케어4") defaultPlan = "2";
-            else if (nextProd === "스마트케어5") defaultPlan = "1";
-            else if (nextProd === "더 해피 450 ONE") defaultPlan = "1";
+            if (nextItem.productType === "combination") {
+                defaultPlan = nextItem.slotCount ? String(nextItem.slotCount) : "2";
+            }
 
             setManualForm(prev => ({
                 ...prev,
-                productType: nextProd,
+                productType: nextItem.name,
                 planType: defaultPlan,
-                products: nextProd.startsWith("스마트케어") ? prev.products : "",
+                products: nextItem.productType === "combination" ? prev.products : "",
             }));
         }
     }, [allowedProductOptions, manualForm.productType]);
@@ -600,7 +598,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white font-bold text-gray-800"
                                 >
                                     {allowedProductOptions.map(opt => (
-                                        <option key={opt} value={opt}>{opt}</option>
+                                        <option key={opt.id || opt.name} value={opt.name}>{opt.name}</option>
                                     ))}
                                 </select>
                             </div>
@@ -612,9 +610,17 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     onChange={handleManualChange}
                                     className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white font-bold text-gray-800"
                                 >
-                                    {manualForm.productType === '더 해피 450 ONE' && ["1", "2", "3"].map(n => <option key={n} value={n}>{n}구좌</option>)}
-                                    {manualForm.productType === '스마트케어4' && ["2"].map(n => <option key={n} value={n}>{n}구좌</option>)}
-                                    {manualForm.productType === '스마트케어5' && ["1", "2", "3", "4"].map(n => <option key={n} value={n}>{n}구좌</option>)}
+                                    {(() => {
+                                        const selectedItem = allowedProductOptions.find(o => o.name === manualForm.productType);
+                                        const isStandard = selectedItem ? selectedItem.productType === "standard" : (!manualForm.productType.includes("스마트"));
+                                        if (isStandard) {
+                                            return ["1", "2", "3"].map(n => <option key={n} value={n}>{n}구좌</option>);
+                                        }
+                                        if (manualForm.productType.includes("4")) {
+                                            return ["2"].map(n => <option key={n} value={n}>{n}구좌</option>);
+                                        }
+                                        return ["1", "2", "3", "4"].map(n => <option key={n} value={n}>{n}구좌</option>);
+                                    })()}
                                 </select>
                             </div>
                             <div className="col-span-1 sm:col-span-2 md:col-span-2">

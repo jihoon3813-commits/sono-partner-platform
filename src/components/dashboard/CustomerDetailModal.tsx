@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Application, ApplicationStatus } from "@/lib/types";
@@ -18,6 +18,31 @@ interface CustomerDetailModalProps {
 export default function CustomerDetailModal({ application, onClose, onUpdate, isAdmin = false, partnerLoginId, currentUserRole = "master" }: CustomerDetailModalProps) {
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
     const statusHistory = useQuery(api.applications.getStatusHistory, { applicationNo: application.applicationNo });
+
+    // Dynamic queries for care products, appliance products, and partners
+    const careProductsData = useQuery(api.careProducts.get);
+    const productsData = useQuery(api.products.get);
+    const partnersData = useQuery(api.partners.getAllPartners);
+
+    // Resolve sales partner for this application
+    const customerPartner = useMemo(() => {
+        if (!partnersData) return null;
+        return partnersData.find(p => p.partnerId === application.partnerId || p.companyName === application.partnerName || p.loginId === partnerLoginId);
+    }, [partnersData, application, partnerLoginId]);
+
+    // Allowed care products based on sales partner's selling product configuration
+    const allowedCareProducts = useMemo(() => {
+        if (!careProductsData || careProductsData.length === 0) return [];
+        const pGroup = customerPartner?.partnerGroup || "전체 상품 판매";
+
+        if (pGroup === "전체 상품 판매" || !pGroup.trim()) {
+            return careProductsData;
+        }
+        if (pGroup === "결합 상품 판매") {
+            return careProductsData.filter(cp => cp.productType === "combination" || cp.name.includes("스마트"));
+        }
+        return careProductsData.filter(cp => pGroup.includes(cp.name) || (cp.productType === "standard" && (pGroup.includes("더해피") || pGroup.includes("해피"))));
+    }, [careProductsData, customerPartner]);
 
     const getStatusBadge = (status: string) => {
         return getStatusBadgeProps(status, dbStatuses);
@@ -104,11 +129,29 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     const [detailAddress, setDetailAddress] = useState(""); // 상세주소 분리
 
     // 신청 상품 정보
-    const [productType, setProductType] = useState(application.productType || "happy450");
+    const [productType, setProductType] = useState<string>(application.productType || "happy450");
     const [products, setProducts] = useState(application.products || "");
     const [planType, setPlanType] = useState(application.planType || "1구좌");
     const [inquiry, setInquiry] = useState(application.inquiry || "");
     const [preferredContactTime, setPreferredContactTime] = useState(application.preferredContactTime || "");
+
+    // Currently selected care product object
+    const currentCareProduct = useMemo(() => {
+        if (!careProductsData) return null;
+        return careProductsData.find(cp => cp.name === productType || (productType && productType.includes(cp.name)));
+    }, [careProductsData, productType]);
+
+    // Available home appliances filtered by current care product / slot count
+    const availableAppliances = useMemo(() => {
+        if (!productsData) return [];
+        const visible = productsData.filter(p => p.isVisible !== false);
+        if (!currentCareProduct || currentCareProduct.productType === "standard") {
+            return visible;
+        }
+        const matched = visible.filter(p => p.careProductId === currentCareProduct._id);
+        if (matched.length > 0) return matched;
+        return visible.filter(p => (p.slotCount || 4) === currentCareProduct.slotCount);
+    }, [productsData, currentCareProduct]);
 
     const [isSavingDetails, setIsSavingDetails] = useState(false);
 
@@ -386,14 +429,45 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                 <span className="w-24 text-gray-400 font-medium shrink-0">상품 유형</span>
                                 <select
                                     value={productType}
-                                    onChange={(e) => setProductType(e.target.value as any)}
-                                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                    onChange={(e) => setProductType(e.target.value)}
+                                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px] font-bold"
                                 >
-                                    <option value="happy450">더 해피 450 ONE</option>
-                                    <option value="smartcare">스마트케어</option>
+                                    {/* Always preserve existing productType option if not in allowedCareProducts */}
+                                    {productType && !allowedCareProducts.some(cp => cp.name === productType) && (
+                                        <option value={productType}>{getProductTypeLabel(productType)}</option>
+                                    )}
+                                    {allowedCareProducts.map(cp => (
+                                        <option key={cp._id} value={cp.name}>{cp.name}</option>
+                                    ))}
                                 </select>
                             </div>
-                            <InputRow label="가전제품" value={products} onChange={setProducts} />
+                            <div className="flex items-center gap-2 text-sm">
+                                <span className="w-24 text-gray-400 font-medium shrink-0">가전제품</span>
+                                {currentCareProduct?.productType === "combination" || (productType && productType.startsWith("스마트")) ? (
+                                    <select
+                                        value={products}
+                                        onChange={(e) => setProducts(e.target.value)}
+                                        className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                    >
+                                        <option value="">-- 가전제품 선택 ({availableAppliances.length}개) --</option>
+                                        {products && !availableAppliances.some(p => `${p.brand ? `[${p.brand}] ` : ''}${p.name}` === products || p.name === products) && (
+                                            <option value={products}>{products}</option>
+                                        )}
+                                        {availableAppliances.map(p => {
+                                            const label = `${p.brand ? `[${p.brand}] ` : ''}${p.name}${p.model ? ` (${p.model})` : ''}`;
+                                            return <option key={p._id} value={label}>{label}</option>;
+                                        })}
+                                    </select>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        value={products}
+                                        onChange={(e) => setProducts(e.target.value)}
+                                        placeholder="가전제품명 입력"
+                                        className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                    />
+                                )}
+                            </div>
                             <div className="flex items-center gap-2 text-sm">
                                 <span className="w-24 text-gray-400 font-medium shrink-0">구좌</span>
                                 <select
@@ -401,12 +475,23 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                     onChange={(e) => setPlanType(e.target.value)}
                                     className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
                                 >
-                                    {!["1구좌", "2구좌", "3구좌"].includes(planType) && planType && (
+                                    {planType && !["1구좌", "2구좌", "3구좌", "4구좌", "1", "2", "3", "4"].includes(planType) && (
                                         <option value={planType}>{planType}</option>
                                     )}
-                                    <option value="1구좌">1구좌</option>
-                                    <option value="2구좌">2구좌</option>
-                                    <option value="3구좌">3구좌</option>
+                                    {currentCareProduct?.productType === "standard" ? (
+                                        <>
+                                            <option value="1구좌">1구좌</option>
+                                            <option value="2구좌">2구좌</option>
+                                            <option value="3구좌">3구좌</option>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <option value="1구좌">1구좌</option>
+                                            <option value="2구좌">2구좌</option>
+                                            <option value="3구좌">3구좌</option>
+                                            <option value="4구좌">4구좌</option>
+                                        </>
+                                    )}
                                 </select>
                             </div>
                             <InputRow label="문의사항" value={inquiry} onChange={setInquiry} />
