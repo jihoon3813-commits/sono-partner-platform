@@ -68,6 +68,10 @@ export async function GET(request: Request) {
                 ? `https://www.sonoimready.com/service/file/fileView?fileUrl=${fileUrl}`
                 : "";
 
+            const detailUrl = item.prdctSeq
+                ? `https://www.sonoimready.com/front/sc/chgServDetail?prdctSeq=${item.prdctSeq}&prdctCd=${encodeURIComponent(category)}`
+                : `https://www.sonoimready.com/front/sc/chgServList?prdctCd=${encodeURIComponent(category)}`;
+
             return {
                 name: item.prdctServNm || item.prdctNm || "전환 상품",
                 desc: item.prdctCntn || "",
@@ -75,7 +79,8 @@ export async function GET(request: Request) {
                 period: period,
                 tags: tags,
                 img: imgUrl,
-                status: item.prcsNm || "접수중"
+                status: item.prcsNm || "접수중",
+                link: detailUrl
             };
         });
 
