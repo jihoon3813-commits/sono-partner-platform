@@ -18,6 +18,7 @@ interface HybridItem {
     tags: string[];
     status?: string;
     img?: string;
+    link?: string;
 }
 
 interface HybridServiceDetail {
@@ -2425,15 +2426,23 @@ export default function SmartCareContent({
                                         </div>
 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                                            {hybridItems.map((subItem, subIdx) => {
+                                             {hybridItems.map((subItem, subIdx) => {
                                                 // 1순위: direct 소노아임레디 이미지 URL, 2순위: 이미지 프록시, 3순위: 카테고리 대표 고화질 이미지
                                                 let subImg = subItem.img;
                                                 if (!subImg || subImg.includes('img_default_product.svg')) {
                                                     subImg = detail?.img || "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg";
                                                 }
 
+                                                const targetUrl = subItem.link || `https://www.sonoimready.com/front/sc/chgServList?prdctCd=${encodeURIComponent(selectedHybrid || '')}`;
+
                                                 return (
-                                                    <div key={subIdx} className="bg-white border border-gray-200 rounded overflow-hidden flex flex-col group/item shadow-sm">
+                                                    <a 
+                                                        key={subIdx} 
+                                                        href={targetUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="bg-white border border-gray-200 hover:border-blue-500/50 rounded overflow-hidden flex flex-col group/item shadow-sm hover:shadow-md transition-all cursor-pointer text-inherit no-underline"
+                                                    >
                                                         <div className="relative aspect-[16/10] overflow-hidden bg-gray-50">
                                                             <img 
                                                                 src={subImg} 
@@ -2461,7 +2470,12 @@ export default function SmartCareContent({
                                                             </span>
                                                         </div>
                                                         <div className="p-4 flex flex-col flex-grow text-left">
-                                                            <h5 className="font-black text-slate-900 text-base mb-1 group-hover/item:text-sono-primary transition-colors leading-snug line-clamp-1" title={subItem.name}>{subItem.name}</h5>
+                                                            <h5 className="font-black text-slate-900 text-base mb-1 group-hover/item:text-blue-600 transition-colors leading-snug line-clamp-1 flex items-center justify-between" title={subItem.name}>
+                                                                <span>{subItem.name}</span>
+                                                                <svg className="w-4 h-4 text-slate-400 group-hover/item:text-blue-600 transition-colors shrink-0 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                </svg>
+                                                            </h5>
                                                             <p className="text-slate-500 text-xs font-medium mb-3 flex-grow line-clamp-2" title={subItem.desc}>{subItem.desc}</p>
                                                             
                                                             <div className="flex justify-between items-baseline border-t border-gray-100 pt-3 mt-auto">
@@ -2478,9 +2492,15 @@ export default function SmartCareContent({
                                                                         {subItem.status}
                                                                     </span>
                                                                 )}
+                                                                <span className="text-[11px] font-bold text-blue-600 group-hover/item:underline flex items-center gap-0.5">
+                                                                    자세히보기
+                                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                                                    </svg>
+                                                                </span>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </a>
                                                 );
                                             })}
                                         </div>
