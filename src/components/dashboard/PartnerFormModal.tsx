@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Partner } from "@/lib/types";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 interface PartnerFormModalProps {
     partner?: Partner | null;
@@ -15,6 +17,9 @@ interface PartnerFormModalProps {
 export default function PartnerFormModal({ partner, initialData, requestId, onClose, onSuccess, isAdmin = false }: PartnerFormModalProps) {
     const isEdit = !!partner;
     const [isLoading, setIsLoading] = useState(false);
+
+    // careProducts query for 판매상품 설정
+    const careProducts = useQuery(api.careProducts.get);
 
     // Search States
     const [searchTerm, setSearchTerm] = useState("");
@@ -396,21 +401,136 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                             </div>
                         </div>
 
-                        {/* Partner Group Selection */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-2">
-                            <div className="space-y-2 sm:col-span-2">
-                                <label className="text-xs font-bold text-gray-400 ml-1">상품 판매 그룹</label>
-                                <select
-                                    disabled={!isAdmin}
-                                    value={formData.partnerGroup}
-                                    onChange={(e) => setFormData({ ...formData, partnerGroup: e.target.value })}
-                                    className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary disabled:opacity-60 disabled:cursor-not-allowed disabled:bg-gray-100"
-                                >
-                                    <option value="전체 상품 판매">전체 상품 판매</option>
-                                    <option value="결합 상품 판매">결합 상품 판매</option>
-                                </select>
-                                <p className="text-[10px] text-gray-400 ml-1 mt-1">* 결합 상품 판매 그룹은 대시보드에 결합상품 관련 URL만 노출됩니다.</p>
+                        {/* 판매상품 설정 (Product Selection) */}
+                        <div className="space-y-4 pt-2">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-400 ml-1">판매상품 설정</label>
+                                    <p className="text-[11px] text-gray-400 ml-1">
+                                        * 해당 파트너사에서 판매 등록/노출 허용할 상품을 선택하세요.
+                                    </p>
+                                </div>
+                                {isAdmin && (
+                                    <div className="flex gap-1.5 flex-wrap">
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, partnerGroup: "전체 상품 판매" })}
+                                            className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all cursor-pointer ${
+                                                formData.partnerGroup === "전체 상품 판매"
+                                                    ? "bg-sono-primary text-white"
+                                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                            }`}
+                                        >
+                                            전체 선택
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, partnerGroup: "결합 상품 판매" })}
+                                            className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all cursor-pointer ${
+                                                formData.partnerGroup === "결합 상품 판매"
+                                                    ? "bg-blue-600 text-white"
+                                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                            }`}
+                                        >
+                                            결합상품만
+                                        </button>
+                                    </div>
+                                )}
                             </div>
+
+                            {/* Registered Products Checkbox Grid */}
+                            <div className="bg-gray-50/80 rounded-2xl p-4 border border-gray-100 space-y-2.5 max-h-64 overflow-y-auto">
+                                {careProducts && careProducts.length > 0 ? (
+                                    careProducts.map((p) => {
+                                        const isAll = formData.partnerGroup === "전체 상품 판매" || !formData.partnerGroup;
+                                        const isCombOnly = formData.partnerGroup === "결합 상품 판매";
+                                        
+                                        const isSelected = isAll 
+                                            ? true 
+                                            : isCombOnly 
+                                                ? p.productType !== "standard"
+                                                : formData.partnerGroup.includes(p.name);
+
+                                        const toggleProduct = () => {
+                                            if (!isAdmin) return;
+                                            let currentSelectedNames: string[] = [];
+
+                                            if (isAll) {
+                                                currentSelectedNames = careProducts.map(cp => cp.name);
+                                            } else if (isCombOnly) {
+                                                currentSelectedNames = careProducts.filter(cp => cp.productType !== "standard").map(cp => cp.name);
+                                            } else {
+                                                currentSelectedNames = formData.partnerGroup.split(",").map(s => s.trim()).filter(Boolean);
+                                            }
+
+                                            if (isSelected) {
+                                                currentSelectedNames = currentSelectedNames.filter(name => name !== p.name);
+                                            } else {
+                                                currentSelectedNames.push(p.name);
+                                            }
+
+                                            if (currentSelectedNames.length === careProducts.length) {
+                                                setFormData({ ...formData, partnerGroup: "전체 상품 판매" });
+                                            } else if (currentSelectedNames.length === 0) {
+                                                setFormData({ ...formData, partnerGroup: "선택 상품 없음" });
+                                            } else {
+                                                setFormData({ ...formData, partnerGroup: currentSelectedNames.join(", ") });
+                                            }
+                                        };
+
+                                        return (
+                                            <div
+                                                key={p._id}
+                                                onClick={toggleProduct}
+                                                className={`flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer ${
+                                                    isSelected
+                                                        ? "bg-white border-sono-primary/40 shadow-xs"
+                                                        : "bg-gray-100/50 border-transparent opacity-60 hover:opacity-80"
+                                                }`}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <input
+                                                        type="checkbox"
+                                                        disabled={!isAdmin}
+                                                        checked={isSelected}
+                                                        onChange={() => {}}
+                                                        className="w-4 h-4 text-sono-primary rounded border-gray-300 focus:ring-sono-primary cursor-pointer"
+                                                    />
+                                                    <div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-black text-sm text-sono-dark">{p.name}</span>
+                                                            {p.productType === "standard" ? (
+                                                                <span className="text-[10px] font-black bg-purple-50 text-purple-600 border border-purple-200/80 px-2 py-0.5 rounded">
+                                                                    일반상품
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-[10px] font-black bg-blue-50 text-blue-600 border border-blue-200/80 px-2 py-0.5 rounded">
+                                                                    결합상품
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="text-[11px] font-bold text-gray-400 mt-0.5">
+                                                            {p.slotCount}구좌 | 월 {(p.monthlyPayment || 0).toLocaleString()}원 {p.target ? `| ${p.target}` : ""}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <span className={`text-xs font-black px-2 py-1 rounded-md ${
+                                                    isSelected ? "bg-sono-primary/10 text-sono-primary" : "bg-gray-200 text-gray-400"
+                                                }`}>
+                                                    {isSelected ? "판매 설정됨" : "미선택"}
+                                                </span>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="text-xs text-center text-gray-400 py-4 font-bold">
+                                        등록된 상품이 없습니다. [상품관리] 탭에서 상품을 먼저 등록하세요.
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-2">
                             <div className="space-y-2 sm:col-span-2">
                                 <label className="text-xs font-bold text-gray-400 ml-1">랜딩 노출 여부</label>
                                 <select

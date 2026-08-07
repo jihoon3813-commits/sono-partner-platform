@@ -29,6 +29,7 @@ export const upsert = mutation({
     args: {
         id: v.optional(v.id("careProducts")),
         name: v.string(),
+        productType: v.optional(v.string()),
         slotCount: v.number(),
         target: v.string(),
         monthlyPayment: v.number(),

@@ -359,9 +359,10 @@ export default defineSchema({
         createdAt: v.string(),
     }).index("by_customerKey", ["customerKey"]),
 
-    // 스마트케어 상품정보 테이블
+    // 스마트케어/상조 상품정보 테이블
     careProducts: defineTable({
-        name: v.string(), // 상품명 (예: 스마트케어 4더블)
+        name: v.string(), // 상품명 (예: 스마트케어 4더블, 더해피450 ONE)
+        productType: v.optional(v.string()), // 'combination' (결합상품) | 'standard' (일반상품)
         slotCount: v.number(), // 구좌수 (예: 4)
         target: v.string(), // 대상 (예: 일반 가전 / 대형 가전)
         monthlyPayment: v.number(), // 월 납입금 (예: 66000)
