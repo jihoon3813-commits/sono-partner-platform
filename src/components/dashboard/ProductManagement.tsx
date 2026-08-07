@@ -103,11 +103,26 @@ export default function ProductManagement() {
     useEffect(() => {
         if (careProducts !== undefined) {
             const hasHappy450 = careProducts.some(p => p.name.includes("더해피450") || p.name.includes("더 해피"));
-            if (!hasHappy450 || careProducts.length === 0) {
-                seedDefaultCareProducts().catch(console.error);
+            if (!hasHappy450) {
+                seedDefaultCareProducts().catch(() => {
+                    upsertCareProduct({
+                        name: "더해피450 ONE",
+                        productType: "standard",
+                        slotCount: 1,
+                        target: "일반 상조 및 8가지 라이프케어 전환",
+                        monthlyPayment: 22500,
+                        cardDiscountPayment: 10000,
+                        features: ["만기 200회 납입 시 100% 환급 보장", "여행·크루즈·골프 등 8가지 라이프케어 전환", "소노 멤버십 & GC 헬스케어 특별 혜택"],
+                        paymentCount: "1~150회",
+                        defermentPeriod: "151~200회",
+                        maturityCount: "200회",
+                        order: 1,
+                        autoUpdate: false,
+                    }).catch(console.error);
+                });
             }
         }
-    }, [careProducts, seedDefaultCareProducts]);
+    }, [careProducts, seedDefaultCareProducts, upsertCareProduct]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
