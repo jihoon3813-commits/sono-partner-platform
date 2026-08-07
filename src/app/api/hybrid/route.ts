@@ -41,19 +41,38 @@ export async function GET(request: Request) {
                 return `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6)}`;
             };
 
-            const period = (item.regularPriceStDt || item.regularPriceEndDt)
-                ? `${formatDt(item.regularPriceStDt)} ~ ${formatDt(item.regularPriceEndDt)}`
-                : "상시접수";
+            let period = "상시";
+            if (item.regularPriceAllDtYn === "Y") {
+                period = "상시";
+            } else if (item.regularPriceStDt || item.regularPriceEndDt) {
+                const st = formatDt(item.regularPriceStDt);
+                const end = formatDt(item.regularPriceEndDt);
+                if (st && end) period = `${st} ~ ${end}`;
+                else if (st) period = `${st} ~`;
+                else if (end) period = `~ ${end}`;
+            }
 
-            const formattedPrice = item.regularPrice
-                ? `${Number(item.regularPrice).toLocaleString()}원~`
+            const priceVal = item.eventPrice || item.regularPrice;
+            const formattedPrice = priceVal
+                ? `${Number(priceVal).toLocaleString()}원~`
                 : "가격 문의";
 
+            let status = "접수중";
+            if (item.prcsCd === "E" || item.prcsNm === "접수마감" || item.prcsNm === "마감") {
+                status = "접수마감";
+            } else if (item.regularPriceAllDtYn === "Y" || item.prcsNm === "상시" || item.prcsNm === "대기") {
+                status = "접수중";
+            } else {
+                status = item.prcsNm || "접수중";
+            }
+
             const tags: string[] = [];
+            if (item.promotionType === "N" || item.promotionType === "NEW") tags.push("신규");
+            if (item.promotionType === "E" || item.promotionType === "EVENT") tags.push("이벤트");
+            if (item.promotionType === "R" || item.promotionType === "RECOMMEND") tags.push("추천");
             if (item.categoryTxt2 === "Y") tags.push("전환");
             if (item.categoryTxt3 === "Y") tags.push("레디캐시");
-            if (item.deadlinePrdctYn === "Y") tags.push("마감임박");
-            if (tags.length === 0) tags.push("추천");
+            if (tags.length === 0) tags.push("전환", "레디캐시");
 
             let fileUrl = "";
             if (item.thumbnailImgFile && item.thumbnailImgFile.phyPath && item.thumbnailImgFile.saveFileNm) {
@@ -79,7 +98,7 @@ export async function GET(request: Request) {
                 period: period,
                 tags: tags,
                 img: imgUrl,
-                status: item.prcsNm || "접수중",
+                status: status,
                 link: detailUrl
             };
         });
