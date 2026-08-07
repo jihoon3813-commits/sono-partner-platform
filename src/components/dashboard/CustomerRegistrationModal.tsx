@@ -155,7 +155,23 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
             return combi.length > 0 ? combi : dbList;
         }
 
-        const filtered = dbList.filter(p => pGroup.includes(p.name) || (p.productType === "standard" && (pGroup.includes("더해피") || pGroup.includes("해피"))));
+        const selectedNames = pGroup.split(",").map((s: string) => s.trim()).filter(Boolean);
+
+        const filtered = dbList.filter(item => {
+            return selectedNames.some((name: string) => {
+                if (item.name === name) return true;
+                if (name === "더해피450" || name === "더 해피 450 ONE") {
+                    return item.name === "더해피450 ONE" || item.name === "더 해피 450 ONE";
+                }
+                if (name === "스마트케어4" || name === "스마트케어 4") {
+                    return item.name.includes("4더블") || item.name === "스마트케어4";
+                }
+                if (name === "스마트케어5" || name === "스마트케어 5") {
+                    return item.name === "스마트케어 5" || item.name.includes("5더블") || item.name.includes("트리플") || item.name.includes("쿼드");
+                }
+                return false;
+            });
+        });
 
         return filtered.length > 0 ? filtered : dbList;
     }, [careProductsData, partners, manualForm.selectedPartnerId, partner]);
