@@ -1089,7 +1089,7 @@ export default function SmartCareContent({
                                 </span>
                             </div>
 
-                            {/* 우측 라인업 정보 & 동기화 날짜 */}
+                            {/* 우측 라인업 정보 & 업데이트 날짜 */}
                             <div className="flex items-center justify-between sm:justify-end gap-2 whitespace-nowrap">
                                 {selectedPlanId !== "" && (
                                     <span className="text-[11px] sm:text-xs font-bold text-slate-400 truncate max-w-[140px] sm:max-w-none">
@@ -1122,7 +1122,7 @@ export default function SmartCareContent({
                                         return (
                                             <span className="inline-flex items-center gap-1.5 bg-emerald-50/90 border border-emerald-200/80 text-emerald-700 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full whitespace-nowrap shadow-2xs">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-                                                <span className="font-mono">{formattedDate} 동기화</span>
+                                                <span className="font-mono">{formattedDate} 업데이트</span>
                                             </span>
                                         );
                                     } catch {
