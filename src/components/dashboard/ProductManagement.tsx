@@ -212,7 +212,15 @@ export default function ProductManagement() {
         if (aBest && !bBest) return -1;
         if (!aBest && bBest) return 1;
 
-        // 2. 1순위 -> 2순위 -> 3순위 -> 4순위 정렬 순차 적용
+        // 2. 베스트 상품끼리는 정렬 기준(브랜드/카테고리/모델/제품명)을 적용하지 않고, 사용자가 지정한 수동 위치(order) 고정 유지
+        if (aBest && bBest) {
+            if ((a.order ?? 0) !== (b.order ?? 0)) {
+                return (a.order ?? 0) - (b.order ?? 0);
+            }
+            return (a.name || "").localeCompare(b.name || "", "ko");
+        }
+
+        // 3. 일반 상품들만 1순위 -> 2순위 -> 3순위 -> 4순위 정렬 순차 적용
         for (const rule of rules) {
             let cmp = 0;
             const dir = rule.direction === "asc" ? 1 : -1;
@@ -459,16 +467,24 @@ export default function ProductManagement() {
         const index = filteredProducts.findIndex(p => p._id === product._id);
         if (direction === 'up' && index > 0) {
             const prev = filteredProducts[index - 1];
-            const currentOrder = product.order || 0;
-            const prevOrder = prev.order || 0;
+            let currentOrder = product.order ?? (index + 1);
+            let prevOrder = prev.order ?? index;
+            if (currentOrder === prevOrder) {
+                currentOrder = index + 1;
+                prevOrder = index;
+            }
             await updateOrder({ id: product._id, order: prevOrder });
             await updateOrder({ id: prev._id, order: currentOrder });
         } else if (direction === 'down' && index < filteredProducts.length - 1) {
             const next = filteredProducts[index + 1];
-            const currentOrder = product.order || 0;
-            const nextOrder = next.order || 0;
+            let currentOrder = product.order ?? (index + 1);
+            let nextOrder = next.order ?? (index + 2);
+            if (currentOrder === nextOrder) {
+                currentOrder = index + 1;
+                nextOrder = index + 2;
+            }
             await updateOrder({ id: product._id, order: nextOrder });
-            await updateOrder({ id: next._id, order: currentOrder });
+            await updateOrder({ id: next._id, order: nextOrder });
         }
     };
 
@@ -582,7 +598,7 @@ export default function ProductManagement() {
                                         우선순위 다중 정렬 설정
                                     </span>
                                     <span className="bg-sono-gold/20 text-sono-dark text-[10px] font-black px-2 py-0.5 rounded-full border border-sono-gold/40">
-                                        ★ 베스트 제품 최상단 고정
+                                        ★ 베스트 제품 최상단 수동 위치 고정 (다중 정렬 제외)
                                     </span>
                                 </div>
                                 <button
@@ -666,7 +682,7 @@ export default function ProductManagement() {
                                         return (
                                             <tr
                                                 key={product._id}
-                                                draggable={sortRules[0]?.field === "order"}
+                                                draggable={product.isBest || sortRules[0]?.field === "order"}
                                                 onDragStart={(e) => handleDragStart(e, product._id)}
                                                 onDragOver={(e) => handleDragOver(e, product._id)}
                                                 onDragLeave={handleDragLeave}
@@ -745,17 +761,19 @@ export default function ProductManagement() {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                {sortRules[0]?.field === "order" ? (
+                                                {product.isBest || sortRules[0]?.field === "order" ? (
                                                     <div className="flex justify-center gap-1">
                                                         <button 
                                                             onClick={() => handleMove(product, 'up')}
                                                             className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-sono-primary transition-colors"
+                                                            title="위로 이동"
                                                         >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" /></svg>
                                                         </button>
                                                         <button 
                                                             onClick={() => handleMove(product, 'down')}
                                                             className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-sono-primary transition-colors"
+                                                            title="아래로 이동"
                                                         >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
                                                         </button>
