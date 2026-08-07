@@ -17,6 +17,7 @@ interface HybridItem {
     period: string;
     tags: string[];
     status?: string;
+    img?: string;
 }
 
 interface HybridServiceDetail {
@@ -31,7 +32,7 @@ interface HybridServiceDetail {
         fees: string;
         method: string;
     };
-    notes: string;
+    notes?: string;
     items?: HybridItem[];
 }
 
@@ -72,12 +73,12 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
         },
         notes: "항공 스케줄 및 현지 리조트 사정에 따라 추가 요금이 발생할 수 있습니다.",
         items: [
-            { name: "[일본] 회원 전용 프라이빗 맞춤여행 서비스", desc: "내 납입금으로 완성하는 나만의 여행 일정", price: "2,970,000원~", period: "2026-07-27 ~ 2026-12-31", tags: ["신규", "전환", "레디캐시"] },
-            { name: "[호주] 시드니 블루마운틴&포트스테판 6일 패키지", desc: "최소출발 2명, 와이너리부터 오페라하우스까지", price: "5,940,000원", period: "2026-07-09 ~ 2026-12-31", tags: ["추천", "전환", "레디캐시"] },
-            { name: "[일본] 큐슈 온천&소도시 4일 패키지", desc: "최소출발 2명, 편하게 떠나는 힐링 일본 여행", price: "3,990,000원", period: "2026-06-16 ~ 2026-12-31", tags: ["전환", "레디캐시"] },
-            { name: "[플러스앤] 회원전용 국내숙박", desc: "아임레디 회원전용으로 만나볼 수 있는 국내숙박!", price: "100,000원~", period: "2026-01-01 ~ 2027-12-31", tags: ["이벤트", "레디캐시"] },
-            { name: "[제주굿렌트카] 제주도 렌터카", desc: "제주도 여행갈땐? 레디캐시로 제주렌터카!", price: "100,000원~", period: "2026-01-01 ~ 2027-12-31", tags: ["레디캐시"] },
-            { name: "[하나투어] 해외여행 패키지&호텔", desc: "대한민국을 대표하는 1등 여행 브랜드", price: "100,000원~", period: "2026-01-01 ~ 2027-12-31", tags: ["레디캐시"] }
+            { name: "[플러스앤] 회원전용 국내숙박", desc: "#국내숙박 #회원전용 #플러스앤", price: "100,000원~", period: "2025-04-25 ~ 상시접수", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/04/25/143b0bde-e209-46e2-ba48-38901ce30cfe", status: "접수중" },
+            { name: "[호주] 시드니 블루마운틴&포트스테판 6일 패키지", desc: "최소출발 2명, 와이너리부터 오페라하우스까지", price: "5,940,000원~", period: "2026-07-09 ~ 2026-12-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/07/09/aed7aa1c-3a7e-4a86-9615-e0f039ce9f5e", status: "접수중" },
+            { name: "[일본] 회원 전용 프라이빗 맞춤여행 서비스", desc: "내 납입금으로 완성하는 나만의 여행 일정", price: "2,970,000원~", period: "2026-07-27 ~ 2026-12-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/07/27/e60bd27c-9e97-4cc2-87d6-05470786fd1b", status: "접수중" },
+            { name: "[제주굿렌터카] 제주도 렌터카", desc: "제주도 여행갈땐? 레디캐시로 제주렌터카!", price: "100,000원~", period: "2025-05-07 ~ 상시접수", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/05/07/279d6d83-418f-4aa5-87a6-6a0238eed7d1", status: "접수중" },
+            { name: "[일본] 큐슈 온천&소도시 4일 패키지", desc: "최소출발 2명, 편하게 떠나는 힐링 일본 여행", price: "3,990,000원~", period: "2026-06-16 ~ 2026-12-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/06/16/474fe0bf-9a4c-41a2-add3-66eee3d26a82", status: "접수중" },
+            { name: "[하나투어] 해외여행 패키지&호텔", desc: "대한민국을 대표하는 1등 여행 브랜드", price: "100,000원~", period: "2025-03-27 ~ 상시접수", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/03/27/dcf0fe19-459b-4f4a-a970-1c288a07087f", status: "접수중" }
         ]
     },
     "크루즈": {
@@ -98,8 +99,14 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
         },
         notes: "선실 등급 및 항공 노선에 따라 추가 비용이 발생할 수 있습니다.",
         items: [
-            { name: "[로얄캐리비안 네비게이터] 동남아 3국 7일", desc: "26.10-27.3월 출발, 아임레디 크루즈 베스트셀러", price: "7,290,000원~", period: "2026-07-01 ~ 2027-02-05", tags: ["전환", "레디캐시"] },
-            { name: "[카니발 어드벤처] 호주 시드니/브리즈번 7일", desc: "~12월 출발, 부담없이 떠날 수 있는 호주 크루즈", price: "3,990,000원~", period: "2025-04-01 ~ 2026-12-13", tags: ["전환", "레디캐시"] }
+            { name: "[MSC 월드유로파] 서부지중해 4국 11일", desc: "10월 출발, 21만톤 최대 규모 지중해 크루즈!", price: "7,190,000원~", period: "2025-11-27 ~ 2026-11-22", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/11/27/f48e8faf-a3b6-4ad4-aa64-d9a522840733", status: "접수중" },
+            { name: "[MSC 그란디오사] 서부지중해 3국 11일", desc: "11월 출발, 부담없이 즐길 수 있는 지중해 크루즈!", price: "6,590,000원~", period: "2025-11-27 ~ 2026-11-22", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/11/27/66a27e84-52a2-44de-b4f0-0ca571ce5270", status: "접수중" },
+            { name: "[MSC 디비나] 동부지중해 3국 11일", desc: "10월 출발, 그리스 신화의 고향 지중해 크루즈!", price: "6,490,000원~", period: "2025-11-27 ~ 2026-11-22", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/11/27/cb688d36-47b1-42ce-b470-736820646576", status: "접수중" },
+            { name: "[MSC 벨리시마] 추석연휴 한중일 3국 7일", desc: "26.9월 출발, 추석연휴에 떠나는 한중일 크루즈", price: "3,890,000원~", period: "2026-07-20 ~ 2026-09-20", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/07/20/fab6621b-8882-4448-8b3c-a70d0160c2d3", status: "접수중" },
+            { name: "[코스타 세레나] 국내출발 한중일 3국 6일", desc: "26.5~6월 출발, 속초/부산 출발 아시아 크루즈", price: "2,390,000원~", period: "2026-05-18 ~ 2026-06-15", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/05/18/b44c85c3-6995-47c6-8097-e6b127135476", status: "접수마감" },
+            { name: "[팬스타 미라클] 부산출발 원나잇 크루즈", desc: "주말 부산 앞바다 불꽃쇼와 선상 공연의 로맨틱 여행", price: "180,000원~", period: "2026-07-29 ~ 2027-12-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/07/29/aa848c02-cace-4b46-8875-3a5e492d94af", status: "접수중" },
+            { name: "[로얄캐리비안 네비게이터] 동남아 3국 7일", desc: "26.10-27.3월 출발, 아임레디 크루즈 베스트셀러", price: "7,290,000원~", period: "2026-07-01 ~ 2027-02-05", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/06/30/fe6646e9-adb9-4eda-a92e-800b0d41e44f", status: "접수중" },
+            { name: "[카니발 어드벤처] 호주 시드니/브리즈번 7일", desc: "~12월 출발, 부담없이 떠날 수 있는 호주 크루즈", price: "3,990,000원~", period: "2025-04-01 ~ 2026-12-13", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/07/01/31e4e5ec-2135-49f7-8851-01f348752829", status: "접수중" }
         ]
     },
     "골프": {
@@ -118,7 +125,14 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             fees: "캐디피 및 개인 경비 본인 부담",
             method: "고객센터 1588-2227 접수"
         },
-        notes: "시즌별 골프장 예약 상황에 따라 일정이 변경될 수 있습니다."
+        notes: "시즌별 골프장 예약 상황에 따라 일정이 변경될 수 있습니다.",
+        items: [
+            { name: "[골프투어] 태국 아티타야 칸차나부리 CC 5일", desc: "최소 2인 출발, 36홀 명문 골프 코스", price: "510,000원~", period: "2025-05-13 ~ 2026-12-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/05/13/ba0b27be-519f-4a4f-939b-79eeea196c9e", status: "접수중" },
+            { name: "[골프투어] 일본 하코다테 홋카이도 CC 4일~8일", desc: "시원한 북해도 여름 골프 라운딩", price: "1,270,000원~", period: "2025-05-13 ~ 2026-12-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/05/13/fcb7344f-9c5f-4050-af8f-63eb48fcc9a0", status: "접수중" },
+            { name: "[골프투어] 베트남 소노펠리체 하이퐁 CC 3일", desc: "소노 그룹 직영 프리미엄 해외 골프 리조트", price: "1,490,000원~", period: "2025-05-13 ~ 2026-12-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/05/13/75e53303-34e8-466a-9391-4cf1fbdcd641", status: "접수중" },
+            { name: "[골프투어] 일본 사츠마 CC 벚꽃 라운딩", desc: "온천 리조트와 함께 즐기는 규슈 명문 골프", price: "1,190,000원~", period: "2025-05-13 ~ 2026-12-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/05/13/bc556bd1-912b-426b-9c71-33230a1eb9e8", status: "접수중" },
+            { name: "[골프투어] 괌 소노펠리체 CC 3색 골프 3박 4일", desc: "휴양과 골프를 동시에 즐기는 프리미엄 괌 투어", price: "1,690,000원~", period: "2025-06-23 ~ 2026-12-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/06/23/c4d886a0-720d-4776-a826-085398af29ee", status: "접수중" }
+        ]
     },
     "교육/어학연수": {
         title: "어학연수 & 교육",
@@ -138,15 +152,16 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
         },
         notes: "국가별 학생 비자 발급 기간이 다를 수 있어 사전 예약이 필수적입니다.",
         items: [
-            { name: "[대교] 눈높이 유아 리틀원 패키지", desc: "유아 학습, 3개월 과정, 한글&수학 패키지", price: "810,000원", period: "상시", tags: ["신규", "레디캐시"], status: "접수중" },
-            { name: "[대교] 눈높이 초등 국어 패키지", desc: "초등 학습, 3개월 과정, 국어 패키지", price: "489,000원", period: "상시", tags: ["신규", "레디캐시"], status: "접수중" },
-            { name: "[대교] 눈높이 초등 영어 패키지", desc: "초등 학습, 3개월 과정, 영어 패키지", price: "414,000원", period: "상시", tags: ["신규", "레디캐시"], status: "접수중" },
-            { name: "[대교] 눈높이 초등 수학 패키지", desc: "초등 학습, 3개월 과정, 수학 패키지", price: "393,000원", period: "상시", tags: ["신규", "레디캐시"], status: "접수중" },
-            { name: "[대교] 눈높이 중등 국어·영어·수학 패키지", desc: "중등 학습, 3개월 과정, 수능 국어·영어·수학 패키지", price: "1,080,000원", period: "상시", tags: ["신규", "레디캐시"], status: "접수중" },
-            { name: "[26년 여름방학] MBC 영어캠프(아시아)", desc: "#싱가포르 #말레이시아 #필리핀 #한국", price: "2,800,000원", period: "2026-06-02 ~ 2026-08-31", tags: ["신규", "전환", "레디캐시"], status: "접수마감" },
-            { name: "[레디캐시전용] 1:1 주니어 화상영어", desc: "무료체험 수업2회를 통한 레벨테스트 진행!", price: "75,000원~", period: "상시", tags: ["레디캐시"], status: "접수중" },
-            { name: "[26년 여름방학] MBC 영어캠프(미주/남태평양)", desc: "#미주 #캐나다 #호주 #뉴질랜드", price: "5,700,000원", period: "2026-06-02 ~ 2026-08-31", tags: ["추천", "전환", "레디캐시"], status: "접수마감" },
-            { name: "['26 겨울방학] 주니어 MBC영어캠프(아시아/남태)", desc: "#영어캠프 #해외캠프 #주니어캠프 #MBC연합캠프", price: "4,500,000원", period: "2025-10-27 ~ 2025-12-31", tags: ["이벤트", "전환", "레디캐시"], status: "접수마감" }
+            { name: "[대교] 눈높이 초등 영어 패키지", desc: "초등 학습, 3개월 과정, 영어 패키지", price: "414,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/06/24/5614f0b7-ec6d-4203-92c9-71f78bb1fa22", status: "접수중" },
+            { name: "[대교] 눈높이 초등 수학 패키지", desc: "초등 학습, 3개월 과정, 수학 패키지", price: "393,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/06/24/41f22350-9312-45df-b248-199b8f4106fd", status: "접수중" },
+            { name: "[대교] 눈높이 중등 국어·영어·수학 패키지", desc: "중등 학습, 3개월 과정, 수능 국어·영어·수학 패키지", price: "1,080,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/06/24/e089a242-8900-4e08-a4cc-158bbb6d7b00", status: "접수중" },
+            { name: "[대교] 눈높이 초등 국어 패키지", desc: "초등 학습, 3개월 과정, 국어 패키지", price: "489,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/06/24/ce2328cb-71cc-455f-bbff-32771e732489", status: "접수중" },
+            { name: "[2025 여름방학] 주니어 MBC 해외 영어캠프", desc: "#영어캠프 #해외캠프 #주니어캠프 #MBC연합캠프", price: "4,990,000원~", period: "2025-04-28 ~ 2025-07-15", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/04/28/89ee6051-2543-4e75-ad13-6059b33d84c5", status: "접수마감" },
+            { name: "[26년 여름방학] MBC 영어캠프(아시아)", desc: "#싱가포르 #말레이시아 #필리핀 #한국", price: "2,800,000원~", period: "2026-06-02 ~ 2026-08-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/06/02/0d7d502f-3791-41d8-88e2-5a6a0d595839", status: "접수마감" },
+            { name: "[26년 여름방학] MBC 영어캠프(미주/남태평양)", desc: "#미주 #캐나다 #호주 #뉴질랜드", price: "5,700,000원~", period: "2026-06-02 ~ 2026-08-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/06/02/7ceeecac-a8a9-46e5-b436-e91dfa101710", status: "접수마감" },
+            { name: "['26 겨울방학] 주니어 MBC영어캠프(아시아/남태)", desc: "#영어캠프 #해외캠프 #주니어캠프 #MBC연합캠프", price: "4,500,000원~", period: "2025-10-27 ~ 2025-12-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/10/27/d8ab699d-2fb4-4e1d-9be9-d71b3a385f8c", status: "접수마감" },
+            { name: "[대교] 눈높이 유아 리틀원 패키지", desc: "유아 학습, 3개월 과정, 한글&수학 패키지", price: "810,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/06/24/a4ae2c82-f7ca-40dc-a911-8659a023fe26", status: "접수중" },
+            { name: "['26 겨울방학] 주니어 MBC영어캠프(미주/유럽)", desc: "#영어캠프 #해외캠프 #주니어캠프 #MBC연합캠프", price: "9,000,000원~", period: "2025-10-27 ~ 2025-12-31", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/10/27/40a21b16-36cb-42db-9bb4-1de58ab3605d", status: "접수마감" }
         ]
     },
     "웨딩": {
@@ -167,14 +182,14 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
         },
         notes: "예식 일정이 몰리는 봄/가을 시즌에는 최소 6개월 전 접수가 필수적입니다.",
         items: [
-            { name: "[프리미엄] 골드바&다이아 주얼리", desc: "순금골드바, 랩 그로운 다이아몬드, 맞춤제작", price: "170,000원~", period: "상시", tags: ["신규", "레디캐시"], status: "접수중" },
-            { name: "[웨딩3] (스드메)+(예복or주얼리or스냅촬영PKG)", desc: "스드메부터 주얼리, 스냅촬영까지!", price: "5,940,000원", period: "상시", tags: ["추천", "전환", "레디캐시"], status: "접수중" },
-            { name: "[웨딩2] (스드메)+(예복or스냅촬영)", desc: "스드메부터 스냅촬영까지!", price: "4,990,000원", period: "상시", tags: ["추천", "전환", "레디캐시"], status: "접수중" },
-            { name: "[가전] 신혼 필수가전 추천", desc: "#가전 #신혼가전 #소형가전", price: "10,000원~", period: "상시", tags: ["레디캐시"], status: "접수중" },
-            { name: "[침구] 혼수 침구·패브릭 추천", desc: "#침구 #패브릭 #신혼침구", price: "10,000원~", period: "상시", tags: ["레디캐시"], status: "접수중" },
-            { name: "[웨딩1] 스튜디오+드레스+메이크업+예복(한복)", desc: "합리적인 웨딩 준비, 스드메와 예복(한복)을 한번에!", price: "3,990,000원", period: "상시", tags: ["추천", "전환", "레디캐시"], status: "접수중" },
-            { name: "[주얼리] 청담 예물명가 쥬드주얼리", desc: "35년 전통의 청담동 주얼리로 가치를 더해보세요.", price: "3,990,000원~", period: "상시", tags: ["추천", "전환", "레디캐시"], status: "접수중" },
-            { name: "[예복] 맞춤예복명가 아틀레 회원특가", desc: "#예복 #결혼예복 #맞춤정장", price: "890,000원~", period: "상시", tags: ["추천", "전환", "레디캐시"], status: "접수중" }
+            { name: "[프리미엄] 골드바&다이아 주얼리", desc: "순금골드바, 랩 그로운 다이아몬드, 맞춤제작", price: "170,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/05/14/d646c2a5-88ef-406d-a56b-4077c849ca71", status: "접수중" },
+            { name: "[웨딩3] (스드메)+(예복or주얼리or스냅촬영PKG)", desc: "스드메부터 주얼리, 스냅촬영까지!", price: "5,940,000원~", period: "상시접수", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/03/27/c4d1be0d-e6da-4110-98a8-3063353b43fd", status: "접수중" },
+            { name: "[웨딩2] (스드메)+(예복or스냅촬영)", desc: "스드메부터 스냅촬영까지!", price: "4,990,000원~", period: "상시접수", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/04/03/82bc43bf-88dc-42ef-8872-b864973646ff", status: "접수중" },
+            { name: "[가전] 신혼 필수가전 추천", desc: "#가전 #신혼가전 #소형가전", price: "10,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/04/26/13896e3f-c284-454d-80f6-0c43ac9e565e", status: "접수중" },
+            { name: "[침구] 혼수 침구·패브릭 추천", desc: "#침구 #패브릭 #신혼침구", price: "10,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2026/04/28/1bbec3a6-0591-4a0e-bb59-60a55d9e84dc", status: "접수중" },
+            { name: "[웨딩1] 스튜디오+드레스+메이크업+예복(한복)", desc: "합리적인 웨딩 준비, 스드메와 예복(한복)을 한번에!", price: "3,990,000원~", period: "상시접수", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/03/27/8875ed6c-7ac8-430b-a608-c7e61b8b2f11", status: "접수중" },
+            { name: "[주얼리] 청담 예물명가 쥬드쥬얼리", desc: "35년 전통의 청담동 주얼리로 가치를 더해보세요.", price: "3,990,000원~", period: "상시접수", tags: ["전환", "레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/03/27/d33da11a-65ad-40bf-8eea-4a6bbd8752a2", status: "접수중" },
+            { name: "[예복] 맞춤예복명가 아틀레 회원특가", desc: "#예복 #결혼예복 #맞춤정장", price: "890,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/05/13/258d616d-3127-4d01-9994-46ecacf9694e", status: "접수중" }
         ]
     },
     "쇼핑": {
@@ -193,7 +208,11 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             fees: "몰 내 배송비 무료 혜택 지원",
             method: "소노아임레디 고객센터 1588-2227 접수"
         },
-        notes: "포인트 전환 완료 후 취소는 규정에 의거 제한될 수 있습니다."
+        notes: "포인트 전환 완료 후 취소는 규정에 의거 제한될 수 있습니다.",
+        items: [
+            { name: "[명품케어] 명품 매입서비스", desc: "#명품매입, #명품시계/가방 #주얼리", price: "100,000원~", period: "2025-11-01 ~ 2040-12-31", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/09/10/eee70d16-1d6e-4bbe-8918-d837fb0885ea", status: "접수중" },
+            { name: "[명품케어] 명품 수선서비스", desc: "#명품수선 #명품시계 #명품가방", price: "40,000원~", period: "2025-11-01 ~ 2040-12-31", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/09/10/2467111e-6b02-4609-bcff-303936bbc11f", status: "접수중" }
+        ]
     },
     "리빙": {
         title: "스마트 홈 리빙 컨시어지",
@@ -213,11 +232,11 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
         },
         notes: "이사 일정 및 아파트 규격, 사다리차 이용 여부에 따라 현장 추가 요금이 발생할 수 있습니다.",
         items: [
-            { name: "[레디캐시전용] 통인익스프레스 이사 컨시어지", desc: "#이사 #프리미엄 #레디캐시전용", price: "700,000원~", period: "상시", tags: ["신규", "레디캐시"], status: "접수중" },
-            { name: "[레디캐시전용] 현대리바트 거실가구", desc: "#리바트 #거실가구 #레디캐시전용", price: "1,858,000원~", period: "상시", tags: ["신규", "레디캐시"], status: "접수중" },
-            { name: "[레디캐시전용] 현대리바트 주방가구", desc: "#리바트 #주방가구 #레디캐시전용", price: "982,000원~", period: "상시", tags: ["신규", "레디캐시"], status: "접수중" },
-            { name: "[레디캐시전용] 현대리바트 침실가구", desc: "#리바트 #침실가구 #레디캐시전용", price: "1,156,000원~", period: "상시", tags: ["신규", "레디캐시"], status: "접수중" },
-            { name: "[레디캐시전용] 현대리바트 키즈가구", desc: "#리바트 #키즈가구 #레디캐시전용", price: "590,000원~", period: "상시", tags: ["신규", "레디캐시"], status: "접수중" }
+            { name: "[레디캐시전용] 통인익스프레스 이사 컨시어지", desc: "#이사 #프리미엄 #레디캐시전용", price: "700,000원~", period: "2025-11-18 ~ 상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/11/18/75b99aec-8740-44fd-8ce7-4cb9b72fc0d8", status: "접수중" },
+            { name: "[레디캐시전용] 현대리바트 거실가구 ", desc: "#리바트 #거실가구 #레디캐시전용", price: "1,858,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/08/01/872b3cc8-4448-4cf3-99be-2ea48f90a163", status: "접수중" },
+            { name: "[레디캐시전용] 현대리바트 주방가구", desc: "#리바트 #주방가구 #레디캐시전용", price: "982,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/08/01/52116ea4-024a-4566-8ca6-03a14ebbc264", status: "접수중" },
+            { name: "[레디캐시전용] 현대리바트 침실가구", desc: "#리바트 #침실가구 #레디캐시전용", price: "1,156,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/08/01/90253af0-965b-4bd0-a197-87092dd59e10", status: "접수중" },
+            { name: "[레디캐시전용] 현대리바트 키즈가구", desc: "#리바트 #키즈가구 #레디캐시전용", price: "590,000원~", period: "상시접수", tags: ["레디캐시"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/08/01/3613045b-5ba8-4427-9fb1-70fb265081ed", status: "접수중" }
         ]
     },
     "쉼케어": {
@@ -236,7 +255,9 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             fees: "안치단 위치 및 석조 가공 비용 별도",
             method: "소노아임레디 고객센터 1588-2227 접수"
         },
-        notes: "장지 우대 혜택은 협약된 시설에 한하여 정상 적용됩니다."
+        items: [
+            { name: "[장지] 장지 시설 서비스", desc: "합법적인 허가 및 관리가 이뤄지는 장지시설 엄선", price: "3,990,000원~", period: "상시접수", tags: ["전환"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/03/27/9d4c2dda-4ef2-4147-9cea-06e9a9edff9c", status: "접수중" }
+        ]
     }
 };
 
@@ -2405,7 +2426,7 @@ export default function SmartCareContent({
 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                                             {hybridItems.map((subItem, subIdx) => {
-                                                // 1순위: API 실시간 이미지, 2순위: 대표 카테고리 고화질 이미지
+                                                // 1순위: direct 소노아임레디 이미지 URL, 2순위: 이미지 프록시, 3순위: 카테고리 대표 고화질 이미지
                                                 let subImg = subItem.img;
                                                 if (!subImg || subImg.includes('img_default_product.svg')) {
                                                     subImg = detail?.img || "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg";
@@ -2419,9 +2440,13 @@ export default function SmartCareContent({
                                                                 alt={subItem.name} 
                                                                 onError={(e) => {
                                                                     const target = e.currentTarget;
-                                                                    const fallback = detail?.img || "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg";
-                                                                    if (target.src !== fallback) {
-                                                                        target.src = fallback;
+                                                                    const proxyUrl = subItem.img && subItem.img.includes('/attach') ? `/api/hybrid/image-proxy?fileUrl=${encodeURIComponent(subItem.img.slice(subItem.img.indexOf('/attach')))}` : '';
+                                                                    const defaultFallback = detail?.img || "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg";
+                                                                    
+                                                                    if (proxyUrl && !target.src.includes('/api/hybrid/image-proxy')) {
+                                                                        target.src = proxyUrl;
+                                                                    } else if (target.src !== defaultFallback) {
+                                                                        target.src = defaultFallback;
                                                                     }
                                                                 }}
                                                                 className="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-500" 
