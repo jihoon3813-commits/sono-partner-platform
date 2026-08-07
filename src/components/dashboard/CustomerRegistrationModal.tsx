@@ -82,19 +82,47 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
         const visible = productsData.filter(p => p.isVisible !== false);
         if (!isSmartCare) return visible;
 
+        // Determine specific target care product name to separate 스마트케어4(4더블) and 스마트케어5(5더블)
+        let targetPlanName = "";
+        if (manualForm.productType === "스마트케어4") {
+            if (currentSlot === 2) targetPlanName = "스마트케어 4더블";
+        } else if (manualForm.productType === "스마트케어5") {
+            if (currentSlot === 1) targetPlanName = "스마트케어 5";
+            else if (currentSlot === 2) targetPlanName = "스마트케어 5더블";
+            else if (currentSlot === 3) targetPlanName = "스마트케어 5트리플";
+            else if (currentSlot === 4) targetPlanName = "스마트케어 5쿼드";
+        }
+
+        if (careProductsData && targetPlanName) {
+            const targetCp = careProductsData.find(cp =>
+                cp.name === targetPlanName ||
+                cp.name.endsWith(targetPlanName.replace("스마트케어 ", ""))
+            );
+            if (targetCp) {
+                const exactMatched = visible.filter(p => p.careProductId === targetCp._id);
+                if (exactMatched.length > 0) {
+                    return exactMatched;
+                }
+            }
+        }
+
         if (currentSlot > 0) {
             const slotMatched = visible.filter(p => {
-                if (p.slotCount && p.slotCount === currentSlot) return true;
                 if (p.careProductId && careProductsData) {
                     const cp = careProductsData.find(c => c._id === p.careProductId);
-                    if (cp && cp.slotCount === currentSlot) return true;
+                    if (cp) {
+                        if (targetPlanName) {
+                            return cp.name === targetPlanName;
+                        }
+                        return cp.slotCount === currentSlot;
+                    }
                 }
-                return false;
+                return (p.slotCount || 4) === currentSlot;
             });
             if (slotMatched.length > 0) return slotMatched;
         }
         return visible;
-    }, [productsData, careProductsData, isSmartCare, currentSlot]);
+    }, [productsData, careProductsData, isSmartCare, currentSlot, manualForm.productType]);
 
     const handleManualChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
