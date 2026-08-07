@@ -174,6 +174,42 @@ export function cleanBrandDeduplication(rawProdName: string, brandName: string):
     return str;
 }
 
+function buildBestExistingMap(existingProducts: any[]) {
+    const map = new Map<string, { isBest: boolean; order?: number; hasGift?: boolean; isVisible?: boolean; promotionId?: any }>();
+    for (const p of existingProducts) {
+        if (p.isBest) {
+            const info = {
+                isBest: true,
+                order: p.order,
+                hasGift: p.hasGift,
+                isVisible: p.isVisible,
+                promotionId: p.promotionId,
+            };
+            const cleanName = cleanBrandDeduplication(p.name, p.brand).trim().toLowerCase();
+            const modelKey = p.model && p.model !== "모델명 없음" ? p.model.trim().toLowerCase() : "";
+
+            if (modelKey) {
+                map.set(`model:${modelKey}`, info);
+            }
+            if (cleanName) {
+                map.set(`name:${cleanName}`, info);
+            }
+        }
+    }
+    return map;
+}
+
+function getPreservedBestInfo(
+    p: { model: string; name: string; brand: string },
+    bestMap: Map<string, { isBest: boolean; order?: number; hasGift?: boolean; isVisible?: boolean; promotionId?: any }>
+) {
+    const cleanName = cleanBrandDeduplication(p.name, p.brand).trim().toLowerCase();
+    const modelKey = p.model && p.model !== "모델명 없음" ? p.model.trim().toLowerCase() : "";
+
+    return (modelKey ? bestMap.get(`model:${modelKey}`) : undefined) || bestMap.get(`name:${cleanName}`);
+}
+
+
 export const get = query({
     args: {},
     handler: async (ctx) => {
@@ -469,16 +505,24 @@ export const replaceProducts = internalMutation({
     handler: async (ctx, args) => {
         const now = new Date().toISOString();
         
-        // 기존 데이터 삭제 
+        // 기존 데이터 삭제 전 베스트 상품 설정 보존 Map 구축
         const existing = await ctx.db.query("products").collect();
+        const bestMap = buildBestExistingMap(existing);
+
         for (const p of existing) {
             await ctx.db.delete(p._id);
         }
 
-        // 새 데이터 추가
+        // 새 데이터 추가 (기존 베스트 설정 복원)
         for (const p of args.products) {
+            const preservedInfo = getPreservedBestInfo(p, bestMap);
             await ctx.db.insert("products", {
                 ...p,
+                isBest: preservedInfo ? true : (p.isBest ?? false),
+                order: preservedInfo?.order ?? p.order,
+                hasGift: preservedInfo?.hasGift ?? p.hasGift,
+                isVisible: preservedInfo?.isVisible ?? p.isVisible,
+                ...(preservedInfo?.promotionId !== undefined ? { promotionId: preservedInfo.promotionId } : {}),
                 createdAt: now,
                 updatedAt: now,
             });
@@ -748,20 +792,27 @@ export const replaceProductsForSlot = internalMutation({
     handler: async (ctx, args) => {
         const now = new Date().toISOString();
         
-        // 해당 구좌수의 기존 제품들만 조회해서 삭제
+        // 해당 구좌수의 기존 제품들만 조회 및 베스트 상품 설정 보존 Map 구축
         const existing = await ctx.db
             .query("products")
             .withIndex("by_slotCount", q => q.eq("slotCount", args.slotCount))
             .collect();
+        const bestMap = buildBestExistingMap(existing);
             
         for (const p of existing) {
             await ctx.db.delete(p._id);
         }
         
-        // 새 제품 입력
+        // 새 제품 입력 (기존 베스트 설정 복원)
         for (const p of args.products) {
+            const preservedInfo = getPreservedBestInfo(p, bestMap);
             await ctx.db.insert("products", {
                 ...p,
+                isBest: preservedInfo ? true : (p.isBest ?? false),
+                order: preservedInfo?.order ?? p.order,
+                hasGift: preservedInfo?.hasGift ?? p.hasGift,
+                isVisible: preservedInfo?.isVisible ?? p.isVisible,
+                ...(preservedInfo?.promotionId !== undefined ? { promotionId: preservedInfo.promotionId } : {}),
                 createdAt: now,
                 updatedAt: now,
             });
@@ -794,20 +845,27 @@ export const replaceProductsForPlan = internalMutation({
     handler: async (ctx, args) => {
         const now = new Date().toISOString();
         
-        // 해당 플랜의 기존 제품들만 조회해서 삭제
+        // 해당 플랜의 기존 제품들만 조회 및 베스트 상품 설정 보존 Map 구축
         const existing = await ctx.db
             .query("products")
             .withIndex("by_careProductId", q => q.eq("careProductId", args.planId))
             .collect();
+        const bestMap = buildBestExistingMap(existing);
             
         for (const p of existing) {
             await ctx.db.delete(p._id);
         }
         
-        // 새 제품 입력
+        // 새 제품 입력 (기존 베스트 설정 복원)
         for (const p of args.products) {
+            const preservedInfo = getPreservedBestInfo(p, bestMap);
             await ctx.db.insert("products", {
                 ...p,
+                isBest: preservedInfo ? true : (p.isBest ?? false),
+                order: preservedInfo?.order ?? p.order,
+                hasGift: preservedInfo?.hasGift ?? p.hasGift,
+                isVisible: preservedInfo?.isVisible ?? p.isVisible,
+                ...(preservedInfo?.promotionId !== undefined ? { promotionId: preservedInfo.promotionId } : {}),
                 createdAt: now,
                 updatedAt: now,
             });
