@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
@@ -123,6 +123,63 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
         }
         return visible;
     }, [productsData, careProductsData, isSmartCare, currentSlot, manualForm.productType]);
+    const allowedProductOptions = useMemo(() => {
+        const selectedP = partners.find(p => p.partnerId === manualForm.selectedPartnerId) || partner;
+        const pGroup = selectedP?.partnerGroup || "전체 상품 판매";
+
+        const allOptions = ["더 해피 450 ONE", "스마트케어4", "스마트케어5"];
+
+        if (pGroup === "전체 상품 판매" || !pGroup.trim()) {
+            return allOptions;
+        }
+
+        if (pGroup === "결합 상품 판매") {
+            return ["스마트케어4", "스마트케어5"];
+        }
+
+        const filtered: string[] = [];
+
+        // Check if "더 해피 450 ONE" is allowed
+        if (pGroup.includes("더해피450") || pGroup.includes("더 해피") || pGroup.includes("ONE")) {
+            filtered.push("더 해피 450 ONE");
+        }
+
+        // Check if "스마트케어4" is allowed (4더블, 스마트케어 4)
+        if (pGroup.includes("스마트케어 4") || pGroup.includes("스마트케어4") || pGroup.includes("4더블")) {
+            filtered.push("스마트케어4");
+        }
+
+        // Check if "스마트케어5" is allowed (스마트케어 5, 5더블, 5트리플, 5쿼드)
+        if (
+            pGroup.includes("스마트케어 5") || 
+            pGroup.includes("스마트케어5") ||
+            pGroup.includes("5더블") ||
+            pGroup.includes("트리플") ||
+            pGroup.includes("쿼드")
+        ) {
+            filtered.push("스마트케어5");
+        }
+
+        return filtered.length > 0 ? filtered : allOptions;
+    }, [partners, manualForm.selectedPartnerId, partner]);
+
+    // Keep manualForm.productType aligned with allowedProductOptions
+    useEffect(() => {
+        if (allowedProductOptions.length > 0 && !allowedProductOptions.includes(manualForm.productType)) {
+            const nextProd = allowedProductOptions[0];
+            let defaultPlan = "1";
+            if (nextProd === "스마트케어4") defaultPlan = "2";
+            else if (nextProd === "스마트케어5") defaultPlan = "1";
+            else if (nextProd === "더 해피 450 ONE") defaultPlan = "1";
+
+            setManualForm(prev => ({
+                ...prev,
+                productType: nextProd,
+                planType: defaultPlan,
+                products: nextProd.startsWith("스마트케어") ? prev.products : "",
+            }));
+        }
+    }, [allowedProductOptions, manualForm.productType]);
 
     const handleManualChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -542,9 +599,9 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     onChange={handleManualChange}
                                     className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white font-bold text-gray-800"
                                 >
-                                    <option value="더 해피 450 ONE">더 해피 450 ONE</option>
-                                    <option value="스마트케어4">스마트케어4</option>
-                                    <option value="스마트케어5">스마트케어5</option>
+                                    {allowedProductOptions.map(opt => (
+                                        <option key={opt} value={opt}>{opt}</option>
+                                    ))}
                                 </select>
                             </div>
                             <div className="col-span-1 sm:col-span-1 md:col-span-1">
