@@ -321,7 +321,13 @@ export default function Happy450Content({
                             {/* 두 개의 혜택 요약 카드 (제휴카드 할인 + GC헬스케어) */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 max-w-3xl">
                                 {/* 제휴카드 카드 */}
-                                <div className="relative group flex flex-col justify-between bg-slate-950/40 backdrop-blur-md border border-amber-400/30 p-6 rounded-none shadow-2xl overflow-hidden text-left">
+                                <div 
+                                    onClick={() => {
+                                        const el = document.getElementById("affiliate-card");
+                                        if (el) el.scrollIntoView({ behavior: "smooth" });
+                                    }}
+                                    className="relative group flex flex-col justify-between bg-slate-950/40 backdrop-blur-md border border-amber-400/30 hover:border-amber-400 p-6 rounded-none shadow-2xl overflow-hidden text-left cursor-pointer transition-all"
+                                >
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-400"></div>
                                     <div>
                                         <div className="flex items-center gap-3 mb-3">
@@ -338,8 +344,17 @@ export default function Happy450Content({
                                         </p>
                                     </div>
                                     <div className="flex items-center justify-between border-t border-white/10 pt-3 mt-1">
-                                        <span className="text-slate-400 text-[10px] font-semibold">자세한 조건 확인하기</span>
-                                        <a href="#affiliate-card" className="shrink-0 bg-white/10 hover:bg-white text-white hover:text-slate-900 px-3 py-1.5 rounded-none text-[10px] font-black transition-all border border-white/20 flex items-center gap-1">
+                                        <span className="text-slate-400 text-[10px] font-semibold group-hover:text-amber-300 transition-colors">자세한 조건 확인하기</span>
+                                        <a 
+                                            href="#affiliate-card" 
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                const el = document.getElementById("affiliate-card");
+                                                if (el) el.scrollIntoView({ behavior: "smooth" });
+                                            }}
+                                            className="shrink-0 bg-white/10 group-hover:bg-amber-400 text-white group-hover:text-slate-950 px-3 py-1.5 rounded-none text-[10px] font-black transition-all border border-white/20 flex items-center gap-1"
+                                        >
                                             바로가기
                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>
                                         </a>
@@ -347,7 +362,13 @@ export default function Happy450Content({
                                 </div>
 
                                 {/* GC헬스케어 카드 */}
-                                <div className="relative group flex flex-col justify-between bg-slate-950/40 backdrop-blur-md border border-emerald-500/30 p-6 rounded-none shadow-2xl overflow-hidden text-left">
+                                <div 
+                                    onClick={() => {
+                                        const el = document.getElementById("gccare");
+                                        if (el) el.scrollIntoView({ behavior: "smooth" });
+                                    }}
+                                    className="relative group flex flex-col justify-between bg-slate-950/40 backdrop-blur-md border border-emerald-500/30 hover:border-emerald-400 p-6 rounded-none shadow-2xl overflow-hidden text-left cursor-pointer transition-all"
+                                >
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-300 to-emerald-500"></div>
                                     <div>
                                         <div className="flex items-center gap-3 mb-3">
@@ -366,8 +387,17 @@ export default function Happy450Content({
                                         </p>
                                     </div>
                                     <div className="flex items-center justify-between border-t border-white/10 pt-3 mt-1">
-                                        <span className="text-slate-400 text-[10px] font-semibold">자세한 서비스 내용 보기</span>
-                                        <a href="#gccare" className="shrink-0 bg-white/10 hover:bg-white text-white hover:text-slate-900 px-3 py-1.5 rounded-none text-[10px] font-black transition-all border border-white/20 flex items-center gap-1">
+                                        <span className="text-slate-400 text-[10px] font-semibold group-hover:text-emerald-300 transition-colors">자세한 서비스 내용 보기</span>
+                                        <a 
+                                            href="#gccare" 
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                const el = document.getElementById("gccare");
+                                                if (el) el.scrollIntoView({ behavior: "smooth" });
+                                            }}
+                                            className="shrink-0 bg-white/10 group-hover:bg-emerald-500 text-white group-hover:text-white px-3 py-1.5 rounded-none text-[10px] font-black transition-all border border-white/20 flex items-center gap-1"
+                                        >
                                             바로가기
                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>
                                         </a>
@@ -618,7 +648,7 @@ export default function Happy450Content({
                 </section>
 
                 {/* 제휴카드 혜택 (진한 다크 럭셔리 & 직각 사각형 스타일) */}
-                <section id="affiliate-card" className="py-20 md:py-32 bg-slate-900 text-white">
+                <section id="affiliate-card" className="py-20 md:py-32 bg-slate-900 text-white scroll-mt-10">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="relative p-4 sm:p-6 md:p-12 lg:p-20 rounded-none border-[3px] border-amber-500/20 bg-slate-950 shadow-[0_0_50px_rgba(0,0,0,0.3)] hover:border-amber-500/35 transition-all duration-500">
                             <div className="text-center mb-16 md:mb-24">
@@ -1315,7 +1345,7 @@ export default function Happy450Content({
                 </section>
 
                                 {/* GC케어 헬스케어서비스 (초록/오렌지 그라데이션 + 파트너 로고 + 업계최초 라벨 + 밝은 박스/표 + 하단 링크 적용) */}
-                <section className="py-20 md:py-32 bg-gradient-to-b from-[#0a351d] via-[#051c0e] to-[#010904] text-white border-t border-slate-900 relative overflow-hidden text-left">
+                <section id="gccare" className="py-20 md:py-32 bg-gradient-to-b from-[#0a351d] via-[#051c0e] to-[#010904] text-white border-t border-slate-900 relative overflow-hidden text-left scroll-mt-10">
                     {/* 추가적인 초록색 및 오렌지색 그라데이션 빛 효과 */}
                     <div className="absolute top-1/4 left-1/3 w-[600px] h-[600px] bg-green-500/10 rounded-full blur-[140px] pointer-events-none"></div>
                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-500/15 rounded-full blur-[100px] pointer-events-none"></div>
