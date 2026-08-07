@@ -1352,10 +1352,10 @@ export default function Happy450Content({
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
                         {/* 헤더 */}
                         <div className="text-center mb-16 md:mb-24">
-                            {/* 업계최초 라벨 */}
+                            {/* NEW 라벨 */}
                             <div className="mb-6">
                                 <span className="bg-emerald-500/20 text-emerald-400 text-xs font-black px-4 py-1.5 rounded-full border border-emerald-500/30 uppercase tracking-widest inline-block animate-pulse">
-                                    ★ 업계최초
+                                    ★ NEW
                                 </span>
                             </div>
 
