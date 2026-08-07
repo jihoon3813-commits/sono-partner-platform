@@ -284,3 +284,19 @@ export const seedDefaultCareProducts = mutation({
         return { seeded: false };
     },
 });
+
+// careProducts 드래그앤드롭 일괄 순서 변경
+export const reorderCareProducts = mutation({
+    args: {
+        orderedIds: v.array(v.id("careProducts")),
+    },
+    handler: async (ctx, args) => {
+        const now = new Date().toISOString();
+        for (let i = 0; i < args.orderedIds.length; i++) {
+            await ctx.db.patch(args.orderedIds[i], {
+                order: i + 1,
+                updatedAt: now,
+            });
+        }
+    },
+});

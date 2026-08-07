@@ -181,6 +181,53 @@ export default function ProductManagement() {
         await reorderProducts({ orderedIds });
     };
 
+    // Care Product Drag & Drop Reordering states
+    const reorderCareProducts = useMutation(api.careProducts.reorderCareProducts);
+    const [draggedCareProductId, setDraggedCareProductId] = useState<Id<"careProducts"> | null>(null);
+    const [dragOverCareProductId, setDragOverCareProductId] = useState<Id<"careProducts"> | null>(null);
+
+    const sortedCareProducts = useMemo(() => {
+        return [...(careProducts || [])].sort((a, b) => (a.order || 99) - (b.order || 99));
+    }, [careProducts]);
+
+    const handleCareDragStart = (e: React.DragEvent, id: Id<"careProducts">) => {
+        setDraggedCareProductId(id);
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", id);
+    };
+
+    const handleCareDragOver = (e: React.DragEvent, id: Id<"careProducts">) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        if (dragOverCareProductId !== id) {
+            setDragOverCareProductId(id);
+        }
+    };
+
+    const handleCareDragLeave = () => {
+        setDragOverCareProductId(null);
+    };
+
+    const handleCareDrop = async (e: React.DragEvent, targetId: Id<"careProducts">) => {
+        e.preventDefault();
+        setDragOverCareProductId(null);
+        if (!draggedCareProductId || draggedCareProductId === targetId || !careProducts) return;
+
+        const currentList = [...sortedCareProducts];
+        const dragIndex = currentList.findIndex(p => p._id === draggedCareProductId);
+        const targetIndex = currentList.findIndex(p => p._id === targetId);
+
+        if (dragIndex === -1 || targetIndex === -1) return;
+
+        const [movedItem] = currentList.splice(dragIndex, 1);
+        currentList.splice(targetIndex, 0, movedItem);
+
+        const orderedIds = currentList.map(p => p._id);
+        setDraggedCareProductId(null);
+
+        await reorderCareProducts({ orderedIds });
+    };
+
     const formatSimpleDate = (dateStr?: string) => {
         if (!dateStr) return "-";
         try {
@@ -904,6 +951,7 @@ export default function ProductManagement() {
                             <table className="w-full text-left min-w-[1200px] table-fixed">
                                 <thead>
                                     <tr className="bg-gray-50 border-b border-gray-100">
+                                        <th className="px-3 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-12">이동</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase w-44">상품명</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-24">구분</th>
                                         <th className="px-6 py-4 text-[11px] font-black text-gray-400 uppercase text-center w-20">구좌수</th>
@@ -916,9 +964,30 @@ export default function ProductManagement() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
-                                    {(careProducts || []).map((plan) => (
-                                        <tr key={plan._id} className="hover:bg-gray-50/50 transition-colors">
-                                            <td className="px-6 py-4 font-black text-sono-dark text-sm truncate" title={plan.name}>
+                                    {sortedCareProducts.map((plan) => {
+                                        const isDragging = draggedCareProductId === plan._id;
+                                        const isDragOver = dragOverCareProductId === plan._id;
+                                        return (
+                                            <tr
+                                                key={plan._id}
+                                                draggable={true}
+                                                onDragStart={(e) => handleCareDragStart(e, plan._id)}
+                                                onDragOver={(e) => handleCareDragOver(e, plan._id)}
+                                                onDragLeave={handleCareDragLeave}
+                                                onDrop={(e) => handleCareDrop(e, plan._id)}
+                                                className={`transition-all duration-150 ${
+                                                    isDragging ? "opacity-30 bg-purple-50/50" : ""
+                                                } ${
+                                                    isDragOver ? "bg-purple-50 border-t-2 border-t-purple-600 ring-2 ring-purple-500/20" : "hover:bg-gray-50/50"
+                                                }`}
+                                            >
+                                                {/* 드래그 핸들 */}
+                                                <td className="px-3 py-4 text-center cursor-grab active:cursor-grabbing text-gray-400 hover:text-purple-600 transition-colors" title="드래그하여 순서 변경">
+                                                    <svg className="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M9 7a2 2 0 11-4 0 2 2 0 014 0zM9 12a2 2 0 11-4 0 2 2 0 014 0zM9 17a2 2 0 11-4 0 2 2 0 014 0zM19 7a2 2 0 11-4 0 2 2 0 014 0zM19 12a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                    </svg>
+                                                </td>
+                                                <td className="px-6 py-4 font-black text-sono-dark text-sm truncate" title={plan.name}>
                                                 <div className="flex flex-col">
                                                     <span>{plan.name}</span>
                                                     <span className="text-[11px] font-bold text-gray-400">{plan.target}</span>
@@ -1149,7 +1218,8 @@ export default function ProductManagement() {
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))}
+                                    );
+                                })}
                                     {(!careProducts || careProducts.length === 0) && (
                                         <tr>
                                             <td colSpan={10} className="px-6 py-20 text-center text-gray-400 font-bold">
