@@ -350,24 +350,29 @@ export default function SmartCareContent({
     const promotionsData = useQuery(api.promotions.get);
     const careProductsData = useQuery(api.careProducts.get);
     
+    // 일반상품(standard)으로 등록한 상품은 스마트케어 랜딩(플랜섹션, 가전목록 등)에서 제외
+    const smartCareProductsData = careProductsData
+        ? careProductsData.filter(cp => cp.productType !== "standard" && !cp.name.includes("더해피450"))
+        : undefined;
+
     const allAppliances = ((productsData || []) as Appliance[]).filter(p => p.isVisible !== false);
     const activePromotions = (promotionsData || []).filter(p => p.isActive !== false);
     const isLoadingAppliances = productsData === undefined;
     const [expandedProductNames, setExpandedProductNames] = useState<Set<string>>(new Set());
     const categoriesOrder = ["에어컨/에어케어", "세탁가전", "냉장가전", "주방가전", "생활가전", "TV/디지털", "건강/뷰티", "가구/침대", "기타가전"];
     
-    // Dynamic Slots based on registered care products
-    const availableSlots = careProductsData && careProductsData.length > 0
-        ? Array.from(new Set(careProductsData.map(cp => cp.slotCount))).sort((a, b) => a - b)
+    // Dynamic Slots based on registered care products (smartcare plans only)
+    const availableSlots = smartCareProductsData && smartCareProductsData.length > 0
+        ? Array.from(new Set(smartCareProductsData.map(cp => cp.slotCount))).sort((a, b) => a - b)
         : Array.from(new Set(allAppliances.map(a => a.slotCount || 4))).sort((a, b) => a - b);
     
-    // Default to a 4-slot plan once careProductsData is loaded
+    // Default to a 4-slot plan once smartCareProductsData is loaded
     useEffect(() => {
-        if (careProductsData && careProductsData.length > 0 && !selectedPlanId) {
-            const defaultPlan = careProductsData.find(cp => cp.slotCount === 4) || careProductsData[0];
+        if (smartCareProductsData && smartCareProductsData.length > 0 && !selectedPlanId) {
+            const defaultPlan = smartCareProductsData.find(cp => cp.slotCount === 4) || smartCareProductsData[0];
             if (defaultPlan) setSelectedPlanId(defaultPlan._id);
         }
-    }, [careProductsData]);
+    }, [smartCareProductsData]);
 
     // Dynamic Categories based on current slot selection
     const availableCategories = Array.from(new Set(
@@ -375,7 +380,7 @@ export default function SmartCareContent({
             .filter(a => {
                 if (selectedPlanId === "") return true;
                 return a.careProductId === selectedPlanId || 
-                       (!a.careProductId && a.slotCount === careProductsData?.find(cp => cp._id === selectedPlanId)?.slotCount);
+                       (!a.careProductId && a.slotCount === smartCareProductsData?.find(cp => cp._id === selectedPlanId)?.slotCount);
             })
             .map(a => a.category)
     )).sort((a, b) => {
@@ -400,7 +405,7 @@ export default function SmartCareContent({
         const matchesPlan = selectedPlanId === "" 
             ? true 
             : (item.careProductId === selectedPlanId || 
-               (!item.careProductId && item.slotCount === careProductsData?.find(cp => cp._id === selectedPlanId)?.slotCount));
+               (!item.careProductId && item.slotCount === smartCareProductsData?.find(cp => cp._id === selectedPlanId)?.slotCount));
         const matchesCategory = selectedCategory === "전체" ? true : item.category === selectedCategory;
         return matchesPlan && matchesCategory;
     });
@@ -418,7 +423,7 @@ export default function SmartCareContent({
         if (item.careProductId && item.careProductId !== selectedPlanId && selectedPlanId !== "") {
             setSelectedPlanId(item.careProductId);
         } else if (!item.careProductId && item.slotCount) {
-            const cp = careProductsData?.find(c => c.slotCount === item.slotCount);
+            const cp = smartCareProductsData?.find(c => c.slotCount === item.slotCount);
             if (cp && cp._id !== selectedPlanId && selectedPlanId !== "") {
                 setSelectedPlanId(cp._id);
             }
@@ -431,7 +436,7 @@ export default function SmartCareContent({
             if (pickedAppliance.careProductId) {
                 setSelectedPlanId(pickedAppliance.careProductId);
             } else {
-                const cp = careProductsData?.find(c => c.slotCount === pickedAppliance.slotCount);
+                const cp = smartCareProductsData?.find(c => c.slotCount === pickedAppliance.slotCount);
                 if (cp) setSelectedPlanId(cp._id);
             }
             setIsModalOpen(true);
@@ -808,14 +813,14 @@ export default function SmartCareContent({
                                 style={{ scrollSnapType: 'x mandatory' }} 
                                 className="flex w-full overflow-x-auto md:overflow-visible snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-10 md:py-16 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-6 md:gap-10 max-w-7xl mx-auto flex-row md:flex-wrap md:justify-center items-stretch justify-start"
                             >
-                                {(careProductsData && careProductsData.length > 0 ? careProductsData : [
+                                {(smartCareProductsData && smartCareProductsData.length > 0 ? smartCareProductsData : [
                                     { name: "스마트케어 4더블", slotCount: 2, monthlyPayment: 55200, cardDiscountPayment: 35000, target: "1인 가구 / 소형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~179회(180회:79,200원)", defermentPeriod: "181~200회", maturityCount: "200회" },
                                     { name: "스마트케어 5", slotCount: 1, monthlyPayment: 33000, cardDiscountPayment: 25000, target: "1인 가구 / 소형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
                                     { name: "스마트케어 5더블", slotCount: 2, monthlyPayment: 66000, cardDiscountPayment: 42000, target: "신혼 부부 / 중형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
                                     { name: "스마트케어 5트리플", slotCount: 3, monthlyPayment: 99000, cardDiscountPayment: 42000, target: "일반 가전 / 대형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
                                     { name: "스마트케어 5쿼드", slotCount: 4, monthlyPayment: 132000, cardDiscountPayment: 42000, target: "대가족 / 프리미엄 가전 패키지", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
                                 ]).map((plan: any, i) => {
-                                    const isBest = plan.slotCount === 4 || (careProductsData && careProductsData.length > 0 ? i === 2 : i === 2);
+                                    const isBest = plan.slotCount === 4 || (smartCareProductsData && smartCareProductsData.length > 0 ? i === 2 : i === 2);
                                     const isActive = selectedPlanId === plan._id || (selectedPlanId === "" && isBest);
                                     return (
                                         <div 
@@ -1048,7 +1053,7 @@ export default function SmartCareContent({
                                 >
                                     전체 상품
                                 </button>
-                                {(careProductsData || []).map((plan) => (
+                                {(smartCareProductsData || []).map((plan) => (
                                     <button
                                         key={plan._id}
                                         onClick={() => { setSelectedPlanId(plan._id); setSelectedCategory("전체"); }}
@@ -1096,16 +1101,16 @@ export default function SmartCareContent({
                             <div className="flex items-center justify-between sm:justify-end gap-2 whitespace-nowrap">
                                 {selectedPlanId !== "" && (
                                     <span className="text-[11px] sm:text-xs font-bold text-slate-400 truncate max-w-[140px] sm:max-w-none">
-                                        {careProductsData?.find(cp => cp._id === selectedPlanId)?.name || `${filteredAppliances[0]?.slotCount || 4}구좌`} 전용
+                                        {smartCareProductsData?.find(cp => cp._id === selectedPlanId)?.name || `${filteredAppliances[0]?.slotCount || 4}구좌`} 전용
                                     </span>
                                 )}
                                 {(() => {
                                     let dateStr: string | undefined = undefined;
                                     if (selectedPlanId) {
-                                        const plan = careProductsData?.find(cp => cp._id === selectedPlanId);
+                                        const plan = smartCareProductsData?.find(cp => cp._id === selectedPlanId);
                                         dateStr = plan?.lastSyncedAt || plan?.updatedAt;
                                     } else {
-                                        const dates = (careProductsData || [])
+                                        const dates = (smartCareProductsData || [])
                                             .map(p => p.lastSyncedAt || p.updatedAt)
                                             .filter((d): d is string => !!d)
                                             .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
@@ -1281,7 +1286,7 @@ export default function SmartCareContent({
                                     >
                                         전체
                                     </button>
-                                    {(careProductsData || []).map((plan) => (
+                                    {(smartCareProductsData || []).map((plan) => (
                                         <button
                                             key={plan._id}
                                             onClick={() => setSelectedPlanId(plan._id)}
@@ -1303,7 +1308,7 @@ export default function SmartCareContent({
                                         (selectedPlanId === "" 
                                             ? true 
                                             : (a.careProductId === selectedPlanId || 
-                                               (!a.careProductId && a.slotCount === careProductsData?.find(cp => cp._id === selectedPlanId)?.slotCount)))
+                                               (!a.careProductId && a.slotCount === smartCareProductsData?.find(cp => cp._id === selectedPlanId)?.slotCount)))
                                     );
 
                                     if (categoryItems.length === 0) return null;

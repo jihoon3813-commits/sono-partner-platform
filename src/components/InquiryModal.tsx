@@ -70,13 +70,18 @@ export default function InquiryModal({
 
     useEffect(() => {
         if (isOpen) {
+            const isSmartCare = ["smartcare", "스마트케어"].includes(productType);
+            const filteredCareProducts = isSmartCare 
+                ? (careProducts || []).filter(c => c.productType !== "standard" && !c.name.includes("더해피450"))
+                : (careProducts || []);
+
             if (initialPlanId) {
                 setSelectedPlanId(initialPlanId);
-                const cp = careProducts?.find(c => c._id === initialPlanId);
+                const cp = filteredCareProducts.find(c => c._id === initialPlanId);
                 if (cp) setSelectedUnit(cp.slotCount.toString());
             } else if (initialUnit) {
                 setSelectedUnit(initialUnit);
-                const cp = careProducts?.find(c => c.slotCount === Number(initialUnit));
+                const cp = filteredCareProducts.find(c => c.slotCount === Number(initialUnit));
                 if (cp) setSelectedPlanId(cp._id);
             }
             if (initialAppliance) {
@@ -94,7 +99,7 @@ export default function InquiryModal({
                 setSelectedAppliance(cleaned);
             }
         }
-    }, [isOpen, initialPlanId, initialUnit, initialAppliance, careProducts]);
+    }, [isOpen, initialPlanId, initialUnit, initialAppliance, careProducts, productType]);
 
     const allAppliances = productsData || [];
     const isLoadingAppliances = productsData === undefined;
@@ -495,7 +500,7 @@ export default function InquiryModal({
                                 <div>
                                     <label className="input-label !text-[#4e5968] !font-bold mb-3 block">가입 상품 선택</label>
                                     <div className="flex bg-[#f2f4f6] border border-gray-300 p-1 rounded-none flex-wrap gap-1">
-                                        {(careProducts || []).map((cp) => (
+                                        {(careProducts || []).filter(cp => cp.productType !== "standard" && !cp.name.includes("더해피450")).map((cp) => (
                                             <button
                                                 key={cp._id}
                                                 type="button"
