@@ -128,7 +128,7 @@ export async function updateApplicationDetails(
         'customerName', 'customerPhone', 'customerBirth', 'customerGender',
         'customerAddress', 'customerZipcode', 'productType', 'products',
         'planType', 'inquiry', 'preferredContactTime', 'partnerMemberId',
-        'statusUpdatedAt', 'memo'
+        'statusUpdatedAt', 'memo', 'partnerId', 'partnerName', 'accessPath'
     ];
 
     keys.forEach(key => {

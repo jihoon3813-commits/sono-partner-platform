@@ -24,11 +24,17 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     const productsData = useQuery(api.products.get);
     const partnersData = useQuery(api.partners.getAllPartners);
 
+    // 파트너 정보 (총괄어드민 수정 가능)
+    const [selectedPartnerId, setSelectedPartnerId] = useState(application.partnerId || "");
+    const [selectedPartnerName, setSelectedPartnerName] = useState(application.partnerName || "");
+    const [accessPath, setAccessPath] = useState(application.accessPath || "H");
+    const [partnerMemberId, setPartnerMemberId] = useState(application.partnerMemberId || "");
+
     // Resolve sales partner for this application
     const customerPartner = useMemo(() => {
         if (!partnersData) return null;
-        return partnersData.find(p => p.partnerId === application.partnerId || p.companyName === application.partnerName || p.loginId === partnerLoginId);
-    }, [partnersData, application, partnerLoginId]);
+        return partnersData.find(p => p.partnerId === selectedPartnerId || p.companyName === selectedPartnerName || p.loginId === partnerLoginId);
+    }, [partnersData, selectedPartnerId, selectedPartnerName, partnerLoginId]);
 
     // Allowed care products based on sales partner's selling product configuration
     const allowedCareProducts = useMemo(() => {
@@ -236,6 +242,10 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                     planType,
                     inquiry,
                     preferredContactTime,
+                    partnerId: selectedPartnerId,
+                    partnerName: selectedPartnerName,
+                    accessPath,
+                    partnerMemberId,
                     changedBy: isAdmin ? "admin" : (partnerLoginId || "unknown"),
                 }),
             });
@@ -536,11 +546,60 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                     <div className="border-t border-gray-100 pt-4">
                         <h3 className="text-sm font-bold text-sono-primary mb-3">파트너 정보</h3>
                         <div className="space-y-3">
-                            <InfoRow label="파트너사" value={application.partnerName} />
-                            <InfoRow label="파트너 ID" value={partnerLoginId || application.partnerId} />
-                            <InfoRow label="접속경로" value={application.accessPath === 'H' ? '홈페이지 (H)' : '직접등록 (D)'} />
-                            <InfoRow label="회원번호" value={application.partnerMemberId || '-'} />
-                            <InfoRow label="신청일시" value={formatDate(application.registrationDate || application.createdAt) || '-'} />
+                            {isAdmin ? (
+                                <>
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <span className="w-24 text-gray-400 font-medium shrink-0">파트너사</span>
+                                        <select
+                                            value={selectedPartnerId}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                setSelectedPartnerId(val);
+                                                const found = partnersData?.find(p => p.partnerId === val);
+                                                if (found) {
+                                                    setSelectedPartnerName(found.companyName);
+                                                } else {
+                                                    setSelectedPartnerName(val);
+                                                }
+                                            }}
+                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px] font-bold"
+                                        >
+                                            {!partnersData?.some(p => p.partnerId === selectedPartnerId) && selectedPartnerId && (
+                                                <option value={selectedPartnerId}>
+                                                    {selectedPartnerName || selectedPartnerId}
+                                                </option>
+                                            )}
+                                            {partnersData?.map((p) => (
+                                                <option key={p._id || p.partnerId} value={p.partnerId}>
+                                                    {p.companyName} {p.loginId ? `(${p.loginId})` : ''}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <InfoRow label="파트너 ID" value={customerPartner?.loginId || selectedPartnerId || '-'} />
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <span className="w-24 text-gray-400 font-medium shrink-0">접속경로</span>
+                                        <select
+                                            value={accessPath}
+                                            onChange={(e) => setAccessPath(e.target.value)}
+                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                        >
+                                            <option value="H">홈페이지 (H)</option>
+                                            <option value="D">직접등록 (D)</option>
+                                        </select>
+                                    </div>
+                                    <InputRow label="회원번호" value={partnerMemberId} onChange={setPartnerMemberId} placeholder="회원번호 입력" />
+                                    <InfoRow label="신청일시" value={formatDate(application.registrationDate || application.createdAt) || '-'} />
+                                </>
+                            ) : (
+                                <>
+                                    <InfoRow label="파트너사" value={application.partnerName} />
+                                    <InfoRow label="파트너 ID" value={partnerLoginId || application.partnerId} />
+                                    <InfoRow label="접속경로" value={application.accessPath === 'H' ? '홈페이지 (H)' : '직접등록 (D)'} />
+                                    <InfoRow label="회원번호" value={application.partnerMemberId || '-'} />
+                                    <InfoRow label="신청일시" value={formatDate(application.registrationDate || application.createdAt) || '-'} />
+                                </>
+                            )}
                         </div>
                     </div>
 
