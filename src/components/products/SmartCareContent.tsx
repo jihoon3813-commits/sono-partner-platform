@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Header, Footer } from "@/components/layout";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import InquiryModal from "@/components/InquiryModal";
 import ProductDetailModal from "@/components/ProductDetailModal";
 import ImportantNotice from "@/components/common/ImportantNotice";
@@ -351,9 +351,11 @@ export default function SmartCareContent({
     const careProductsData = useQuery(api.careProducts.get);
     
     // 일반상품(standard)으로 등록한 상품은 스마트케어 랜딩(플랜섹션, 가전목록 등)에서 제외
-    const smartCareProductsData = careProductsData
-        ? careProductsData.filter(cp => cp.productType !== "standard" && !cp.name.includes("더해피450"))
-        : undefined;
+    const smartCareProductsData = useMemo(() => {
+        return careProductsData
+            ? careProductsData.filter(cp => cp.productType !== "standard" && !cp.name.includes("더해피450"))
+            : undefined;
+    }, [careProductsData]);
 
     const allAppliances = ((productsData || []) as Appliance[]).filter(p => p.isVisible !== false);
     const activePromotions = (promotionsData || []).filter(p => p.isActive !== false);
@@ -366,9 +368,12 @@ export default function SmartCareContent({
         ? Array.from(new Set(smartCareProductsData.map(cp => cp.slotCount))).sort((a, b) => a - b)
         : Array.from(new Set(allAppliances.map(a => a.slotCount || 4))).sort((a, b) => a - b);
     
-    // Default to a 4-slot plan once smartCareProductsData is loaded
+    const hasInitializedPlanRef = useRef(false);
+
+    // Default to a 4-slot plan once smartCareProductsData is loaded for the first time
     useEffect(() => {
-        if (smartCareProductsData && smartCareProductsData.length > 0 && !selectedPlanId) {
+        if (smartCareProductsData && smartCareProductsData.length > 0 && !hasInitializedPlanRef.current) {
+            hasInitializedPlanRef.current = true;
             const defaultPlan = smartCareProductsData.find(cp => cp.slotCount === 4) || smartCareProductsData[0];
             if (defaultPlan) setSelectedPlanId(defaultPlan._id);
         }
