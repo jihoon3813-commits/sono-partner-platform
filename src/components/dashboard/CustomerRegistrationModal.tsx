@@ -68,10 +68,43 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
         preferredContactTime: "",
         partnerMemberId: "",
         inquiry: "",
-        selectedPartnerId: partner?.partnerId || "",
-        selectedPartnerLoginId: partner?.loginId || "",
+        selectedPartnerId: partner?.partnerId || partner?.loginId || "",
+        selectedPartnerLoginId: partner?.loginId || partner?.partnerId || "",
         selectedPartnerName: partner?.companyName || partner?.name || "",
     });
+
+    // Available partners (for Admin: all partners, for Partner: self + sub-partners)
+    const availablePartners = useMemo(() => {
+        if (isAdmin) return partners;
+
+        const list: Partner[] = [];
+        const seen = new Set<string>();
+
+        // Add self first if available
+        if (partner) {
+            list.push(partner);
+            if (partner.partnerId) seen.add(partner.partnerId);
+            if (partner.loginId) seen.add(partner.loginId);
+        }
+
+        // Add partners passed from dashboard (which contains self + sub-partners)
+        partners.forEach(p => {
+            const pId = p.partnerId;
+            const pLogin = p.loginId;
+            const alreadyIn = (pId && seen.has(pId)) || (pLogin && seen.has(pLogin));
+            if (!alreadyIn) {
+                list.push(p);
+                if (pId) seen.add(pId);
+                if (pLogin) seen.add(pLogin);
+            }
+        });
+
+        return list;
+    }, [isAdmin, partners, partner]);
+
+    // Check if sub-partners exist for logged-in partner
+    const hasSubPartners = !isAdmin && availablePartners.length > 1;
+    const showPartnerSelect = isAdmin || hasSubPartners;
 
     const isSmartCare = manualForm.productType.startsWith("스마트케어");
     const currentSlot = Number(manualForm.planType) || 0;
@@ -126,7 +159,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
 
     // Calculate allowed product types for the selected partner (dynamically read from careProductsData)
     const allowedProductOptions = useMemo(() => {
-        const selectedP = partners.find(p => p.partnerId === manualForm.selectedPartnerId) || partner;
+        const selectedP = availablePartners.find(p => p.partnerId === manualForm.selectedPartnerId || p.loginId === manualForm.selectedPartnerId) || partner;
         const pGroup = selectedP?.partnerGroup || "전체 상품 판매";
 
         let dbList: { id: string; name: string; productType: string; slotCount: number }[] = [];
@@ -174,7 +207,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
         });
 
         return filtered.length > 0 ? filtered : dbList;
-    }, [careProductsData, partners, manualForm.selectedPartnerId, partner]);
+    }, [careProductsData, availablePartners, manualForm.selectedPartnerId, partner]);
 
     // Keep manualForm.productType aligned with allowedProductOptions
     useEffect(() => {
@@ -230,12 +263,12 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
 
         // When partner is selected, also update loginId and name
         if (name === "selectedPartnerId") {
-            const selectedP = partners.find(p => p.partnerId === value);
+            const selectedP = availablePartners.find(p => p.partnerId === value || p.loginId === value);
             setManualForm(prev => ({
                 ...prev,
                 selectedPartnerId: value,
-                selectedPartnerLoginId: selectedP?.loginId || "",
-                selectedPartnerName: selectedP?.companyName || "",
+                selectedPartnerLoginId: selectedP?.loginId || value,
+                selectedPartnerName: selectedP?.companyName || (selectedP as any)?.name || "",
             }));
             return;
         }
@@ -283,20 +316,23 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
             return;
         }
 
-        // Admin check: Partner selection
-        let pId = partner?.partnerId || "";
+        // Partner selection determination
+        let pId = partner?.partnerId || partner?.loginId || "";
         let pName = partner?.companyName || partner?.name || "";
-        let pLoginId = partner?.loginId || "";
+        let pLoginId = partner?.loginId || partner?.partnerId || "";
 
-        if (isAdmin) {
-            if (!manualForm.selectedPartnerId) {
-                alert("파트너사를 선택해주세요.");
-                return;
+        if (manualForm.selectedPartnerId) {
+            const selectedP = availablePartners.find(p => p.partnerId === manualForm.selectedPartnerId || p.loginId === manualForm.selectedPartnerId);
+            if (selectedP) {
+                pId = selectedP.partnerId || selectedP.loginId || "";
+                pName = selectedP.companyName || (selectedP as any).name || "";
+                pLoginId = selectedP.loginId || selectedP.partnerId || "";
             }
-            pId = manualForm.selectedPartnerId;
-            const selectedP = partners.find(p => p.partnerId === pId);
-            pName = selectedP?.companyName || "";
-            pLoginId = selectedP?.loginId || "";
+        }
+
+        if (isAdmin && !pId) {
+            alert("파트너사를 선택해주세요.");
+            return;
         }
 
         const newCustomer: StagedCustomer = {
@@ -309,7 +345,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
 
         setStagedCustomers(prev => [...prev, newCustomer]);
 
-        // Reset form but keep partner selection if admin
+        // Reset form but keep partner selection
         setManualForm({
             id: "",
             customerName: "",
@@ -324,9 +360,9 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
             preferredContactTime: "",
             partnerMemberId: "",
             inquiry: "",
-            selectedPartnerId: isAdmin ? manualForm.selectedPartnerId : (partner?.partnerId || ""),
-            selectedPartnerLoginId: isAdmin ? manualForm.selectedPartnerLoginId : (partner?.loginId || ""),
-            selectedPartnerName: isAdmin ? manualForm.selectedPartnerName : (partner?.companyName || partner?.name || ""),
+            selectedPartnerId: manualForm.selectedPartnerId || partner?.partnerId || partner?.loginId || "",
+            selectedPartnerLoginId: manualForm.selectedPartnerLoginId || partner?.loginId || "",
+            selectedPartnerName: manualForm.selectedPartnerName || partner?.companyName || partner?.name || "",
         });
     };
 
@@ -355,7 +391,10 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                 return foundIdx !== -1 ? foundIdx : fallbackIdx;
             };
 
-            const offset = isAdmin ? 1 : 0;
+            const partnerColIdx = getCol(["파트너", "아이디", "ID", "loginId"], -1);
+            const hasPartnerCol = partnerColIdx !== -1;
+
+            const offset = (isAdmin || hasPartnerCol) ? 1 : 0;
             const nameIdx = getCol(["고객명", "성함"], 0 + offset);
             const phoneIdx = getCol(["연락처", "전화"], 1 + offset);
             const birthIdx = getCol(["생년월일"], 2 + offset);
@@ -372,28 +411,39 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
             const newCustomers: StagedCustomer[] = [];
 
             rows.forEach((row, idx) => {
-                let pId = partner?.partnerId || "";
+                let pId = partner?.partnerId || partner?.loginId || "";
                 let pName = partner?.companyName || partner?.name || "";
-                let pLoginId = partner?.loginId || "";
+                let pLoginId = partner?.loginId || partner?.partnerId || "";
 
-                if (isAdmin) {
-                    const partnerColIdx = getCol(["파트너"], 0);
-                    const loginId = String(row[partnerColIdx] || "").trim();
-                    let p = partners.find(p => p.loginId === loginId || p.partnerId === loginId);
+                if (hasPartnerCol && row[partnerColIdx]) {
+                    const rowPartnerVal = String(row[partnerColIdx] || "").trim();
+                    let p = availablePartners.find(p =>
+                        p.loginId === rowPartnerVal ||
+                        p.partnerId === rowPartnerVal ||
+                        p.companyName === rowPartnerVal ||
+                        (p as any).name === rowPartnerVal
+                    );
 
                     if (p) {
-                        pId = p.partnerId;
-                        pLoginId = p.loginId || "";
-                        pName = p.companyName || "";
+                        pId = p.partnerId || p.loginId;
+                        pLoginId = p.loginId || p.partnerId;
+                        pName = p.companyName || (p as any).name || "";
                     } else if (manualForm.selectedPartnerId) {
                         pId = manualForm.selectedPartnerId;
-                        const selected = partners.find(p => p.partnerId === pId);
-                        pName = selected?.companyName || "";
+                        const selected = availablePartners.find(p => p.partnerId === pId || p.loginId === pId);
+                        pName = selected?.companyName || (selected as any)?.name || "";
+                        pLoginId = selected?.loginId || "";
+                    }
+                } else if (manualForm.selectedPartnerId) {
+                    pId = manualForm.selectedPartnerId;
+                    const selected = availablePartners.find(p => p.partnerId === pId || p.loginId === pId);
+                    if (selected) {
+                        pName = selected?.companyName || (selected as any)?.name || "";
                         pLoginId = selected?.loginId || "";
                     }
                 }
 
-                if (!pId) return;
+                if (!pId && !pLoginId) return;
 
                 const customerName = row[nameIdx];
                 const customerPhone = row[phoneIdx];
@@ -442,7 +492,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
         try {
             // Transform StagedCustomer to API payload
             const payload = stagedCustomers.map(c => ({
-                partnerId: c.selectedPartnerLoginId || partner?.loginId || "",
+                partnerId: c.selectedPartnerLoginId || c.selectedPartnerId || partner?.loginId || partner?.partnerId || "",
                 // partnerName: only use companyName
                 partnerName: c.selectedPartnerName || partner?.companyName || partner?.name || "",
                 productType: c.productType,
@@ -499,7 +549,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                 onClick={() => {
                                     // Use the proxy API route for downloading.
                                     // This handles secure file fetching from Convex and avoids CORS/Mixed Content issues.
-                                    window.location.assign(`/api/download-template?type=${isAdmin ? 'admin' : 'standard'}`);
+                                    window.location.assign(`/api/download-template?type=${isAdmin || hasSubPartners ? 'admin' : 'standard'}`);
                                 }}
                                 className="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-200 transition-all flex items-center gap-2"
                             >
@@ -538,6 +588,9 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                 <ol className="list-decimal text-left list-inside pl-1 space-y-0.5 text-blue-700/80">
                                     <li>[양식 다운로드] 버튼을 눌러 엑셀 파일을 다운로드합니다.</li>
                                     <li>다운로드한 파일에 고객 정보를 입력합니다. (헤더 삭제 금지)</li>
+                                    {hasSubPartners && (
+                                        <li>하위파트너로 등록 시 엑셀 1열의 파트너ID에 하위파트너 로그인 ID를 입력하거나, 개별 폼에서 하위파트너를 선택한 후 업로드할 수 있습니다.</li>
+                                    )}
                                     <li>[엑셀 업로드] 버튼을 눌러 작성한 파일을 선택하면 자동으로 목록에 추가됩니다.</li>
                                 </ol>
                             </div>
@@ -548,19 +601,30 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                     <div className="md:col-span-3 bg-gray-50 p-4 sm:p-5 rounded-2xl border border-gray-100">
                         <h3 className="text-sm font-bold text-gray-500 mb-4 uppercase tracking-wider">개별 등록</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-                            {isAdmin && (
+                            {showPartnerSelect && (
                                 <div className="col-span-1 sm:col-span-2 md:col-span-1">
-                                    <label className="block text-xs font-bold text-gray-400 mb-1">파트너사 *</label>
+                                    <label className="block text-xs font-bold text-gray-400 mb-1">
+                                        {isAdmin ? "파트너사 *" : "하위파트너 지정 *"}
+                                    </label>
                                     <select
                                         name="selectedPartnerId"
                                         value={manualForm.selectedPartnerId}
                                         onChange={handleManualChange}
-                                        className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
+                                        className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white font-medium text-gray-800"
                                     >
-                                        <option value="">선택</option>
-                                        {partners.map(p => (
-                                            <option key={p.partnerId} value={p.partnerId}>{p.companyName} ({p.loginId})</option>
-                                        ))}
+                                        {isAdmin && <option value="">선택</option>}
+                                        {availablePartners.map(p => {
+                                            const isSelf = partner && (p.partnerId === (partner.partnerId || partner.loginId) || p.loginId === partner.loginId);
+                                            const rolePrefix = isAdmin ? "" : (isSelf ? "[본인] " : "[하위] ");
+                                            const displayName = p.companyName || (p as any).name || '파트너';
+                                            const displayId = p.loginId || p.partnerId;
+                                            const val = p.partnerId || p.loginId;
+                                            return (
+                                                <option key={val} value={val}>
+                                                    {rolePrefix}{displayName} ({displayId})
+                                                </option>
+                                            );
+                                        })}
                                     </select>
                                 </div>
                             )}
@@ -799,7 +863,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                             <table className="w-full text-left text-sm min-w-[550px]">
                                 <thead className="bg-gray-50 border-b border-gray-100">
                                     <tr>
-                                        {isAdmin && <th className="px-4 py-3 font-bold text-gray-500 text-xs">파트너</th>}
+                                        {showPartnerSelect && <th className="px-4 py-3 font-bold text-gray-500 text-xs">파트너</th>}
                                         <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center w-20">고객명</th>
                                         <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center">연락처</th>
                                         <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center">통화가능시간</th>
@@ -811,7 +875,11 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                 <tbody className="divide-y divide-gray-100 bg-white">
                                     {stagedCustomers.length > 0 ? stagedCustomers.map((c) => (
                                         <tr key={c.id} className="hover:bg-gray-50">
-                                            {isAdmin && <td className="px-4 py-3 text-gray-600 font-bold text-xs truncate max-w-[100px]">{c.selectedPartnerName}</td>}
+                                            {showPartnerSelect && (
+                                                <td className="px-4 py-3 text-gray-600 font-bold text-xs truncate max-w-[130px]">
+                                                    {c.selectedPartnerName || c.selectedPartnerLoginId || "-"}
+                                                </td>
+                                            )}
                                             <td className="px-4 py-3 font-bold text-sono-dark text-xs text-center">{c.customerName}</td>
                                             <td className="px-4 py-3 text-gray-600 text-xs text-center">{c.customerPhone}</td>
                                             <td className="px-4 py-3 text-gray-600 text-xs text-center">{c.preferredContactTime || "-"}</td>
@@ -832,7 +900,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                         </tr>
                                     )) : (
                                         <tr>
-                                            <td colSpan={isAdmin ? 7 : 6} className="px-4 py-10 text-center text-gray-400 text-xs">
+                                            <td colSpan={showPartnerSelect ? 7 : 6} className="px-4 py-10 text-center text-gray-400 text-xs">
                                                 등록된 고객이 없습니다. 고객을 추가해주세요.
                                             </td>
                                         </tr>
