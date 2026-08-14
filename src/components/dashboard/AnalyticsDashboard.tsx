@@ -257,57 +257,82 @@ export default function AnalyticsDashboard() {
                 </div>
 
                 {stats.daily.length > 0 ? (
-                    <div className="h-84 flex items-stretch gap-2 md:gap-3 overflow-x-auto pt-3 pb-4 px-1 scrollbar-thin">
+                    <div className="flex items-stretch gap-2 md:gap-3 overflow-x-auto pt-4 pb-4 px-2 scrollbar-thin">
                         {stats.daily.map((d: any) => {
                             const isSelected = selectedDate === d.date;
+                            const pvH = Math.max(Math.round((d.pv / maxDaily) * 170), d.pv > 0 ? 8 : 0);
+                            const uvH = Math.max(Math.round((d.uv / maxDaily) * 170), d.uv > 0 ? 8 : 0);
+                            const appsH = Math.max(Math.round((d.apps / maxDaily) * 170), d.apps > 0 ? 8 : 0);
+
                             return (
-                                <button
+                                <div
                                     key={d.date}
                                     onClick={() => setSelectedDate(d.date)}
-                                    className={`flex-shrink-0 w-[72px] md:w-[92px] flex flex-col items-center group h-full p-2 rounded-2xl transition-all ${
+                                    className={`cursor-pointer flex-shrink-0 w-[74px] md:w-[94px] flex flex-col items-center group p-2.5 rounded-2xl transition-all select-none ${
                                         isSelected 
                                             ? "bg-sono-primary/10 ring-2 ring-sono-primary shadow-md" 
-                                            : "hover:bg-gray-50"
+                                            : "hover:bg-gray-50/80"
                                     }`}
                                 >
-                                    <div className="w-full flex justify-center items-end gap-[4px] flex-1 pb-2 h-full relative">
-                                        <div className="absolute inset-x-0 bottom-2 h-px bg-gray-100"></div>
+                                    {/* Bar Container with fixed height (200px) */}
+                                    <div className="w-full h-[200px] flex justify-center items-end gap-[5px] pb-2 relative">
+                                        {/* Baseline */}
+                                        <div className="absolute inset-x-0 bottom-2 h-px bg-gray-200"></div>
                                         
-                                        {/* PV Column */}
-                                        <div className="flex flex-col items-center justify-end h-full gap-1 z-10">
+                                        {/* PV Bar */}
+                                        <div className="flex flex-col items-center justify-end h-full z-10 group/pv">
+                                            {d.pv > 0 && (
+                                                <span className="text-[9px] font-extrabold text-blue-600 mb-1 opacity-80 group-hover/pv:opacity-100">
+                                                    {d.pv}
+                                                </span>
+                                            )}
                                             <div 
-                                                className={`w-2.5 rounded-t-[4px] transition-all group-hover:brightness-110 shadow-sm ${isSelected ? 'bg-blue-600' : 'bg-blue-500'}`}
-                                                style={{ height: `${Math.max((d.pv / maxDaily) * 80, d.pv > 0 ? 4 : 0)}%` }}
-                                                title={`PV: ${d.pv}`}
+                                                className={`w-3 rounded-t-md transition-all group-hover:brightness-110 shadow-sm ${isSelected ? 'bg-blue-600' : 'bg-blue-500'}`}
+                                                style={{ height: `${pvH}px` }}
+                                                title={`PV (페이지뷰): ${d.pv}건`}
                                             ></div>
                                         </div>
-                                        {/* UV Column */}
-                                        <div className="flex flex-col items-center justify-end h-full gap-1 z-10">
+
+                                        {/* UV Bar */}
+                                        <div className="flex flex-col items-center justify-end h-full z-10 group/uv">
+                                            {d.uv > 0 && (
+                                                <span className="text-[9px] font-extrabold text-indigo-600 mb-1 opacity-80 group-hover/uv:opacity-100">
+                                                    {d.uv}
+                                                </span>
+                                            )}
                                             <div 
-                                                className={`w-2.5 rounded-t-[4px] transition-all group-hover:brightness-110 shadow-sm ${isSelected ? 'bg-indigo-600' : 'bg-indigo-400'}`}
-                                                style={{ height: `${Math.max((d.uv / maxDaily) * 80, d.uv > 0 ? 4 : 0)}%` }}
-                                                title={`UV: ${d.uv}`}
+                                                className={`w-3 rounded-t-md transition-all group-hover:brightness-110 shadow-sm ${isSelected ? 'bg-indigo-600' : 'bg-indigo-400'}`}
+                                                style={{ height: `${uvH}px` }}
+                                                title={`UV (방문자): ${d.uv}명`}
                                             ></div>
                                         </div>
-                                        {/* Apps Column */}
-                                        <div className="flex flex-col items-center justify-end h-full gap-1 z-10">
+
+                                        {/* Apps Bar */}
+                                        <div className="flex flex-col items-center justify-end h-full z-10 group/app">
+                                            {d.apps > 0 && (
+                                                <span className="text-[9px] font-extrabold text-orange-600 mb-1 opacity-80 group-hover/app:opacity-100">
+                                                    {d.apps}
+                                                </span>
+                                            )}
                                             <div 
-                                                className={`w-2.5 rounded-t-[4px] transition-all group-hover:brightness-110 shadow-sm ${isSelected ? 'bg-orange-600' : 'bg-orange-500'}`}
-                                                style={{ height: `${Math.max((d.apps / maxDaily) * 80, d.apps > 0 ? 4 : 0)}%` }}
-                                                title={`Apply: ${d.apps}`}
+                                                className={`w-3 rounded-t-md transition-all group-hover:brightness-110 shadow-sm ${isSelected ? 'bg-orange-600' : 'bg-orange-500'}`}
+                                                style={{ height: `${appsH}px` }}
+                                                title={`APPLY (신청): ${d.apps}건`}
                                             ></div>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col items-center mt-1">
-                                        <span className={`text-[10px] font-black uppercase ${isSelected ? 'text-sono-primary scale-110 font-extrabold' : 'text-sono-dark'}`}>
+
+                                    {/* Date Label */}
+                                    <div className="flex flex-col items-center mt-2 pt-1 border-t border-gray-100 w-full">
+                                        <span className={`text-[11px] font-black uppercase ${isSelected ? 'text-sono-primary scale-105' : 'text-sono-dark'}`}>
                                             {d.date.substring(8)}일
                                         </span>
-                                        <span className="text-[8px] font-bold text-gray-400">{d.date.substring(5, 7)}월</span>
+                                        <span className="text-[9px] font-bold text-gray-400">{d.date.substring(5, 7)}월</span>
                                         {isSelected && (
-                                            <span className="mt-1 w-1.5 h-1.5 rounded-full bg-sono-primary"></span>
+                                            <span className="mt-1 w-1.5 h-1.5 rounded-full bg-sono-primary animate-pulse"></span>
                                         )}
                                     </div>
-                                </button>
+                                </div>
                             );
                         })}
                     </div>
