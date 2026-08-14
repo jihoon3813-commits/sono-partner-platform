@@ -54,6 +54,7 @@ export default function PartnerTracker() {
 
         // Visitor ID handling (LocalStorage)
         let visitorId = "";
+        let referrer = "";
         if (typeof window !== "undefined") {
             try {
                 visitorId = localStorage.getItem("sono_visitor_id") || "";
@@ -61,6 +62,7 @@ export default function PartnerTracker() {
                     visitorId = "v_" + Math.random().toString(36).substring(2, 11) + Date.now().toString(36);
                     localStorage.setItem("sono_visitor_id", visitorId);
                 }
+                referrer = document.referrer || "";
             } catch (err) {
                 visitorId = "v_anon_" + Date.now();
             }
@@ -70,10 +72,19 @@ export default function PartnerTracker() {
             partnerId: finalPartnerId,
             path: pathname,
             visitorId: visitorId || "anonymous",
-            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined
+            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+            referrer: referrer
         };
 
-        recordHit(hitData).catch(err => console.error("Failed to record analytics hit:", err));
+        // Try API endpoint first (to extract real visitor IP from HTTP headers)
+        fetch("/api/analytics/record", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(hitData),
+        }).catch(() => {
+            // Fallback to direct Convex client mutation
+            recordHit(hitData).catch(err => console.error("Failed to record analytics hit:", err));
+        });
 
     }, [partnerByCustomUrl, partnerById, partnerIdentifier, pathname, recordHit]);
 

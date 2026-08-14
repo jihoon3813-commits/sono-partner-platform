@@ -235,6 +235,8 @@ export default defineSchema({
         path: v.string(), // 접속 경로
         visitorId: v.string(), // 방문자 식별자 (세션/쿠키 기반)
         userAgent: v.optional(v.string()),
+        referrer: v.optional(v.string()), // 유입 경로 / 사이트 URL
+        ip: v.optional(v.string()), // 방문자 IP 주소
         createdAt: v.string(),
     })
         .index("by_partnerId", ["partnerId"])
