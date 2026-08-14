@@ -238,7 +238,7 @@ export default function AnalyticsDashboard() {
                             <select
                                 value={selectedDate}
                                 onChange={(e) => setSelectedDate(e.target.value)}
-                                className="bg-sono-primary/10 border-none rounded-xl px-3 py-1.5 text-xs font-black text-sono-primary cursor-pointer focus:ring-2 focus:ring-sono-primary"
+                                className="bg-sono-primary/10 border border-sono-primary/20 rounded-xl px-3 py-1.5 text-xs font-black text-sono-primary cursor-pointer focus:ring-2 focus:ring-sono-primary shadow-sm"
                             >
                                 {stats.daily.map((d: any) => (
                                     <option key={d.date} value={d.date}>
@@ -257,16 +257,16 @@ export default function AnalyticsDashboard() {
                 </div>
 
                 {stats.daily.length > 0 ? (
-                    <div className="h-80 flex items-stretch gap-2 md:gap-3 overflow-x-auto pb-4 scrollbar-thin">
+                    <div className="h-84 flex items-stretch gap-2 md:gap-3 overflow-x-auto pt-3 pb-4 px-1 scrollbar-thin">
                         {stats.daily.map((d: any) => {
                             const isSelected = selectedDate === d.date;
                             return (
                                 <button
                                     key={d.date}
                                     onClick={() => setSelectedDate(d.date)}
-                                    className={`flex-shrink-0 w-[72px] md:w-[92px] flex flex-col items-center group h-full p-1.5 rounded-2xl transition-all ${
+                                    className={`flex-shrink-0 w-[72px] md:w-[92px] flex flex-col items-center group h-full p-2 rounded-2xl transition-all ${
                                         isSelected 
-                                            ? "bg-sono-primary/10 ring-2 ring-sono-primary shadow-sm scale-105" 
+                                            ? "bg-sono-primary/10 ring-2 ring-sono-primary shadow-md" 
                                             : "hover:bg-gray-50"
                                     }`}
                                 >
