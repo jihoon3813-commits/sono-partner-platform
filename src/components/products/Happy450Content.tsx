@@ -1535,13 +1535,10 @@ export default function Happy450Content({
                                             <span className="text-emerald-500 mt-0.5">✓</span>
                                             <span><strong>서비스 자격 기준</strong>: 기본(1구좌), 플러스(2구좌), 프리미엄(3구좌) 가입 고객 대상</span>
                                         </li>
+
                                         <li className="flex items-start gap-3">
                                             <span className="text-emerald-500 mt-0.5">✓</span>
-                                            <span><strong>이용 범위</strong>: 가입자 본인 및 직계가족 중 사전 지정된 1인에 한함 (양도 불가능)</span>
-                                        </li>
-                                        <li className="flex items-start gap-3">
-                                            <span className="text-emerald-500 mt-0.5">✓</span>
-                                            <span><strong>서비스 개시</strong>: 상품 가입 후 <strong>6회차 정상 납부 완료</strong> 후 익월 1일부터 개시</span>
+                                            <span><strong>서비스 개시</strong>: 상품 가입 후 <strong>6회차 정상 납부 완료</strong> 후 익월 말부터</span>
                                         </li>
                                         <li className="flex items-start gap-3">
                                             <span className="text-emerald-400 mt-0.5">✓</span>
@@ -1581,7 +1578,7 @@ export default function Happy450Content({
                                     <div className="bg-slate-50 border border-slate-200 p-5 rounded flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                         <div>
                                             <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">GC케어 전용 헬스콜센터</div>
-                                            <a href="tel:1577-1898" className="text-2xl md:text-3xl font-black text-emerald-600 hover:text-emerald-700 hover:underline">1577-1898</a>
+                                            <div className="text-xl md:text-2xl font-black text-emerald-600">2027년 2월 중 오픈 예정</div>
                                         </div>
                                         <div className="text-[11px] font-semibold text-slate-500 sm:text-right">
                                             <div>평일 오전 9시 ~ 오후 6시</div>
@@ -1593,36 +1590,6 @@ export default function Happy450Content({
                                     <p className="text-slate-400 text-[11px] leading-relaxed">※ 본 서비스는 소노아임레디 상조상품 가입 고객에 한해 제공되는 제휴 부가서비스입니다.<br />※ 월 납입 미납 또는 구좌 중도 해약 시 익월부터 즉시 서비스 제공이 중단되거나 서비스 등급이 변경될 수 있습니다.</p>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* 하단 바로가기 및 상세설명서 다운로드 버튼 그룹 */}
-                        <div className="mt-16 pt-10 border-t border-emerald-950/30 flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <a 
-                                href="https://www.gccare.net/" 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="flex items-center justify-center gap-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 font-bold border border-emerald-500/30 px-6 py-3 rounded text-sm transition-all w-full sm:w-auto"
-                            >
-                                <span>GC헬스케어 홈페이지 바로가기</span>
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                            </a>
-                            <a 
-                                href="https://gclifecare.com/" 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="flex items-center justify-center gap-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 font-bold border border-emerald-500/30 px-6 py-3 rounded text-sm transition-all w-full sm:w-auto"
-                            >
-                                <span>GC라이프케어몰 바로가기</span>
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                            </a>
-                            <a 
-                                href="/hoon/(GC%EC%BC%80%EC%96%B4)%20%ED%97%AC%EC%8A%A4%EC%BC%80%EC%96%B4%EC%84%9C%EB%B9%84%EC%8A%A4%20%ED%95%B4%EC%84%A4%EC%A7%91%20(%EA%B5%90%EC%9C%A1%EC%9E%90%EB%A3%8C).pdf" 
-                                download="(GC케어) 헬스케어서비스 해설집 (교육자료).pdf"
-                                className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-6 py-3 rounded text-sm transition-all w-full sm:w-auto shadow-lg"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                <span>GC헬스케어 상세설명서 다운로드</span>
-                            </a>
                         </div>
                     </div>
                 </section>
