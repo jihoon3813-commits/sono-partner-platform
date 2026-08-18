@@ -1743,9 +1743,6 @@ export default function Happy450Content({
                                         <span className="absolute top-4 left-4 bg-slate-900/80 text-white text-[10px] font-extrabold px-2.5 py-1 z-10">
                                             {item.badge}
                                         </span>
-                                        <span className="absolute bottom-4 right-4 bg-emerald-600 text-white text-[11px] font-black px-3 py-1.5 rounded-full shadow z-10">
-                                            {item.highlight}
-                                        </span>
                                         <img src={item.img} alt={item.title} className="w-full h-full object-cover opacity-95 group-hover:scale-105 transition-all duration-500" />
                                     </div>
                                     <div className="p-6 text-left flex-grow flex flex-col justify-between">
