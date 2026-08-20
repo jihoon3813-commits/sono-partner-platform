@@ -2615,7 +2615,7 @@ export default function SmartCareContent({
                     const modelSuffix = pickedAppliance.model ? ` (${pickedAppliance.model})` : "";
                     return `${brandPrefix}${cleanName}${modelSuffix}`;
                 })() : ""}
-                initialUnit={pickedAppliance?.slotCount ? pickedAppliance.slotCount.toString() : "4"}
+                initialUnit={pickedAppliance?.slotCount ? pickedAppliance.slotCount.toString() : (isPremiumMallMode ? "" : "4")}
                 initialPlanId={pickedAppliance?.careProductId || ""}
                 isPremiumMallMode={isPremiumMallMode}
             />

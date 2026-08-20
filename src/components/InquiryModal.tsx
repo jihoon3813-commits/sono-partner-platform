@@ -72,7 +72,15 @@ export default function InquiryModal({
         if (isOpen) {
             const isSmartCare = ["smartcare", "스마트케어"].includes(productType);
             const filteredCareProducts = isSmartCare 
-                ? (careProducts || []).filter(c => c.productType !== "standard" && !c.name.includes("더해피450"))
+                ? ((careProducts && careProducts.length > 0)
+                    ? careProducts.filter(c => c.productType !== "standard" && !c.name.includes("더해피450"))
+                    : [
+                        { _id: "sc4_2", name: "스마트케어 4더블", slotCount: 2 },
+                        { _id: "sc5_1", name: "스마트케어 5", slotCount: 1 },
+                        { _id: "sc5_2", name: "스마트케어 5더블", slotCount: 2 },
+                        { _id: "sc5_3", name: "스마트케어 5트리플", slotCount: 3 },
+                        { _id: "sc5_4", name: "스마트케어 5쿼드", slotCount: 4 },
+                    ])
                 : (careProducts || []);
 
             if (initialPlanId) {
@@ -83,6 +91,9 @@ export default function InquiryModal({
                 setSelectedUnit(initialUnit);
                 const cp = filteredCareProducts.find(c => c.slotCount === Number(initialUnit));
                 if (cp) setSelectedPlanId(cp._id);
+            } else if (filteredCareProducts.length > 0) {
+                setSelectedPlanId(filteredCareProducts[0]._id);
+                setSelectedUnit(filteredCareProducts[0].slotCount.toString());
             }
             if (initialAppliance) {
                 // If the parent passed a string, format it if brand is prepended without brackets
@@ -216,13 +227,58 @@ export default function InquiryModal({
                 };
                 redirectUrl = happy450Mapping[selectedUnit];
             } else if (isSmartCare) {
-                const smartcareMapping: Record<string, string> = {
-                    "2": "https://www.premiummall.co.kr/rental/list-view.html?uid=1456",
-                    "3": "https://www.premiummall.co.kr/rental/list-view.html?uid=1459",
-                    "4": "https://www.premiummall.co.kr/rental/list-view.html?uid=1458",
-                    "6": "https://www.premiummall.co.kr/rental/list-view.html?uid=1457"
-                };
-                redirectUrl = smartcareMapping[selectedUnit];
+                let planName = "";
+                let slotCount = Number(selectedUnit);
+
+                if (selectedPlanId === "sc4_2") {
+                    planName = "스마트케어 4더블";
+                    slotCount = 2;
+                } else if (selectedPlanId === "sc5_1") {
+                    planName = "스마트케어 5";
+                    slotCount = 1;
+                } else if (selectedPlanId === "sc5_2") {
+                    planName = "스마트케어 5더블";
+                    slotCount = 2;
+                } else if (selectedPlanId === "sc5_3") {
+                    planName = "스마트케어 5트리플";
+                    slotCount = 3;
+                } else if (selectedPlanId === "sc5_4") {
+                    planName = "스마트케어 5쿼드";
+                    slotCount = 4;
+                } else {
+                    const currentPlan = (careProducts || []).find(cp => cp._id === selectedPlanId);
+                    if (currentPlan) {
+                        planName = currentPlan.name;
+                        slotCount = currentPlan.slotCount;
+                    }
+                }
+
+                // 스마트케어4더블 2구좌: https://www.premiummall.co.kr/rental/list-view.html?uid=1512
+                // 스마트케어 5 1구좌: https://www.premiummall.co.kr/rental/list-view.html?uid=1511
+                // 스마트케어 5 2구좌: https://www.premiummall.co.kr/rental/list-view.html?uid=1513
+                // 스마트케어 5 3구좌: https://www.premiummall.co.kr/rental/list-view.html?uid=1514
+                // 스마트케어 5 4구좌: https://www.premiummall.co.kr/rental/list-view.html?uid=1515
+                if (planName.includes("4더블") || (slotCount === 2 && planName.includes("4"))) {
+                    redirectUrl = "https://www.premiummall.co.kr/rental/list-view.html?uid=1512";
+                } else if (planName.includes("5더블") || (slotCount === 2 && (planName.includes("5") || !planName.includes("4")))) {
+                    redirectUrl = "https://www.premiummall.co.kr/rental/list-view.html?uid=1513";
+                } else if (slotCount === 1 || planName === "스마트케어 5" || (planName.includes("스마트케어") && planName.includes("5") && !planName.includes("더블") && !planName.includes("트리플") && !planName.includes("쿼드"))) {
+                    redirectUrl = "https://www.premiummall.co.kr/rental/list-view.html?uid=1511";
+                } else if (slotCount === 3 || planName.includes("5트리플") || planName.includes("트리플")) {
+                    redirectUrl = "https://www.premiummall.co.kr/rental/list-view.html?uid=1514";
+                } else if (slotCount === 4 || planName.includes("5쿼드") || planName.includes("쿼드")) {
+                    redirectUrl = "https://www.premiummall.co.kr/rental/list-view.html?uid=1515";
+                } else if (selectedUnit === "1") {
+                    redirectUrl = "https://www.premiummall.co.kr/rental/list-view.html?uid=1511";
+                } else if (selectedUnit === "2") {
+                    redirectUrl = "https://www.premiummall.co.kr/rental/list-view.html?uid=1512";
+                } else if (selectedUnit === "3") {
+                    redirectUrl = "https://www.premiummall.co.kr/rental/list-view.html?uid=1514";
+                } else if (selectedUnit === "4") {
+                    redirectUrl = "https://www.premiummall.co.kr/rental/list-view.html?uid=1515";
+                } else {
+                    redirectUrl = "https://www.premiummall.co.kr/rental/list-view.html?uid=1511";
+                }
             }
 
             if (redirectUrl) {
@@ -500,7 +556,16 @@ export default function InquiryModal({
                                 <div>
                                     <label className="input-label !text-[#4e5968] !font-bold mb-3 block">가입 상품 선택</label>
                                     <div className="flex bg-[#f2f4f6] border border-gray-300 p-1 rounded-none flex-wrap gap-1">
-                                        {(careProducts || []).filter(cp => cp.productType !== "standard" && !cp.name.includes("더해피450")).map((cp) => (
+                                        {((careProducts && careProducts.length > 0) 
+                                            ? careProducts.filter(cp => cp.productType !== "standard" && !cp.name.includes("더해피450"))
+                                            : [
+                                                { _id: "sc4_2", name: "스마트케어 4더블", slotCount: 2 },
+                                                { _id: "sc5_1", name: "스마트케어 5", slotCount: 1 },
+                                                { _id: "sc5_2", name: "스마트케어 5더블", slotCount: 2 },
+                                                { _id: "sc5_3", name: "스마트케어 5트리플", slotCount: 3 },
+                                                { _id: "sc5_4", name: "스마트케어 5쿼드", slotCount: 4 },
+                                            ]
+                                        ).map((cp) => (
                                             <button
                                                 key={cp._id}
                                                 type="button"
@@ -521,64 +586,66 @@ export default function InquiryModal({
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label className="input-label !text-[#4e5968] !font-bold mb-3 block">가전제품 선택</label>
-                                    <div
-                                        ref={productListRef}
-                                        className="flex flex-col h-[380px] overflow-y-auto border border-gray-400 bg-white rounded-none divide-y divide-gray-300 no-scrollbar"
-                                    >
-                                        <button
-                                            type="button"
-                                            onClick={() => setSelectedAppliance("상담 시 결정")}
-                                            className={`w-full py-2.5 px-4 text-xs font-bold transition-all text-left flex items-center justify-between ${
-                                                selectedAppliance === "상담 시 결정"
-                                                    ? "bg-[#fff3cd] text-[#0c2340] font-extrabold"
-                                                    : "bg-white text-gray-700 hover:bg-gray-50"
-                                            }`}
+                                {!isPremiumMallMode && (
+                                    <div>
+                                        <label className="input-label !text-[#4e5968] !font-bold mb-3 block">가전제품 선택</label>
+                                        <div
+                                            ref={productListRef}
+                                            className="flex flex-col h-[380px] overflow-y-auto border border-gray-400 bg-white rounded-none divide-y divide-gray-300 no-scrollbar"
                                         >
-                                            <span>상담 시 결정</span>
-                                            {selectedAppliance === "상담 시 결정" && (
-                                                <span className="text-[#0c2340] text-xs shrink-0 font-bold ml-2">✓ 선택됨</span>
-                                            )}
-                                        </button>
-                                        {allAppliances
-                                            .filter(item => {
-                                                return selectedPlanId 
-                                                    ? (item.careProductId === selectedPlanId || 
-                                                       (!item.careProductId && (item.slotCount || 4).toString() === selectedUnit))
-                                                    : (item.slotCount || 4).toString() === selectedUnit;
-                                            })
-                                            .map((item, idx) => {
-                                                const displayLabel = formatApplianceText(item.brand, item.name, item.model);
-                                                const applianceValue = formatApplianceText(item.brand, item.name, item.model);
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedAppliance("상담 시 결정")}
+                                                className={`w-full py-2.5 px-4 text-xs font-bold transition-all text-left flex items-center justify-between ${
+                                                    selectedAppliance === "상담 시 결정"
+                                                        ? "bg-[#fff3cd] text-[#0c2340] font-extrabold"
+                                                        : "bg-white text-gray-700 hover:bg-gray-50"
+                                                }`}
+                                            >
+                                                <span>상담 시 결정</span>
+                                                {selectedAppliance === "상담 시 결정" && (
+                                                    <span className="text-[#0c2340] text-xs shrink-0 font-bold ml-2">✓ 선택됨</span>
+                                                )}
+                                            </button>
+                                            {allAppliances
+                                                .filter(item => {
+                                                    return selectedPlanId 
+                                                        ? (item.careProductId === selectedPlanId || 
+                                                           (!item.careProductId && (item.slotCount || 4).toString() === selectedUnit))
+                                                        : (item.slotCount || 4).toString() === selectedUnit;
+                                                })
+                                                .map((item, idx) => {
+                                                    const displayLabel = formatApplianceText(item.brand, item.name, item.model);
+                                                    const applianceValue = formatApplianceText(item.brand, item.name, item.model);
 
-                                                return (
-                                                    <button
-                                                        key={idx}
-                                                        type="button"
-                                                        onClick={() => setSelectedAppliance(applianceValue)}
-                                                        className={`w-full py-2.5 px-4 text-xs font-bold transition-all text-left flex items-center justify-between ${
-                                                            selectedAppliance === applianceValue
-                                                                ? "bg-[#fff3cd] text-[#0c2340] font-extrabold"
-                                                                : "bg-white text-gray-700 hover:bg-gray-50"
-                                                        }`}
-                                                    >
-                                                        <span className="truncate">{displayLabel}</span>
-                                                        {selectedAppliance === applianceValue && (
-                                                            <span className="text-[#0c2340] text-xs shrink-0 font-bold ml-2">✓ 선택됨</span>
-                                                        )}
-                                                    </button>
-                                                )
-                                            })
-                                        }
-                                    </div>
-                                    {selectedAppliance && selectedAppliance !== "상담 시 결정" && (
-                                        <div className="mt-3 p-4 bg-[#fff3cd] border border-[#d69e2e] rounded-none shadow-sm animate-fade-in">
-                                            <span className="text-xs font-bold text-[#0c2340] block mb-1">선택하신 제품</span>
-                                            <div className="font-bold text-sono-dark text-sm break-keep leading-snug">{selectedAppliance}</div>
+                                                    return (
+                                                        <button
+                                                            key={idx}
+                                                            type="button"
+                                                            onClick={() => setSelectedAppliance(applianceValue)}
+                                                            className={`w-full py-2.5 px-4 text-xs font-bold transition-all text-left flex items-center justify-between ${
+                                                                selectedAppliance === applianceValue
+                                                                    ? "bg-[#fff3cd] text-[#0c2340] font-extrabold"
+                                                                    : "bg-white text-gray-700 hover:bg-gray-50"
+                                                            }`}
+                                                        >
+                                                            <span className="truncate">{displayLabel}</span>
+                                                            {selectedAppliance === applianceValue && (
+                                                                <span className="text-[#0c2340] text-xs shrink-0 font-bold ml-2">✓ 선택됨</span>
+                                                            )}
+                                                        </button>
+                                                    )
+                                                })
+                                            }
                                         </div>
-                                    )}
-                                </div>
+                                        {selectedAppliance && selectedAppliance !== "상담 시 결정" && (
+                                            <div className="mt-3 p-4 bg-[#fff3cd] border border-[#d69e2e] rounded-none shadow-sm animate-fade-in">
+                                                <span className="text-xs font-bold text-[#0c2340] block mb-1">선택하신 제품</span>
+                                                <div className="font-bold text-sono-dark text-sm break-keep leading-snug">{selectedAppliance}</div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         )}
 
