@@ -106,8 +106,8 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
     const hasSubPartners = !isAdmin && availablePartners.length > 1;
     const showPartnerSelect = isAdmin || hasSubPartners;
 
-    const isSmartCare = manualForm.productType.startsWith("스마트케어");
-    const currentSlot = Number(manualForm.planType) || 0;
+    const isSmartCare = manualForm.productType.startsWith("스마트케어") || manualForm.productType.startsWith("스마트");
+    const currentSlot = Number(manualForm.planType.replace(/[^0-9]/g, "")) || 0;
 
     // Filter available home appliances dynamically based on selected product & slot count
     const availableAppliances = useMemo(() => {
@@ -115,20 +115,26 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
         const visible = productsData.filter(p => p.isVisible !== false);
         if (!isSmartCare) return visible;
 
-        // Determine specific target care product name to separate 스마트케어4(4더블) and 스마트케어5(5더블)
+        // Determine specific target care product name
         let targetPlanName = "";
-        if (manualForm.productType === "스마트케어4") {
-            if (currentSlot === 2) targetPlanName = "스마트케어 4더블";
-        } else if (manualForm.productType === "스마트케어5") {
-            if (currentSlot === 1) targetPlanName = "스마트케어 5";
-            else if (currentSlot === 2) targetPlanName = "스마트케어 5더블";
-            else if (currentSlot === 3) targetPlanName = "스마트케어 5트리플";
-            else if (currentSlot === 4) targetPlanName = "스마트케어 5쿼드";
+        const cleanProdName = manualForm.productType.replace(/\s+/g, "");
+
+        if (cleanProdName.includes("4더블") || (cleanProdName.includes("스마트케어4") && currentSlot === 2)) {
+            targetPlanName = "스마트케어 4더블";
+        } else if (cleanProdName.includes("5더블") || (cleanProdName.includes("스마트케어5") && currentSlot === 2)) {
+            targetPlanName = "스마트케어 5더블";
+        } else if (cleanProdName.includes("5트리플") || (cleanProdName.includes("스마트케어5") && currentSlot === 3)) {
+            targetPlanName = "스마트케어 5트리플";
+        } else if (cleanProdName.includes("5쿼드") || (cleanProdName.includes("스마트케어5") && currentSlot === 4)) {
+            targetPlanName = "스마트케어 5쿼드";
+        } else if (cleanProdName === "스마트케어5" && currentSlot === 1) {
+            targetPlanName = "스마트케어 5";
         }
 
         if (careProductsData && targetPlanName) {
             const targetCp = careProductsData.find(cp =>
                 cp.name === targetPlanName ||
+                cp.name.replace(/\s+/g, "") === targetPlanName.replace(/\s+/g, "") ||
                 cp.name.endsWith(targetPlanName.replace("스마트케어 ", ""))
             );
             if (targetCp) {
@@ -145,7 +151,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                     const cp = careProductsData.find(c => c._id === p.careProductId);
                     if (cp) {
                         if (targetPlanName) {
-                            return cp.name === targetPlanName;
+                            return cp.name === targetPlanName || cp.name.replace(/\s+/g, "") === targetPlanName.replace(/\s+/g, "");
                         }
                         return cp.slotCount === currentSlot;
                     }
@@ -215,8 +221,10 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
         if (optionNames.length > 0 && !optionNames.includes(manualForm.productType)) {
             const nextItem = allowedProductOptions[0];
             let defaultPlan = "1";
-            if (nextItem.productType === "combination") {
-                defaultPlan = nextItem.slotCount ? String(nextItem.slotCount) : "2";
+            if (nextItem.slotCount) {
+                defaultPlan = String(nextItem.slotCount);
+            } else if (nextItem.productType === "combination") {
+                defaultPlan = "2";
             }
 
             setManualForm(prev => ({
@@ -243,19 +251,22 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
             else if (numbers.length <= 6) finalValue = `${numbers.slice(0, 4)}-${numbers.slice(4)}`;
             else finalValue = `${numbers.slice(0, 4)}-${numbers.slice(4, 6)}-${numbers.slice(6, 8)}`;
         } else if (name === "productType") {
+            const selectedOpt = allowedProductOptions.find(o => o.name === value);
             let defaultPlan = "1";
-            if (value === "스마트케어4") {
+            if (selectedOpt?.slotCount) {
+                defaultPlan = String(selectedOpt.slotCount);
+            } else if (value.includes("4") || value.includes("더블")) {
                 defaultPlan = "2";
-            } else if (value === "스마트케어5") {
-                defaultPlan = "1";
-            } else if (value === "더 해피 450 ONE") {
-                defaultPlan = "1";
+            } else if (value.includes("트리플")) {
+                defaultPlan = "3";
+            } else if (value.includes("쿼드")) {
+                defaultPlan = "4";
             }
             setManualForm(prev => ({
                 ...prev,
                 productType: value,
                 planType: defaultPlan,
-                products: value.startsWith("스마트케어") ? prev.products : "",
+                products: (value.startsWith("스마트") || selectedOpt?.productType === "combination") ? prev.products : "",
             }));
             setIsCustomProduct(false);
             return;
@@ -496,7 +507,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                 // partnerName: only use companyName
                 partnerName: c.selectedPartnerName || partner?.companyName || partner?.name || "",
                 productType: c.productType,
-                planType: c.planType,
+                planType: c.planType ? (c.planType.includes("구좌") ? c.planType : `${c.planType}구좌`) : "1구좌",
                 products: c.products,
                 customerName: c.customerName,
                 customerBirth: c.customerBirth,

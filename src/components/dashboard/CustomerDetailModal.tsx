@@ -153,7 +153,11 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     // 신청 상품 정보
     const [productType, setProductType] = useState<string>(application.productType || "happy450");
     const [products, setProducts] = useState(application.products || "");
-    const [planType, setPlanType] = useState(application.planType || "1구좌");
+    const rawPlanType = application.planType || "1구좌";
+    const initialPlanType = rawPlanType.includes("구좌")
+        ? rawPlanType
+        : (/^\d+$/.test(rawPlanType.trim()) ? `${rawPlanType.trim()}구좌` : rawPlanType);
+    const [planType, setPlanType] = useState(initialPlanType);
     const [inquiry, setInquiry] = useState(application.inquiry || "");
     const [preferredContactTime, setPreferredContactTime] = useState(application.preferredContactTime || "");
 
