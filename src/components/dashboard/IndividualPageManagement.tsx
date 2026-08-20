@@ -9,12 +9,12 @@ export default function IndividualPageManagement() {
     const individualPages = [
         {
             title: "더해피450 (니오라 전용)",
-            path: "/p/neora/products/happy450",
+            path: "/neora/happy450",
             description: "니오라 파트너를 위한 단독 더해피450 랜딩페이지입니다.",
         },
         {
             title: "스마트케어 (니오라 전용)",
-            path: "/p/neora/products/smartcare",
+            path: "/neora/smartcare",
             description: "니오라 파트너를 위한 단독 스마트케어 랜딩페이지입니다.",
         }
     ];

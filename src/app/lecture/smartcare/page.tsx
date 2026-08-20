@@ -127,7 +127,7 @@ const ApplianceShortcutSlide = ({ allAppliances }: { allAppliances: Appliance[] 
 
             <div className="text-center mt-2 shrink-0">
                 <button 
-                    onClick={() => window.open("https://sono-partners.com/p/neora/products/smartcare", "_blank")}
+                    onClick={() => window.open("https://sono-partners.com/neora/smartcare", "_blank")}
                     className="relative z-20 bg-gradient-to-r from-blue-500 to-[#3b82f6] text-white px-12 py-5 rounded-[24px] font-black text-lg shadow-[0_0_35px_rgba(59,130,246,0.3)] hover:scale-[1.03] hover:from-blue-600 hover:to-blue-500 transition-all flex items-center gap-3 mx-auto group border border-blue-400/20"
                 >
                     <span>실시간 가전제품 리스트 & 스펙 보러가기</span>
