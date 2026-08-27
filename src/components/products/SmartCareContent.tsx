@@ -9,6 +9,7 @@ import InquiryModal from "@/components/InquiryModal";
 import ProductDetailModal from "@/components/ProductDetailModal";
 import ImportantNotice from "@/components/common/ImportantNotice";
 import { cleanProductName } from "@/lib/productUtils";
+import AffiliateCardBenefit from "@/components/products/AffiliateCardBenefit";
 
 interface HybridItem {
     name: string;
@@ -70,7 +71,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (1구좌 이상)",
             conditions: "출발 최소 2개월 전 신청 필수",
             fees: "성수기 할증료 및 유류세 본인 부담",
-            method: "소노아임레디 고객센터 1588-2227 접수"
+            method: "소노아임레디 고객센터 1588-5811 접수"
         },
         notes: "항공 스케줄 및 현지 리조트 사정에 따라 추가 요금이 발생할 수 있습니다.",
         items: [
@@ -96,7 +97,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (2구좌 이상)",
             conditions: "출발 최소 3개월 전 전환 신청 및 여권 보유 필수",
             fees: "선실 단독 사용료, 기항지 관광 비용 및 유류세 본인 부담",
-            method: "소노아임레디 고객센터 1588-2227 접수"
+            method: "소노아임레디 고객센터 1588-5811 접수"
         },
         notes: "선실 등급 및 항공 노선에 따라 추가 비용이 발생할 수 있습니다.",
         items: [
@@ -124,7 +125,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (1구좌 이상)",
             conditions: "예약 최소 1개월 전 신청 필수",
             fees: "캐디피 및 개인 경비 본인 부담",
-            method: "고객센터 1588-2227 접수"
+            method: "고객센터 1588-5811 접수"
         },
         notes: "시즌별 골프장 예약 상황에 따라 일정이 변경될 수 있습니다.",
         items: [
@@ -149,7 +150,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (2구좌 이상)",
             conditions: "연수 개시 4개월 전 신청 필수",
             fees: "개인 용돈 및 현지 교통비 제외",
-            method: "고객센터 1588-2227 접수"
+            method: "고객센터 1588-5811 접수"
         },
         notes: "국가별 학생 비자 발급 기간이 다를 수 있어 사전 예약이 필수적입니다.",
         items: [
@@ -179,7 +180,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (1구좌 이상)",
             conditions: "예식 예정일 최소 6개월 전 신청",
             fees: "일부 프리미엄 드레스 피팅비 별도",
-            method: "소노아임레디 고객센터 1588-2227 접수"
+            method: "소노아임레디 고객센터 1588-5811 접수"
         },
         notes: "예식 일정이 몰리는 봄/가을 시즌에는 최소 6개월 전 접수가 필수적입니다.",
         items: [
@@ -207,7 +208,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (1구좌 이상)",
             conditions: "상시 신청 및 즉시 전환 적용",
             fees: "몰 내 배송비 무료 혜택 지원",
-            method: "소노아임레디 고객센터 1588-2227 접수"
+            method: "소노아임레디 고객센터 1588-5811 접수"
         },
         notes: "포인트 전환 완료 후 취소는 규정에 의거 제한될 수 있습니다.",
         items: [
@@ -229,7 +230,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (1구좌 이상)",
             conditions: "설치 및 이사 예정 3주 전 전환 접수",
             fees: "도서산간/일부 지역 설치비 및 사다리차 등 장비 비용 본인 부담",
-            method: "소노아임레디 고객센터 1588-2227 접수"
+            method: "소노아임레디 고객센터 1588-5811 접수"
         },
         notes: "이사 일정 및 아파트 규격, 사다리차 이용 여부에 따라 현장 추가 요금이 발생할 수 있습니다.",
         items: [
@@ -254,7 +255,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (1구좌 이상)",
             conditions: "상시 예약 신청 가능",
             fees: "안치단 위치 및 석조 가공 비용 별도",
-            method: "소노아임레디 고객센터 1588-2227 접수"
+            method: "소노아임레디 고객센터 1588-5811 접수"
         },
         items: [
             { name: "[장지] 장지 시설 서비스", desc: "합법적인 허가 및 관리가 이뤄지는 장지시설 엄선", price: "3,990,000원~", period: "상시", tags: ["추천","전환"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/03/27/9d4c2dda-4ef2-4147-9cea-06e9a9edff9c", status: "접수중", link: "https://www.sonoimready.com/front/sc/chgServDetail?prdctSeq=40&prdctCd=%EC%89%BC%EC%BC%80%EC%96%B4" }
@@ -344,6 +345,7 @@ export default function SmartCareContent({
 
     const [selectedPlanId, setSelectedPlanId] = useState<string>("");
     const [showAllOverlay, setShowAllOverlay] = useState(false);
+    const [funeralPlanTab, setFuneralPlanTab] = useState<"smartcare5" | "smartcare4">("smartcare5");
 
     // Convex Query - Fetch and filter client-side for stability
     const productsData = useQuery(api.products.get);
@@ -363,6 +365,23 @@ export default function SmartCareContent({
     const [expandedProductNames, setExpandedProductNames] = useState<Set<string>>(new Set());
     const categoriesOrder = ["에어컨/에어케어", "세탁가전", "냉장가전", "주방가전", "생활가전", "TV/디지털", "건강/뷰티", "가구/침대", "기타가전"];
     
+    const defaultPlansList = useMemo(() => [
+        { _id: "sc4double", name: "스마트케어 4더블", slotCount: 2, monthlyPayment: 55200, cardDiscountPayment: 35000, target: "1인 가구 / 소형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~179회(180회:79,200원)", defermentPeriod: "181~200회", maturityCount: "200회" },
+        { _id: "sc5", name: "스마트케어 5", slotCount: 1, monthlyPayment: 33000, cardDiscountPayment: 25000, target: "1인 가구 / 소형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
+        { _id: "sc5double", name: "스마트케어 5더블", slotCount: 2, monthlyPayment: 66000, cardDiscountPayment: 42000, target: "신혼 부부 / 중형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
+        { _id: "sc5triple", name: "스마트케어 5트리플", slotCount: 3, monthlyPayment: 99000, cardDiscountPayment: 42000, target: "일반 가전 / 대형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
+        { _id: "sc5quad", name: "스마트케어 5쿼드", slotCount: 4, monthlyPayment: 132000, cardDiscountPayment: 42000, target: "대가족 / 프리미엄 가전 패키지", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
+    ], []);
+
+    const activePlan = useMemo(() => {
+        const plans = (smartCareProductsData && smartCareProductsData.length > 0) ? smartCareProductsData : defaultPlansList;
+        if (selectedPlanId) {
+            const found = plans.find((p: any) => p._id === selectedPlanId || p.name === selectedPlanId);
+            if (found) return found;
+        }
+        return plans.find((p: any) => p.name === "스마트케어 5더블" || p.slotCount === 2) || plans[0];
+    }, [selectedPlanId, smartCareProductsData, defaultPlansList]);
+
     // Dynamic Slots based on registered care products (smartcare plans only)
     const availableSlots = smartCareProductsData && smartCareProductsData.length > 0
         ? Array.from(new Set(smartCareProductsData.map(cp => cp.slotCount))).sort((a, b) => a - b)
@@ -730,7 +749,7 @@ export default function SmartCareContent({
                                 {
                                     title: "BENEFIT 02",
                                     name: "100% 안심 환급 시스템",
-                                    desc: "만기 시까지 상조나 전환 서비스를 이용하지 않으시면 납입금 100% 전액을 환급해 드립니다.",
+                                    desc: "만기 후 익월 해약 시 까지 상조나 전환 서비스를 이용하지 않으시면 납입금 100% 전액을 환급해 드립니다.",
                                     image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932610/06_full_refund_logo_1_ija0rc.png"
                                 },
                                 {
@@ -778,19 +797,19 @@ export default function SmartCareContent({
                     </div>
                 </section>
                 {/* 상품 구성 섹션 */}
-                <section className="py-20 md:py-32 bg-slate-900 text-white relative overflow-hidden">
+                <section className="py-8 md:py-14 bg-gradient-to-b from-[#0b0f19] via-[#0f172a] to-[#0b0f19] relative text-white border-b border-slate-800" id="plans-section">
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/5 rounded-none blur-[120px] pointer-events-none"></div>
-                    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
-                        <div className="text-center mb-16 md:mb-24">
-                            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4 leading-tight">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+                        <div className="text-center mb-6 md:mb-10">
+                            <h2 className="text-2xl md:text-4xl font-black text-white tracking-tighter mb-2 leading-tight">
                                 다양한 라이프스타일에<br className="md:hidden" /> 맞춘 구성
                             </h2>
-                            <p className="text-slate-400 font-bold text-xs sm:text-lg md:text-xl max-w-2xl mx-auto break-keep">
+                            <p className="text-slate-400 font-bold text-xs sm:text-base max-w-2xl mx-auto break-keep">
                                 원하는 구좌 수를 선택하고 최신 가전을 골라보세요.
                             </p>
                             
                             {/* 모바일 전용 좌우 스크롤 안내 뱃지 */}
-                            <div className="md:hidden mt-4 inline-flex items-center gap-2 bg-[#1f2d42] border border-blue-500/30 text-blue-300 text-[11px] font-bold px-3.5 py-1.5 rounded-none shadow-lg animate-pulse">
+                            <div className="md:hidden mt-3 inline-flex items-center gap-2 bg-[#1f2d42] border border-blue-500/30 text-blue-300 text-[11px] font-bold px-3 py-1 rounded-none shadow-lg animate-pulse">
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
                                 </svg>
@@ -816,116 +835,129 @@ export default function SmartCareContent({
 
                             <div 
                                 style={{ scrollSnapType: 'x mandatory' }} 
-                                className="flex w-full overflow-x-auto md:overflow-visible snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-10 md:py-16 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-6 md:gap-10 max-w-7xl mx-auto flex-row md:flex-wrap md:justify-center items-stretch justify-start"
+                                className="flex w-full overflow-x-auto md:overflow-visible snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-3 md:py-5 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-4 md:gap-6 max-w-7xl mx-auto flex-row md:flex-wrap md:justify-center items-stretch justify-start"
                             >
                                 {(smartCareProductsData && smartCareProductsData.length > 0 ? smartCareProductsData : [
-                                    { name: "스마트케어 4더블", slotCount: 2, monthlyPayment: 55200, cardDiscountPayment: 35000, target: "1인 가구 / 소형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~179회(180회:79,200원)", defermentPeriod: "181~200회", maturityCount: "200회" },
-                                    { name: "스마트케어 5", slotCount: 1, monthlyPayment: 33000, cardDiscountPayment: 25000, target: "1인 가구 / 소형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
-                                    { name: "스마트케어 5더블", slotCount: 2, monthlyPayment: 66000, cardDiscountPayment: 42000, target: "신혼 부부 / 중형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
-                                    { name: "스마트케어 5트리플", slotCount: 3, monthlyPayment: 99000, cardDiscountPayment: 42000, target: "일반 가전 / 대형 가전", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
-                                    { name: "스마트케어 5쿼드", slotCount: 4, monthlyPayment: 132000, cardDiscountPayment: 42000, target: "대가족 / 프리미엄 가전 패키지", features: ["가전 렌탈료 전액 지원 혜택", "멤버십 즉시 이용", "100% 만기 환급 (만기 후 익월 해약 시)"], paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
+                                    { name: "스마트케어 4더블", slotCount: 2, monthlyPayment: 55200, cardDiscountPayment: 35000, target: "1인 가구 / 소형 가전", paymentCount: "1~179회(180회:79,200원)", defermentPeriod: "181~200회", maturityCount: "200회" },
+                                    { name: "스마트케어 5", slotCount: 1, monthlyPayment: 33000, cardDiscountPayment: 25000, target: "1인 가구 / 소형 가전", paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
+                                    { name: "스마트케어 5더블", slotCount: 2, monthlyPayment: 66000, cardDiscountPayment: 42000, target: "신혼 부부 / 중형 가전", paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
+                                    { name: "스마트케어 5트리플", slotCount: 3, monthlyPayment: 99000, cardDiscountPayment: 42000, target: "일반 가전 / 대형 가전", paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
+                                    { name: "스마트케어 5쿼드", slotCount: 4, monthlyPayment: 132000, cardDiscountPayment: 42000, target: "대가족 / 프리미엄 가전 패키지", paymentCount: "1~180회", defermentPeriod: "181~200회", maturityCount: "200회" },
                                 ]).map((plan: any, i) => {
                                     const isBest = plan.slotCount === 4 || (smartCareProductsData && smartCareProductsData.length > 0 ? i === 2 : i === 2);
                                     const isActive = selectedPlanId === plan._id || (selectedPlanId === "" && isBest);
+                                    const cardDiscount = 23000;
+                                    const discountedPrice = Math.max(0, plan.monthlyPayment - cardDiscount);
+
                                     return (
                                         <div 
                                             key={i} 
                                             onClick={() => setSelectedPlanId(plan._id)}
                                             style={{ scrollSnapStop: 'always' }}
-                                            className={`relative !p-6 md:!p-8 flex flex-col justify-between transition-all rounded-[24px] snap-center snap-always [scroll-snap-stop:always] shrink-0 w-[82vw] max-w-[320px] sm:w-[330px] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] cursor-pointer select-none ${
+                                            className={`relative !p-4 sm:!p-5 flex flex-col justify-between transition-all rounded-[24px] snap-center snap-always [scroll-snap-stop:always] shrink-0 w-[82vw] max-w-[320px] sm:w-[320px] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] cursor-pointer select-none ${
                                                 isActive 
-                                                    ? "bg-white text-slate-900 shadow-[0_25px_60px_rgba(37,99,235,0.22)] md:scale-105 border-[3px] border-[#2563eb] ring-4 ring-blue-500/15 z-10" 
-                                                    : "bg-white/95 text-slate-900 border border-slate-200 hover:border-blue-300 shadow-xl hover:shadow-2xl hover:-translate-y-1.5"
+                                                    ? "bg-white text-slate-900 shadow-[0_20px_50px_rgba(37,99,235,0.22)] md:scale-105 border-[3px] border-[#2563eb] ring-4 ring-blue-500/15 z-10" 
+                                                    : "bg-white/95 text-slate-900 border border-slate-200 hover:border-blue-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
                                             }`}
                                         >
-                                            {/* Tag/Badge at the Top */}
-                                            <div className="flex justify-between items-start mb-6">
-                                                <span className={`text-[11px] font-black tracking-wider px-3.5 py-1.5 rounded-full shadow-xs ${getPlanTagStyle(plan.name, plan.slotCount)}`}>
-                                                    {plan.name}
-                                                </span>
-                                                {isBest && (
-                                                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-md tracking-wider flex items-center gap-1">
-                                                        ★ BEST
+                                            <div>
+                                                {/* Tag/Badge at the Top */}
+                                                <div className="flex justify-between items-start mb-2.5">
+                                                    <span className={`text-[11px] font-black tracking-wider px-3 py-1 rounded-full shadow-xs ${getPlanTagStyle(plan.name, plan.slotCount)}`}>
+                                                        {plan.name}
                                                     </span>
-                                                )}
-                                            </div>
-
-                                            {/* Plan Header */}
-                                            <div className="mb-4 text-left">
-                                                <h3 className="text-3xl md:text-4xl font-black tracking-tight leading-none text-slate-900 flex items-baseline gap-1">
-                                                    {plan.slotCount}
-                                                    <span className="text-lg font-extrabold text-slate-500">구좌</span>
-                                                </h3>
-                                                <p className="text-xs font-bold mt-2 text-slate-500">{plan.target}</p>
-                                            </div>
-
-                                            {/* Price block */}
-                                            <div className="pt-4 border-t border-slate-100">
-                                                <div className="text-left">
-                                                    <span className="text-[11px] font-bold text-slate-400 block mb-1">기본 월 납입금</span>
-                                                    <div className="flex items-baseline gap-0.5">
-                                                        <span className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
-                                                            {plan.monthlyPayment.toLocaleString()}
+                                                    {isBest && (
+                                                        <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-md tracking-wider flex items-center gap-1">
+                                                            ★ BEST
                                                         </span>
-                                                        <span className="text-xs font-bold text-slate-500">원 ~</span>
+                                                    )}
+                                                </div>
+
+                                                {/* Plan Header */}
+                                                <div className="mb-2 text-left">
+                                                    <h3 className="text-2xl sm:text-3xl font-black tracking-tight leading-none text-slate-900 flex items-baseline gap-1">
+                                                        {plan.slotCount}
+                                                        <span className="text-base font-extrabold text-slate-500">구좌</span>
+                                                    </h3>
+                                                    <p className="text-xs font-bold mt-1 text-slate-500">{plan.target}</p>
+                                                </div>
+
+                                                {/* Price block */}
+                                                <div className="pt-2 border-t border-slate-100">
+                                                    <div className="text-left">
+                                                        <span className="text-[10px] font-bold text-slate-400 block mb-0.5">기본 월 납입금</span>
+                                                        <div className="flex items-baseline gap-0.5">
+                                                            <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                                                                {plan.monthlyPayment.toLocaleString()}
+                                                            </span>
+                                                            <span className="text-xs font-bold text-slate-500">원 ~</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* 제휴카드 할인 가격 안내 박스 */}
+                                                    <div className="mt-2 p-2.5 bg-gradient-to-br from-blue-50/90 via-indigo-50/60 to-blue-50/90 border border-blue-200/80 rounded-xl text-left shadow-xs">
+                                                        <div className="flex items-center justify-between mb-0.5">
+                                                            <span className="text-[10px] font-extrabold text-blue-700 flex items-center gap-1">
+                                                                💳 제휴카드 적용 시
+                                                            </span>
+                                                            <span className="text-[9px] font-extrabold bg-blue-600 text-white px-1.5 py-0.5 rounded-full shadow-xs">
+                                                                -23,000원 할인
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-baseline justify-between pt-0.5">
+                                                            <span className="text-[10px] font-bold text-slate-500">할인 적용가</span>
+                                                            <div className="flex items-baseline gap-0.5">
+                                                                <span className="text-lg sm:text-xl font-black text-blue-600">
+                                                                    {discountedPrice.toLocaleString()}
+                                                                </span>
+                                                                <span className="text-xs font-bold text-blue-600">원 ~</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
 
-                                                {/* 제휴카드 할인 가격 안내 박스 */}
-                                                {(() => {
-                                                    const cardDiscount = plan.cardDiscountPayment || (plan.slotCount >= 4 ? 42000 : 25000);
-                                                    const discountedPrice = Math.max(0, plan.monthlyPayment - cardDiscount);
-                                                    return (
-                                                        <div className="mt-3.5 p-3.5 bg-gradient-to-br from-blue-50/90 via-indigo-50/60 to-blue-50/90 border border-blue-200/80 rounded-2xl text-left shadow-xs">
-                                                            <div className="flex items-center justify-between mb-1">
-                                                                <span className="text-[11px] font-extrabold text-blue-700 flex items-center gap-1">
-                                                                    💳 제휴카드 적용 시
-                                                                </span>
-                                                                <span className="text-[10px] font-extrabold bg-blue-600 text-white px-2 py-0.5 rounded-full shadow-xs">
-                                                                    -{cardDiscount.toLocaleString()}원 할인
-                                                                </span>
-                                                            </div>
-                                                            <div className="flex items-baseline justify-between pt-1">
-                                                                <span className="text-[11px] font-bold text-slate-500">할인 적용가</span>
-                                                                <div className="flex items-baseline gap-0.5">
-                                                                    <span className="text-xl md:text-2xl font-black text-blue-600">
-                                                                        {discountedPrice.toLocaleString()}
-                                                                    </span>
-                                                                    <span className="text-xs font-bold text-blue-600">원 ~</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })()}
-                                            </div>
-
-                                            {/* Details schedule card */}
-                                            <div className="my-5 p-4 rounded-2xl text-[11px] font-bold flex flex-col gap-2.5 text-left bg-slate-50 border border-slate-200/80 text-slate-600">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-slate-400 font-medium">납입회차</span>
-                                                    <span className="font-bold text-slate-800">{plan.paymentCount}</span>
-                                                </div>
-                                                <div className="flex justify-between items-center border-t border-slate-200/60 pt-2.5">
-                                                    <span className="text-slate-400 font-medium">거치기간</span>
-                                                    <span className="font-bold text-slate-800">{plan.defermentPeriod}</span>
-                                                </div>
-                                                <div className="flex justify-between items-center border-t border-slate-200/60 pt-2.5">
-                                                    <span className="text-slate-400 font-medium">만기회차</span>
-                                                    <span className="font-black text-blue-600">{plan.maturityCount}</span>
+                                                {/* Details schedule card */}
+                                                <div className="my-2.5 p-2.5 rounded-xl text-[10px] sm:text-[11px] font-bold flex flex-col gap-1.5 text-left bg-slate-50 border border-slate-200/80 text-slate-600">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-slate-400 font-medium">납입회차</span>
+                                                        <span className="font-bold text-slate-800">{plan.paymentCount}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center border-t border-slate-200/60 pt-1.5">
+                                                        <span className="text-slate-400 font-medium">거치기간</span>
+                                                        <span className="font-bold text-slate-800">{plan.defermentPeriod}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center border-t border-slate-200/60 pt-1.5">
+                                                        <span className="text-slate-400 font-medium">만기회차</span>
+                                                        <span className="font-black text-blue-600">{plan.maturityCount}</span>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            {/* Features list */}
-                                            <ul className="space-y-3 text-xs font-bold text-left mb-2">
-                                                {(plan.features || []).map((feat: any, fidx: number) => (
-                                                    <li key={fidx} className="flex items-start gap-2.5">
-                                                        <svg className="w-4 h-4 shrink-0 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                        </svg>
-                                                        <span className="text-slate-700 leading-snug break-keep">{feat}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
+                                            {/* 플랜 카드 내부 제휴카드 신청 안내 */}
+                                            <div className="pt-2.5 border-t border-slate-100 flex flex-col gap-2">
+                                                <div className="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200/70">
+                                                    <img 
+                                                        src="https://res.cloudinary.com/lyjyvy54/image/upload/v1787790972/11755_1_oaddqn.png" 
+                                                        alt="BS렌탈 플러스 하나카드" 
+                                                        className="w-11 h-auto object-contain shrink-0 drop-shadow-xs" 
+                                                    />
+                                                    <div className="flex-1 text-left min-w-0">
+                                                        <p className="text-[11px] font-black text-slate-900 truncate">BS렌탈 플러스 하나카드</p>
+                                                        <p className="text-[10px] font-extrabold text-blue-600">최대 월 2.3만원 할인</p>
+                                                        <p className="text-[9px] text-slate-400 truncate">30만↑ 1.3만 / 120만↑ 2.3만</p>
+                                                    </div>
+                                                </div>
+                                                <a
+                                                    href="https://m.hanacard.co.kr/MKCDCM1000M.web?CD_PD_SEQ=11811"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="w-full py-2 bg-[#0c2340] hover:bg-[#1a365d] text-white font-bold text-[11px] sm:text-xs rounded-xl shadow-xs transition-all text-center flex items-center justify-center gap-1 active:scale-95 cursor-pointer"
+                                                >
+                                                    <span>제휴카드 신청하기</span>
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+                                                </a>
+                                            </div>
                                         </div>
                                     );
                                 })}
@@ -1489,143 +1521,274 @@ export default function SmartCareContent({
                 </section>
 
 
-                {/* 의전 서비스 상세 구성 (샤프한 직각 사각형 스타일) */}
+                {/* 의전 서비스 상세 구성 (스마트케어 4 / 스마트케어 5 탭 분기) */}
                 <section className="py-16 md:py-24 bg-slate-100">
                     <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12">
-                        <div className="text-center mb-12">
+                        <div className="text-center mb-8">
                             <span className="bg-slate-900 text-white font-black text-xs px-4 py-2 rounded-none mb-3 inline-block uppercase tracking-wider">SERVICE DETAILS</span>
-                            <h2 className="section-title">의전 서비스 상세 구성</h2>
+                            <h2 className="section-title">스마트케어 상조 서비스 상세 구성</h2>
+                            <p className="text-slate-500 font-medium text-sm md:text-base mt-2">
+                                플랜별 맞춤 상조 의전 서비스 구성을 확인해보세요
+                            </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                            {/* 고인용품 (입관/수시) */}
-                            <div className="bg-white rounded-none overflow-hidden border border-slate-200 shadow-sm">
-                                <div className="bg-slate-900 text-white px-5 py-3.5 font-bold text-sm md:text-base border-b border-slate-800">
-                                    고인용품 (입관/수시)
-                                </div>
-                                <div className="p-5 space-y-4">
-                                    <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">관</span>
-                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
-                                            <p>오동나무 45mm (매장)</p>
-                                            <p>오동나무 18mm/유골함 (화장)</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
-                                        <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">수의</span>
-                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
-                                            <p>대마 100% 기계직</p>
-                                            <p className="text-[#8b95a1] font-bold text-[11px]">(꽃관보/도우미 대체 가능)</p>
-                                        </div>
-                                    </div>
-                                </div>
+                        {/* 플랜 전환 탭 */}
+                        <div className="flex justify-center mb-10">
+                            <div className="inline-flex bg-slate-200/90 p-1.5 rounded-xl border border-slate-300 shadow-inner">
+                                <button
+                                    onClick={() => setFuneralPlanTab("smartcare5")}
+                                    className={`px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-black text-sm sm:text-base transition-all duration-200 ${
+                                        funeralPlanTab === "smartcare5"
+                                            ? "bg-[#0c2340] text-white shadow-md"
+                                            : "text-slate-600 hover:text-slate-900"
+                                    }`}
+                                >
+                                    스마트케어 5 <span className="text-[11px] font-normal opacity-80">(추천)</span>
+                                </button>
+                                <button
+                                    onClick={() => setFuneralPlanTab("smartcare4")}
+                                    className={`px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-black text-sm sm:text-base transition-all duration-200 ${
+                                        funeralPlanTab === "smartcare4"
+                                            ? "bg-[#0c2340] text-white shadow-md"
+                                            : "text-slate-600 hover:text-slate-900"
+                                    }`}
+                                >
+                                    스마트케어 4
+                                </button>
                             </div>
+                        </div>
 
-                            {/* 입관용품 */}
-                            <div className="bg-white rounded-none overflow-hidden border border-slate-200 shadow-sm">
-                                <div className="bg-slate-900 text-white px-5 py-3.5 font-bold text-sm md:text-base border-b border-slate-800">
-                                    입관용품
-                                </div>
-                                <div className="p-5 space-y-4">
-                                    <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">의류</span>
-                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
-                                            도포, 원삼, 천금, 지금<br />(수의와 동일 제품)
-                                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                            {/* 고인용품 및 수시용품 */}
+                            <div className="bg-white rounded-none overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <div className="bg-slate-900 text-white px-5 py-3.5 font-bold text-sm md:text-base border-b border-slate-800 flex justify-between items-center">
+                                        <span>고인용품 및 수시용품</span>
+                                        <span className="text-[11px] font-semibold text-blue-300">
+                                            {funeralPlanTab === "smartcare5" ? "스마트케어 5" : "스마트케어 4"}
+                                        </span>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
-                                        <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">기타</span>
-                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
-                                            명정, 관보, 베개, 습신 등<br />규격품 일체 제공
+                                    <div className="p-5 space-y-4">
+                                        <div className="flex justify-between items-start gap-4">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">관</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                                <p>오동나무 45mm <span className="text-slate-400 text-xs">(매장시)</span></p>
+                                                <p>오동나무 18mm, 유골함 <span className="text-slate-400 text-xs">(화장시)</span></p>
+                                                <p>오동나무 18mm, 횡대 <span className="text-slate-400 text-xs">(탈관시)</span></p>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">수의</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                                {funeralPlanTab === "smartcare5" ? (
+                                                    <p className="font-bold text-blue-900">대마 100%, 기계직</p>
+                                                ) : (
+                                                    <p className="font-bold text-slate-800">마혼용 (대마, 아마, 저마), 기계직</p>
+                                                )}
+                                                <p className="text-[#8b95a1] text-[11px] mt-0.5 font-normal">수의 준비 시: 꽃관보 또는 장례도우미 1명 (택1)</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">입관/수시용품</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                                <p>도포, 원삼, 천금, 지금 <span className="text-slate-400 text-xs">(수의와 동일)</span></p>
+                                                <p>명정, 관보, 베개, 습신, 수시포, 한지 등 <span className="text-slate-400 text-xs">(규격품)</span></p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* 빈소 및 기타용품 */}
-                            <div className="bg-white rounded-none overflow-hidden border border-slate-200 shadow-sm">
-                                <div className="bg-slate-900 text-white px-5 py-3.5 font-bold text-sm md:text-base border-b border-slate-800">
-                                    빈소 및 기타용품
-                                </div>
-                                <div className="p-5 space-y-4">
-                                    <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">빈소내 용품</span>
-                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
-                                            향, 양초, 부의록, 위패 등<br />필요량 일체 제공
-                                        </div>
+                            <div className="bg-white rounded-none overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <div className="bg-slate-900 text-white px-5 py-3.5 font-bold text-sm md:text-base border-b border-slate-800">
+                                        빈소 및 기타용품
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
-                                        <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">대여/기타</span>
-                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
-                                            향로, 촛대 (대여)<br />완장, 상장, 장갑 (제공)
+                                    <div className="p-5 space-y-4">
+                                        <div className="flex justify-between items-start gap-4">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">빈소용품</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                                <p>향, 양초, 부의록, 축문, 위패</p>
+                                                <p className="font-bold text-emerald-600">일체 제공</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">대여용품</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                                <p>향로, 촛대, 잔대</p>
+                                                <p className="font-bold text-emerald-600">일체 대여 제공</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">기타용품</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                                <p>완장, 상장, 운구장갑</p>
+                                                <p className="font-bold text-emerald-600">필요량 일체 제공</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* 의전 및 제단 */}
-                            <div className="bg-white rounded-none overflow-hidden border border-slate-200 shadow-sm">
-                                <div className="bg-slate-900 text-white px-5 py-3.5 font-bold text-sm md:text-base border-b border-slate-800">
-                                    의전 및 제단
-                                </div>
-                                <div className="p-5 space-y-4">
-                                    <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">현대식 상복</span>
-                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
-                                            검정 양복 / 개량 한복<br />
-                                            <span className="text-[#11326c] font-bold">각 5벌 (남녀 무관)</span>
+                            {/* 의전용품 (상복) */}
+                            <div className="bg-white rounded-none overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <div className="bg-slate-900 text-white px-5 py-3.5 font-bold text-sm md:text-base border-b border-slate-800 flex justify-between items-center">
+                                        <span>의전용품 (상복)</span>
+                                        <span className="text-[11px] font-semibold text-blue-300">
+                                            {funeralPlanTab === "smartcare5" ? "스마트케어 5" : "스마트케어 4"}
+                                        </span>
+                                    </div>
+                                    <div className="p-5 space-y-4">
+                                        <div className="flex justify-between items-start gap-4">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">현대식 상복</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                                {funeralPlanTab === "smartcare5" ? (
+                                                    <>
+                                                        <p>남성: <strong className="text-blue-900">제공 (10벌)</strong></p>
+                                                        <p>여성: <strong className="text-blue-900">직계제공</strong></p>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <p>남성: <strong className="text-slate-800">제공 (5벌)</strong></p>
+                                                        <p>여성: <strong className="text-slate-800">제공 (5벌)</strong></p>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">전통식 상복</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                                <p>남성: 직계 제공</p>
+                                                <p>여성: 필요량 제공</p>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
-                                        <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">꽃장식</span>
-                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
-                                            헌화용 국화 30송이, 꽃바구니 2개<br />
-                                            <span className="text-red-500 font-bold">(제단 꽃장식 제외)</span>
+                                </div>
+                            </div>
+
+                            {/* 제단장식 (꽃장식) */}
+                            <div className="bg-white rounded-none overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <div className="bg-slate-900 text-white px-5 py-3.5 font-bold text-sm md:text-base border-b border-slate-800 flex justify-between items-center">
+                                        <span>제단장식 (꽃장식)</span>
+                                        <span className="text-[11px] font-semibold text-blue-300">
+                                            {funeralPlanTab === "smartcare5" ? "스마트케어 5" : "스마트케어 4"}
+                                        </span>
+                                    </div>
+                                    <div className="p-5 space-y-4">
+                                        <div className="flex justify-between items-start gap-4">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">생화꽃 액자</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
+                                                제공
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">생화꽃 제단장식</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
+                                                {funeralPlanTab === "smartcare5" ? (
+                                                    <span className="font-bold text-blue-900">35만원 상당</span>
+                                                ) : (
+                                                    <span className="font-bold text-slate-800">25만원 상당</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">헌화용 국화</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
+                                                {funeralPlanTab === "smartcare5" ? (
+                                                    <span className="font-bold text-blue-900">50송이</span>
+                                                ) : (
+                                                    <span className="font-bold text-slate-800">30송이</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">꽃바구니</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
+                                                꽃바구니 2개
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* 차량지원 */}
-                            <div className="bg-white rounded-none overflow-hidden border border-slate-200 shadow-sm">
-                                <div className="bg-slate-900 text-white px-5 py-3.5 font-bold text-sm md:text-base border-b border-slate-800">
-                                    차량지원
-                                </div>
-                                <div className="p-5 space-y-4">
-                                    <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">이송차량</span>
-                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
-                                            관내 (시, 군내) 무료 제공
-                                        </div>
+                            <div className="bg-white rounded-none overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <div className="bg-slate-900 text-white px-5 py-3.5 font-bold text-sm md:text-base border-b border-slate-800 flex justify-between items-center">
+                                        <span>차량지원</span>
+                                        <span className="text-[11px] font-semibold text-blue-300">
+                                            {funeralPlanTab === "smartcare5" ? "스마트케어 5" : "스마트케어 4"}
+                                        </span>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
-                                        <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">유족버스/<br />리무진</span>
-                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
-                                            왕복 300km 제공<br />
-                                            <span className="text-[#11326c] font-bold">택 1 (초과시 별도)</span>
+                                    <div className="p-5 space-y-4">
+                                        <div className="flex justify-between items-start gap-4">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">운구이송차량</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
+                                                관내(시,군내) 제공 <span className="text-slate-400 text-xs">(요청 시)</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">고인전용 리무진</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                                {funeralPlanTab === "smartcare5" ? (
+                                                    <p className="font-bold text-blue-900">왕복 300KM</p>
+                                                ) : (
+                                                    <p className="font-bold text-slate-800">왕복 200KM</p>
+                                                )}
+                                                <p className="text-slate-400 text-[11px] font-normal">(초과시 2,000원 / KM)</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">유족전용 버스</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                                {funeralPlanTab === "smartcare5" ? (
+                                                    <p className="font-bold text-blue-900">왕복 300KM</p>
+                                                ) : (
+                                                    <p className="font-bold text-slate-800">왕복 200KM</p>
+                                                )}
+                                                <p className="text-slate-400 text-[11px] font-normal">(초과시 2,000원 / KM)</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* 인력지원 */}
-                            <div className="bg-white rounded-none overflow-hidden border border-slate-200 shadow-sm">
-                                <div className="bg-slate-900 text-white px-5 py-3.5 font-bold text-sm md:text-base border-b border-slate-800">
-                                    인력지원
-                                </div>
-                                <div className="p-5 space-y-4">
-                                    <div className="flex justify-between items-start gap-4">
-                                        <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">장례지도사</span>
-                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
-                                            국가공인 지도사 <span className="font-bold text-[#11326c] text-base">1명</span>
-                                            <p className="text-[#8b95a1] text-[11px] font-bold mt-0.5">(입관 및 행사 진행)</p>
-                                        </div>
+                            {/* 인력지원 & 편의서비스 */}
+                            <div className="bg-white rounded-none overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <div className="bg-slate-900 text-white px-5 py-3.5 font-bold text-sm md:text-base border-b border-slate-800 flex justify-between items-center">
+                                        <span>인력지원 & 편의서비스</span>
+                                        <span className="text-[11px] font-semibold text-blue-300">
+                                            {funeralPlanTab === "smartcare5" ? "스마트케어 5" : "스마트케어 4"}
+                                        </span>
                                     </div>
-                                    <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
-                                        <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">의전도우미</span>
-                                        <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
-                                            전문 도우미 <span className="font-bold text-[#11326c] text-base">5명</span>
-                                            <p className="text-[#8b95a1] text-[11px] font-bold mt-0.5">(접객 및 빈소 관리)</p>
+                                    <div className="p-5 space-y-4">
+                                        <div className="flex justify-between items-start gap-4">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">장례지도사</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium">
+                                                장례진행 <span className="font-bold text-[#11326c]">1명</span>, 입관지원 <span className="font-bold text-[#11326c]">1명</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">장례의전 도우미</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                                {funeralPlanTab === "smartcare5" ? (
+                                                    <p><strong className="text-blue-900 text-base">5명</strong> (인당 10시간)</p>
+                                                ) : (
+                                                    <p><strong className="text-slate-800 text-base">4명</strong> (인당 10시간)</p>
+                                                )}
+                                                <p className="text-slate-400 text-[11px] font-normal">(접객 및 빈소 관리)</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-start gap-4 border-t border-gray-100 pt-3">
+                                            <span className="font-bold text-[#11326c] flex-shrink-0 text-xs md:text-sm">편의서비스</span>
+                                            <div className="text-right text-xs md:text-sm text-sono-dark font-medium leading-relaxed">
+                                                <p>일회용 식기세트: <strong className="text-slate-800">150인분</strong></p>
+                                                <p>편의용품: <strong className="text-slate-800">(남/녀 6인세트) 1개</strong></p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -2045,9 +2208,6 @@ export default function SmartCareContent({
                                         <span className="absolute top-4 left-4 bg-slate-900/80 text-white text-[10px] font-extrabold px-2.5 py-1 z-10">
                                             {item.badge}
                                         </span>
-                                        <span className="absolute bottom-4 right-4 bg-emerald-600 text-white text-[11px] font-black px-3 py-1.5 rounded-full shadow z-10">
-                                            {item.highlight}
-                                        </span>
                                         <img src={item.img} alt={item.title} className="w-full h-full object-cover opacity-95 group-hover:scale-105 transition-all duration-500" />
                                     </div>
                                     <div className="p-6 text-left flex-grow flex flex-col justify-between">
@@ -2396,7 +2556,7 @@ export default function SmartCareContent({
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-4 py-3 border-b border-gray-200 text-xs md:text-sm">
                                         <div className="flex items-center gap-2 text-slate-700">
                                             <svg className="w-5 h-5 text-sono-primary shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 004.587 4.587l.773-1.548a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
-                                            <span>전환 전담 문의처: <strong>1588-2227</strong></span>
+                                            <span>전환 전담 문의처: <strong>1833-6093</strong></span>
                                         </div>
                                         <a 
                                             href={selectedHybrid === "크루즈" ? "https://www.sonoimready.com/front/sc/chgServList?prdctCd=%ED%81%AC%EB%A3%A8%EC%A6%88" : "https://www.sonoimready.com"} 

@@ -48,7 +48,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (1구좌 이상)",
             conditions: "출발 최소 2개월 전 신청 필수",
             fees: "성수기 할증료 및 유류세 본인 부담",
-            method: "소노아임레디 고객센터 1588-2227 접수"
+            method: "소노아임레디 고객센터 1588-5811 접수"
         },
         notes: "항공 스케줄 및 현지 리조트 사정에 따라 추가 요금이 발생할 수 있습니다.",
         items: [
@@ -74,7 +74,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (2구좌 이상)",
             conditions: "출발 최소 3개월 전 전환 신청 및 여권 보유 필수",
             fees: "선실 단독 사용료, 기항지 관광 비용 및 유류세 본인 부담",
-            method: "소노아임레디 고객센터 1588-2227 접수"
+            method: "소노아임레디 고객센터 1588-5811 접수"
         },
         notes: "선실 등급 및 항공 노선에 따라 추가 비용이 발생할 수 있습니다.",
         items: [
@@ -102,7 +102,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (1구좌 이상)",
             conditions: "예약 최소 1개월 전 신청 필수",
             fees: "캐디피 및 개인 경비 본인 부담",
-            method: "고객센터 1588-2227 접수"
+            method: "고객센터 1588-5811 접수"
         },
         notes: "시즌별 골프장 예약 상황에 따라 일정이 변경될 수 있습니다.",
         items: [
@@ -127,7 +127,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (2구좌 이상)",
             conditions: "연수 개시 4개월 전 신청 필수",
             fees: "개인 용돈 및 현지 교통비 제외",
-            method: "고객센터 1588-2227 접수"
+            method: "고객센터 1588-5811 접수"
         },
         notes: "국가별 학생 비자 발급 기간이 다를 수 있어 사전 예약이 필수적입니다.",
         items: [
@@ -157,7 +157,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (1구좌 이상)",
             conditions: "예식 예정일 최소 6개월 전 신청",
             fees: "일부 프리미엄 드레스 피팅비 별도",
-            method: "소노아임레디 고객센터 1588-2227 접수"
+            method: "소노아임레디 고객센터 1588-5811 접수"
         },
         notes: "예식 일정이 몰리는 봄/가을 시즌에는 최소 6개월 전 접수가 필수적입니다.",
         items: [
@@ -185,7 +185,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (1구좌 이상)",
             conditions: "상시 신청 및 즉시 전환 적용",
             fees: "몰 내 배송비 무료 혜택 지원",
-            method: "소노아임레디 고객센터 1588-2227 접수"
+            method: "소노아임레디 고객센터 1588-5811 접수"
         },
         notes: "포인트 전환 완료 후 취소는 규정에 의거 제한될 수 있습니다.",
         items: [
@@ -207,7 +207,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (1구좌 이상)",
             conditions: "설치 및 이사 예정 3주 전 전환 접수",
             fees: "도서산간/일부 지역 설치비 및 사다리차 등 장비 비용 본인 부담",
-            method: "소노아임레디 고객센터 1588-2227 접수"
+            method: "소노아임레디 고객센터 1588-5811 접수"
         },
         notes: "이사 일정 및 아파트 규격, 사다리차 이용 여부에 따라 현장 추가 요금이 발생할 수 있습니다.",
         items: [
@@ -232,7 +232,7 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
             available: "더해피450 ONE (1구좌 이상)",
             conditions: "상시 예약 신청 가능",
             fees: "안치단 위치 및 석조 가공 비용 별도",
-            method: "소노아임레디 고객센터 1588-2227 접수"
+            method: "소노아임레디 고객센터 1588-5811 접수"
         },
         items: [
             { name: "[장지] 장지 시설 서비스", desc: "합법적인 허가 및 관리가 이뤄지는 장지시설 엄선", price: "3,990,000원~", period: "상시", tags: ["추천","전환"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/03/27/9d4c2dda-4ef2-4147-9cea-06e9a9edff9c", status: "접수중", link: "https://www.sonoimready.com/front/sc/chgServDetail?prdctSeq=40&prdctCd=%EC%89%BC%EC%BC%80%EC%96%B4" }
@@ -337,7 +337,7 @@ export default function Happy450Content({
                                     호텔&리조트 혜택부터 헬스케어 서비스까지 이용하고도<br />만기 시 납입금 100% 환급 보장
                                 </p>
                                 <p className="text-base md:text-lg text-white/95 leading-relaxed font-semibold drop-shadow-sm break-keep">
-                                    대한민국 대표 리조트 기업 소노아임레디가 제안하는 프리미엄 라이프케어 솔루션
+                                    국내 대표 토탈 라이프케어 브랜드 소노아임레디가 제안하는 프리미엄 라이프케어 솔루션
                                 </p>
                             </div>
 
@@ -363,7 +363,7 @@ export default function Happy450Content({
                                             </h3>
                                         </div>
                                         <p className="text-white font-bold text-xs sm:text-sm leading-relaxed break-keep mb-3">
-                                            자동이체 등록 시 첫 달 <span className="text-amber-300 underline underline-offset-4 decoration-2">무조건 12,000원 청구할인!</span> (전월 실적 상관없이 제공, 매월 최대 22,000원 할인)
+                                            자동이체 등록 시 전월실적 무관 <span className="text-amber-300 underline underline-offset-4 decoration-2">2회차까지 월 12,000원 할인</span>(매월 최대 19,000원 할인)
                                         </p>
                                     </div>
                                     <div className="flex items-center justify-between border-t border-white/10 pt-3 mt-1">
@@ -406,7 +406,7 @@ export default function Happy450Content({
                                             </h3>
                                         </div>
                                         <p className="text-white font-bold text-xs sm:text-sm leading-relaxed break-keep mb-3">
-                                            전문간호사 1:1 상담부터 대형병원 진료예약 대행, 전문의 명의 추천, <span className="text-emerald-400 underline underline-offset-4 decoration-2">간호사 병원동행 서비스</span> 무상 연계
+                                            전문간호사 1:1 상담부터 대형병원 진료예약 대행, 전문의 명의 추천, <span className="text-emerald-400 underline underline-offset-4 decoration-2">중대질환Care 서비스</span> 연계
                                         </p>
                                     </div>
                                     <div className="flex items-center justify-between border-t border-white/10 pt-3 mt-1">
@@ -457,7 +457,7 @@ export default function Happy450Content({
                             <span className="bg-amber-500/20 text-amber-300 text-xs font-black px-4 py-2 rounded-none uppercase tracking-wider mb-4 inline-block border border-amber-500/30">
                                 KEY BENEFITS
                             </span>
-                            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">더 해피 450 핵심 혜택</h2>
+                            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">더 해피 450 ONE 핵심 혜택</h2>
                             <p className="text-slate-400 font-medium text-sm md:text-base mt-3 max-w-xl mx-auto">
                                 가입부터 만기 환급까지 파트너 및 회원님께 제공되는 특별한 시그니처 혜택
                             </p>
@@ -492,13 +492,13 @@ export default function Happy450Content({
                                 {
                                     title: "BENEFIT 05",
                                     name: "GC헬스케어 특별혜택",
-                                    desc: "GC케어가 제공하는 프리미엄 건강 상담 및 헬스케어 서비스 무료 연계 혜택을 제공합니다.",
+                                    desc: "GC케어가 제공하는 프리미엄 건강 상담 및 헬스케어 서비스 연계 우대 혜택을 제공합니다.",
                                     image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932611/Group_1_8_1_guxnwi.png"
                                 },
                                 {
                                     title: "BENEFIT 06",
                                     name: "납입금 100% 전액환급",
-                                    desc: "상조 서비스를 이용하지 않더라도 만기 납입 완료 후 해약 시 납입하신 금액 100% 전액을 환급해 드립니다.",
+                                    desc: "상조 서비스를 이용하지 않더라도 만기 납입 완료 후 익월 해약 시 납입하신 금액 100% 전액을 환급해 드립니다.",
                                     image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932610/06_full_refund_logo_1_ija0rc.png"
                                 }
                             ].map((benefit, index) => (
@@ -600,11 +600,11 @@ export default function Happy450Content({
                                                 <div className="flex justify-between items-center bg-slate-950/80 border border-amber-500/20 rounded-none px-4 py-3 transition-colors">
                                                     <div className="text-left">
                                                         <p className="text-[11px] font-black text-amber-400 leading-none mb-1.5">제휴카드 최대할인</p>
-                                                        <p className="text-[10px] font-bold text-slate-400 leading-none">150만원 실적 시</p>
+                                                        <p className="text-[10px] font-bold text-slate-400 leading-none">전월 실적 충족 시</p>
                                                     </div>
                                                     <div className="text-right flex items-baseline gap-0.5">
                                                         <span className="text-lg md:text-xl font-black text-amber-400 whitespace-nowrap">
-                                                            {Math.max(0, Number(plan.price.replace(/,/g, '')) - 25000).toLocaleString()}
+                                                            {Math.max(0, Number(plan.price.replace(/,/g, '')) - 19000).toLocaleString()}
                                                         </span>
                                                         <span className="text-[10px] md:text-xs font-bold text-slate-400 whitespace-nowrap">원</span>
                                                     </div>
@@ -659,11 +659,11 @@ export default function Happy450Content({
                             </div>
                         </div>
 
-                        <div className="mt-8 md:mt-12 text-center space-y-1 md:space-y-2">
-                            <p className="text-slate-500 font-bold text-xs md:text-sm italic">
+                        <div className="mt-8 md:mt-12 text-center space-y-1.5 md:space-y-2">
+                            <p className="text-slate-700 font-black text-sm md:text-base">
                                 *100% 환급 조건 : 만기 납입 후 익월 해약 시*
                             </p>
-                            <p className="text-slate-500 font-bold text-xs md:text-sm italic">
+                            <p className="text-slate-700 font-black text-sm md:text-base">
                                 *레디캐시 사용 조건 : 가입 상품의 해약환급금 80% 사용 가능*
                             </p>
                         </div>
@@ -1417,11 +1417,11 @@ export default function Happy450Content({
                                 <p className="text-slate-300 text-xs md:text-sm font-bold mt-1">가입 구좌와 관계없이 다양하고 전문적인 건강관리 서비스를 자유롭게 이용하실 수 있습니다.</p>
                             </div>
                             
-                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                                 {[
                                     {
                                         title: "전문간호사·전문의 건강상담",
-                                        desc: "24시간 365일 언제든 전문 의료진과의 1:1 맞춤형 건강 상담 서비스 제공",
+                                        desc: "언제든 전문 의료진과의 건강 상담 서비스 제공",
                                         img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785911342/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_03_25_32_1_1_rzcp61.png"
                                     },
                                     {
@@ -1431,18 +1431,13 @@ export default function Happy450Content({
                                     },
                                     {
                                         title: "건강검진 컨설팅 및 우대예약",
-                                        desc: "개인별 맞춤형 검진 프로그램 설계 및 제휴 검진센터 최우대 우대 할인 예약 지원",
+                                        desc: "개인별 맞춤형 검진 프로그램 설계 및 제휴 검진센터 우대 할인 예약 지원",
                                         img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785911342/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_03_25_32_3_1_xa3lms.png"
                                     },
                                     {
                                         title: "건강기능식품 구매우대",
-                                        desc: "전문가가 엄선한 검증된 건강기능식품을 아임레디 회원 전용 특별 할인가로 제공",
+                                        desc: "GC녹십자 임직원몰을 통한 온라인 구매 시 임직원가로 구매 혜택",
                                         img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785911342/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_03_25_33_4_1_rk2xiq.png"
-                                    },
-                                    {
-                                        title: "뷰티클리닉 예약 및 우대",
-                                        desc: "제휴 메디컬 에스테틱 및 유명 뷰티 클리닉 우대 가격 혜택 및 예약 컨시어지",
-                                        img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785911343/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_03_25_33_5_1_rn4vfy.png"
                                     },
                                     {
                                         title: "건강정보 월 1회 제공",
@@ -1456,12 +1451,12 @@ export default function Happy450Content({
                                     },
                                     {
                                         title: "해외 중입자치료 컨시어지",
-                                        desc: "꿈의 암 치료로 불리는 일본 중입자치료 전문 코디네이션 및 현지 이송/치료 컨시어지",
+                                        desc: "꿈의 암 치료로 불리는 해외 중입자치료 전문 코디네이션 및 현지 이송/치료 컨시어지",
                                         img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785911342/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_03_25_34_7_1_hhjyii.png"
                                     },
                                     {
                                         title: "건강 안부콜 분기 1회",
-                                        desc: "부모님 및 실버 가구 대상 분기별 전문 간호사의 건강 체크 통화 및 케어 피드백 안부콜",
+                                        desc: "건강상태 확인 후 필요시 전문가 상담진행 및 병원안내, 진료예약 제공",
                                         img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785911342/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_03_25_35_9_1_y4dcvo.png"
                                     }
                                 ].map((item, index) => (
@@ -1538,7 +1533,7 @@ export default function Happy450Content({
 
                                         <li className="flex items-start gap-3">
                                             <span className="text-emerald-500 mt-0.5">✓</span>
-                                            <span><strong>서비스 개시</strong>: 상품 가입 후 <strong>6회차 정상 납부 완료</strong> 후 익월 말부터</span>
+                                            <span><strong>서비스 개시</strong>: 상품 가입 후 <strong>6회차 정상 납부 완료</strong> 후 익월 25일내 서비스 개시</span>
                                         </li>
                                         <li className="flex items-start gap-3">
                                             <span className="text-emerald-400 mt-0.5">✓</span>
@@ -2091,7 +2086,7 @@ export default function Happy450Content({
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-4 py-3 border-b border-gray-200 text-xs md:text-sm">
                                         <div className="flex items-center gap-2 text-slate-700">
                                             <svg className="w-5 h-5 text-sono-primary shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 004.587 4.587l.773-1.548a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
-                                            <span>전환 전담 문의처: <strong>1588-2227</strong></span>
+                                            <span>전환 전담 문의처: <strong>1833-6093</strong></span>
                                         </div>
                                         <a 
                                             href={selectedHybrid === "크루즈" ? "https://www.sonoimready.com/front/sc/chgServList?prdctCd=%ED%81%AC%EB%A3%A8%EC%A6%88" : "https://www.sonoimready.com"} 

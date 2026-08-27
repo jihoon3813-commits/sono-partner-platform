@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { cleanProductName } from "@/lib/productUtils";
+import AffiliateCardBenefit from "@/components/products/AffiliateCardBenefit";
 
 interface Appliance {
     _id?: string;
@@ -264,6 +265,13 @@ export default function ProductDetailModal({
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* 1번 이미지 참고: 가격구성 및 제휴카드 신청 안내 */}
+                                    <AffiliateCardBenefit
+                                        slotCount={appliance.slotCount || 2}
+                                        monthlyPayment={appliance.monthlyPayment}
+                                        className="my-4"
+                                    />
 
                                     {/* 상세 기술 사양표 (Specification Table) */}
                                     <div className="space-y-3 w-full box-border min-w-0">
