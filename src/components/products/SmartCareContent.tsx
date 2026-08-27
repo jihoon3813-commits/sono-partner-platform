@@ -388,6 +388,42 @@ export default function SmartCareContent({
         : Array.from(new Set(allAppliances.map(a => a.slotCount || 4))).sort((a, b) => a - b);
     
     const hasInitializedPlanRef = useRef(false);
+    
+    // 마우스 좌우 드래그 스크롤 핸들러를 위한 Ref 및 State
+    const planScrollRef = useRef<HTMLDivElement>(null);
+    const isPlanMouseDownRef = useRef(false);
+    const planStartXRef = useRef(0);
+    const planScrollLeftRef = useRef(0);
+    const isPlanDraggingRef = useRef(false);
+    const [isPlanGrabbing, setIsPlanGrabbing] = useState(false);
+
+    const handlePlanMouseDown = (e: React.MouseEvent) => {
+        if (!planScrollRef.current) return;
+        isPlanMouseDownRef.current = true;
+        isPlanDraggingRef.current = false;
+        planStartXRef.current = e.pageX - planScrollRef.current.offsetLeft;
+        planScrollLeftRef.current = planScrollRef.current.scrollLeft;
+        setIsPlanGrabbing(true);
+    };
+
+    const handlePlanMouseMove = (e: React.MouseEvent) => {
+        if (!isPlanMouseDownRef.current || !planScrollRef.current) return;
+        e.preventDefault();
+        const x = e.pageX - planScrollRef.current.offsetLeft;
+        const walk = (x - planStartXRef.current) * 1.5;
+        if (Math.abs(x - planStartXRef.current) > 5) {
+            isPlanDraggingRef.current = true;
+        }
+        planScrollRef.current.scrollLeft = planScrollLeftRef.current - walk;
+    };
+
+    const handlePlanMouseUpOrLeave = () => {
+        isPlanMouseDownRef.current = false;
+        setIsPlanGrabbing(false);
+        setTimeout(() => {
+            isPlanDraggingRef.current = false;
+        }, 80);
+    };
 
     // Default to a 4-slot plan once smartCareProductsData is loaded for the first time
     useEffect(() => {
@@ -808,12 +844,12 @@ export default function SmartCareContent({
                                 원하는 구좌 수를 선택하고 최신 가전을 골라보세요.
                             </p>
                             
-                            {/* 좌우 스크롤 안내 뱃지 */}
+                            {/* 좌우 드래그 안내 뱃지 */}
                             <div className="mt-3 inline-flex items-center gap-2 bg-[#1f2d42]/80 border border-blue-500/30 text-blue-300 text-[11px] sm:text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
                                 <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
                                 </svg>
-                                <span>좌우로 슬라이드하여 5가지 플랜 비교</span>
+                                <span>좌우로 마우스 드래그하여 5가지 플랜 비교</span>
                                 <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
@@ -833,10 +869,17 @@ export default function SmartCareContent({
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
                             </button>
 
-                            {/* Plan Cards Horizontal Scroll Container */}
+                            {/* Plan Cards Horizontal Scroll Container (Drag-to-Scroll enabled) */}
                             <div 
-                                style={{ scrollSnapType: 'x mandatory' }} 
-                                className="flex w-full overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-4 md:py-8 px-2 sm:px-4 scroll-px-4 gap-4 sm:gap-6 items-stretch justify-start scroll-smooth"
+                                ref={planScrollRef}
+                                onMouseDown={handlePlanMouseDown}
+                                onMouseMove={handlePlanMouseMove}
+                                onMouseUp={handlePlanMouseUpOrLeave}
+                                onMouseLeave={handlePlanMouseUpOrLeave}
+                                style={{ scrollSnapType: isPlanGrabbing ? 'none' : 'x mandatory' }} 
+                                className={`flex w-full overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-4 md:py-8 px-2 sm:px-4 scroll-px-4 gap-4 sm:gap-6 items-stretch justify-start scroll-smooth select-none ${
+                                    isPlanGrabbing ? 'cursor-grabbing' : 'cursor-grab'
+                                }`}
                             >
                                 {(smartCareProductsData && smartCareProductsData.length > 0 ? smartCareProductsData : [
                                     { name: "스마트케어 4더블", slotCount: 2, monthlyPayment: 55200, cardDiscountPayment: 35000, target: "1인 가구 / 소형 가전", paymentCount: "1~179회(180회:79,200원)", defermentPeriod: "181~200회", maturityCount: "200회" },
@@ -853,7 +896,10 @@ export default function SmartCareContent({
                                     return (
                                         <div 
                                             key={i} 
-                                            onClick={() => setSelectedPlanId(plan._id)}
+                                            onClick={() => {
+                                                if (isPlanDraggingRef.current) return;
+                                                setSelectedPlanId(plan._id);
+                                            }}
                                             style={{ scrollSnapStop: 'always' }}
                                             className={`relative !p-4 sm:!p-5 flex flex-col justify-between transition-all rounded-[24px] snap-center snap-always [scroll-snap-stop:always] shrink-0 w-[285px] sm:w-[315px] md:w-[325px] cursor-pointer select-none ${
                                                 isActive 
