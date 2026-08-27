@@ -252,73 +252,16 @@ export default function SmartCareLecturePage() {
                         <p className="text-white/50 text-xl font-medium">원하는 구좌 수를 선택하고 최신 가전을 골라보세요.</p>
                     </div>
 
-                    <div className="flex flex-col gap-6 max-w-[1250px] mx-auto w-full px-4 shrink">
-                        {/* Row 1: 3 cards */}
-                        <div className="flex flex-wrap justify-center gap-6">
+                    <div className="flex flex-col gap-6 max-w-[1350px] mx-auto w-full px-2 sm:px-4 shrink">
+                        <div className="flex overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-4 px-2 gap-6 items-stretch justify-start scroll-smooth">
                             {[
                                 { name: "스마트케어 4더블", tagBg: "bg-[#ff6b00]", unit: "2", price: "55,200", target: "1인 가구 / 소형 가전", best: false },
                                 { name: "스마트케어 5", tagBg: "bg-[#3b82f6]", unit: "1", price: "33,000", target: "1인 가구 / 소형 가전", best: false },
                                 { name: "스마트케어 5더블", tagBg: "bg-[#3b82f6]", unit: "2", price: "66,000", target: "신혼 부부 / 중형 가전", best: true },
-                            ].map((plan, i) => (
-                                <div key={i} className={`w-full sm:w-[340px] p-6 rounded-[32px] border-2 transition-all bg-[#131924] ${plan.best ? "border-[#3b82f6] shadow-[0_0_25px_rgba(59,130,246,0.35)] scale-105 z-10" : "border-[#202632] hover:border-white/10"}`}>
-                                    <div className="flex justify-between items-center mb-4">
-                                        <span className={`${plan.tagBg} text-white text-[11px] font-black px-3 py-1 rounded-md inline-block`}>
-                                            {plan.name}
-                                        </span>
-                                        {plan.best && (
-                                            <span className="bg-[#3b82f6] text-white text-[9px] font-black px-3 py-1 rounded-full flex items-center gap-0.5 shadow-lg shadow-blue-500/20">
-                                                ★ BEST
-                                            </span>
-                                        )}
-                                    </div>
-                                    <h3 className="font-black mb-1 text-left">
-                                        <span className="text-3xl text-white font-black">{plan.unit}</span>
-                                        <span className="text-xl text-white/90 ml-0.5 font-bold">구좌</span>
-                                    </h3>
-                                    <p className="text-white/60 text-xs font-bold mb-6 text-left">{plan.target}</p>
-                                    <div className="mb-6 text-left">
-                                        <span className="text-4xl font-black text-white">{plan.price}</span>
-                                        <span className="text-lg opacity-60 ml-1">원~</span>
-                                    </div>
-
-                                    {/* 납입 구조 Table */}
-                                    <div className="border-y border-white/10 py-4 my-6 text-xs space-y-3 opacity-90 text-left">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-white/50 font-bold">납입회차</span>
-                                            <span className="font-black text-white/90">1~180회</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-white/50 font-bold">거치기간</span>
-                                            <span className="font-black text-white/90">181~200회</span>
-                                        </div>
-                                        <div className="flex justify-between items-center text-[#3b82f6] font-black">
-                                            <span>만기회차</span>
-                                            <span>200회</span>
-                                        </div>
-                                    </div>
-
-                                    <ul className="space-y-3 text-xs font-bold text-left">
-                                        <li className="flex items-center gap-2 text-white/90">
-                                            <span className="text-[#3b82f6] font-black">✓</span> 가전 렌탈료 전액 지원 혜택
-                                        </li>
-                                        <li className="flex items-center gap-2 text-white/90">
-                                            <span className="text-[#3b82f6] font-black">✓</span> 멤버십 즉시 이용
-                                        </li>
-                                        <li className="flex items-center gap-2 text-white/90">
-                                            <span className="text-[#3b82f6] font-black">✓</span> 100% 만기 환급
-                                        </li>
-                                    </ul>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Row 2: 2 cards */}
-                        <div className="flex flex-wrap justify-center gap-6">
-                            {[
                                 { name: "스마트케어 5트리플", tagBg: "bg-[#3b82f6]", unit: "3", price: "99,000", target: "일반 가전 / 대형 가전", best: false },
                                 { name: "스마트케어 5쿼드", tagBg: "bg-[#3b82f6]", unit: "4", price: "132,000", target: "대가족 / 프리미엄 가전 패키지", best: true }
                             ].map((plan, i) => (
-                                <div key={i} className={`w-full sm:w-[340px] p-6 rounded-[32px] border-2 transition-all bg-[#131924] ${plan.best ? "border-[#3b82f6] shadow-[0_0_25px_rgba(59,130,246,0.35)] scale-105 z-10" : "border-[#202632] hover:border-white/10"}`}>
+                                <div key={i} className={`w-[290px] sm:w-[320px] shrink-0 p-6 rounded-[32px] border-2 transition-all bg-[#131924] snap-center ${plan.best ? "border-[#3b82f6] shadow-[0_0_25px_rgba(59,130,246,0.35)] scale-[1.02] z-10" : "border-[#202632] hover:border-white/10"}`}>
                                     <div className="flex justify-between items-center mb-4">
                                         <span className={`${plan.tagBg} text-white text-[11px] font-black px-3 py-1 rounded-md inline-block`}>
                                             {plan.name}

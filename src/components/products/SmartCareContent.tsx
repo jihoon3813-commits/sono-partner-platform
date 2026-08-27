@@ -808,34 +808,35 @@ export default function SmartCareContent({
                                 원하는 구좌 수를 선택하고 최신 가전을 골라보세요.
                             </p>
                             
-                            {/* 모바일 전용 좌우 스크롤 안내 뱃지 */}
-                            <div className="md:hidden mt-3 inline-flex items-center gap-2 bg-[#1f2d42] border border-blue-500/30 text-blue-300 text-[11px] font-bold px-3 py-1 rounded-none shadow-lg animate-pulse">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {/* 좌우 스크롤 안내 뱃지 */}
+                            <div className="mt-3 inline-flex items-center gap-2 bg-[#1f2d42]/80 border border-blue-500/30 text-blue-300 text-[11px] sm:text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
+                                <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
                                 </svg>
-                                <span>좌우로 스크롤하여 요금제 비교</span>
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <span>좌우로 슬라이드하여 5가지 플랜 비교</span>
+                                <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
                             </div>
                         </div>
 
-                        <div className="relative group md:block">
-                            {/* Previous Arrow (Mobile only) */}
+                        <div className="relative group px-1 sm:px-4">
+                            {/* Previous Arrow Button (Desktop & Mobile) */}
                             <button 
                                 onClick={(e) => { 
                                     const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
-                                    if (el) { const card = el.querySelector(':scope > div, :scope > a'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: -w, behavior: 'smooth' }); }
+                                    if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: -w, behavior: 'smooth' }); }
                                 }} 
-                                className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-none shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none md:hidden" 
-                                aria-label="Previous"
+                                className="absolute -left-2 sm:-left-5 top-1/2 -translate-y-1/2 z-30 bg-slate-900/90 hover:bg-blue-600 text-white p-3 sm:p-3.5 rounded-full shadow-2xl border border-white/20 hover:border-blue-400 transition-all duration-300 focus:outline-none flex items-center justify-center active:scale-95" 
+                                aria-label="이전 플랜 보기"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
                             </button>
 
+                            {/* Plan Cards Horizontal Scroll Container */}
                             <div 
                                 style={{ scrollSnapType: 'x mandatory' }} 
-                                className="flex w-full overflow-x-auto md:overflow-visible snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-3 md:py-5 px-0 md:px-0 scroll-px-0 md:scroll-px-0 gap-4 md:gap-6 max-w-7xl mx-auto flex-row md:flex-wrap md:justify-center items-stretch justify-start"
+                                className="flex w-full overflow-x-auto snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-4 md:py-8 px-2 sm:px-4 scroll-px-4 gap-4 sm:gap-6 items-stretch justify-start scroll-smooth"
                             >
                                 {(smartCareProductsData && smartCareProductsData.length > 0 ? smartCareProductsData : [
                                     { name: "스마트케어 4더블", slotCount: 2, monthlyPayment: 55200, cardDiscountPayment: 35000, target: "1인 가구 / 소형 가전", paymentCount: "1~179회(180회:79,200원)", defermentPeriod: "181~200회", maturityCount: "200회" },
@@ -854,9 +855,9 @@ export default function SmartCareContent({
                                             key={i} 
                                             onClick={() => setSelectedPlanId(plan._id)}
                                             style={{ scrollSnapStop: 'always' }}
-                                            className={`relative !p-4 sm:!p-5 flex flex-col justify-between transition-all rounded-[24px] snap-center snap-always [scroll-snap-stop:always] shrink-0 w-[82vw] max-w-[320px] sm:w-[320px] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] cursor-pointer select-none ${
+                                            className={`relative !p-4 sm:!p-5 flex flex-col justify-between transition-all rounded-[24px] snap-center snap-always [scroll-snap-stop:always] shrink-0 w-[285px] sm:w-[315px] md:w-[325px] cursor-pointer select-none ${
                                                 isActive 
-                                                    ? "bg-white text-slate-900 shadow-[0_20px_50px_rgba(37,99,235,0.22)] md:scale-105 border-[3px] border-[#2563eb] ring-4 ring-blue-500/15 z-10" 
+                                                    ? "bg-white text-slate-900 shadow-[0_20px_50px_rgba(37,99,235,0.25)] border-[3px] border-[#2563eb] ring-4 ring-blue-500/20 z-10 scale-[1.02]" 
                                                     : "bg-white/95 text-slate-900 border border-slate-200 hover:border-blue-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
                                             }`}
                                         >
@@ -963,16 +964,16 @@ export default function SmartCareContent({
                                 })}
                             </div>
 
-                            {/* Next Arrow (Mobile only) */}
+                            {/* Next Arrow Button (Desktop & Mobile) */}
                             <button 
                                 onClick={(e) => { 
                                     const el = e.currentTarget.closest('.relative')?.querySelector('.overflow-x-auto'); 
-                                    if (el) { const card = el.querySelector(':scope > div, :scope > a'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: w, behavior: 'smooth' }); }
+                                    if (el) { const card = el.querySelector(':scope > div'); const w = card ? card.getBoundingClientRect().width + 24 : el.clientWidth; el.scrollBy({ left: w, behavior: 'smooth' }); }
                                 }} 
-                                className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-slate-400 hover:text-slate-600 p-2 rounded-none shadow-lg border border-white/30 hover:border-white/50 transition-all duration-300 focus:outline-none md:hidden" 
-                                aria-label="Next"
+                                className="absolute -right-2 sm:-right-5 top-1/2 -translate-y-1/2 z-30 bg-slate-900/90 hover:bg-blue-600 text-white p-3 sm:p-3.5 rounded-full shadow-2xl border border-white/20 hover:border-blue-400 transition-all duration-300 focus:outline-none flex items-center justify-center active:scale-95" 
+                                aria-label="다음 플랜 보기"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                             </button>
                         </div>
                     </div>
