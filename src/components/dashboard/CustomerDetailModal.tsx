@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Application, ApplicationStatus } from "@/lib/types";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
+import { formatDateTime } from "@/lib/dateUtils";
 
 interface CustomerDetailModalProps {
     application: Application;
@@ -16,6 +17,7 @@ interface CustomerDetailModalProps {
 }
 
 export default function CustomerDetailModal({ application, onClose, onUpdate, isAdmin = false, partnerLoginId, currentUserRole = "master" }: CustomerDetailModalProps) {
+    const updateDetails = useMutation(api.applications.updateApplicationDetails);
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
     const statusHistory = useQuery(api.applications.getStatusHistory, { applicationNo: application.applicationNo });
 
@@ -223,10 +225,9 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                 ? `${customerAddress.trim()} ${detailAddress.trim()}` 
                 : customerAddress.trim();
 
-            const response = await fetch(`/api/applications/${application.applicationNo}/details`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
+            await updateDetails({
+                applicationNo: application.applicationNo,
+                updates: {
                     status,
                     memo,
                     firstPaymentDate,
@@ -250,21 +251,16 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                     partnerName: selectedPartnerName,
                     accessPath,
                     partnerMemberId,
-                    changedBy: isAdmin ? "admin" : (partnerLoginId || "unknown"),
-                }),
+                },
+                changedBy: isAdmin ? "admin" : (partnerLoginId || "unknown"),
             });
 
-            const data = await response.json();
-            if (data.success) {
-                alert("수정사항이 저장되었습니다.");
-                onUpdate();
-                onClose();
-            } else {
-                alert(data.message || "오류가 발생했습니다.");
-            }
+            alert("수정사항이 저장되었습니다.");
+            onUpdate();
+            onClose();
         } catch (error) {
-            console.error(error);
-            alert("서버 통신 오류가 발생했습니다.");
+            console.error("Save error:", error);
+            alert("저장 중 오류가 발생했습니다.");
         } finally {
             setIsLoading(false);
         }
@@ -593,7 +589,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                         </select>
                                     </div>
                                     <InputRow label="회원번호" value={partnerMemberId} onChange={setPartnerMemberId} placeholder="회원번호 입력" />
-                                    <InfoRow label="신청일시" value={formatDate(application.registrationDate || application.createdAt) || '-'} />
+                                    <InfoRow label="신청일시" value={formatDateTime(application.createdAt, (application as any)._creationTime) || '-'} />
                                 </>
                             ) : (
                                 <>
@@ -601,7 +597,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                     <InfoRow label="파트너 ID" value={partnerLoginId || application.partnerId} />
                                     <InfoRow label="접속경로" value={application.accessPath === 'H' ? '홈페이지 (H)' : '직접등록 (D)'} />
                                     <InfoRow label="회원번호" value={application.partnerMemberId || '-'} />
-                                    <InfoRow label="신청일시" value={formatDate(application.registrationDate || application.createdAt) || '-'} />
+                                    <InfoRow label="신청일시" value={formatDateTime(application.createdAt, (application as any)._creationTime) || '-'} />
                                 </>
                             )}
                         </div>

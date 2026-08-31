@@ -30,6 +30,45 @@ export function getKSTDateTimeString(dateInput?: Date | string | number): string
     }).format(d);
 }
 
+// 2-digit 연/월/일 및 분단위 일시 표시 포맷 (예: 26. 08. 28. 오후 04:44)
+export function formatDateTime(val?: Date | string | number, fallbackCreationTime?: number): string {
+    if (!val && !fallbackCreationTime) return "-";
+
+    let d: Date | null = null;
+
+    if (val) {
+        // Excel serial handling
+        const serial = typeof val === 'number' ? val : (typeof val === 'string' && !val.includes('-') && !val.includes(':') && !val.includes('T') ? parseFloat(val) : NaN);
+        if (!isNaN(serial) && serial > 30000 && serial < 60000) {
+            d = new Date((serial - 25569) * 86400 * 1000);
+        } else {
+            const parsed = new Date(String(val));
+            if (!isNaN(parsed.getTime())) {
+                d = parsed;
+            }
+        }
+    }
+
+    if (!d || isNaN(d.getTime())) {
+        if (fallbackCreationTime) {
+            d = new Date(fallbackCreationTime);
+        }
+    }
+
+    if (!d || isNaN(d.getTime())) {
+        return String(val || "-");
+    }
+
+    return d.toLocaleString('ko-KR', {
+        timeZone: 'Asia/Seoul',
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
+
 // 한국 시간 기준 금월 1일 (YYYY-MM-01)
 export function getKSTFirstDayOfMonth(): string {
     const now = new Date();

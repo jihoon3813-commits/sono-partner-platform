@@ -6,7 +6,7 @@ import CustomerDetailModal from "./CustomerDetailModal";
 import CustomerRegistrationModal from "./CustomerRegistrationModal";
 import BulkUploadModal from "./BulkUploadModal";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
-import { getKSTDateString, getKSTMonthsAgoDateString, getKSTLastMonthRange } from "@/lib/dateUtils";
+import { getKSTDateString, getKSTMonthsAgoDateString, getKSTLastMonthRange, formatDateTime } from "@/lib/dateUtils";
 
 interface CustomerManagementProps {
     applications: Application[];
@@ -496,7 +496,7 @@ export default function CustomerManagement({
                                         const rows = filteredApplications.map((app, index) => [
                                             filteredApplications.length - index,
                                             app.applicationNo,
-                                            new Date(app.createdAt).toLocaleString(),
+                                            formatDateTime(app.createdAt, (app as any)._creationTime),
                                             app.partnerName,
                                             app.partnerId,
                                             getPartnerLoginId(app.partnerId),
@@ -863,7 +863,7 @@ export default function CustomerManagement({
                                                 {sortedApplications.length - ((currentPage - 1) * itemsPerPage + index)}
                                             </td>
                                             <td className="px-2 py-4 text-xs text-gray-500 text-center whitespace-nowrap">
-                                                {app.registrationDate ? formatDate(app.registrationDate) : new Date(app.createdAt).toLocaleString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                                                {formatDateTime(app.createdAt, (app as any)._creationTime)}
                                             </td>
                                             <td className="px-2 py-4 text-center whitespace-nowrap">
                                                 <div className="text-sm font-bold text-sono-dark">{app.partnerName}</div>
@@ -1194,7 +1194,7 @@ function DuplicateCheckModal({ app, onClose, onConfirm }: { app: Application, on
                                             <div className="text-[11px] text-gray-400 font-bold">신청번호</div>
                                             <div className="text-[11px] text-sono-dark font-bold text-right">{dup.applicationNo}</div>
                                             <div className="text-[11px] text-gray-400 font-bold">등록일시</div>
-                                            <div className="text-[11px] text-sono-dark font-bold text-right">{new Date(dup.createdAt).toLocaleDateString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit' })}</div>
+                                            <div className="text-[11px] text-sono-dark font-bold text-right">{formatDateTime(dup.createdAt, dup._creationTime)}</div>
                                             {dup.productType && (
                                                 <>
                                                     <div className="text-[11px] text-gray-400 font-bold">상품명</div>

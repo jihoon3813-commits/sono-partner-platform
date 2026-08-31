@@ -260,6 +260,7 @@ export const updateApplicationDetails = mutation({
         let statusChanged = false;
         Object.entries(actualUpdates).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
+                if (key === 'createdAt') return; // 최초 접수/등록일시는 변조 방지
                 patchData[key] = value;
                 if (key === 'status' && String(value) !== previousStatus) {
                     statusChanged = true;
@@ -594,18 +595,29 @@ export const bulkSyncApplications = mutation({
                     updated++;
                     updatedNamesSet.add(`${customerName} [${reasonStr}]`);
                 }
-            } else {
                 // Create
                 const dateStr = now.slice(0, 10).replace(/-/g, '');
                 const random = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
                 const applicationNo = `SA-${dateStr}-${random}`;
+
+                let finalCreatedAt = now;
+                if (data.createdAt) {
+                    const parsed = new Date(data.createdAt);
+                    if (!isNaN(parsed.getTime())) {
+                        finalCreatedAt = data.createdAt;
+                    } else if (formattedRegistrationDate) {
+                        finalCreatedAt = `${formattedRegistrationDate}T${now.substring(11)}`;
+                    }
+                } else if (formattedRegistrationDate) {
+                    finalCreatedAt = `${formattedRegistrationDate}T${now.substring(11)}`;
+                }
 
                 await ctx.db.insert("applications", {
                     ...baseData,
                     status: baseData.status || "접수",
                     registrationDate: formattedRegistrationDate,
                     applicationNo,
-                    createdAt: data.createdAt || now,
+                    createdAt: finalCreatedAt,
                     updatedAt: now,
                 });
                 created++;
@@ -687,6 +699,22 @@ export const fixLegacyData = mutation({
 
             const newPayDate = formatDate(master.firstPaymentDate);
             if (newPayDate !== master.firstPaymentDate) { updates.firstPaymentDate = newPayDate; needsUpdate = true; }
+
+            // Normalize createdAt
+            let isValidCreatedAt = false;
+            if (master.createdAt) {
+                const d = new Date(master.createdAt);
+                if (!isNaN(d.getTime())) isValidCreatedAt = true;
+            }
+            if (!isValidCreatedAt) {
+                const creationDate = new Date(master._creationTime);
+                const kstCreation = new Date(creationDate.getTime() + 9 * 60 * 60 * 1000);
+                const kstCreationISO = kstCreation.toISOString().replace("Z", "+09:00");
+                const creationTimeOnly = kstCreationISO.substring(11);
+                const regDateValid = /^\d{4}-\d{2}-\d{2}$/.test(newRegDate);
+                updates.createdAt = regDateValid ? `${newRegDate}T${creationTimeOnly}` : kstCreationISO;
+                needsUpdate = true;
+            }
 
             // Normalize additional date fields
             const dateFields = [
@@ -865,4 +893,52 @@ export const updateMultipleApplicationStatuses = mutation({
         return count;
     },
 });
+
+// 모든 기존 고객의 createdAt을 KST ISO 일시(분단위 포함)로 소급 마이그레이션
+export const migrateAllApplicationsCreatedAt = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const apps = await ctx.db.query("applications").collect();
+        let migratedCount = 0;
+
+        for (const app of apps) {
+            const creationDate = new Date(app._creationTime);
+            const kstCreation = new Date(creationDate.getTime() + 9 * 60 * 60 * 1000);
+            const kstCreationISO = kstCreation.toISOString().replace("Z", "+09:00");
+            const creationTimeOnly = kstCreationISO.substring(11); // HH:mm:ss.sss+09:00
+
+            let datePart = "";
+            if (app.registrationDate && /^\d{4}-\d{2}-\d{2}$/.test(app.registrationDate.trim())) {
+                datePart = app.registrationDate.trim();
+            }
+
+            let isValidCreatedAt = false;
+            if (app.createdAt) {
+                const d = new Date(app.createdAt);
+                if (!isNaN(d.getTime())) {
+                    isValidCreatedAt = true;
+                }
+            }
+
+            let targetCreatedAt = app.createdAt;
+            if (!isValidCreatedAt) {
+                if (datePart) {
+                    targetCreatedAt = `${datePart}T${creationTimeOnly}`;
+                } else {
+                    targetCreatedAt = kstCreationISO;
+                }
+            }
+
+            if (targetCreatedAt !== app.createdAt) {
+                await ctx.db.patch(app._id, {
+                    createdAt: targetCreatedAt,
+                });
+                migratedCount++;
+            }
+        }
+
+        return { total: apps.length, migrated: migratedCount };
+    },
+});
+
 
