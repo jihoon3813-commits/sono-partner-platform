@@ -217,6 +217,19 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
         }).open();
     };
 
+    const handleCopy = async (text: string) => {
+        if (!text) {
+            alert("복사할 내용이 없습니다.");
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(text);
+            alert("복사되었습니다.");
+        } catch (err) {
+            console.error("복사에 실패했습니다.", err);
+        }
+    };
+
     const handleSaveAll = async () => {
         setIsLoading(true);
         try {
@@ -358,11 +371,11 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                     <InputRow label="신규등록일" value={registrationDate} onChange={setRegistrationDate} type="date" />
                                     <InputRow label="초회납입일" value={firstPaymentDate} onChange={setFirstPaymentDate} type="date" />
                                     <div className="flex items-center gap-2 text-sm">
-                                        <span className="w-24 text-gray-400 font-medium shrink-0">납입방법</span>
+                                        <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0">납입방법</span>
                                         <select
                                             value={paymentMethod}
                                             onChange={(e) => setPaymentMethod(e.target.value)}
-                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                            className="flex-1 min-w-0 bg-gray-50 border border-gray-200 text-sono-dark text-xs sm:text-sm rounded-lg px-2.5 sm:px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
                                         >
                                             <option value="">선택하세요</option>
                                             <option value="신용카드">신용카드</option>
@@ -403,11 +416,11 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             <InputRow label="연락처" value={customerPhone} onChange={setCustomerPhone} placeholder="010-0000-0000" showCopy showCopyNoHyphen />
                             <InputRow label="생년월일" value={customerBirth} onChange={setCustomerBirth} placeholder="YYMMDD" />
                             <div className="flex items-center gap-2 text-sm">
-                                <span className="w-24 text-gray-400 font-medium shrink-0">성별</span>
+                                <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0">성별</span>
                                 <select
                                     value={customerGender}
                                     onChange={(e) => setCustomerGender(e.target.value)}
-                                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                    className="flex-1 min-w-0 bg-gray-50 border border-gray-200 text-sono-dark text-xs sm:text-sm rounded-lg px-2.5 sm:px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
                                 >
                                     <option value="-">미지정</option>
                                     <option value="남성">남성</option>
@@ -452,11 +465,11 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                         <div className="space-y-3">
                             {/* Application Product Info - Now editable by both Admin and Partners */}
                             <div className="flex items-center gap-2 text-sm">
-                                <span className="w-24 text-gray-400 font-medium shrink-0">상품 유형</span>
+                                <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0">상품 유형</span>
                                 <select
                                     value={productType}
                                     onChange={(e) => setProductType(e.target.value)}
-                                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px] font-bold"
+                                    className="flex-1 min-w-0 bg-gray-50 border border-gray-200 text-sono-dark text-xs sm:text-sm rounded-lg px-2.5 sm:px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px] font-bold"
                                 >
                                     {/* Always preserve existing productType option if not in allowedCareProducts */}
                                     {productType && !allowedCareProducts.some(cp => cp.name === productType) && (
@@ -468,38 +481,50 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                 </select>
                             </div>
                             <div className="flex items-center gap-2 text-sm">
-                                <span className="w-24 text-gray-400 font-medium shrink-0">가전제품</span>
-                                {currentCareProduct?.productType === "combination" || (productType && productType.startsWith("스마트")) ? (
-                                    <select
-                                        value={products}
-                                        onChange={(e) => setProducts(e.target.value)}
-                                        className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0">가전제품</span>
+                                <div className="flex-1 flex gap-1.5 items-center min-w-0">
+                                    {currentCareProduct?.productType === "combination" || (productType && productType.startsWith("스마트")) ? (
+                                        <select
+                                            value={products}
+                                            onChange={(e) => setProducts(e.target.value)}
+                                            className="flex-1 min-w-0 bg-gray-50 border border-gray-200 text-sono-dark text-xs sm:text-sm rounded-lg px-2.5 sm:px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px] truncate"
+                                        >
+                                            <option value="">-- 가전제품 선택 ({availableAppliances.length}개) --</option>
+                                            {products && !availableAppliances.some(p => `${p.brand ? `[${p.brand}] ` : ''}${p.name}` === products || p.name === products) && (
+                                                <option value={products}>{products}</option>
+                                            )}
+                                            {availableAppliances.map(p => {
+                                                const label = `${p.brand ? `[${p.brand}] ` : ''}${p.name}${p.model ? ` (${p.model})` : ''}`;
+                                                return <option key={p._id} value={label}>{label}</option>;
+                                            })}
+                                        </select>
+                                    ) : (
+                                        <input
+                                            type="text"
+                                            value={products}
+                                            onChange={(e) => setProducts(e.target.value)}
+                                            placeholder="가전제품명 입력"
+                                            className="flex-1 min-w-0 bg-gray-50 border border-gray-200 text-sono-dark text-xs sm:text-sm rounded-lg px-2.5 sm:px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                        />
+                                    )}
+                                    <button 
+                                        type="button"
+                                        onClick={() => handleCopy(products)}
+                                        className="p-1.5 bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-lg transition-colors border border-gray-200 shrink-0"
+                                        title="가전제품 복사"
                                     >
-                                        <option value="">-- 가전제품 선택 ({availableAppliances.length}개) --</option>
-                                        {products && !availableAppliances.some(p => `${p.brand ? `[${p.brand}] ` : ''}${p.name}` === products || p.name === products) && (
-                                            <option value={products}>{products}</option>
-                                        )}
-                                        {availableAppliances.map(p => {
-                                            const label = `${p.brand ? `[${p.brand}] ` : ''}${p.name}${p.model ? ` (${p.model})` : ''}`;
-                                            return <option key={p._id} value={label}>{label}</option>;
-                                        })}
-                                    </select>
-                                ) : (
-                                    <input
-                                        type="text"
-                                        value={products}
-                                        onChange={(e) => setProducts(e.target.value)}
-                                        placeholder="가전제품명 입력"
-                                        className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
-                                    />
-                                )}
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                             <div className="flex items-center gap-2 text-sm">
-                                <span className="w-24 text-gray-400 font-medium shrink-0">구좌</span>
+                                <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0">구좌</span>
                                 <select
                                     value={planType}
                                     onChange={(e) => setPlanType(e.target.value)}
-                                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                    className="flex-1 min-w-0 bg-gray-50 border border-gray-200 text-sono-dark text-xs sm:text-sm rounded-lg px-2.5 sm:px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
                                 >
                                     {planType && !["1구좌", "2구좌", "3구좌", "4구좌", "1", "2", "3", "4"].includes(planType) && (
                                         <option value={planType}>{planType}</option>
@@ -522,11 +547,11 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             </div>
                             <InputRow label="문의사항" value={inquiry} onChange={setInquiry} />
                             <div className="flex items-center gap-2 text-sm">
-                                <span className="w-24 text-gray-400 font-medium shrink-0">선호 시간</span>
+                                <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0">선호 시간</span>
                                 <select
                                     value={preferredContactTime}
                                     onChange={(e) => setPreferredContactTime(e.target.value)}
-                                    className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                    className="flex-1 min-w-0 bg-gray-50 border border-gray-200 text-sono-dark text-xs sm:text-sm rounded-lg px-2.5 sm:px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
                                 >
                                     <option value="">선택하세요</option>
                                     {preferredContactTime && !["10:00~11:00", "11:00~12:00", "14:00~15:00", "15:00~16:00", "16:00~17:00", "17:00~18:00", "10시~11시", "11시~12시", "14시~15시", "15시~16시", "16시~17시", "17시~18시"].includes(preferredContactTime) && (
@@ -549,7 +574,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             {isAdmin ? (
                                 <>
                                     <div className="flex items-center gap-2 text-sm">
-                                        <span className="w-24 text-gray-400 font-medium shrink-0">파트너사</span>
+                                        <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0">파트너사</span>
                                         <select
                                             value={selectedPartnerId}
                                             onChange={(e) => {
@@ -562,7 +587,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                                     setSelectedPartnerName(val);
                                                 }
                                             }}
-                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px] font-bold"
+                                            className="flex-1 min-w-0 bg-gray-50 border border-gray-200 text-sono-dark text-xs sm:text-sm rounded-lg px-2.5 sm:px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px] font-bold truncate"
                                         >
                                             {!partnersData?.some(p => p.partnerId === selectedPartnerId) && selectedPartnerId && (
                                                 <option value={selectedPartnerId}>
@@ -578,11 +603,11 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                     </div>
                                     <InfoRow label="파트너 ID" value={customerPartner?.loginId || selectedPartnerId || '-'} />
                                     <div className="flex items-center gap-2 text-sm">
-                                        <span className="w-24 text-gray-400 font-medium shrink-0">접속경로</span>
+                                        <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0">접속경로</span>
                                         <select
                                             value={accessPath}
                                             onChange={(e) => setAccessPath(e.target.value)}
-                                            className="flex-1 bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
+                                            className="flex-1 min-w-0 bg-gray-50 border border-gray-200 text-sono-dark text-xs sm:text-sm rounded-lg px-2.5 sm:px-3 py-1.5 focus:ring-1 focus:ring-sono-primary outline-none h-[34px]"
                                         >
                                             <option value="H">홈페이지 (H)</option>
                                             <option value="D">직접등록 (D)</option>
@@ -689,8 +714,8 @@ function InfoRow({ label, value, showCopy, showCopyNoHyphen }: { label: string, 
 
     return (
         <div className="flex text-sm items-start md:items-center py-0.5">
-            <span className="w-24 text-gray-400 font-medium shrink-0 pt-1 md:pt-0">{label}</span>
-            <div className="flex flex-wrap items-center gap-1.5 flex-1">
+            <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0 pt-1 md:pt-0">{label}</span>
+            <div className="flex flex-wrap items-center gap-1.5 flex-1 min-w-0">
                 <span className="text-sono-dark font-medium break-all">{value}</span>
                 <div className="flex gap-1">
                     {showCopy && (
