@@ -568,7 +568,7 @@ export default function Happy450LecturePage() {
                                     { title: "웨딩", img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product06.jpg", url: "https://www.sonoimready.com/front/sc/chgServList?prdctCd=%EC%9B%A8%EB%94%A9" },
                                     { title: "리빙", img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product07.jpg", url: "https://www.sonoimready.com/front/sc/chgServList?prdctCd=%EB%A6%AC%EB%B9%99" },
                                     { title: "명품케어", img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product10.jpg?raw=true", url: "https://www.sonoimready.com/front/sc/chgServList?prdctCd=%EB%AA%85%ED%92%88%EC%BC%80%EC%96%B4" },
-                                    { title: "쉼케어", img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product08.jpg?raw=true", url: "https://www.sonoimready.com/front/sc/chgServList?prdctCd=%EC%89%BC%EC%BC%80%EC%96%B4" }
+                                    { title: "장지 시설", img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product08.jpg?raw=true", url: "https://www.sonoimready.com/front/sc/chgServList?prdctCd=%EC%89%BC%EC%BC%80%EC%96%B4" }
                                 ].map((h, i) => (
                                     <div 
                                         key={i} 

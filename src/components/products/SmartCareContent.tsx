@@ -242,20 +242,20 @@ const hybridDetails: Record<string, HybridServiceDetail> = {
         ]
     },
     "쉼케어": {
-        title: "장지 및 안심 힐링 쉼케어",
-        subtitle: "고품격 장지 에스코트 및 심리케어 웰니스 서비스",
-        desc: "갑작스러운 시기에 가족 모두의 안정을 돕는 종합심리검사 상담 서비스와 함께 최고의 장지 안치 시설 우대 안내 서비스를 제공합니다.",
+        title: "장지 시설 서비스",
+        subtitle: "봉안당·수목장·봉안묘 등 엄선된 명품 추모공원 전환 혜택",
+        desc: "소중한 분을 평온하게 모실 수 있도록 전국 우수 봉안당, 봉안묘, 수목장 등 합법적인 허가 및 관리가 이뤄지는 명품 장지 시설을 엄선하여 전문 컨설팅과 안치 우대 혜택을 제공합니다.",
         img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product08.jpg?raw=true",
         highlights: [
-            "전국 우수 추모공원 및 납골당 VIP 우대 할인",
-            "전문 에스코트 및 상담 전문 동행 요원 배치",
-            "가족 종합 심리케어 검사 무료 바우처 지급"
+            "전국 우수 봉안당·봉안묘·수목장 시설 제휴 우대",
+            "합법적 허가 및 체계적 관리가 검증된 명품 장지 엄선",
+            "전문 장지 컨설팅 및 맞춤 현장 동행 답사 지원"
         ],
         guide: {
             available: "더해피450 ONE (1구좌 이상)",
-            conditions: "상시 예약 신청 가능",
+            conditions: "상시 예약 신청 가능 (상중 이용 불가, 사전 신청 필수)",
             fees: "안치단 위치 및 석조 가공 비용 별도",
-            method: "소노아임레디 고객센터 1588-5811 접수"
+            method: "소노아임레디 고객센터 1588-8511 접수"
         },
         items: [
             { name: "[장지] 장지 시설 서비스", desc: "합법적인 허가 및 관리가 이뤄지는 장지시설 엄선", price: "3,990,000원~", period: "상시", tags: ["추천","전환"], img: "https://www.sonoimready.com/service/file/fileView?fileUrl=/attach/se/2025/03/27/9d4c2dda-4ef2-4147-9cea-06e9a9edff9c", status: "접수중", link: "https://www.sonoimready.com/front/sc/chgServDetail?prdctSeq=40&prdctCd=%EC%89%BC%EC%BC%80%EC%96%B4" }
@@ -2032,20 +2032,20 @@ export default function SmartCareContent({
                                     )
                                 },
                                 { 
-                                    title: "토탈 헬스 & 쉼케어", 
-                                    subtitle: "검진부터 홈케어까지 아우르는 웰니스 혜택",
-                                    desc: "건강한 삶의 동반자로서 종합 건강검진 우대 혜택부터 전문 케어 코디네이터 연계, 살균 및 소독 청소 홈케어까지 맞춤 제공합니다.",
+                                    title: "장지 시설 서비스", 
+                                    subtitle: "봉안당·수목장·봉안묘 등 엄선된 명품 추모시설",
+                                    desc: "소중한 분을 평온하게 모실 수 있도록 전국 우수 봉안당, 봉안묘, 수목장 등 합법적인 허가 및 관리가 이뤄지는 명품 장지 시설을 엄선하여 맞춤 전환 혜택을 제공합니다.",
                                     key: "쉼케어", 
                                     badge: "하이브리드 전환",
                                     img: "https://github.com/jihoon3813-commits/img_sono/blob/main/photo_best02_product08.jpg?raw=true",
                                     features: [
-                                        "전국 종합 검진 센터 회원 특별 우대",
-                                        "전문 교육 홈케어 살균/방역 서비스",
-                                        "시니어 요양 및 전문 간병 매칭 지원"
+                                        "전국 우수 봉안당·봉안묘·수목장 제휴 우대",
+                                        "합법적 허가 및 체계적 관리 장지시설 엄선",
+                                        "전문 장지 컨설팅 및 현장 동행 답사 지원"
                                     ],
                                     icon: (
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
                                         </svg>
                                     )
                                 }
@@ -2532,7 +2532,7 @@ export default function SmartCareContent({
                             <div className="bg-gray-50 border-b border-gray-200 px-3.5 sm:px-6 py-3 sm:py-4 flex justify-between items-center shrink-0 gap-2">
                                 <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1 flex-wrap sm:flex-nowrap">
                                     <span className="bg-blue-50 text-blue-600 text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded border border-blue-200 whitespace-nowrap shrink-0">
-                                        {selectedHybrid} 하이브리드 전환
+                                        {selectedHybrid === "쉼케어" ? "장지 시설" : selectedHybrid} 하이브리드 전환
                                     </span>
                                     <span className="text-slate-500 text-[10px] sm:text-xs font-bold truncate">
                                         100% 가치 대체 서비스
