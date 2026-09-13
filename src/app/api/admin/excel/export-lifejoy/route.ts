@@ -1,27 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import os from "os";
 import ExcelJS from "exceljs";
 
-// hoon 폴더의 최신 라이프앤조이 엑셀 파일 경로 조회
+// 최신 라이프앤조이 엑셀 파일 경로 조회 (/tmp 및 hoon 디렉토리 병합 탐색)
 function getLatestExcelFilePath(): { filePath: string; fileName: string } {
-    const hoonDir = path.join(process.cwd(), "hoon");
-    if (!fs.existsSync(hoonDir)) {
-        fs.mkdirSync(hoonDir, { recursive: true });
+    const candidates: { filePath: string; fileName: string }[] = [];
+
+    // 1. /tmp 디렉토리 탐색 (서버리스 환경)
+    try {
+        const tmpDir = os.tmpdir();
+        if (fs.existsSync(tmpDir)) {
+            const tmpFiles = fs.readdirSync(tmpDir).filter(f => f.startsWith("라이프앤조이_더해피one_가입요청") && f.endsWith(".xlsx"));
+            tmpFiles.forEach(f => {
+                candidates.push({ filePath: path.join(tmpDir, f), fileName: f });
+            });
+        }
+    } catch (e) {
+        console.warn("Failed to read tmp directory:", e);
     }
 
-    const files = fs.readdirSync(hoonDir).filter(f => f.startsWith("라이프앤조이_더해피one_가입요청") && f.endsWith(".xlsx"));
-    if (files.length === 0) {
-        throw new Error("hoon 폴더에 기준 엑셀 파일이 존재하지 않습니다.");
+    // 2. hoon 디렉토리 탐색 (로컬 및 빌드 배포본)
+    try {
+        const hoonDir = path.join(process.cwd(), "hoon");
+        if (fs.existsSync(hoonDir)) {
+            const hoonFiles = fs.readdirSync(hoonDir).filter(f => f.startsWith("라이프앤조이_더해피one_가입요청") && f.endsWith(".xlsx"));
+            hoonFiles.forEach(f => {
+                candidates.push({ filePath: path.join(hoonDir, f), fileName: f });
+            });
+        }
+    } catch (e) {
+        console.warn("Failed to read hoon directory:", e);
+    }
+
+    if (candidates.length === 0) {
+        throw new Error("기준 엑셀 파일이 존재하지 않습니다.");
     }
 
     // 파일명 기준 정렬 (최신 날짜/차수 우선)
-    files.sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
-    const latestFile = files[0];
-    return {
-        filePath: path.join(hoonDir, latestFile),
-        fileName: latestFile,
-    };
+    candidates.sort((a, b) => b.fileName.localeCompare(a.fileName, undefined, { numeric: true }));
+    return candidates[0];
 }
 
 // 판매채널 자동 판별 함수 (환경설정 매핑 지원)
@@ -451,11 +470,24 @@ export async function POST(req: NextRequest) {
         // 새 파일 바이너리 버퍼 생성
         const buffer = await workbook.xlsx.writeBuffer();
 
-        // 서버 hoon 디렉토리에도 새 파일로 보관
+        // 서버/임시 저장소 보관 (로컬 hoon 폴더 또는 Vercel /tmp)
         if (saveToServer) {
-            const hoonDir = path.join(process.cwd(), "hoon");
-            const newFilePath = path.join(hoonDir, targetFileName);
-            fs.writeFileSync(newFilePath, Buffer.from(buffer));
+            try {
+                const hoonDir = path.join(process.cwd(), "hoon");
+                if (fs.existsSync(hoonDir)) {
+                    const newFilePath = path.join(hoonDir, targetFileName);
+                    fs.writeFileSync(newFilePath, Buffer.from(buffer));
+                }
+            } catch (fsErr: any) {
+                // Vercel / 서버리스 읽기전용 환경(EROFS)일 경우 /tmp 에 백업 보관
+                try {
+                    const tmpDir = os.tmpdir();
+                    const tmpFilePath = path.join(tmpDir, targetFileName);
+                    fs.writeFileSync(tmpFilePath, Buffer.from(buffer));
+                } catch (tmpErr) {
+                    console.warn("Failed to write to tmp dir:", tmpErr);
+                }
+            }
         }
 
         // 다운로드 파일명 인코딩 (한글 지원)
