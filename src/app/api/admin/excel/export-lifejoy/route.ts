@@ -418,6 +418,11 @@ export async function POST(req: NextRequest) {
         let addedCount = 0;
 
         for (const customer of customers) {
+            // 접수대기 상태 데이터만 엑셀에 추가
+            if (customer.status && customer.status !== "접수대기") {
+                continue;
+            }
+
             // 상품별 시트 분기: 더해피450 -> '450', 스마트케어 -> 'combined'
             const sheetType = resolveSheetType(customer);
             const reqDate = parseToDate(customer.registrationDate || customer.createdAt);

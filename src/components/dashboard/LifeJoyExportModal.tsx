@@ -56,6 +56,8 @@ export default function LifeJoyExportModal({
     const [selectedAppNos, setSelectedAppNos] = useState<string[]>([]);
     // 고객별 채널 오버라이드
     const [customChannels, setCustomChannels] = useState<{ [appNo: string]: string }>({});
+    // 상태 필터: 기본 '접수대기' 건만 보기
+    const [statusFilter, setStatusFilter] = useState<"pending" | "all">("pending");
 
     // 채널 자동 판별 헬퍼 (환경설정 매핑 최우선 반영)
     const getDefaultChannel = (app: Application) => {
@@ -153,14 +155,19 @@ export default function LifeJoyExportModal({
         return ymd < "2026-09-01";
     };
 
-    // 이미 등록된 고객인지 확인 (과거 등록 고객은 모두 반영완료로 처리)
+    // 이미 등록된 고객인지 확인 (접수대기가 아니거나 과거 등록 고객은 모두 반영완료로 처리)
     const isAlreadyInExcel = (app: Application) => {
+        // 0. 접수대기 상태가 아닌 고객은 엑셀 추가 대상이 아니므로 모두 반영완료 처리
+        if (app.status !== "접수대기") {
+            return true;
+        }
+
         // 1. 과거 등록 고객은 미반영 없고 모두 반영으로 처리
         if (isPastRegisteredCustomer(app)) {
             return true;
         }
 
-        // 2. 최신 2개 및 앞으로 등록하는 신규 고객만 엑셀 대조
+        // 2. 26년 9월 이후 및 앞으로 등록하는 접수대기 신규 고객만 엑셀 대조
         const cleanPhone = String(app.customerPhone || "").replace(/[^\d]/g, "");
         const key = `${String(app.customerName || "").trim()}_${cleanPhone}`;
         return existingList.some(c => `${c.name}_${c.phone}` === key);
@@ -193,8 +200,8 @@ export default function LifeJoyExportModal({
                         const key = `${String(app.customerName || "").trim()}_${cleanPhone}`;
                         channelMap[app.applicationNo] = getDefaultChannel(app);
 
-                        // 과거 고객은 제외, 최신 미반영 고객만 자동 선택
-                        if (!isPastRegisteredCustomer(app) && !existingSet.has(key)) {
+                        // 접수대기 상태이면서 26년 9월 이후 미반영 고객만 자동 선택
+                        if (app.status === "접수대기" && !isPastRegisteredCustomer(app) && !existingSet.has(key)) {
                             newAppNos.push(app.applicationNo);
                         }
                     });
@@ -210,7 +217,7 @@ export default function LifeJoyExportModal({
         }
 
         fetchInfo();
-    }, [isOpen, applications, channelSetting]);
+    }, [isOpen, applications]);
 
     if (!isOpen) return null;
 
@@ -225,17 +232,20 @@ export default function LifeJoyExportModal({
 
     // 전체 선택 / 해제
     const handleToggleAll = () => {
-        if (selectedAppNos.length === applications.length) {
+        const currentList = statusFilter === "pending"
+            ? applications.filter(a => a.status === "접수대기")
+            : applications;
+        if (selectedAppNos.length === currentList.length) {
             setSelectedAppNos([]);
         } else {
-            setSelectedAppNos(applications.map(a => a.applicationNo));
+            setSelectedAppNos(currentList.map(a => a.applicationNo));
         }
     };
 
-    // 미반영 신규 고객만 전체 선택
+    // 미반영 신규 고객만 전체 선택 (접수대기 건 기준)
     const handleSelectOnlyNew = () => {
         const newAppNos = applications
-            .filter(app => !isAlreadyInExcel(app))
+            .filter(app => app.status === "접수대기" && !isAlreadyInExcel(app))
             .map(app => app.applicationNo);
         setSelectedAppNos(newAppNos);
     };
@@ -296,8 +306,16 @@ export default function LifeJoyExportModal({
         }
     };
 
+    // 상태 필터에 따른 목록 (기본: '접수대기'만)
+    const filteredApplications = applications.filter(app => {
+        if (statusFilter === "pending") {
+            return app.status === "접수대기";
+        }
+        return true;
+    });
+
     // 미반영 신규 고객이 테이블 위쪽에 오도록 정렬
-    const sortedApplications = [...applications].sort((a, b) => {
+    const sortedApplications = [...filteredApplications].sort((a, b) => {
         const aAlready = isAlreadyInExcel(a);
         const bAlready = isAlreadyInExcel(b);
         if (aAlready !== bAlready) {
@@ -306,7 +324,8 @@ export default function LifeJoyExportModal({
         return (b.createdAt || "").localeCompare(a.createdAt || "");
     });
 
-    const newCustomerCount = applications.filter(a => !isAlreadyInExcel(a)).length;
+    // 접수대기 상태이면서 엑셀 미반영인 신규 고객 수 계산
+    const newCustomerCount = applications.filter(a => a.status === "접수대기" && !isAlreadyInExcel(a)).length;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
@@ -353,7 +372,7 @@ export default function LifeJoyExportModal({
                                 </div>
                                 <div className="text-emerald-600 font-bold flex items-center gap-1.5">
                                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                    미반영 신규 고객: {newCustomerCount}명 감지됨
+                                    접수대기 신규 고객: {newCustomerCount}명 감지됨
                                 </div>
                             </div>
 
@@ -388,13 +407,27 @@ export default function LifeJoyExportModal({
                         {/* 2. 추가할 고객 선택 테이블 */}
                         <div>
                             <div className="flex items-center justify-between mb-2.5">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-3">
                                     <h3 className="text-sm font-black text-gray-800">
                                         추가할 고객 선택 ({selectedAppNos.length}명 선택됨)
                                     </h3>
-                                    <span className="text-xs text-gray-400">
-                                        (체크된 고객이 기존 엑셀 시트의 마지막 번호 뒤에 이어서 삽입됩니다)
-                                    </span>
+                                    {/* 상태 필터 토글 */}
+                                    <div className="inline-flex p-0.5 bg-gray-100 rounded-lg text-xs font-bold border border-gray-200">
+                                        <button
+                                            type="button"
+                                            onClick={() => setStatusFilter("pending")}
+                                            className={`px-2.5 py-1 rounded-md transition-all ${statusFilter === "pending" ? "bg-white text-emerald-700 shadow-sm font-black" : "text-gray-500 hover:text-gray-800"}`}
+                                        >
+                                            접수대기만 ({applications.filter(a => a.status === "접수대기").length}건)
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setStatusFilter("all")}
+                                            className={`px-2.5 py-1 rounded-md transition-all ${statusFilter === "all" ? "bg-white text-gray-800 shadow-sm font-black" : "text-gray-500 hover:text-gray-800"}`}
+                                        >
+                                            전체 보기 ({applications.length}건)
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button
@@ -420,6 +453,7 @@ export default function LifeJoyExportModal({
                                         <tr>
                                             <th className="p-3 w-10 text-center">선택</th>
                                             <th className="p-3 w-20 text-center">구분</th>
+                                            <th className="p-3 w-20 text-center">상태</th>
                                             <th className="p-3">고객명</th>
                                             <th className="p-3">연락처</th>
                                             <th className="p-3">상품명 / 구좌</th>
@@ -429,10 +463,10 @@ export default function LifeJoyExportModal({
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
-                                        {applications.length === 0 ? (
+                                        {filteredApplications.length === 0 ? (
                                             <tr>
-                                                <td colSpan={8} className="p-8 text-center text-gray-400">
-                                                    등록된 고객 데이터가 없습니다.
+                                                <td colSpan={9} className="p-8 text-center text-gray-400">
+                                                    선택한 조건의 고객 데이터가 없습니다.
                                                 </td>
                                             </tr>
                                         ) : (
@@ -464,6 +498,17 @@ export default function LifeJoyExportModal({
                                                                     신규미반영
                                                                 </span>
                                                             )}
+                                                        </td>
+                                                        <td className="p-3 text-center">
+                                                            <span
+                                                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                                                    app.status === "접수대기"
+                                                                        ? "bg-blue-100 text-blue-800"
+                                                                        : "bg-gray-100 text-gray-600"
+                                                                }`}
+                                                            >
+                                                                {app.status || "미지정"}
+                                                            </span>
                                                         </td>
                                                         <td className="p-3 font-bold text-gray-800">
                                                             {app.customerName}
