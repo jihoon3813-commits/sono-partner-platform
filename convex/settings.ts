@@ -63,3 +63,61 @@ export const getTemplateUrl = query({
         }
     },
 });
+
+// 가입요청 엑셀용 판매채널명 매핑 조회
+export const getChannelMappings = query({
+    args: {},
+    handler: async (ctx) => {
+        const setting = await ctx.db
+            .query("settings")
+            .withIndex("by_key", (q) => q.eq("key", "lifejoy_channel_mappings"))
+            .unique();
+
+        if (!setting || !setting.value) {
+            return [];
+        }
+
+        try {
+            return JSON.parse(setting.value);
+        } catch (e) {
+            console.error("Failed to parse channel mappings:", e);
+            return [];
+        }
+    },
+});
+
+// 가입요청 엑셀용 판매채널명 매핑 저장
+export const saveChannelMappings = mutation({
+    args: {
+        mappings: v.array(
+            v.object({
+                partnerId: v.string(),
+                partnerName: v.string(),
+                excelChannelName: v.string(),
+                memo: v.optional(v.string()),
+                updatedAt: v.optional(v.string()),
+            })
+        ),
+    },
+    handler: async (ctx, args) => {
+        const existing = await ctx.db
+            .query("settings")
+            .withIndex("by_key", (q) => q.eq("key", "lifejoy_channel_mappings"))
+            .unique();
+
+        const jsonVal = JSON.stringify(args.mappings);
+
+        if (existing) {
+            await ctx.db.patch(existing._id, {
+                value: jsonVal,
+                updatedAt: nowKST(),
+            });
+        } else {
+            await ctx.db.insert("settings", {
+                key: "lifejoy_channel_mappings",
+                value: jsonVal,
+                updatedAt: nowKST(),
+            });
+        }
+    },
+});

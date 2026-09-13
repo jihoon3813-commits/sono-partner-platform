@@ -17,6 +17,7 @@ import RetentionManagement from "@/components/dashboard/RetentionManagement";
 import RetentionManagement2 from "@/components/dashboard/RetentionManagement2";
 import TMManagement from "@/components/dashboard/TMManagement";
 import AccountManagement from "@/components/dashboard/AccountManagement";
+import ChannelMappingManagement from "@/components/dashboard/ChannelMappingManagement";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { PartnerRequest } from "@/lib/types";
@@ -50,7 +51,7 @@ export default function PartnerDashboard() {
     const [copySuccessInquiry, setCopySuccessInquiry] = useState(false);
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
     const [selectedRequest, setSelectedRequest] = useState<PartnerRequest | null>(null);
-    const [settingsSubTab, setSettingsSubTab] = useState<"status" | "individual" | "account">("status");
+    const [settingsSubTab, setSettingsSubTab] = useState<"status" | "individual" | "account" | "channel">("status");
     const [hqAdminSession, setHqAdminSession] = useState<any>(null);
 
     // Filter States (Lifted from CustomerManagement)
@@ -1100,10 +1101,21 @@ export default function PartnerDashboard() {
                                     >
                                         계정 관리
                                     </button>
+                                    <button
+                                        onClick={() => setSettingsSubTab("channel")}
+                                        className={`px-6 py-2 rounded-xl text-sm font-black transition-all ${
+                                            settingsSubTab === "channel"
+                                                ? "bg-white text-emerald-600 shadow-sm border border-gray-100"
+                                                : "text-gray-400 hover:text-sono-dark"
+                                        }`}
+                                    >
+                                        판매채널(엑셀) 설정
+                                    </button>
                                 </div>
 
                                 {settingsSubTab === "status" && <StatusManagement />}
                                 {settingsSubTab === "individual" && <IndividualPageManagement />}
+                                {settingsSubTab === "channel" && <ChannelMappingManagement />}
                                 {settingsSubTab === "account" && (
                                     <AccountManagement
                                         partner={currentPartner}

@@ -5,6 +5,7 @@ import { Application, Partner, ApplicationStatus } from "@/lib/types";
 import CustomerDetailModal from "./CustomerDetailModal";
 import CustomerRegistrationModal from "./CustomerRegistrationModal";
 import BulkUploadModal from "./BulkUploadModal";
+import LifeJoyExportModal from "./LifeJoyExportModal";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
 import { getKSTDateString, getKSTMonthsAgoDateString, getKSTLastMonthRange, formatDateTime } from "@/lib/dateUtils";
 
@@ -69,6 +70,7 @@ export default function CustomerManagement({
     const [selectedApp, setSelectedApp] = useState<Application | null>(null);
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
     const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
+    const [isLifeJoyExportModalOpen, setIsLifeJoyExportModalOpen] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [selectedAppIds, setSelectedAppIds] = useState<string[]>([]);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -435,6 +437,19 @@ export default function CustomerManagement({
                                         </button>
                                     </div>
                                 </>
+                            )}
+
+                            {isAdmin && (
+                                <button
+                                    onClick={() => setIsLifeJoyExportModalOpen(true)}
+                                    className="flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl text-xs sm:text-sm font-bold hover:from-emerald-700 hover:to-teal-700 transition-all shadow-md active:scale-95 shrink-0 whitespace-nowrap"
+                                    title="hoon 폴더의 가입요청 엑셀 파일에 신규 고객을 자동 추가하고 다운로드합니다."
+                                >
+                                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span>가입요청 엑셀 업데이트</span>
+                                </button>
                             )}
 
                             {isAdmin && (
@@ -1033,6 +1048,15 @@ export default function CustomerManagement({
                     onSuccess={() => {
                         onRefresh();
                     }}
+                />
+            )}
+
+            {isLifeJoyExportModalOpen && (
+                <LifeJoyExportModal
+                    isOpen={isLifeJoyExportModalOpen}
+                    onClose={() => setIsLifeJoyExportModalOpen(false)}
+                    applications={applications}
+                    onSuccess={onRefresh}
                 />
             )}
 
