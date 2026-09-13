@@ -101,6 +101,30 @@ function parseToDate(dateStr?: string): Date {
     return d;
 }
 
+// 시트 헤더(4행)를 분석하여 각 컬럼의 위치를 동적으로 감지 (B열 상태 열 유무 자동 대응)
+function getSheetColMap(ws: ExcelJS.Worksheet): { [key: string]: number } {
+    const colMap: { [key: string]: number } = {};
+    const headerRow = ws.getRow(4);
+    headerRow.eachCell((cell, colNumber) => {
+        const val = String(cell.value || "").trim().replace(/\s+/g, "");
+        if (val.includes("NO") || val.includes("번호")) colMap["no"] = colNumber;
+        else if (val.includes("판매채널") || val.includes("채널")) colMap["channel"] = colNumber;
+        else if (val.includes("판매자")) colMap["seller"] = colNumber;
+        else if (val.includes("요청일")) colMap["reqDate"] = colNumber;
+        else if (val.includes("이름") || val.includes("고객명")) colMap["name"] = colNumber;
+        else if (val.includes("연락처") || val.includes("전화")) colMap["phone"] = colNumber;
+        else if (val.includes("구좌")) colMap["plan"] = colNumber;
+        else if (val.includes("가전")) colMap["product"] = colNumber;
+        else if (val.includes("1차")) colMap["time1"] = colNumber;
+        else if (val.includes("2차")) colMap["time2"] = colNumber;
+        else if (val.includes("희망")) {
+            if (!colMap["time1"]) colMap["time1"] = colNumber;
+            else if (!colMap["time2"]) colMap["time2"] = colNumber;
+        }
+    });
+    return colMap;
+}
+
 // GET: 현재 엑셀에 이미 등록된 고객 목록 및 최신 파일 정보 반환
 export async function GET() {
     try {
@@ -111,12 +135,17 @@ export async function GET() {
         const existingCustomers: { name: string; phone: string; sheet: string; no: number }[] = [];
 
         workbook.eachSheet((ws) => {
+            const colMap = getSheetColMap(ws);
+            const nameCol = colMap["name"] || 6;
+            const phoneCol = colMap["phone"] || 7;
+            const noCol = colMap["no"] || 2;
+
             const rowCount = ws.rowCount;
             for (let r = 5; r <= rowCount; r++) {
                 const row = ws.getRow(r);
-                const no = row.getCell("C").value;
-                const name = row.getCell("G").value;
-                const phone = row.getCell("H").value;
+                const no = row.getCell(noCol).value;
+                const name = row.getCell(nameCol).value;
+                const phone = row.getCell(phoneCol).value;
 
                 if (name && phone && typeof name === "string") {
                     const cleanPhone = String(phone).replace(/[^\d]/g, "");
@@ -140,8 +169,21 @@ export async function GET() {
         const todayPrefix = `라이프앤조이_더해피one_가입요청_${yy}${mm}${dd}_`;
 
         const hoonDir = path.join(process.cwd(), "hoon");
-        const todayFiles = fs.readdirSync(hoonDir).filter(f => f.startsWith(todayPrefix) && f.endsWith(".xlsx"));
-        const nextOrder = todayFiles.length + 1;
+        const tmpDir = os.tmpdir();
+        const todaySet = new Set<string>();
+
+        try {
+            if (fs.existsSync(hoonDir)) {
+                fs.readdirSync(hoonDir).filter(f => f.startsWith(todayPrefix) && f.endsWith(".xlsx")).forEach(f => todaySet.add(f));
+            }
+        } catch (e) {}
+        try {
+            if (fs.existsSync(tmpDir)) {
+                fs.readdirSync(tmpDir).filter(f => f.startsWith(todayPrefix) && f.endsWith(".xlsx")).forEach(f => todaySet.add(f));
+            }
+        } catch (e) {}
+
+        const nextOrder = todaySet.size + 1;
         const suggestedFileName = `${todayPrefix}${nextOrder}.xlsx`;
 
         return NextResponse.json({
@@ -353,37 +395,13 @@ export async function POST(req: NextRequest) {
             return ws;
         };
 
-        // 시트 헤더(4행)를 분석하여 각 컬럼의 위치를 동적으로 감지 (B열 상태 열이 삭제되어도 자동 대응)
-        const getSheetColMap = (ws: ExcelJS.Worksheet) => {
-            const colMap: { [key: string]: number } = {};
-            const headerRow = ws.getRow(4);
-            headerRow.eachCell((cell, colNumber) => {
-                const val = String(cell.value || "").trim().replace(/\s+/g, "");
-                if (val.includes("NO") || val.includes("번호")) colMap["no"] = colNumber;
-                else if (val.includes("판매채널") || val.includes("채널")) colMap["channel"] = colNumber;
-                else if (val.includes("판매자")) colMap["seller"] = colNumber;
-                else if (val.includes("요청일")) colMap["reqDate"] = colNumber;
-                else if (val.includes("이름") || val.includes("고객명")) colMap["name"] = colNumber;
-                else if (val.includes("연락처") || val.includes("전화")) colMap["phone"] = colNumber;
-                else if (val.includes("구좌")) colMap["plan"] = colNumber;
-                else if (val.includes("가전")) colMap["product"] = colNumber;
-                else if (val.includes("1차")) colMap["time1"] = colNumber;
-                else if (val.includes("2차")) colMap["time2"] = colNumber;
-                else if (val.includes("희망")) {
-                    if (!colMap["time1"]) colMap["time1"] = colNumber;
-                    else if (!colMap["time2"]) colMap["time2"] = colNumber;
-                }
-            });
-            return colMap;
-        };
-
         // 마지막 데이터 행과 번호(NO.) 계산 헬퍼 (헤더 자동 매핑 기준)
         const getNextRowInfo = (ws: ExcelJS.Worksheet, colMap: { [key: string]: number }) => {
             let lastDataRowIndex = 4; // 헤더가 4행
             let lastNo = 0;
 
-            const nameCol = colMap["name"] || 7; // 기본 G열
-            const noCol = colMap["no"] || 3;     // 기본 C열
+            const nameCol = colMap["name"] || 6; // 기본 F열
+            const noCol = colMap["no"] || 2;     // 기본 B열
 
             const rowCount = ws.rowCount;
             for (let r = 5; r <= rowCount; r++) {
@@ -435,8 +453,29 @@ export async function POST(req: NextRequest) {
 
             const targetSheet = getOrCreateMonthSheet(workbook, sheetType, reqMonthStr);
             const colMap = getSheetColMap(targetSheet);
-            const { nextRowIndex, nextNo } = getNextRowInfo(targetSheet, colMap);
 
+            // 중복 방지: 이미 해당 시트에 같은 이름과 연락처가 존재하는지 확인
+            const cleanTargetPhone = String(customer.customerPhone || "").replace(/[^\d]/g, "");
+            const cleanTargetName = String(customer.customerName || "").trim();
+
+            let alreadyInSheet = false;
+            const targetRowCount = targetSheet.rowCount;
+            for (let r = 5; r <= targetRowCount; r++) {
+                const rRow = targetSheet.getRow(r);
+                const rName = String(rRow.getCell(colMap["name"] || 6).value || "").trim();
+                const rPhone = String(rRow.getCell(colMap["phone"] || 7).value || "").replace(/[^\d]/g, "");
+                if (rName === cleanTargetName && rPhone === cleanTargetPhone) {
+                    alreadyInSheet = true;
+                    break;
+                }
+            }
+
+            if (alreadyInSheet) {
+                console.log(`[LifeJoy Export] Customer ${cleanTargetName} (${cleanTargetPhone}) already exists in ${targetSheet.name}. Skipping duplicate.`);
+                continue;
+            }
+
+            const { nextRowIndex, nextNo } = getNextRowInfo(targetSheet, colMap);
             const row = targetSheet.getRow(nextRowIndex);
 
             const channel = customer.channel || resolveSalesChannel(customer, channelMappings);
@@ -541,3 +580,83 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
+
+// PUT: 사용자가 직접 수정한 엑셀 파일을 업로드하여 기준 파일로 등록/교체
+export async function PUT(request: NextRequest) {
+    try {
+        const formData = await request.formData();
+        const file = formData.get("file") as File;
+        if (!file) {
+            return NextResponse.json({ success: false, error: "업로드할 엑셀 파일이 없습니다." }, { status: 400 });
+        }
+
+        const buffer = Buffer.from(await file.arrayBuffer());
+
+        // 엑셀 유효성 검사
+        const wb = new ExcelJS.Workbook();
+        await wb.xlsx.load(buffer as any);
+
+        if (wb.worksheets.length === 0) {
+            return NextResponse.json({ success: false, error: "올바른 엑셀 파일 형식이 아닙니다." }, { status: 400 });
+        }
+
+        const fileName = file.name;
+
+        // 1. hoon 폴더 저장 시도 (로컬 개발 환경)
+        try {
+            const hoonDir = path.join(process.cwd(), "hoon");
+            if (fs.existsSync(hoonDir)) {
+                fs.writeFileSync(path.join(hoonDir, fileName), buffer);
+            }
+        } catch (e) {
+            console.warn("Could not save to hoon dir:", e);
+        }
+
+        // 2. /tmp 폴더 저장 (서버리스 배포 환경)
+        try {
+            const tmpDir = os.tmpdir();
+            if (fs.existsSync(tmpDir)) {
+                fs.writeFileSync(path.join(tmpDir, fileName), buffer);
+            }
+        } catch (e) {
+            console.warn("Could not save to tmp dir:", e);
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: `기준 파일 '${fileName}'이(가) 성공적으로 업로드 및 갱신되었습니다.`,
+            fileName,
+        });
+    } catch (error: any) {
+        console.error("Failed to upload excel file:", error);
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+}
+
+// DELETE: 임시 생성된 엑셀 캐시 파일 정리 및 원본 엑셀로 초기화
+export async function DELETE() {
+    try {
+        let deletedCount = 0;
+        try {
+            const tmpDir = os.tmpdir();
+            if (fs.existsSync(tmpDir)) {
+                const tmpFiles = fs.readdirSync(tmpDir).filter(f => f.startsWith("라이프앤조이_더해피one_가입요청") && f.endsWith(".xlsx"));
+                tmpFiles.forEach(f => {
+                    try {
+                        fs.unlinkSync(path.join(tmpDir, f));
+                        deletedCount++;
+                    } catch (e) {}
+                });
+            }
+        } catch (e) {}
+
+        return NextResponse.json({
+            success: true,
+            message: `임시 엑셀 캐시(${deletedCount}개)가 정리되었으며, 원본 엑셀 기준으로 초기화되었습니다.`,
+            deletedCount,
+        });
+    } catch (error: any) {
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+}
+

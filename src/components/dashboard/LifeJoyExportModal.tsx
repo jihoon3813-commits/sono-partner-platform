@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Application } from "@/lib/types";
@@ -47,6 +47,9 @@ export default function LifeJoyExportModal({
 
     const [isLoadingInfo, setIsLoadingInfo] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const [latestFileName, setLatestFileName] = useState("");
     const [outputFileName, setOutputFileName] = useState("");
     const [sellerName, setSellerName] = useState("김지훈");
@@ -174,50 +177,105 @@ export default function LifeJoyExportModal({
     };
 
     // 모달 열릴 때 최신 엑셀 정보 로드
-    useEffect(() => {
-        if (!isOpen) return;
+    const fetchInfo = useCallback(async () => {
+        setIsLoadingInfo(true);
+        try {
+            const res = await fetch("/api/admin/excel/export-lifejoy");
+            const data = await res.json();
+            if (data.success) {
+                setLatestFileName(data.latestFileName || "");
+                setOutputFileName(data.suggestedFileName || "");
+                setExistingList(data.existingCustomers || []);
 
-        async function fetchInfo() {
-            setIsLoadingInfo(true);
-            try {
-                const res = await fetch("/api/admin/excel/export-lifejoy");
-                const data = await res.json();
-                if (data.success) {
-                    setLatestFileName(data.latestFileName || "");
-                    setOutputFileName(data.suggestedFileName || "");
-                    setExistingList(data.existingCustomers || []);
+                // 이미 엑셀에 없는 신규 고객들을 자동 선택
+                const existingSet = new Set(
+                    (data.existingCustomers || []).map((c: ExistingCustomer) => `${c.name}_${c.phone}`)
+                );
 
-                    // 이미 엑셀에 없는 신규 고객들을 자동 선택
-                    const existingSet = new Set(
-                        (data.existingCustomers || []).map((c: ExistingCustomer) => `${c.name}_${c.phone}`)
-                    );
+                const newAppNos: string[] = [];
+                const channelMap: { [appNo: string]: string } = {};
 
-                    const newAppNos: string[] = [];
-                    const channelMap: { [appNo: string]: string } = {};
+                applications.forEach(app => {
+                    const cleanPhone = String(app.customerPhone || "").replace(/[^\d]/g, "");
+                    const key = `${String(app.customerName || "").trim()}_${cleanPhone}`;
+                    channelMap[app.applicationNo] = getDefaultChannel(app);
 
-                    applications.forEach(app => {
-                        const cleanPhone = String(app.customerPhone || "").replace(/[^\d]/g, "");
-                        const key = `${String(app.customerName || "").trim()}_${cleanPhone}`;
-                        channelMap[app.applicationNo] = getDefaultChannel(app);
+                    // 접수대기 상태이면서 26년 9월 이후 미반영 고객만 자동 선택
+                    if (app.status === "접수대기" && !isPastRegisteredCustomer(app) && !existingSet.has(key)) {
+                        newAppNos.push(app.applicationNo);
+                    }
+                });
 
-                        // 접수대기 상태이면서 26년 9월 이후 미반영 고객만 자동 선택
-                        if (app.status === "접수대기" && !isPastRegisteredCustomer(app) && !existingSet.has(key)) {
-                            newAppNos.push(app.applicationNo);
-                        }
-                    });
-
-                    setSelectedAppNos(newAppNos);
-                    setCustomChannels(channelMap);
-                }
-            } catch (err) {
-                console.error("Failed to load excel info:", err);
-            } finally {
-                setIsLoadingInfo(false);
+                setSelectedAppNos(newAppNos);
+                setCustomChannels(channelMap);
             }
+        } catch (err) {
+            console.error("Failed to load excel info:", err);
+        } finally {
+            setIsLoadingInfo(false);
+        }
+    }, [applications, dbMappings]);
+
+    useEffect(() => {
+        if (isOpen) {
+            fetchInfo();
+        }
+    }, [isOpen, fetchInfo]);
+
+    // 수정한 엑셀 파일 업로드/교체 핸들러
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.name.endsWith(".xlsx")) {
+            alert(".xlsx 확장자의 엑셀 파일만 업로드할 수 있습니다.");
+            return;
         }
 
-        fetchInfo();
-    }, [isOpen, applications]);
+        setIsUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const res = await fetch("/api/admin/excel/export-lifejoy", {
+                method: "PUT",
+                body: formData,
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert(`기준 엑셀 파일이 성공적으로 갱신되었습니다!\n파일명: ${data.fileName}`);
+                await fetchInfo();
+            } else {
+                alert(`업로드 실패: ${data.error || "알 수 없는 오류"}`);
+            }
+        } catch (err: any) {
+            alert(`업로드 중 오류 발생: ${err.message}`);
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+        }
+    };
+
+    // 임시 캐시 파일 초기화 (Git 원본 기준 복원)
+    const handleResetCache = async () => {
+        if (!confirm("임시 생성된 엑셀 캐시를 정리하고 원본 엑셀 파일 기준으로 초기화하시겠습니까?")) {
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/admin/excel/export-lifejoy", { method: "DELETE" });
+            const data = await res.json();
+            if (data.success) {
+                alert("임시 캐시가 정리되었습니다. 원본 기준 엑셀로 다시 불러옵니다.");
+                await fetchInfo();
+            }
+        } catch (err: any) {
+            alert(`초기화 실패: ${err.message}`);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -363,16 +421,52 @@ export default function LifeJoyExportModal({
                     <div className="p-7 space-y-6">
                         {/* 1. 파일 및 기본 정보 설정 박스 */}
                         <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200/80 space-y-4">
-                            <div className="flex items-center justify-between text-xs pb-3 border-b border-gray-200">
-                                <div className="flex items-center gap-2">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs pb-3 border-b border-gray-200">
+                                <div className="flex items-center gap-2 flex-wrap">
                                     <span className="font-bold text-gray-500">기존 기준 엑셀 파일:</span>
                                     <span className="font-mono bg-white px-2.5 py-1 rounded-lg border border-gray-200 text-gray-800 font-bold">
                                         {latestFileName || "hoon/라이프앤조이_더해피one_가입요청_260911_1.xlsx"}
                                     </span>
+                                    {/* 파일 교체 및 초기화 버튼들 */}
+                                    <input
+                                        type="file"
+                                        accept=".xlsx"
+                                        ref={fileInputRef}
+                                        onChange={handleFileUpload}
+                                        className="hidden"
+                                    />
+                                    <button
+                                        type="button"
+                                        disabled={isUploading}
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 hover:border-gray-400 transition-colors shadow-xs cursor-pointer"
+                                        title="다운로드 후 직접 수정한 엑셀 파일을 업로드하여 기준 파일로 설정합니다."
+                                    >
+                                        📁 {isUploading ? "업로드 중..." : "수정 엑셀 업로드(교체)"}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleResetCache}
+                                        className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 text-gray-400 hover:text-red-600 rounded-lg transition-colors cursor-pointer"
+                                        title="임시 캐시를 비우고 원본 파일로 초기화합니다."
+                                    >
+                                        🔄 초기화
+                                    </button>
                                 </div>
-                                <div className="text-emerald-600 font-bold flex items-center gap-1.5">
+                                <div className="text-emerald-600 font-bold flex items-center gap-1.5 whitespace-nowrap">
                                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                                     접수대기 신규 고객: {newCustomerCount}명 감지됨
+                                </div>
+                            </div>
+
+                            {/* 저장 위치 및 파일 수정 안내 */}
+                            <div className="text-[11px] bg-emerald-50/80 border border-emerald-200 text-emerald-800 rounded-xl p-3 flex items-start gap-2.5">
+                                <span className="text-base leading-none">💡</span>
+                                <div className="leading-relaxed">
+                                    <span className="font-bold text-emerald-950">저장 위치 및 수정 안내: </span>
+                                    <span>
+                                        다운로드된 파일은 내 PC의 <strong>[다운로드(Downloads)]</strong> 폴더에 저장됩니다. 다운로드 후 엑셀에서 데이터를 직접 수정(행 삭제/수정 등)하셨다면 위의 <strong>[수정 엑셀 업로드(교체)]</strong> 버튼으로 올려주시면 다음 번에도 그 수정한 파일을 기준으로 이어서 작성됩니다.
+                                    </span>
                                 </div>
                             </div>
 
