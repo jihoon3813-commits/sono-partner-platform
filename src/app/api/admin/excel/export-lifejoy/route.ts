@@ -336,12 +336,11 @@ export async function POST(req: NextRequest) {
             for (let i = 1; i <= 100; i++) {
                 const r = 4 + i;
                 const row = ws.getRow(r);
-                row.getCell("B").value = sheetType === "450" ? "요청중" : "접수완료";
                 row.getCell("C").value = i;
 
                 const cols = sheetType === "450"
-                    ? ["B", "C", "D", "E", "F", "G", "H", "K", "P", "S"]
-                    : ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
+                    ? ["C", "D", "E", "F", "G", "H", "K", "P", "S"]
+                    : ["C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
 
                 cols.forEach(col => {
                     const cell = row.getCell(col);
@@ -354,20 +353,45 @@ export async function POST(req: NextRequest) {
             return ws;
         };
 
-        // 마지막 데이터 행과 번호(NO.) 계산 헬퍼 (템플릿에 미리 채워진 빈 번호 무시)
-        const getNextRowInfo = (ws: ExcelJS.Worksheet) => {
+        // 시트 헤더(4행)를 분석하여 각 컬럼의 위치를 동적으로 감지 (B열 상태 열이 삭제되어도 자동 대응)
+        const getSheetColMap = (ws: ExcelJS.Worksheet) => {
+            const colMap: { [key: string]: number } = {};
+            const headerRow = ws.getRow(4);
+            headerRow.eachCell((cell, colNumber) => {
+                const val = String(cell.value || "").trim().replace(/\s+/g, "");
+                if (val.includes("NO") || val.includes("번호")) colMap["no"] = colNumber;
+                else if (val.includes("판매채널") || val.includes("채널")) colMap["channel"] = colNumber;
+                else if (val.includes("판매자")) colMap["seller"] = colNumber;
+                else if (val.includes("요청일")) colMap["reqDate"] = colNumber;
+                else if (val.includes("이름") || val.includes("고객명")) colMap["name"] = colNumber;
+                else if (val.includes("연락처") || val.includes("전화")) colMap["phone"] = colNumber;
+                else if (val.includes("구좌")) colMap["plan"] = colNumber;
+                else if (val.includes("가전")) colMap["product"] = colNumber;
+                else if (val.includes("1차")) colMap["time1"] = colNumber;
+                else if (val.includes("2차")) colMap["time2"] = colNumber;
+                else if (val.includes("희망")) {
+                    if (!colMap["time1"]) colMap["time1"] = colNumber;
+                    else if (!colMap["time2"]) colMap["time2"] = colNumber;
+                }
+            });
+            return colMap;
+        };
+
+        // 마지막 데이터 행과 번호(NO.) 계산 헬퍼 (헤더 자동 매핑 기준)
+        const getNextRowInfo = (ws: ExcelJS.Worksheet, colMap: { [key: string]: number }) => {
             let lastDataRowIndex = 4; // 헤더가 4행
             let lastNo = 0;
+
+            const nameCol = colMap["name"] || 7; // 기본 G열
+            const noCol = colMap["no"] || 3;     // 기본 C열
 
             const rowCount = ws.rowCount;
             for (let r = 5; r <= rowCount; r++) {
                 const row = ws.getRow(r);
-                const nameVal = row.getCell("G").value;
-                const phoneVal = row.getCell("H").value;
-                // 이름이나 전화번호에 실제 값이 채워져 있는 행만 실제 데이터 행으로 간주
+                const nameVal = row.getCell(nameCol).value;
                 if (nameVal && String(nameVal).trim() !== "") {
                     lastDataRowIndex = r;
-                    const cVal = row.getCell("C").value;
+                    const cVal = row.getCell(noCol).value;
                     if (typeof cVal === "number") {
                         lastNo = cVal;
                     } else if (typeof cVal === "string" && !isNaN(Number(cVal))) {
@@ -399,13 +423,14 @@ export async function POST(req: NextRequest) {
             const reqDate = parseToDate(customer.registrationDate || customer.createdAt);
             let reqMonthStr = String(reqDate.getMonth() + 1).padStart(2, "0");
 
-            // 과거 월(8월 이하) 신청 건이더라도 현재 활성 월(09월 이상) 시트로 배정하여 서식 유지
+            // 26년 09월 기준 유지 (과거월 신청 건이더라도 활성 09월 시트로 배정)
             if (reqMonthStr < activeMonthStr) {
                 reqMonthStr = activeMonthStr;
             }
 
             const targetSheet = getOrCreateMonthSheet(workbook, sheetType, reqMonthStr);
-            const { nextRowIndex, nextNo } = getNextRowInfo(targetSheet);
+            const colMap = getSheetColMap(targetSheet);
+            const { nextRowIndex, nextNo } = getNextRowInfo(targetSheet, colMap);
 
             const row = targetSheet.getRow(nextRowIndex);
 
@@ -416,52 +441,57 @@ export async function POST(req: NextRequest) {
             const plan = String(customer.planType || "1구좌").trim();
             const contactTime = formatTimeSlot(customer.preferredContactTime);
 
+            // B열 상태(요청중) 열은 값을 입력하지 않음 (사용자 요청: B열 상태 열 제거/미기재)
+            // 동적 컬럼 매핑으로 기재 (B열 삭제 시에도 컬럼 위치 자동 감지)
+            const noCol = colMap["no"] || (sheetType === "450" ? 3 : 3);
+            const chanCol = colMap["channel"] || 4;
+            const sellerCol = colMap["seller"] || 5;
+            const dateCol = colMap["reqDate"] || 6;
+            const nameCol = colMap["name"] || 7;
+            const phoneCol = colMap["phone"] || 8;
+
+            row.getCell(noCol).value = nextNo;
+            row.getCell(chanCol).value = channel;
+            row.getCell(sellerCol).value = seller;
+            row.getCell(dateCol).value = reqDate;
+            row.getCell(dateCol).numFmt = 'm"월" d"일"';
+            row.getCell(nameCol).value = name;
+            row.getCell(phoneCol).value = phone;
+
+            const styledCols: number[] = [noCol, chanCol, sellerCol, dateCol, nameCol, phoneCol];
+
             if (sheetType === "450") {
                 // 더해피 450 시트 입력:
-                row.getCell("B").value = "요청중";
-                row.getCell("C").value = nextNo;
-                row.getCell("D").value = channel;
-                row.getCell("E").value = seller;
-                row.getCell("F").value = reqDate;
-                row.getCell("F").numFmt = 'm"월" d"일"';
-                row.getCell("G").value = name;
-                row.getCell("H").value = phone;
-                row.getCell("K").value = plan.includes("구좌") ? plan : `${plan}구좌`;
-                row.getCell("P").value = "-";
-                row.getCell("S").value = contactTime;
+                const planCol = colMap["plan"] || 11; // 기본 K열
+                const time1Col = colMap["time1"] || 16; // 기본 P열
+                const time2Col = colMap["time2"] || 19; // 기본 S열
 
-                // 스타일 적용
-                ["B", "C", "D", "E", "F", "G", "H", "K", "P", "S"].forEach((col) => {
-                    const cell = row.getCell(col);
-                    cell.font = defaultFont;
-                    cell.border = defaultBorder;
-                    cell.alignment = defaultAlignment;
-                });
+                row.getCell(planCol).value = plan.includes("구좌") ? plan : `${plan}구좌`;
+                row.getCell(time1Col).value = "-";
+                row.getCell(time2Col).value = contactTime;
+                styledCols.push(planCol, time1Col, time2Col);
             } else {
-                // 결합 시트 입력:
-                row.getCell("B").value = "접수완료";
-                row.getCell("C").value = nextNo;
-                row.getCell("D").value = channel;
-                row.getCell("E").value = seller;
-                row.getCell("F").value = reqDate;
-                row.getCell("F").numFmt = 'm"월" d"일"';
-                row.getCell("G").value = name;
-                row.getCell("H").value = phone;
-                row.getCell("I").value = plan.includes("구좌") ? plan : `${plan}구좌`;
-                row.getCell("J").value = customer.products || "-";
-                row.getCell("K").value = reqDate;
-                row.getCell("K").numFmt = 'mm"월" dd"일"';
-                row.getCell("L").value = contactTime;
-                row.getCell("M").value = "무관";
+                // 결합(스마트케어) 시트 입력:
+                const planCol = colMap["plan"] || 9;   // 기본 I열
+                const prodCol = colMap["product"] || 10; // 기본 J열
+                const time1Col = colMap["time1"] || 11; // 기본 K열
+                const time2Col = colMap["time2"] || 12; // 기본 L열
 
-                // 스타일 적용
-                ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"].forEach((col) => {
-                    const cell = row.getCell(col);
-                    cell.font = defaultFont;
-                    cell.border = defaultBorder;
-                    cell.alignment = defaultAlignment;
-                });
+                row.getCell(planCol).value = plan.includes("구좌") ? plan : `${plan}구좌`;
+                row.getCell(prodCol).value = customer.products || "-";
+                row.getCell(time1Col).value = reqDate;
+                row.getCell(time1Col).numFmt = 'mm"월" dd"일"';
+                row.getCell(time2Col).value = contactTime;
+                styledCols.push(planCol, prodCol, time1Col, time2Col);
             }
+
+            // 스타일 일괄 적용
+            styledCols.forEach((c) => {
+                const cell = row.getCell(c);
+                cell.font = defaultFont;
+                cell.border = defaultBorder;
+                cell.alignment = defaultAlignment;
+            });
 
             row.commit();
             addedCount++;

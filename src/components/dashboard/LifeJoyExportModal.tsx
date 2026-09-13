@@ -142,8 +142,14 @@ export default function LifeJoyExportModal({
             return true; // 정규식 불일치 시 안전하게 과거 데이터로 처리
         }
 
-        const ymd = `${match[1]}-${match[2]}-${match[3]}`;
-        // 2026년 8월 31일까지의 모든 등록 고객(스마트케어 5더블 포함)은 반영완료로 처리
+        const yyyy = match[1];
+        const mm = match[2];
+        const dd = match[3];
+        const ymd = `${yyyy}-${mm}-${dd}`;
+        
+        // 09월 리스트는 26년 기준: 2024년, 2025년 및 2026년 8월 이전은 모두 반영완료로 처리
+        // 오직 2026년 9월 1일 이후 등록 고객만 신규 미반영 대조 대상
+        if (yyyy < "2026") return true;
         return ymd < "2026-09-01";
     };
 
@@ -521,9 +527,11 @@ export default function LifeJoyExportModal({
                             <div className="space-y-1">
                                 <p className="font-bold">가입요청 엑셀 업데이트 & 시트 안내</p>
                                 <p className="text-emerald-800/80 leading-relaxed">
-                                    • <strong>상품별 자동 시트 분기</strong>: <strong>더해피 450</strong> 상품은 <strong>'MM월 리스트_450'</strong> 시트, <strong>스마트케어</strong> 상품은 <strong>'MM월 리스트_결합'</strong> 시트로 분기되어 자동 입력됩니다.
+                                    • <strong>26년 09월 기준 적용</strong>: 24년/25년 및 26년 8월 이전 과거 데이터는 모두 반영완료 처리되어, <strong>26년 9월 이후 신규 미등록 고객(최신 2건) 및 향후 등록 고객만</strong> 자동 감지됩니다.
                                     <br />
-                                    • <strong>미등록 고객 대조</strong>: 이전 과거 데이터는 모두 반영완료 처리되어 있으며, <strong>최신 미등록 고객(현재 2명) 및 앞으로 등록되는 신규 고객만</strong> 엑셀 업데이트 대상(신규 미반영)으로 자동 선택됩니다.
+                                    • <strong>B열 상태(요청중) 열 제외</strong>: 상태값 없이 고객 정보가 양식에 맞추어 정확하게 기재되며, B열을 삭제하더라도 각 항목 열이 자동 매핑됩니다.
+                                    <br />
+                                    • <strong>상품별 자동 시트 분기</strong>: <strong>더해피 450</strong> 상품은 <strong>'MM월 리스트_450'</strong> 시트, <strong>스마트케어</strong> 상품은 <strong>'MM월 리스트_결합'</strong> 시트로 분기되어 자동 입력됩니다.
                                     <br />
                                     • <strong>월 자동 전환</strong>: 10월 등 월이 바뀌면 엑셀 파일 내에 해당 월 시트(예: <strong>'10월 리스트_450'</strong>, <strong>'10월 리스트_결합'</strong>)가 자동으로 생성되어 1번부터 차례대로 반영됩니다.
                                     <br />
