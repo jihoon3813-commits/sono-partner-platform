@@ -99,28 +99,54 @@ export default function LifeJoyExportModal({
         return "라이프앤조이_직영";
     };
 
-    // 2026년 8월 이전(2026-08-31까지) 등록된 고객인지 확인
-    const isRegisteredBeforeSep2026 = (app: Application) => {
-        const dateStr = String(app.registrationDate || app.createdAt || "").trim();
-        if (!dateStr) return true; // 날짜 없으면 과거 데이터
-
-        // 한글 형식 (예: '11월 13일', '9월18일')은 2025년 과거 레거시 데이터
-        if (dateStr.includes("월") || !dateStr.includes("-")) {
-            return true;
+    // 상품 종류에 따른 대상 시트 판정 (더해피 450 -> 450시트, 스마트케어 -> 결합시트)
+    const getSheetType = (app: Application): "450" | "combined" => {
+        const prodType = String(app.productType || "").toLowerCase().trim();
+        if (
+            prodType.includes("smart") || 
+            prodType.includes("스마트") || 
+            prodType.includes("결합")
+        ) {
+            return "combined";
         }
-
-        const isoDate = dateStr.slice(0, 10);
-        return isoDate < "2026-09-01";
+        if (
+            prodType.includes("450") || 
+            prodType.includes("해피") || 
+            prodType.includes("happy")
+        ) {
+            return "450";
+        }
+        if (app.products && String(app.products).trim() !== "") {
+            return "combined";
+        }
+        return "450";
     };
 
-    // 이미 등록된 고객인지 확인 (26년 8월 이전은 모두 반영완료로 처리)
-    const isAlreadyInExcel = (app: Application) => {
-        // 1. 26년 8월 이전 등록 고객은 미반영 없고 모두 반영으로 처리
-        if (isRegisteredBeforeSep2026(app)) {
+    // 과거 등록 고객 판정: 2026년 8월 15일 이전 및 과거 데이터는 모두 '반영완료'로 처리
+    // (현재 최신 2개인 2026년 8월 20일 건 및 앞으로 등록되는 신규 고객만 미등록 대조 대상)
+    const isPastRegisteredCustomer = (app: Application) => {
+        const createdStr = String(app.createdAt || "").trim();
+        const regStr = String(app.registrationDate || "").trim();
+
+        if (!createdStr && !regStr) return true; // 날짜 없으면 과거 데이터
+
+        // 한글 형식 (예: '11월 13일', '9월18일') 또는 비표준 형식은 과거 레거시 데이터
+        if (regStr.includes("월") || (regStr && !regStr.includes("-"))) {
             return true;
         }
 
-        // 2. 26년 9월 이후 및 앞으로 등록하는 신규 고객만 엑셀 대조
+        const dateToCheck = createdStr || regStr;
+        return dateToCheck < "2026-08-15";
+    };
+
+    // 이미 등록된 고객인지 확인 (과거 등록 고객은 모두 반영완료로 처리)
+    const isAlreadyInExcel = (app: Application) => {
+        // 1. 과거 등록 고객은 미반영 없고 모두 반영으로 처리
+        if (isPastRegisteredCustomer(app)) {
+            return true;
+        }
+
+        // 2. 최신 2개 및 앞으로 등록하는 신규 고객만 엑셀 대조
         const cleanPhone = String(app.customerPhone || "").replace(/[^\d]/g, "");
         const key = `${String(app.customerName || "").trim()}_${cleanPhone}`;
         return existingList.some(c => `${c.name}_${c.phone}` === key);
@@ -153,8 +179,8 @@ export default function LifeJoyExportModal({
                         const key = `${String(app.customerName || "").trim()}_${cleanPhone}`;
                         channelMap[app.applicationNo] = getDefaultChannel(app);
 
-                        // 26년 8월 이전 고객은 제외, 9월 이후 미반영 고객만 자동 선택
-                        if (!isRegisteredBeforeSep2026(app) && !existingSet.has(key)) {
+                        // 과거 고객은 제외, 최신 미반영 고객만 자동 선택
+                        if (!isPastRegisteredCustomer(app) && !existingSet.has(key)) {
                             newAppNos.push(app.applicationNo);
                         }
                     });
@@ -431,9 +457,20 @@ export default function LifeJoyExportModal({
                                                         <td className="p-3 font-mono text-gray-600">
                                                             {app.customerPhone}
                                                         </td>
-                                                        <td className="p-3">
-                                                            <div className="font-semibold text-gray-800">
-                                                                {app.productType || "더 해피 450 ONE"}
+                                                         <td className="p-3">
+                                                            <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                                                                <span className="font-semibold text-gray-800">
+                                                                    {app.productType || "더 해피 450 ONE"}
+                                                                </span>
+                                                                {getSheetType(app) === "combined" ? (
+                                                                    <span className="text-[10px] font-bold px-1.5 py-0.2 bg-purple-50 text-purple-700 rounded border border-purple-200">
+                                                                        결합(스마트케어)
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-[10px] font-bold px-1.5 py-0.2 bg-blue-50 text-blue-700 rounded border border-blue-200">
+                                                                        더해피450
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                             <div className="text-[11px] text-gray-500">
                                                                 {app.planType || "1구좌"}
@@ -476,7 +513,9 @@ export default function LifeJoyExportModal({
                             <div className="space-y-1">
                                 <p className="font-bold">가입요청 엑셀 업데이트 & 시트 안내</p>
                                 <p className="text-emerald-800/80 leading-relaxed">
-                                    • <strong>2026년 8월 이전 등록 고객</strong>은 모두 반영완료로 처리되며, 앞으로 등록되는 신규 고객만 엑셀에 업데이트됩니다.
+                                    • <strong>상품별 자동 시트 분기</strong>: <strong>더해피 450</strong> 상품은 <strong>'MM월 리스트_450'</strong> 시트, <strong>스마트케어</strong> 상품은 <strong>'MM월 리스트_결합'</strong> 시트로 분기되어 자동 입력됩니다.
+                                    <br />
+                                    • <strong>미등록 고객 대조</strong>: 이전 과거 데이터는 모두 반영완료 처리되어 있으며, <strong>최신 미등록 고객(현재 2명) 및 앞으로 등록되는 신규 고객만</strong> 엑셀 업데이트 대상(신규 미반영)으로 자동 선택됩니다.
                                     <br />
                                     • <strong>월 자동 전환</strong>: 10월 등 월이 바뀌면 엑셀 파일 내에 해당 월 시트(예: <strong>'10월 리스트_450'</strong>, <strong>'10월 리스트_결합'</strong>)가 자동으로 생성되어 1번부터 차례대로 반영됩니다.
                                     <br />

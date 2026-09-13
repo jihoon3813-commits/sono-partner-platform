@@ -138,20 +138,53 @@ export async function GET() {
     }
 }
 
+// 상품 종류 판정: "450" (더해피450) vs "combined" (스마트케어 / 결합)
+function resolveSheetType(customer: any): "450" | "combined" {
+    const prodType = String(customer.productType || "").toLowerCase().trim();
+    
+    // 스마트케어 계열 (스마트케어, smartcare, smart, 결합 등)
+    if (
+        prodType.includes("smart") || 
+        prodType.includes("스마트") || 
+        prodType.includes("결합")
+    ) {
+        return "combined";
+    }
+
+    // 더해피450 계열 (happy450, 450, 해피, happy 등)
+    if (
+        prodType.includes("450") || 
+        prodType.includes("해피") || 
+        prodType.includes("happy")
+    ) {
+        return "450";
+    }
+
+    // 그 외 가전제품(products)이 기재되어 있으면 스마트케어(결합), 없으면 기본 450
+    if (customer.products && String(customer.products).trim() !== "") {
+        return "combined";
+    }
+
+    return "450";
+}
+
 // POST: 신규 고객들을 엑셀 파일에 추가하고 브라우저 다운로드 제공
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
         const {
-            customers = [], // 추가할 고객 목록
-            sellerName = "김지훈",
+            customers,
             outputFileName,
+            channelMappings = [],
+            sellerName = "김지훈",
             saveToServer = true,
-            channelMappings = [], // 환경설정 채널 매핑 목록
         } = body;
 
-        if (!Array.isArray(customers) || customers.length === 0) {
-            return NextResponse.json({ success: false, message: "추가할 고객 데이터가 없습니다." }, { status: 400 });
+        if (!customers || !Array.isArray(customers) || customers.length === 0) {
+            return NextResponse.json(
+                { success: false, message: "추가할 고객 데이터가 없습니다." },
+                { status: 400 }
+            );
         }
 
         const { filePath } = getLatestExcelFilePath();
@@ -167,24 +200,31 @@ export async function POST(req: NextRequest) {
 
         const targetFileName = outputFileName || `라이프앤조이_더해피one_가입요청_${yy}${mm}${dd}_1.xlsx`;
 
-        // 기본 셀 스타일 템플릿 (나눔고딕 10pt, thin 테두리, 가운데 정렬)
-        const defaultFont = { name: "나눔고딕", size: 10, family: 3, charset: 129 };
-        const defaultBorder = {
-            top: { style: "thin" as const, color: { argb: "FFD3D3D3" } },
-            left: { style: "thin" as const, color: { argb: "FFD3D3D3" } },
-            bottom: { style: "thin" as const, color: { argb: "FFD3D3D3" } },
-            right: { style: "thin" as const, color: { argb: "FFD3D3D3" } },
+        // 기본 서식 정의
+        const defaultFont = { name: "나눔고딕", size: 10 };
+        const defaultBorder: Partial<ExcelJS.Borders> = {
+            top: { style: "thin", color: { argb: "FFD3D3D3" } },
+            left: { style: "thin", color: { argb: "FFD3D3D3" } },
+            bottom: { style: "thin", color: { argb: "FFD3D3D3" } },
+            right: { style: "thin", color: { argb: "FFD3D3D3" } },
         };
-        const defaultAlignment = { horizontal: "center" as const, vertical: "middle" as const };
+        const defaultAlignment: Partial<ExcelJS.Alignment> = {
+            vertical: "middle",
+            horizontal: "center",
+        };
 
-        // 월별 시트 자동 생성/가져오기 함수 (월이 바뀌면 10월, 11월 탭을 자동 생성)
-        const getOrCreateMonthSheet = (
-            wb: ExcelJS.Workbook,
-            sheetType: "450" | "combined",
-            monthStr: string
-        ): ExcelJS.Worksheet => {
-            const sheetName = `${monthStr}월 리스트_${sheetType === "450" ? "450" : "결합"}`;
-            let ws = wb.getWorksheet(sheetName);
+        // 월별 시트 가져오기 (없으면 이전 시트 서식 복제하여 자동 생성)
+        const getOrCreateMonthSheet = (wb: ExcelJS.Workbook, sheetType: "450" | "combined", monthStr: string) => {
+            const sheetSuffix = sheetType === "450" ? "450" : "결합";
+            const sheetName = `${monthStr}월 리스트_${sheetSuffix}`;
+
+            // 공백 유연하게 탐색 (예: "09월 리스트_450", "09월리스트_450" 모두 대응)
+            let ws = wb.worksheets.find(s => {
+                const sName = s.name.replace(/\s+/g, "");
+                const targetName = sheetName.replace(/\s+/g, "");
+                return sName === targetName;
+            });
+
             if (ws) return ws;
 
             // 템플릿으로 삼을 이전 최신 시트 탐색
@@ -243,7 +283,7 @@ export async function POST(req: NextRequest) {
 
                 ["B", "C", "D", "E", "F", "G", "H", "K", "P", "S"].forEach(col => {
                     const cell = ws.getCell(col + "4");
-                    cell.font = { ...defaultFont, bold: true };
+                    cell.font = { name: "나눔고딕", size: 10, bold: true };
                     cell.border = defaultBorder;
                     cell.alignment = defaultAlignment;
                     cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF2F2F2" } };
@@ -266,7 +306,7 @@ export async function POST(req: NextRequest) {
 
                 ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K"].forEach(col => {
                     const cell = ws.getCell(col + "4");
-                    cell.font = { ...defaultFont, bold: true };
+                    cell.font = { name: "나눔고딕", size: 10, bold: true };
                     cell.border = defaultBorder;
                     cell.alignment = defaultAlignment;
                     cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF2F2F2" } };
@@ -277,12 +317,12 @@ export async function POST(req: NextRequest) {
             for (let i = 1; i <= 100; i++) {
                 const r = 4 + i;
                 const row = ws.getRow(r);
-                row.getCell("B").value = sheetType === "450" ? "요청중" : "해피콜요청";
+                row.getCell("B").value = sheetType === "450" ? "요청중" : "접수완료";
                 row.getCell("C").value = i;
 
                 const cols = sheetType === "450"
                     ? ["B", "C", "D", "E", "F", "G", "H", "K", "P", "S"]
-                    : ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"];
+                    : ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
 
                 cols.forEach(col => {
                     const cell = row.getCell(col);
@@ -300,17 +340,19 @@ export async function POST(req: NextRequest) {
             let lastDataRowIndex = 4; // 헤더가 4행
             let lastNo = 0;
 
-            for (let r = 5; r <= ws.rowCount; r++) {
+            const rowCount = ws.rowCount;
+            for (let r = 5; r <= rowCount; r++) {
                 const row = ws.getRow(r);
-                const nameCell = row.getCell("G");
-
-                // G열(이름)에 실제 데이터가 채워져 있다면 데이터 행으로 인정
-                if (nameCell.value && String(nameCell.value).trim() !== "") {
+                const nameVal = row.getCell("G").value;
+                const phoneVal = row.getCell("H").value;
+                // 이름이나 전화번호에 실제 값이 채워져 있는 행만 실제 데이터 행으로 간주
+                if (nameVal && String(nameVal).trim() !== "") {
                     lastDataRowIndex = r;
-                    const noCell = row.getCell("C");
-                    const parsed = parseInt(String(noCell.value || ""), 10);
-                    if (!isNaN(parsed)) {
-                        lastNo = parsed;
+                    const cVal = row.getCell("C").value;
+                    if (typeof cVal === "number") {
+                        lastNo = cVal;
+                    } else if (typeof cVal === "string" && !isNaN(Number(cVal))) {
+                        lastNo = Number(cVal);
                     }
                 }
             }
@@ -324,12 +366,11 @@ export async function POST(req: NextRequest) {
         let addedCount = 0;
 
         for (const customer of customers) {
-            const prodType = String(customer.productType || "").toLowerCase();
-            const isCombined = prodType.includes("smart") || prodType.includes("스마트") || (customer.products && String(customer.products).trim() !== "");
+            // 상품별 시트 분기: 더해피450 -> '450', 스마트케어 -> 'combined'
+            const sheetType = resolveSheetType(customer);
             const reqDate = parseToDate(customer.registrationDate || customer.createdAt);
             const reqMonthStr = String(reqDate.getMonth() + 1).padStart(2, "0");
 
-            const sheetType = isCombined ? "combined" : "450";
             const targetSheet = getOrCreateMonthSheet(workbook, sheetType, reqMonthStr);
             const { nextRowIndex, nextNo } = getNextRowInfo(targetSheet);
 
