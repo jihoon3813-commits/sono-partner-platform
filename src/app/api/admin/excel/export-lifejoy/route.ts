@@ -167,26 +167,6 @@ export async function POST(req: NextRequest) {
 
         const targetFileName = outputFileName || `라이프앤조이_더해피one_가입요청_${yy}${mm}${dd}_1.xlsx`;
 
-        // 더해피 450 시트 및 스마트케어(결합) 시트 확인
-        const sheet450Name = `${currentMonthStr}월 리스트_450`;
-        const sheetSmartName = `${currentMonthStr}월 리스트_결합`;
-
-        let ws450 = workbook.getWorksheet(sheet450Name);
-        let wsSmart = workbook.getWorksheet(sheetSmartName);
-
-        if (!ws450) {
-            const candidate = workbook.worksheets.find(ws => ws.name.includes("450"));
-            if (candidate) ws450 = candidate;
-        }
-        if (!wsSmart) {
-            const candidate = workbook.worksheets.find(ws => ws.name.includes("결합") || ws.name.includes("스마트"));
-            if (candidate) wsSmart = candidate;
-        }
-
-        if (!ws450) {
-            throw new Error(`엑셀 파일 내에 [${sheet450Name}] 시트를 찾을 수 없습니다.`);
-        }
-
         // 기본 셀 스타일 템플릿 (나눔고딕 10pt, thin 테두리, 가운데 정렬)
         const defaultFont = { name: "나눔고딕", size: 10, family: 3, charset: 129 };
         const defaultBorder = {
@@ -196,6 +176,124 @@ export async function POST(req: NextRequest) {
             right: { style: "thin" as const, color: { argb: "FFD3D3D3" } },
         };
         const defaultAlignment = { horizontal: "center" as const, vertical: "middle" as const };
+
+        // 월별 시트 자동 생성/가져오기 함수 (월이 바뀌면 10월, 11월 탭을 자동 생성)
+        const getOrCreateMonthSheet = (
+            wb: ExcelJS.Workbook,
+            sheetType: "450" | "combined",
+            monthStr: string
+        ): ExcelJS.Worksheet => {
+            const sheetName = `${monthStr}월 리스트_${sheetType === "450" ? "450" : "결합"}`;
+            let ws = wb.getWorksheet(sheetName);
+            if (ws) return ws;
+
+            // 템플릿으로 삼을 이전 최신 시트 탐색
+            const templateSheetName = sheetType === "450" ? "09월 리스트_450" : "09월 리스트_결합";
+            let templateWs = wb.getWorksheet(templateSheetName);
+            if (!templateWs) {
+                templateWs = wb.worksheets.find(s => s.name.includes(sheetType === "450" ? "450" : "결합"));
+            }
+
+            // 새 월 시트 추가
+            ws = wb.addWorksheet(sheetName);
+
+            // 1. 열 너비 복제
+            if (templateWs) {
+                for (let c = 1; c <= 25; c++) {
+                    const tempCol = templateWs.getColumn(c);
+                    if (tempCol && tempCol.width) {
+                        ws.getColumn(c).width = tempCol.width;
+                    }
+                }
+            } else {
+                if (sheetType === "450") {
+                    const widths = [1, 9, 9, 20, 11, 12, 9, 16, 5, 5, 9, 9, 9, 9, 9, 11, 11, 18, 11, 18];
+                    widths.forEach((w, i) => { ws.getColumn(i + 1).width = w; });
+                } else {
+                    const widths = [1, 9, 9, 20, 11, 12, 9, 16, 9, 63, 11, 18, 12];
+                    widths.forEach((w, i) => { ws.getColumn(i + 1).width = w; });
+                }
+            }
+
+            // 2. Row 2: 타이틀 복제
+            const titleCell = ws.getCell("B2");
+            titleCell.value = sheetType === "450"
+                ? "라이프앤조이 소노 더해피 가입 진행요청"
+                : "라이프앤조이 소노 스마트케어(결합) 가입 진행요청";
+            titleCell.font = { name: "나눔고딕", size: 14, bold: true };
+            titleCell.alignment = { vertical: "middle" };
+
+            // 3. Row 4: 헤더 설정 및 스타일 복제
+            if (sheetType === "450") {
+                ws.getCell("B4").value = "상태";
+                ws.getCell("C4").value = "NO.";
+                ws.getCell("D4").value = "판매채널";
+                ws.getCell("E4").value = "판매자";
+                ws.getCell("F4").value = "요청일";
+                ws.getCell("G4").value = "이름";
+                ws.getCell("H4").value = "연락처";
+                ws.getCell("K4").value = "구좌";
+                ws.getCell("P4").value = "1차 희망일시";
+                ws.getCell("S4").value = "2차 희망일시";
+
+                try {
+                    ws.mergeCells("P4:R4");
+                    ws.mergeCells("S4:T4");
+                } catch (e) {}
+
+                ["B", "C", "D", "E", "F", "G", "H", "K", "P", "S"].forEach(col => {
+                    const cell = ws.getCell(col + "4");
+                    cell.font = { ...defaultFont, bold: true };
+                    cell.border = defaultBorder;
+                    cell.alignment = defaultAlignment;
+                    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF2F2F2" } };
+                });
+            } else {
+                ws.getCell("B4").value = "상태";
+                ws.getCell("C4").value = "NO.";
+                ws.getCell("D4").value = "판매채널";
+                ws.getCell("E4").value = "판매자";
+                ws.getCell("F4").value = "요청일";
+                ws.getCell("G4").value = "이름";
+                ws.getCell("H4").value = "연락처";
+                ws.getCell("I4").value = "구좌";
+                ws.getCell("J4").value = "가전";
+                ws.getCell("K4").value = "1차 희망일시";
+
+                try {
+                    ws.mergeCells("K4:L4");
+                } catch (e) {}
+
+                ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K"].forEach(col => {
+                    const cell = ws.getCell(col + "4");
+                    cell.font = { ...defaultFont, bold: true };
+                    cell.border = defaultBorder;
+                    cell.alignment = defaultAlignment;
+                    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF2F2F2" } };
+                });
+            }
+
+            // 4. Row 5 ~ Row 104: 100개 행 빈 템플릿 번호 미리 생성
+            for (let i = 1; i <= 100; i++) {
+                const r = 4 + i;
+                const row = ws.getRow(r);
+                row.getCell("B").value = sheetType === "450" ? "요청중" : "해피콜요청";
+                row.getCell("C").value = i;
+
+                const cols = sheetType === "450"
+                    ? ["B", "C", "D", "E", "F", "G", "H", "K", "P", "S"]
+                    : ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"];
+
+                cols.forEach(col => {
+                    const cell = row.getCell(col);
+                    cell.font = defaultFont;
+                    cell.border = defaultBorder;
+                    cell.alignment = defaultAlignment;
+                });
+            }
+
+            return ws;
+        };
 
         // 마지막 데이터 행과 번호(NO.) 계산 헬퍼 (템플릿에 미리 채워진 빈 번호 무시)
         const getNextRowInfo = (ws: ExcelJS.Worksheet) => {
@@ -228,21 +326,23 @@ export async function POST(req: NextRequest) {
         for (const customer of customers) {
             const prodType = String(customer.productType || "").toLowerCase();
             const isCombined = prodType.includes("smart") || prodType.includes("스마트") || (customer.products && String(customer.products).trim() !== "");
+            const reqDate = parseToDate(customer.registrationDate || customer.createdAt);
+            const reqMonthStr = String(reqDate.getMonth() + 1).padStart(2, "0");
 
-            const targetSheet: ExcelJS.Worksheet = (isCombined && wsSmart) ? wsSmart : ws450;
+            const sheetType = isCombined ? "combined" : "450";
+            const targetSheet = getOrCreateMonthSheet(workbook, sheetType, reqMonthStr);
             const { nextRowIndex, nextNo } = getNextRowInfo(targetSheet);
 
             const row = targetSheet.getRow(nextRowIndex);
 
             const channel = customer.channel || resolveSalesChannel(customer, channelMappings);
             const seller = customer.seller || sellerName || "김지훈";
-            const reqDate = parseToDate(customer.registrationDate || customer.createdAt);
             const name = String(customer.customerName || "").trim();
             const phone = String(customer.customerPhone || "").trim();
             const plan = String(customer.planType || "1구좌").trim();
             const contactTime = formatTimeSlot(customer.preferredContactTime);
 
-            if (targetSheet === ws450) {
+            if (sheetType === "450") {
                 // 더해피 450 시트 입력:
                 row.getCell("B").value = "요청중";
                 row.getCell("C").value = nextNo;
@@ -263,7 +363,7 @@ export async function POST(req: NextRequest) {
                     cell.border = defaultBorder;
                     cell.alignment = defaultAlignment;
                 });
-            } else if (wsSmart && targetSheet === wsSmart) {
+            } else {
                 // 결합 시트 입력:
                 row.getCell("B").value = "접수완료";
                 row.getCell("C").value = nextNo;

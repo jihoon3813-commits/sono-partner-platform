@@ -99,6 +99,33 @@ export default function LifeJoyExportModal({
         return "라이프앤조이_직영";
     };
 
+    // 2026년 8월 이전(2026-08-31까지) 등록된 고객인지 확인
+    const isRegisteredBeforeSep2026 = (app: Application) => {
+        const dateStr = String(app.registrationDate || app.createdAt || "").trim();
+        if (!dateStr) return true; // 날짜 없으면 과거 데이터
+
+        // 한글 형식 (예: '11월 13일', '9월18일')은 2025년 과거 레거시 데이터
+        if (dateStr.includes("월") || !dateStr.includes("-")) {
+            return true;
+        }
+
+        const isoDate = dateStr.slice(0, 10);
+        return isoDate < "2026-09-01";
+    };
+
+    // 이미 등록된 고객인지 확인 (26년 8월 이전은 모두 반영완료로 처리)
+    const isAlreadyInExcel = (app: Application) => {
+        // 1. 26년 8월 이전 등록 고객은 미반영 없고 모두 반영으로 처리
+        if (isRegisteredBeforeSep2026(app)) {
+            return true;
+        }
+
+        // 2. 26년 9월 이후 및 앞으로 등록하는 신규 고객만 엑셀 대조
+        const cleanPhone = String(app.customerPhone || "").replace(/[^\d]/g, "");
+        const key = `${String(app.customerName || "").trim()}_${cleanPhone}`;
+        return existingList.some(c => `${c.name}_${c.phone}` === key);
+    };
+
     // 모달 열릴 때 최신 엑셀 정보 로드
     useEffect(() => {
         if (!isOpen) return;
@@ -126,7 +153,8 @@ export default function LifeJoyExportModal({
                         const key = `${String(app.customerName || "").trim()}_${cleanPhone}`;
                         channelMap[app.applicationNo] = getDefaultChannel(app);
 
-                        if (!existingSet.has(key)) {
+                        // 26년 8월 이전 고객은 제외, 9월 이후 미반영 고객만 자동 선택
+                        if (!isRegisteredBeforeSep2026(app) && !existingSet.has(key)) {
                             newAppNos.push(app.applicationNo);
                         }
                     });
@@ -145,13 +173,6 @@ export default function LifeJoyExportModal({
     }, [isOpen, applications, channelSetting]);
 
     if (!isOpen) return null;
-
-    // 이미 등록된 고객인지 확인
-    const isAlreadyInExcel = (app: Application) => {
-        const cleanPhone = String(app.customerPhone || "").replace(/[^\d]/g, "");
-        const key = `${String(app.customerName || "").trim()}_${cleanPhone}`;
-        return existingList.some(c => `${c.name}_${c.phone}` === key);
-    };
 
     // 체크박스 토글
     const handleToggleSelect = (appNo: string) => {
@@ -234,6 +255,16 @@ export default function LifeJoyExportModal({
             setIsExporting(false);
         }
     };
+
+    // 미반영 신규 고객이 테이블 위쪽에 오도록 정렬
+    const sortedApplications = [...applications].sort((a, b) => {
+        const aAlready = isAlreadyInExcel(a);
+        const bAlready = isAlreadyInExcel(b);
+        if (aAlready !== bAlready) {
+            return aAlready ? 1 : -1;
+        }
+        return (b.createdAt || "").localeCompare(a.createdAt || "");
+    });
 
     const newCustomerCount = applications.filter(a => !isAlreadyInExcel(a)).length;
 
@@ -365,7 +396,7 @@ export default function LifeJoyExportModal({
                                                 </td>
                                             </tr>
                                         ) : (
-                                            applications.map((app) => {
+                                            sortedApplications.map((app) => {
                                                 const already = isAlreadyInExcel(app);
                                                 const isSelected = selectedAppNos.includes(app.applicationNo);
                                                 const currentChannel = customChannels[app.applicationNo] || getDefaultChannel(app);
@@ -443,11 +474,13 @@ export default function LifeJoyExportModal({
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <div className="space-y-1">
-                                <p className="font-bold">엑셀 업데이트 안내</p>
+                                <p className="font-bold">가입요청 엑셀 업데이트 & 시트 안내</p>
                                 <p className="text-emerald-800/80 leading-relaxed">
-                                    • 상품에 따라 <strong>'09월 리스트_450'</strong> 또는 <strong>'09월 리스트_결합'</strong> 시트에 분기되어 자동 입력됩니다.
+                                    • <strong>2026년 8월 이전 등록 고객</strong>은 모두 반영완료로 처리되며, 앞으로 등록되는 신규 고객만 엑셀에 업데이트됩니다.
                                     <br />
-                                    • 기존 입력된 1~8번 등의 이전 데이터는 그대로 유지되며, 다음 빈 행(9번, 10번...)부터 나눔고딕 10pt 테두리 서식과 함께 깔끔하게 삽입됩니다.
+                                    • <strong>월 자동 전환</strong>: 10월 등 월이 바뀌면 엑셀 파일 내에 해당 월 시트(예: <strong>'10월 리스트_450'</strong>, <strong>'10월 리스트_결합'</strong>)가 자동으로 생성되어 1번부터 차례대로 반영됩니다.
+                                    <br />
+                                    • 기존 데이터는 그대로 유지되며, 나눔고딕 10pt 테두리 서식과 함께 이어서 삽입됩니다.
                                     <br />
                                     • 다운로드 후 개발폴더 <code className="font-bold bg-white/80 px-1 py-0.5 rounded text-emerald-900">hoon/</code> 폴더에도 최신 파일이 자동 보관됩니다.
                                 </p>
