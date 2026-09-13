@@ -363,13 +363,27 @@ export async function POST(req: NextRequest) {
             };
         };
 
+        // 현재 엑셀에 존재하는 최신 월 파악 (기본 "09")
+        let activeMonthStr = "09";
+        workbook.worksheets.forEach(ws => {
+            const match = ws.name.match(/^(\d{2})월/);
+            if (match && match[1] > activeMonthStr) {
+                activeMonthStr = match[1];
+            }
+        });
+
         let addedCount = 0;
 
         for (const customer of customers) {
             // 상품별 시트 분기: 더해피450 -> '450', 스마트케어 -> 'combined'
             const sheetType = resolveSheetType(customer);
             const reqDate = parseToDate(customer.registrationDate || customer.createdAt);
-            const reqMonthStr = String(reqDate.getMonth() + 1).padStart(2, "0");
+            let reqMonthStr = String(reqDate.getMonth() + 1).padStart(2, "0");
+
+            // 과거 월(8월 이하) 신청 건이더라도 현재 활성 월(09월 이상) 시트로 배정하여 서식 유지
+            if (reqMonthStr < activeMonthStr) {
+                reqMonthStr = activeMonthStr;
+            }
 
             const targetSheet = getOrCreateMonthSheet(workbook, sheetType, reqMonthStr);
             const { nextRowIndex, nextNo } = getNextRowInfo(targetSheet);

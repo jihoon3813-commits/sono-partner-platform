@@ -122,21 +122,29 @@ export default function LifeJoyExportModal({
         return "450";
     };
 
-    // 과거 등록 고객 판정: 2026년 8월 15일 이전 및 과거 데이터는 모두 '반영완료'로 처리
-    // (현재 최신 2개인 2026년 8월 20일 건 및 앞으로 등록되는 신규 고객만 미등록 대조 대상)
+    // 과거 등록 고객 판정: 2026년 8월 31일 이전 및 레거시 데이터는 모두 '반영완료'로 처리
+    // (2026년 9월 1일 이후 및 앞으로 등록되는 신규 고객만 미등록 대조 대상)
     const isPastRegisteredCustomer = (app: Application) => {
-        const createdStr = String(app.createdAt || "").trim();
-        const regStr = String(app.registrationDate || "").trim();
+        // 등록일(registrationDate) 또는 생성일(createdAt) 추출
+        const rawDate = String(app.registrationDate || app.createdAt || "").trim();
 
-        if (!createdStr && !regStr) return true; // 날짜 없으면 과거 데이터
+        // 날짜 없으면 과거 레거시 데이터로 간주
+        if (!rawDate) return true;
 
-        // 한글 형식 (예: '11월 13일', '9월18일') 또는 비표준 형식은 과거 레거시 데이터
-        if (regStr.includes("월") || (regStr && !regStr.includes("-"))) {
+        // 한글('월', '일')이 들어있거나 하이픈('-')이 없는 비정형 날짜(예: '9월18일', '11월 13일' 등)는 과거 데이터
+        if (rawDate.includes("월") || rawDate.includes("일") || !rawDate.includes("-")) {
             return true;
         }
 
-        const dateToCheck = createdStr || regStr;
-        return dateToCheck < "2026-08-15";
+        // YYYY-MM-DD 정규식 매칭
+        const match = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (!match) {
+            return true; // 정규식 불일치 시 안전하게 과거 데이터로 처리
+        }
+
+        const ymd = `${match[1]}-${match[2]}-${match[3]}`;
+        // 2026년 8월 31일까지의 모든 등록 고객(스마트케어 5더블 포함)은 반영완료로 처리
+        return ymd < "2026-09-01";
     };
 
     // 이미 등록된 고객인지 확인 (과거 등록 고객은 모두 반영완료로 처리)
