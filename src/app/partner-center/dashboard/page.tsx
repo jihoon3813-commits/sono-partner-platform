@@ -23,6 +23,7 @@ import { api } from "../../../../convex/_generated/api";
 import { PartnerRequest } from "@/lib/types";
 import { Footer } from "@/components/layout";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
+import { getKSTDateString } from "@/lib/dateUtils";
 
 
 type Tab = "overview" | "partners" | "products" | "promotions" | "customers" | "requests" | "library" | "stats" | "settings" | "retention" | "retention2" | "tms";
@@ -158,9 +159,14 @@ export default function PartnerDashboard() {
         allRequests: realTimeData?.allRequests || []
     };
 
-    const newCustomerCount = (dashboardData.customers || []).filter((c: any) => 
-        c.status === "접수대기" || c.status === "접수"
-    ).length;
+    const today = getKSTDateString();
+    const newCustomerCount = (dashboardData.customers || []).filter((c: any) => {
+        const isInitialStatus = c.status === "접수대기" || c.status === "접수";
+        if (!isInitialStatus) return false;
+
+        const regDate = getKSTDateString(c.registrationDate || c.createdAt || c._creationTime);
+        return regDate === today;
+    }).length;
 
     const currentPartner = dashboardData.partners.find((p: any) => 
         (partner?.partnerId && (p.partnerId === partner.partnerId || p.loginId === partner.partnerId || p.customUrl === partner.partnerId)) ||
