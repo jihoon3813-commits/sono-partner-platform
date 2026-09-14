@@ -6,6 +6,7 @@ import {
     getPendingPartnerRequests,
     approvePartnerRequest,
     rejectPartnerRequest,
+    holdPartnerRequest,
 } from '@/lib/db';
 
 // 전체 파트너 목록 조회
@@ -92,15 +93,29 @@ export async function POST(request: Request) {
             );
         }
 
-        // approve/reject 액션은 requestId 필요
-        if ((action === 'approve' || action === 'reject') && !requestId) {
+        // approve/reject/hold 액션은 requestId 필요
+        if ((action === 'approve' || action === 'reject' || action === 'hold') && !requestId) {
             return NextResponse.json(
                 { success: false, message: '신청 ID가 필요합니다.' },
                 { status: 400 }
             );
         }
 
-        if (action === 'approve') {
+        if (action === 'hold') {
+            const success = await holdPartnerRequest(requestId, approvedBy || 'admin');
+
+            if (!success) {
+                return NextResponse.json(
+                    { success: false, message: '신청을 찾을 수 없습니다.' },
+                    { status: 404 }
+                );
+            }
+
+            return NextResponse.json({
+                success: true,
+                message: '파트너 신청이 보류되었습니다.',
+            });
+        } else if (action === 'approve') {
             if (!partnerData?.customUrl || !partnerData?.loginId || !partnerData?.loginPassword) {
                 return NextResponse.json(
                     { success: false, message: '파트너 설정 정보가 필요합니다.' },

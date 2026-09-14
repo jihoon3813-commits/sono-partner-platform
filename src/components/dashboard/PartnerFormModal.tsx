@@ -159,6 +159,37 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
         }
     };
 
+    const handleHold = async () => {
+        if (!requestId) return;
+        if (!confirm("해당 입점신청을 보류 처리하시겠습니까?")) return;
+        setIsLoading(true);
+
+        try {
+            const response = await fetch("/api/admin/partners", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "hold",
+                    requestId: requestId,
+                    approvedBy: "admin"
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert("보류 처리되었습니다.");
+                onSuccess();
+            } else {
+                alert(data.message || "오류가 발생했습니다.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("서버와 통신 중 오류가 발생했습니다.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -634,29 +665,39 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                         </div>
                     </div>
 
-                    <div className="pt-6 flex gap-4">
+                    <div className="pt-6 flex gap-3 sm:gap-4">
                         {isEdit && isAdmin && (
                             <button
                                 type="button"
                                 onClick={handleDelete}
-                                className="bg-red-50 text-red-500 font-bold px-6 py-4 rounded-2xl hover:bg-red-100 transition-all"
+                                className="bg-red-50 text-red-500 font-bold px-5 sm:px-6 py-4 rounded-2xl hover:bg-red-100 transition-all whitespace-nowrap"
                             >
                                 삭제
+                            </button>
+                        )}
+                        {!isEdit && requestId && (
+                            <button
+                                type="button"
+                                onClick={handleHold}
+                                disabled={isLoading}
+                                className="bg-amber-500 text-white font-bold px-5 sm:px-6 py-4 rounded-2xl hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50 whitespace-nowrap"
+                            >
+                                보류
                             </button>
                         )}
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 bg-gray-100 text-gray-500 font-bold py-4 rounded-2xl hover:bg-gray-200 transition-all"
+                            className="flex-1 bg-gray-100 text-gray-500 font-bold py-4 rounded-2xl hover:bg-gray-200 transition-all whitespace-nowrap"
                         >
                             취소
                         </button>
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="flex-[2] bg-sono-primary text-white font-bold py-4 rounded-2xl hover:bg-sono-primary/90 transition-all shadow-xl shadow-sono-primary/20 disabled:opacity-50"
+                            className="flex-[2] bg-sono-primary text-white font-bold py-4 rounded-2xl hover:bg-sono-primary/90 transition-all shadow-xl shadow-sono-primary/20 disabled:opacity-50 whitespace-nowrap"
                         >
-                            {isLoading ? "처리 중..." : isEdit ? "정보 수정 완료" : "파트너 등록 완료"}
+                            {isLoading ? "처리 중..." : isEdit ? "정보 수정 완료" : requestId ? "승인 처리" : "파트너 등록 완료"}
                         </button>
                     </div>
                 </form>

@@ -161,3 +161,76 @@ export const rejectPartnerRequest = mutation({
         return true;
     },
 });
+
+export const holdPartnerRequest = mutation({
+    args: {
+        requestId: v.string(),
+        heldBy: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const request = await ctx.db
+            .query("partnerRequests")
+            .withIndex("by_requestId", (q) => q.eq("requestId", args.requestId))
+            .unique();
+
+        if (!request) return false;
+
+        await ctx.db.patch(request._id, {
+            status: "hold",
+            reviewedBy: args.heldBy || "admin",
+            reviewedAt: nowKST(),
+        });
+
+        return true;
+    },
+});
+
+export const unholdPartnerRequest = mutation({
+    args: {
+        requestId: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const request = await ctx.db
+            .query("partnerRequests")
+            .withIndex("by_requestId", (q) => q.eq("requestId", args.requestId))
+            .unique();
+
+        if (!request) return false;
+
+        await ctx.db.patch(request._id, {
+            status: "pending",
+            reviewedAt: nowKST(),
+        });
+
+        return true;
+    },
+});
+
+export const getAllPartnerRequests = query({
+    handler: async (ctx) => {
+        return await ctx.db
+            .query("partnerRequests")
+            .order("desc")
+            .collect();
+    },
+});
+
+export const deletePartnerRequest = mutation({
+    args: {
+        requestId: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const request = await ctx.db
+            .query("partnerRequests")
+            .withIndex("by_requestId", (q) => q.eq("requestId", args.requestId))
+            .unique();
+
+        if (!request) return false;
+
+        await ctx.db.delete(request._id);
+        return true;
+    },
+});
+
+
+

@@ -14,15 +14,15 @@ export const getDashboardData = query({
         if (isAdmin) {
             const partners = await ctx.db.query("partners").collect();
             const applications = await ctx.db.query("applications").order("desc").collect();
-            const pendingRequests = await ctx.db.query("partnerRequests")
-                .withIndex("by_status", q => q.eq("status", "pending"))
-                .collect();
+            const allRequests = await ctx.db.query("partnerRequests").order("desc").collect();
+            const pendingRequests = allRequests.filter(r => r.status === "pending");
 
             return {
                 isAdmin,
                 partners,
                 customers: attachDuplicateFlags(applications, applications),
-                pendingRequests
+                pendingRequests,
+                allRequests
             };
         }
 
@@ -124,7 +124,8 @@ export const getDashboardData = query({
             isAdmin: false,
             partners: partnerList,
             customers: attachDuplicateFlags(filteredApps, allApplications),
-            pendingRequests: []
+            pendingRequests: [],
+            allRequests: []
         };
     },
 });

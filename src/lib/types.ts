@@ -154,7 +154,7 @@ export interface PartnerRequest {
     pointsInfo?: string; // For backward compatibility if needed
     parentPartnerId?: string;
     parentPartnerName?: string;
-    status: 'pending' | 'approved' | 'rejected';
+    status: 'pending' | 'approved' | 'rejected' | 'hold';
     createdAt: string;
     reviewedBy?: string;
     reviewedAt?: string;

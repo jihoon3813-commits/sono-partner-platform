@@ -167,17 +167,8 @@ export async function bulkSyncApplications(
 // ============================================
 
 export async function getAllPartnerRequests(): Promise<PartnerRequest[]> {
-    // requests.ts doesn't have getAllPartnerRequests? 
-    // Summary said: "A generic getAllPartnerRequests query is not explicitly defined"
-    // But getPendingPartnerRequests exists.
-    // Let's use getPending for now or generic query.
-    // Wait, if not defined, query will fail. 
-    // I'll check requests.ts later. For now, try getPending if user needs it.
-    // But "getAllPartnerRequests" implies ALL.
-    // I'll try "requests:getAllPartnerRequests" assuming I should add it or it fails.
-    // To be safe, I'll return empty array if catch error.
     try {
-        return await getClient().query("requests:getPendingPartnerRequests" as any); // Temporary fallback
+        return await getClient().query("requests:getAllPartnerRequests" as any);
     } catch (e) {
         return [];
     }
@@ -233,6 +224,18 @@ export async function rejectPartnerRequest(
     });
     return true;
 }
+
+export async function holdPartnerRequest(
+    requestId: string,
+    heldBy: string
+): Promise<boolean> {
+    await getClient().mutation("requests:holdPartnerRequest" as any, {
+        requestId,
+        heldBy
+    });
+    return true;
+}
+
 
 
 // ============================================
