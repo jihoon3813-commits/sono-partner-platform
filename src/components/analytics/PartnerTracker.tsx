@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useParams, usePathname } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { isReservedKeyword } from "@/lib/constants";
 
 export default function PartnerTracker() {
     const params = useParams();
@@ -24,7 +25,8 @@ export default function PartnerTracker() {
         } catch (e) {}
     }
 
-    const partnerIdentifier = routePartnerId || pathPartnerId || queryPartnerId || "main";
+    const rawIdentifier = routePartnerId || pathPartnerId || queryPartnerId || "main";
+    const partnerIdentifier = isReservedKeyword(rawIdentifier) ? "main" : rawIdentifier;
 
     // Query partner by customUrl or partnerId if identifier is present
     const partnerByCustomUrl = useQuery(api.partners.getPartnerByCustomUrl,
@@ -52,7 +54,7 @@ export default function PartnerTracker() {
         if (lastRecordedKey.current === recordKey) return;
         lastRecordedKey.current = recordKey;
 
-        // Visitor ID handling (LocalStorage)
+        // Visitor ID handling (LocalStorage) & Session Attribution (Referrer / UTM)
         let visitorId = "";
         let referrer = "";
         if (typeof window !== "undefined") {
@@ -62,7 +64,30 @@ export default function PartnerTracker() {
                     visitorId = "v_" + Math.random().toString(36).substring(2, 11) + Date.now().toString(36);
                     localStorage.setItem("sono_visitor_id", visitorId);
                 }
-                referrer = document.referrer || "";
+
+                // 1. UTM 및 유입 파라미터 세션 보존
+                const search = new URLSearchParams(window.location.search);
+                const utmSource = search.get("utm_source") || search.get("ref");
+                if (utmSource) {
+                    sessionStorage.setItem("sono_utm_source", utmSource);
+                }
+                const activeUtm = utmSource || sessionStorage.getItem("sono_utm_source") || "";
+
+                // 2. 외부 Referrer 세션 보존 (자사 내부 도메인 이동은 외부 리퍼러로 처리하지 않음)
+                const rawRef = document.referrer || "";
+                const isInternal = rawRef ? (rawRef.includes(window.location.hostname) || rawRef.includes("sono-partners.com")) : true;
+
+                if (rawRef && !isInternal) {
+                    sessionStorage.setItem("sono_session_referrer", rawRef);
+                    referrer = rawRef;
+                } else {
+                    referrer = sessionStorage.getItem("sono_session_referrer") || "";
+                }
+
+                // 3. 외부 Referrer가 없으나 UTM 캠페인이 있을 경우 utm:// 스키마로 전달
+                if (!referrer && activeUtm) {
+                    referrer = `utm://${activeUtm}`;
+                }
             } catch (err) {
                 visitorId = "v_anon_" + Date.now();
             }

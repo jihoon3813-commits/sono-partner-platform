@@ -29,7 +29,23 @@ export async function POST(req: NextRequest) {
             ip = cfIp.trim();
         }
 
-        const finalReferrer = referrer || headerReferrer || "";
+        // 자사 도메인 및 내부 호출 헤더가 유입 리퍼러로 잘못 기록되지 않도록 방지
+        const host = req.headers.get("host") || "";
+        let cleanReferrer = (referrer || "").trim();
+
+        if (cleanReferrer) {
+            try {
+                const parsed = new URL(cleanReferrer.startsWith("http") ? cleanReferrer : `https://${cleanReferrer}`);
+                if (
+                    parsed.host === host ||
+                    parsed.host.includes("sono-partners.com") ||
+                    parsed.host.includes("localhost") ||
+                    parsed.host.includes("127.0.0.1")
+                ) {
+                    cleanReferrer = ""; // 내부 페이지 이동은 외부 유입 출처가 아니므로 비움
+                }
+            } catch (e) {}
+        }
 
         if (convex) {
             await convex.mutation(api.analytics.recordHit, {
@@ -37,7 +53,7 @@ export async function POST(req: NextRequest) {
                 path: path || "/",
                 visitorId: visitorId || "anonymous",
                 userAgent: userAgent || req.headers.get("user-agent") || undefined,
-                referrer: finalReferrer || undefined,
+                referrer: cleanReferrer || undefined,
                 ip: ip || undefined,
             });
         }

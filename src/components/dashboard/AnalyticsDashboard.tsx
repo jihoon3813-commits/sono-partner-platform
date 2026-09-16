@@ -446,12 +446,14 @@ export default function AnalyticsDashboard() {
                                     </thead>
                                     <tbody className="divide-y divide-gray-50">
                                         {dailyDetails.referrers.map((ref: any, idx: number) => {
-                                            let categoryBadgeClass = "bg-gray-100 text-gray-600";
+                                            let categoryBadgeClass = "bg-gray-100 text-gray-600 border border-gray-200";
                                             if (ref.category === "naver") categoryBadgeClass = "bg-emerald-50 text-emerald-700 font-black border border-emerald-200";
                                             if (ref.category === "google") categoryBadgeClass = "bg-blue-50 text-blue-700 font-black border border-blue-200";
                                             if (ref.category === "daum") categoryBadgeClass = "bg-yellow-50 text-yellow-800 font-black border border-yellow-200";
+                                            if (ref.category === "kakao") categoryBadgeClass = "bg-amber-100 text-amber-900 font-black border border-amber-300";
                                             if (ref.category === "social") categoryBadgeClass = "bg-pink-50 text-pink-700 font-black border border-pink-200";
-                                            if (ref.category === "direct") categoryBadgeClass = "bg-gray-100 text-gray-700 font-bold";
+                                            if (ref.category === "campaign") categoryBadgeClass = "bg-purple-50 text-purple-700 font-black border border-purple-200";
+                                            if (ref.category === "direct") categoryBadgeClass = "bg-gray-100 text-gray-700 font-bold border border-gray-200";
 
                                             return (
                                                 <tr key={ref.domain + idx} className="hover:bg-gray-50/80 transition-colors">
@@ -470,6 +472,10 @@ export default function AnalyticsDashboard() {
                                                             <a href={ref.rawUrls[0]} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-sono-primary truncate block" title={ref.rawUrls[0]}>
                                                                 {ref.rawUrls[0]}
                                                             </a>
+                                                        ) : ref.domain === "direct" ? (
+                                                            <span className="text-gray-400 font-sans">직접 접속 / 문자 / 북마크</span>
+                                                        ) : ref.domain === "kakaotalk" ? (
+                                                            <span className="text-amber-700 font-sans font-medium">카카오톡 채팅방 / 채널 링크</span>
                                                         ) : (
                                                             ref.domain
                                                         )}
@@ -585,7 +591,15 @@ export default function AnalyticsDashboard() {
                                                     {log.partnerName}
                                                 </td>
                                                 <td className="py-3 px-4">
-                                                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                                                        log.category === "kakao" ? "bg-amber-100 text-amber-900 border border-amber-300" :
+                                                        log.category === "naver" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                                                        log.category === "google" ? "bg-blue-50 text-blue-700 border border-blue-200" :
+                                                        log.category === "daum" ? "bg-yellow-50 text-yellow-800 border border-yellow-200" :
+                                                        log.category === "social" ? "bg-pink-50 text-pink-700 border border-pink-200" :
+                                                        log.category === "campaign" ? "bg-purple-50 text-purple-700 border border-purple-200" :
+                                                        "bg-gray-100 text-gray-700 border border-gray-200"
+                                                    }`}>
                                                         {log.siteName || "직접 유입"}
                                                     </span>
                                                 </td>

@@ -8,24 +8,95 @@ function getKSTDateStr(dateInput?: Date | string | number): string {
     return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(d);
 }
 
-// 유입 사이트 URL 분석 및 도메인/명칭 분류 헬퍼
-export function parseReferrerSite(url?: string): { siteName: string; domain: string; category: string } {
-    if (!url || !url.trim()) {
-        return { siteName: "직접 유입 (Direct)", domain: "direct", category: "direct" };
-    }
-    const cleanUrl = url.trim();
-    let hostname = "";
-    try {
-        if (cleanUrl.startsWith("http://") || cleanUrl.startsWith("https://")) {
-            const parsed = new URL(cleanUrl);
-            hostname = parsed.hostname.toLowerCase();
-        } else {
-            hostname = cleanUrl.split("/")[0].toLowerCase();
+// 유입 사이트 URL 및 User-Agent 기반 유입 출처 분석 헬퍼
+export function parseReferrerSite(url?: string, userAgent?: string): { siteName: string; domain: string; category: string } {
+    const cleanUrl = (url || "").trim();
+    const ua = (userAgent || "").toLowerCase();
+
+    // 1. UTM 파라미터 감지 (예: utm://kakaotalk 또는 URL 내 utm_source)
+    let utmSource = "";
+    if (cleanUrl.startsWith("utm://")) {
+        utmSource = cleanUrl.replace("utm://", "").toLowerCase();
+    } else if (cleanUrl.includes("utm_source=")) {
+        try {
+            const urlObj = new URL(cleanUrl.startsWith("http") ? cleanUrl : `https://${cleanUrl}`);
+            utmSource = urlObj.searchParams.get("utm_source")?.toLowerCase() || "";
+        } catch (e) {
+            const match = cleanUrl.match(/utm_source=([^&]+)/i);
+            if (match) utmSource = decodeURIComponent(match[1]).toLowerCase();
         }
-    } catch (e) {
-        hostname = cleanUrl.toLowerCase();
     }
 
+    if (utmSource) {
+        if (utmSource.includes("kakao")) return { siteName: "카카오톡 (UTM)", domain: "kakaotalk", category: "kakao" };
+        if (utmSource.includes("insta")) return { siteName: "인스타그램 (UTM)", domain: "instagram.com", category: "social" };
+        if (utmSource.includes("face") || utmSource.includes("fb")) return { siteName: "페이스북 (UTM)", domain: "facebook.com", category: "social" };
+        if (utmSource.includes("naver") || utmSource.includes("blog")) return { siteName: "네이버 (UTM)", domain: "naver.com", category: "naver" };
+        if (utmSource.includes("sms") || utmSource.includes("mms") || utmSource.includes("msg") || utmSource.includes("text")) return { siteName: "문자 메시지 (SMS)", domain: "sms", category: "direct" };
+        if (utmSource.includes("google")) return { siteName: "구글 (UTM)", domain: "google.com", category: "google" };
+        if (utmSource.includes("youtube")) return { siteName: "유튜브 (UTM)", domain: "youtube.com", category: "youtube" };
+        if (utmSource.includes("band")) return { siteName: "네이버 밴드 (UTM)", domain: "band.us", category: "naver" };
+        return { siteName: `캠페인/광고 (${utmSource})`, domain: utmSource, category: "campaign" };
+    }
+
+    // 2. 자사 내부 도메인, 로컬호스트 또는 direct 여부 판별
+    let isInternalOrDirect = !cleanUrl || cleanUrl === "direct";
+    let hostname = "";
+    if (cleanUrl && !isInternalOrDirect) {
+        try {
+            if (cleanUrl.startsWith("http://") || cleanUrl.startsWith("https://")) {
+                const parsed = new URL(cleanUrl);
+                hostname = parsed.hostname.toLowerCase();
+            } else {
+                hostname = cleanUrl.split("/")[0].toLowerCase();
+            }
+        } catch (e) {
+            hostname = cleanUrl.toLowerCase();
+        }
+
+        if (
+            hostname === "localhost" ||
+            hostname === "127.0.0.1" ||
+            hostname.includes("sono-partners.com") ||
+            hostname.includes("vercel.app")
+        ) {
+            isInternalOrDirect = true;
+        }
+    }
+
+    // 3. 내부 이동이거나 직접 유입인 경우 -> User-Agent로 인앱 브라우저(카카오톡, 인스타 등) 확인
+    if (isInternalOrDirect) {
+        if (ua.includes("kakaotalk")) {
+            return { siteName: "카카오톡 (인앱)", domain: "kakaotalk", category: "kakao" };
+        }
+        if (ua.includes("instagram")) {
+            return { siteName: "인스타그램 (인앱)", domain: "instagram.com", category: "social" };
+        }
+        if (ua.includes("fban") || ua.includes("fbav") || ua.includes("fb_iab")) {
+            return { siteName: "페이스북 (인앱)", domain: "facebook.com", category: "social" };
+        }
+        if (ua.includes("naver(inapp)")) {
+            return { siteName: "네이버 앱 (인앱)", domain: "naver.com", category: "naver" };
+        }
+        if (ua.includes("line/")) {
+            return { siteName: "라인 (인앱)", domain: "line.me", category: "social" };
+        }
+        if (ua.includes("band/")) {
+            return { siteName: "네이버 밴드 (인앱)", domain: "band.us", category: "naver" };
+        }
+        if (ua.includes("daumapps")) {
+            return { siteName: "다음 앱 (인앱)", domain: "daum.net", category: "daum" };
+        }
+        if (ua.includes("twitter") || ua.includes("tweet") || ua.includes("x/")) {
+            return { siteName: "X (트위터)", domain: "x.com", category: "social" };
+        }
+        if (ua.includes("tiktok")) {
+            return { siteName: "틱톡 (인앱)", domain: "tiktok.com", category: "social" };
+        }
+        return { siteName: "직접 유입 (Direct / 문자 등)", domain: "direct", category: "direct" };
+    }
+
+    // 4. 외부 유입 사이트 판별
     if (hostname.includes("naver.com")) {
         if (hostname.includes("search.naver.com") || hostname.includes("m.search.naver.com")) {
             return { siteName: "네이버 통합검색", domain: hostname, category: "naver" };
@@ -201,8 +272,8 @@ export const getStatsSummary = query({
             pathStats[path].pv++;
             pathStats[path].uv.add(log.visitorId);
 
-            // 유입 사이트 통계
-            const refInfo = parseReferrerSite(log.referrer);
+            // 유입 사이트 통계 (User-Agent 기반 인앱 브라우저 분석 포함)
+            const refInfo = parseReferrerSite(log.referrer, log.userAgent);
             const refKey = refInfo.domain;
             if (!referrerStats[refKey]) {
                 referrerStats[refKey] = {
@@ -360,7 +431,7 @@ export const getDailyDetailLogs = query({
         const enrichedLogs = rawLogs.map(log => {
             totalUvSet.add(log.visitorId);
 
-            const refInfo = parseReferrerSite(log.referrer);
+            const refInfo = parseReferrerSite(log.referrer, log.userAgent);
             const refDomain = refInfo.domain;
 
             if (!referrerMap[refDomain]) {
@@ -375,7 +446,9 @@ export const getDailyDetailLogs = query({
             }
             referrerMap[refDomain].pv++;
             referrerMap[refDomain].uvSet.add(log.visitorId);
-            if (log.referrer) referrerMap[refDomain].rawUrls.add(log.referrer);
+            if (log.referrer && !log.referrer.includes("sono-partners.com") && !log.referrer.includes("localhost")) {
+                referrerMap[refDomain].rawUrls.add(log.referrer);
+            }
 
             const ipKey = (log.ip || "미수집").trim();
             if (!ipMap[ipKey]) {

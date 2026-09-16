@@ -2,6 +2,7 @@
 
 import SmartCareContent from "@/components/products/SmartCareContent";
 import { useState, useEffect, use } from "react";
+import { isReservedKeyword } from "@/lib/constants";
 
 interface PartnerData {
     customUrl: string;
@@ -14,7 +15,26 @@ export default function PartnerSmartCareDirectPage({ params }: { params: Promise
     const [isLoading, setIsLoading] = useState(true);
     const [partner, setPartner] = useState<PartnerData | null>(null);
 
+    const lowerId = (resolvedParams.partnerId || "").trim().toLowerCase();
+
     useEffect(() => {
+        if (lowerId === "privacy") {
+            window.location.replace("/privacy");
+            return;
+        }
+        if (lowerId === "terms") {
+            window.location.replace("/terms");
+            return;
+        }
+        if (lowerId === "disclosure") {
+            window.location.replace("/disclosure");
+            return;
+        }
+        if (isReservedKeyword(lowerId)) {
+            window.location.replace("/");
+            return;
+        }
+
         let isMounted = true;
         async function fetchPartner() {
             try {
