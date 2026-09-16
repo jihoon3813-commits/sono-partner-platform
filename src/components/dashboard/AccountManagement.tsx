@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { formatPhoneNumber } from "@/lib/phoneUtils";
 
 interface AccountManagementProps {
     partner: any;
@@ -14,13 +15,14 @@ export default function AccountManagement({ partner, isAdmin, onRefresh }: Accou
     const updatePartnerMut = useMutation(api.partners.updatePartner);
     const updateAdminMut = useMutation(api.admins.updateAdmin);
 
-    // 개인정보 상태
+    // 개인정보 상태 (상담 대표번호는 미설정 시 등록된 담당자 핸드폰 번호로 기본 설정)
     const [infoData, setInfoData] = useState({
         companyName: partner?.companyName || partner?.name || "",
         ceoName: partner?.ceoName || "",
         managerName: partner?.managerName || partner?.name || "",
-        managerPhone: partner?.managerPhone || "",
+        managerPhone: formatPhoneNumber(partner?.managerPhone || ""),
         managerEmail: partner?.managerEmail || partner?.email || "",
+        inquiryPhone: formatPhoneNumber(partner?.inquiryPhone || partner?.managerPhone || ""),
     });
 
     // 비밀번호 상태
@@ -48,8 +50,9 @@ export default function AccountManagement({ partner, isAdmin, onRefresh }: Accou
                 companyName: partner.companyName || partner.name || "",
                 ceoName: partner.ceoName || "",
                 managerName: partner.managerName || partner.name || "",
-                managerPhone: partner.managerPhone || "",
+                managerPhone: formatPhoneNumber(partner.managerPhone || ""),
                 managerEmail: partner.managerEmail || partner.email || "",
+                inquiryPhone: formatPhoneNumber(partner.inquiryPhone || partner.managerPhone || ""),
             });
         }
     }, [partner]);
@@ -82,6 +85,7 @@ export default function AccountManagement({ partner, isAdmin, onRefresh }: Accou
                         managerName: infoData.managerName,
                         managerPhone: infoData.managerPhone,
                         managerEmail: infoData.managerEmail,
+                        inquiryPhone: infoData.inquiryPhone || infoData.managerPhone,
                     }
                 });
             }
@@ -99,6 +103,7 @@ export default function AccountManagement({ partner, isAdmin, onRefresh }: Accou
                             managerPhone: infoData.managerPhone,
                             managerEmail: infoData.managerEmail,
                             ceoName: infoData.ceoName,
+                            inquiryPhone: infoData.inquiryPhone || infoData.managerPhone,
                         };
                         if (sessionStorage.getItem("partnerSession")) {
                             sessionStorage.setItem("partnerSession", JSON.stringify(updatedSession));
@@ -267,15 +272,38 @@ export default function AccountManagement({ partner, isAdmin, onRefresh }: Accou
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-gray-600 mb-1.5">담당자 연락처</label>
+                                <label className="block text-xs font-bold text-gray-600 mb-1.5">담당자 연락처 (휴대폰)</label>
                                 <input
                                     type="text"
+                                    inputMode="numeric"
                                     value={infoData.managerPhone}
-                                    onChange={(e) => setInfoData({ ...infoData, managerPhone: e.target.value })}
+                                    onChange={(e) => setInfoData({ ...infoData, managerPhone: formatPhoneNumber(e.target.value) })}
                                     className="w-full px-4 py-3 rounded-2xl bg-gray-50 border border-gray-200 text-sm font-medium focus:bg-white focus:border-sono-primary focus:ring-2 focus:ring-sono-primary/20 outline-none transition-all"
                                     placeholder="010-0000-0000"
                                 />
                             </div>
+
+                            {!isAdmin && (
+                                <div>
+                                    <div className="flex items-center justify-between mb-1.5">
+                                        <label className="block text-xs font-bold text-gray-700">상담 대표번호 (하단 상담바 노출)</label>
+                                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                            랜딩페이지 연동
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        value={infoData.inquiryPhone}
+                                        onChange={(e) => setInfoData({ ...infoData, inquiryPhone: formatPhoneNumber(e.target.value) })}
+                                        className="w-full px-4 py-3 rounded-2xl bg-gray-50 border border-gray-200 text-sm font-medium focus:bg-white focus:border-sono-primary focus:ring-2 focus:ring-sono-primary/20 outline-none transition-all"
+                                        placeholder="예: 1588-9999 또는 010-0000-0000"
+                                    />
+                                    <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">
+                                        * 파트너 전용 랜딩페이지 하단 상담바에 노출되는 대표번호입니다. 미입력 시 등록된 담당자 연락처로 자동 노출되며, 1588-9999 등 4자리 대표번호 및 휴대폰 번호 모두 자동 하이픈이 적용됩니다. 모바일에서는 방문자가 원클릭으로 전화 걸기 및 문자를 보낼 수 있습니다.
+                                    </p>
+                                </div>
+                            )}
 
                             <div>
                                 <label className="block text-xs font-bold text-gray-600 mb-1.5">담당자 이메일</label>

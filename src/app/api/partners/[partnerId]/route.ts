@@ -33,6 +33,7 @@ export async function GET(
             landingTitle: partner.landingTitle,
             pointInfo: partner.pointInfo,
             brandColor: partner.brandColor,
+            inquiryPhone: partner.inquiryPhone || partner.managerPhone || "",
         };
 
         return NextResponse.json({

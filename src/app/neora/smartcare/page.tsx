@@ -7,6 +7,7 @@ interface PartnerData {
     customUrl: string;
     name: string;
     partnerId: string;
+    inquiryPhone?: string;
 }
 
 export default function NeoraSmartCarePage() {
@@ -58,6 +59,7 @@ export default function NeoraSmartCarePage() {
             partnerUrl={partner?.customUrl || partnerId}
             partnerName={partner?.name || "니오라"}
             partnerId={partner?.partnerId || partnerId}
+            partnerPhone={partner?.inquiryPhone || ""}
             isPremiumMallMode={true}
         />
     );

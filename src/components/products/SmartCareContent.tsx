@@ -10,6 +10,7 @@ import ProductDetailModal from "@/components/ProductDetailModal";
 import ImportantNotice from "@/components/common/ImportantNotice";
 import { cleanProductName } from "@/lib/productUtils";
 import AffiliateCardBenefit from "@/components/products/AffiliateCardBenefit";
+import { formatPhoneNumber, getRawPhoneNumber } from "@/lib/phoneUtils";
 
 interface HybridItem {
     name: string;
@@ -268,6 +269,7 @@ interface SmartCareContentProps {
     partnerUrl?: string;
     partnerName?: string;
     partnerId?: string;
+    partnerPhone?: string;
     isPremiumMallMode?: boolean;
 }
 
@@ -296,10 +298,25 @@ export default function SmartCareContent({
     partnerUrl = "",
     partnerName = "",
     partnerId = "",
+    partnerPhone = "",
     isPremiumMallMode = false
 }: SmartCareContentProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [pickedAppliance, setPickedAppliance] = useState<Appliance | null>(null);
+
+    // 파트너 상담 대표번호 조회 (props 미전달 시 Convex 쿼리 자동 fallback)
+    const partnerByCustomUrl = useQuery(
+        api.partners.getPartnerByCustomUrl,
+        partnerUrl ? { customUrl: partnerUrl } : "skip" as any
+    );
+    const partnerByPid = useQuery(
+        api.partners.getPartnerById,
+        partnerId ? { partnerId: partnerId } : "skip" as any
+    );
+    const resolvedPartner = partnerByCustomUrl || partnerByPid;
+    const effectivePhone = partnerPhone || (resolvedPartner as any)?.inquiryPhone || (resolvedPartner as any)?.managerPhone || "";
+    const formattedPhone = formatPhoneNumber(effectivePhone);
+    const rawPhone = getRawPhoneNumber(effectivePhone);
     const [detailModalAppliance, setDetailModalAppliance] = useState<Appliance | null>(null);
     const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
     const [selectedHybrid, setSelectedHybrid] = useState<string | null>(null);
@@ -2502,18 +2519,84 @@ export default function SmartCareContent({
 
             {/* Sleek Floating Bottom Counseling Bar for both Mobile & PC (샤프한 직각 사각형 스타일) */}
             {!isModalOpen && (
-                <div className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800 py-3 px-4 sm:px-8">
-                    <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2.5">
-                            <span className="w-2.5 h-2.5 rounded-none bg-emerald-400"></span>
-                            <span className="text-xs sm:text-sm font-bold text-slate-200">온라인 무료 상담 대기 중</span>
+                <div className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800 py-2.5 px-3 sm:py-3 sm:px-8 shadow-2xl">
+                    <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-3">
+                        {/* 좌측 정보 영역: PC는 온라인 무료 상담 대기 중 + 전화번호, 모바일은 문구 대신 전화번호 노출 */}
+                        <div className="flex items-center gap-2 min-w-0">
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+
+                            {/* Desktop (PC): 온라인 무료 상담 대기 중 + 전화번호 */}
+                            <div className="hidden sm:flex items-center gap-3">
+                                <span className="text-xs sm:text-sm font-bold text-slate-200">온라인 무료 상담 대기 중</span>
+                                {formattedPhone && (
+                                    <a
+                                        href={`tel:${rawPhone}`}
+                                        className="text-amber-400 hover:text-amber-300 font-black text-sm tracking-wide flex items-center gap-1.5 transition-colors group/phone ml-2"
+                                        title="전화 상담 연결"
+                                    >
+                                        <svg className="w-4 h-4 group-hover/phone:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                        </svg>
+                                        <span>상담문의 {formattedPhone}</span>
+                                    </a>
+                                )}
+                            </div>
+
+                            {/* Mobile (모바일): '온라인 무료상담 대기중' 문구 대신 번호 노출 및 터치 시 바로 전화걸기 */}
+                            <div className="sm:hidden flex items-center gap-1 min-w-0">
+                                {formattedPhone ? (
+                                    <a
+                                        href={`tel:${rawPhone}`}
+                                        className="text-white hover:text-amber-400 font-black text-xs xs:text-sm tracking-tight truncate flex items-center gap-1 active:scale-95 transition-all"
+                                        title="터치 시 바로 전화걸기"
+                                    >
+                                        <span className="text-amber-400 text-xs shrink-0">📞</span>
+                                        <span className="truncate">{formattedPhone}</span>
+                                    </a>
+                                ) : (
+                                    <span className="text-xs font-bold text-slate-200 truncate">온라인 무료 상담 대기 중</span>
+                                )}
+                            </div>
                         </div>
-                        <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="flex-1 sm:flex-initial bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs sm:text-base px-6 sm:px-8 py-3 rounded-none shadow-lg transition-all flex items-center justify-center gap-2 whitespace-nowrap"
-                        >
-                            <span>⚡ 빠른 상담 신청하기</span>
-                        </button>
+
+                        {/* 우측 버튼 영역: 모바일 바로 전화걸기 / 바로 문자보내기 + 빠른 상담 신청 */}
+                        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                            {formattedPhone && (
+                                <>
+                                    {/* 모바일 바로 전화걸기 버튼 */}
+                                    <a
+                                        href={`tel:${rawPhone}`}
+                                        className="sm:hidden bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-black text-xs px-2.5 py-2 rounded-lg flex items-center justify-center gap-1 shadow-md transition-all active:scale-95"
+                                        title="바로 전화걸기"
+                                    >
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                        </svg>
+                                        <span>전화</span>
+                                    </a>
+
+                                    {/* 모바일 바로 문자보내기 버튼 */}
+                                    <a
+                                        href={`sms:${rawPhone}`}
+                                        className="sm:hidden bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-black text-xs px-2.5 py-2 rounded-lg flex items-center justify-center gap-1 shadow-md transition-all active:scale-95"
+                                        title="바로 문자보내기"
+                                    >
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                        </svg>
+                                        <span>문자</span>
+                                    </a>
+                                </>
+                            )}
+
+                            {/* 빠른 상담 신청 버튼 */}
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 font-black text-xs sm:text-base px-3 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-none shadow-lg transition-all flex items-center justify-center gap-1.5 whitespace-nowrap active:scale-95 cursor-pointer"
+                            >
+                                <span>⚡ 빠른 상담 신청</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

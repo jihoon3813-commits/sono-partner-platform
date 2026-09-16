@@ -10,6 +10,7 @@ export interface Partner {
     managerName: string;
     managerPhone: string;
     managerEmail: string;
+    inquiryPhone?: string;
     shopUrl: string;
     shopType: string;
     memberCount: string;

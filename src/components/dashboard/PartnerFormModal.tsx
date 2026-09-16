@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Partner } from "@/lib/types";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { formatPhoneNumber } from "@/lib/phoneUtils";
 
 interface PartnerFormModalProps {
     partner?: Partner | null;
@@ -33,6 +34,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
         managerName: "",
         managerPhone: "",
         managerEmail: "",
+        inquiryPhone: "",
         shopUrl: "",
         shopType: "회원제 쇼핑몰",
         memberCount: "",
@@ -58,8 +60,9 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                 businessNumber: partner.businessNumber || "",
                 ceoName: partner.ceoName || "",
                 managerName: partner.managerName || "",
-                managerPhone: partner.managerPhone || "",
+                managerPhone: formatPhoneNumber(partner.managerPhone || ""),
                 managerEmail: partner.managerEmail || "",
+                inquiryPhone: formatPhoneNumber(partner.inquiryPhone || partner.managerPhone || ""),
                 shopUrl: partner.shopUrl || "",
                 shopType: partner.shopType || "회원제 쇼핑몰",
                 memberCount: partner.memberCount || "",
@@ -131,13 +134,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
         setSearchTerm("");
     };
 
-    const formatPhone = (val: string) => {
-        const nums = val.replace(/[^0-9]/g, "");
-        if (nums.length <= 3) return nums;
-        if (nums.length <= 7) return `${nums.slice(0, 3)}-${nums.slice(3)}`;
-        if (nums.length <= 11) return `${nums.slice(0, 3)}-${nums.slice(3, 7)}-${nums.slice(7)}`;
-        return `${nums.slice(0, 3)}-${nums.slice(3, 7)}-${nums.slice(7, 11)}`;
-    };
+    const formatPhone = (val: string) => formatPhoneNumber(val);
 
     const handleDelete = async () => {
         if (!partner || !confirm("정말 이 파트너를 삭제하시겠습니까? 복구할 수 없습니다.")) return;
@@ -383,6 +380,25 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                                     className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary"
                                     placeholder="010-0000-0000"
                                 />
+                            </div>
+                            <div className="space-y-2 sm:col-span-2">
+                                <div className="flex items-center justify-between">
+                                    <label className="text-xs font-bold text-gray-700 ml-1">상담 대표번호 (랜딩페이지 하단 상담바 노출)</label>
+                                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                        랜딩페이지 연동
+                                    </span>
+                                </div>
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={formData.inquiryPhone}
+                                    onChange={(e) => setFormData({ ...formData, inquiryPhone: formatPhone(e.target.value) })}
+                                    className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary"
+                                    placeholder="미입력 시 담당자 연락처로 자동 노출 (예: 1588-9999, 010-0000-0000)"
+                                />
+                                <p className="text-[11px] text-gray-400 ml-1">
+                                    * 미입력 시 담당자 연락처가 노출됩니다. 1588-9999 등 4자리 전국대표번호 및 휴대폰 번호 모두 자동 하이픈이 적용되며, 모바일에서 원클릭 전화걸기/문자보내기가 연동됩니다.
+                                </p>
                             </div>
                         </div>
                     </div>

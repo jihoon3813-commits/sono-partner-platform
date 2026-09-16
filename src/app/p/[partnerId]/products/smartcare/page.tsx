@@ -7,6 +7,7 @@ interface PartnerData {
     customUrl: string;
     name: string;
     partnerId: string;
+    inquiryPhone?: string;
 }
 
 export default function PartnerSmartCarePage({ params }: { params: Promise<{ partnerId: string }> }) {
@@ -71,6 +72,7 @@ export default function PartnerSmartCarePage({ params }: { params: Promise<{ par
             partnerUrl={partner?.customUrl || resolvedParams.partnerId}
             partnerName={partner?.name || ""}
             partnerId={partner?.partnerId || resolvedParams.partnerId}
+            partnerPhone={partner?.inquiryPhone || ""}
         />
     );
 }

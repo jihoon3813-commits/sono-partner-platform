@@ -11,6 +11,7 @@ export default defineSchema({
         managerName: v.string(),
         managerPhone: v.string(),
         managerEmail: v.string(),
+        inquiryPhone: v.optional(v.string()), // 랜딩페이지 하단 상담바 노출 대표번호
         shopUrl: v.optional(v.string()),
         shopType: v.string(),
         memberCount: v.string(),
