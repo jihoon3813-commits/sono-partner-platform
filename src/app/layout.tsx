@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     description: "소노 아임레디 제휴 파트너 플랫폼",
     keywords: ["소노아임레디", "상조", "제휴", "파트너", "스마트케어", "더해피450", "회원제쇼핑몰"],
     icons: {
-        icon: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%ED%8C%8C%EB%B9%84%EC%BD%98_%EC%86%8C%EB%85%B8%ED%8C%8C%ED%8A%B8%EB%84%88.png",
+        icon: "/favicon_sono.png",
     },
     openGraph: {
         title: "소노아임레디 제휴 파트너 플랫폼",

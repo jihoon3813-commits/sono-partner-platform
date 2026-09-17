@@ -24,6 +24,7 @@ import { PartnerRequest } from "@/lib/types";
 import { Footer } from "@/components/layout";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
 import { getKSTDateString } from "@/lib/dateUtils";
+import { updateFaviconBadge, BASE_TITLE } from "@/lib/notificationBadge";
 
 
 type Tab = "overview" | "partners" | "products" | "promotions" | "customers" | "requests" | "library" | "stats" | "settings" | "retention" | "retention2" | "tms";
@@ -167,6 +168,54 @@ export default function PartnerDashboard() {
         const regDate = getKSTDateString(c.registrationDate || c.createdAt || c._creationTime);
         return regDate === today;
     }).length;
+
+    // 브라우저 탭 파비콘(빨간색 원 알림 뱃지) 및 탭 제목 업데이트
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        // 1. 파비콘에 카카오톡 스타일 빨간색 원 뱃지 합성 적용
+        updateFaviconBadge(newCustomerCount);
+
+        // 2. 탭 제목(Title) 업데이트
+        if (newCustomerCount <= 0) {
+            document.title = BASE_TITLE;
+            return;
+        }
+
+        const badgeTitle = `🔴 (${newCustomerCount}) ${BASE_TITLE}`;
+        const alertTitle = `🔴 (${newCustomerCount}) 신규 고객 접수!`;
+
+        let isAlert = false;
+        let blinkInterval: NodeJS.Timeout | null = null;
+
+        const updateTitle = () => {
+            if (document.hidden) {
+                document.title = isAlert ? alertTitle : badgeTitle;
+                isAlert = !isAlert;
+            } else {
+                document.title = badgeTitle;
+            }
+        };
+
+        updateTitle();
+
+        blinkInterval = setInterval(updateTitle, 1500);
+
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                document.title = badgeTitle;
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        return () => {
+            if (blinkInterval) clearInterval(blinkInterval);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            document.title = BASE_TITLE;
+            updateFaviconBadge(0);
+        };
+    }, [newCustomerCount]);
 
     const currentPartner = dashboardData.partners.find((p: any) => 
         (partner?.partnerId && (p.partnerId === partner.partnerId || p.loginId === partner.partnerId || p.customUrl === partner.partnerId)) ||
