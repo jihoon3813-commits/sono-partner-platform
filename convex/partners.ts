@@ -112,7 +112,7 @@ export const createPartner = mutation({
 export const getEffectiveSonoAuthCode = query({
     args: { partnerId: v.string() },
     handler: async (ctx, args) => {
-        const DEFAULT_CODE = "BIZI0012";
+        const DEFAULT_CODE = "BIZI0011";
         if (!args.partnerId) return DEFAULT_CODE;
 
         let currentId = args.partnerId;

@@ -28,7 +28,7 @@ export interface Partner {
     parentPartnerId?: string;
     parentPartnerName?: string;
     role?: string; // 'master' | 'tm'
-    sonoAuthCode?: string; // 소노접수 인증코드 (예: BIZI0012)
+    sonoAuthCode?: string; // 소노접수 인증코드 (예: BIZI0011)
     createdAt: string;
     approvedAt: string;
     approvedBy: string;

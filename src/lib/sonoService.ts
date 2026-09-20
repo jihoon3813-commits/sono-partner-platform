@@ -6,7 +6,7 @@
 export interface SonoRegisterInput {
     customerName: string;
     customerPhone: string;
-    authCode?: string; // 파트너별 인증코드 (기본 fallback: 'BIZI0012')
+    authCode?: string; // 파트너별 인증코드 (기본 fallback: 'BIZI0011')
     orderQty?: string | number; // 구좌수 (1, 2, 3) 기본 1
     preferredContactTime?: string; // 희망 통화 시간
     callDate?: string; // 통화 요청 날짜 (YYYY-MM-DD)
@@ -83,7 +83,7 @@ function getCallDateAndTime(preferredTime?: string) {
 }
 
 export async function registerToSonoImready(input: SonoRegisterInput): Promise<SonoRegisterResult> {
-    const authCode = (input.authCode || 'BIZI0012').trim();
+    const authCode = (input.authCode || 'BIZI0011').trim();
     const sellerName = input.sellerName || '김지훈';
     const sellerPhone = (input.sellerPhone || '01043223813').replace(/[^0-9]/g, '');
     const sellerBirthDay = (input.sellerBirthDay || '19811115').replace(/[^0-9]/g, '');

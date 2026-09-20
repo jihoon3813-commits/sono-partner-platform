@@ -159,7 +159,7 @@ export async function getEffectiveSonoAuthCode(partnerId: string): Promise<strin
         return await getClient().query("partners:getEffectiveSonoAuthCode" as any, { partnerId });
     } catch (e) {
         console.error("Error fetching effective sono auth code:", e);
-        return "BIZI0012";
+        return "BIZI0011";
     }
 }
 

@@ -647,7 +647,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                                         소노접수 웹 인증코드 (authCd)
                                     </label>
                                     <span className="text-[11px] text-indigo-600 font-semibold">
-                                        기본값: BIZI0012
+                                        기본값: BIZI0011
                                     </span>
                                 </div>
                                 <input
@@ -655,7 +655,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                                     value={formData.sonoAuthCode}
                                     onChange={(e) => setFormData({ ...formData, sonoAuthCode: e.target.value })}
                                     className="w-full bg-white border border-indigo-200/70 rounded-xl py-3 px-4 text-sm font-bold text-indigo-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                    placeholder="예: BIZI0012 (미입력 시 기본 BIZI0012 또는 상위 파트너 설정값 적용)"
+                                    placeholder="예: BIZI0011 (미입력 시 기본 BIZI0011 또는 상위 파트너 설정값 적용)"
                                 />
                                 <div className="text-[11px] text-gray-500 space-y-1 ml-1 pt-1">
                                     <p>

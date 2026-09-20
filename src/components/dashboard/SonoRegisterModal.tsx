@@ -65,7 +65,7 @@ export default function SonoRegisterModal({
     application,
     onSuccess,
 }: SonoRegisterModalProps) {
-    const [authCode, setAuthCode] = useState("BIZI0012");
+    const [authCode, setAuthCode] = useState("BIZI0011");
     const [orderQty, setOrderQty] = useState("1");
     const [callDate, setCallDate] = useState("");
     const [callTime, setCallTime] = useState("10:00 ~ 11:00");
@@ -106,7 +106,7 @@ export default function SonoRegisterModal({
                         setAuthCode(data.data.sonoAuthCode);
                     }
                 } catch {
-                    // 기본값 BIZI0012 유지
+                    // 기본값 BIZI0011 유지
                 }
             })();
         }
@@ -259,7 +259,7 @@ export default function SonoRegisterModal({
                             value={authCode}
                             onChange={(e) => setAuthCode(e.target.value)}
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm font-bold text-indigo-900 focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none"
-                            placeholder="예: BIZI0012"
+                            placeholder="예: BIZI0011"
                         />
                     </div>
 

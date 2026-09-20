@@ -29,7 +29,7 @@ export default defineSchema({
         parentPartnerId: v.optional(v.string()),
         parentPartnerName: v.optional(v.string()),
         role: v.optional(v.string()), // 'master', 'tm'
-        sonoAuthCode: v.optional(v.string()), // 소노접수 인증코드 (예: BIZI0012)
+        sonoAuthCode: v.optional(v.string()), // 소노접수 인증코드 (예: BIZI0011)
         createdAt: v.string(),
         approvedAt: v.optional(v.string()),
         approvedBy: v.optional(v.string()),

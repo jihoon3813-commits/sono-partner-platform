@@ -353,7 +353,7 @@ export default function CustomerManagement({
             });
             const data = await res.json();
             if (data.success) {
-                alert(`✅ [소노아임레디 접수 결과]\n${data.message}\n(인증코드: ${data.authCodeUsed || 'BIZI0012'}${data.agentNm ? ` / 소속: ${data.agentNm}` : ''})`);
+                alert(`✅ [소노아임레디 접수 결과]\n${data.message}\n(인증코드: ${data.authCodeUsed || 'BIZI0011'}${data.agentNm ? ` / 소속: ${data.agentNm}` : ''})`);
             } else {
                 alert(`❌ [소노아임레디 접수 실패]\n${data.message}`);
             }
