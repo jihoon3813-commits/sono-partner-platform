@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         // 2. 소노 인증코드 결정: 전달된 커스텀 코드가 없으면 상위 파트너 체인 탐색
         let authCode = customAuthCode;
         if (!authCode || authCode.trim() === '') {
-            authCode = await getEffectiveSonoAuthCode(app.partnerId);
+            authCode = await getEffectiveSonoAuthCode(app.partnerId || app.partnerName || '');
         }
 
         // 3. 소노아임레디 등록 서비스 호출

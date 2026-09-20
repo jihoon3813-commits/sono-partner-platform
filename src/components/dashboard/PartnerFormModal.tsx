@@ -21,10 +21,17 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
 
     // careProducts query for 판매상품 설정
     const careProducts = useQuery(api.careProducts.get);
+    const allPartners = useQuery(api.partners.getAllPartners);
+
+    // 하위 파트너 수 계산
+    const subPartnerCount = allPartners?.filter(p => 
+        (partner?.partnerId && p.parentPartnerId === partner.partnerId) ||
+        (partner?.loginId && p.parentPartnerId === partner.loginId)
+    ).length || 0;
 
     // Search States
     const [searchTerm, setSearchTerm] = useState("");
-    const [searchResults, setSearchResults] = useState<{ partnerId: string, companyName: string, ceoName: string }[]>([]);
+    const [searchResults, setSearchResults] = useState<{ partnerId: string, companyName: string, ceoName: string, sonoAuthCode?: string }[]>([]);
     const [isSearching, setIsSearching] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -118,15 +125,32 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
         }
     };
 
-    const selectParent = (p: { partnerId: string, companyName: string }) => {
+    const selectParent = (p: { partnerId: string, companyName: string, sonoAuthCode?: string }) => {
+        const parentRecord = allPartners?.find(item => item.partnerId === p.partnerId || item.loginId === p.partnerId);
+        const parentCode = parentRecord?.sonoAuthCode || p.sonoAuthCode || "";
+
         setFormData(prev => ({
             ...prev,
             parentPartnerId: p.partnerId,
-            parentPartnerName: p.companyName
+            parentPartnerName: p.companyName,
+            sonoAuthCode: parentCode || prev.sonoAuthCode
         }));
         setSearchTerm("");
         setSearchResults([]);
     };
+
+    // 상위 파트너가 설정되어 있는데 인증코드가 비어있다면 상위 파트너의 인증코드 자동 상속
+    useEffect(() => {
+        if (formData.parentPartnerId && !formData.sonoAuthCode && allPartners) {
+            const parent = allPartners.find(item => item.partnerId === formData.parentPartnerId || item.loginId === formData.parentPartnerId);
+            if (parent?.sonoAuthCode) {
+                setFormData(prev => ({
+                    ...prev,
+                    sonoAuthCode: parent.sonoAuthCode || ""
+                }));
+            }
+        }
+    }, [formData.parentPartnerId, allPartners]);
 
     const clearParent = () => {
         setFormData(prev => ({
@@ -664,6 +688,11 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                                     <p>
                                         * 상위 파트너(예: bestoneserve1)에 인증코드를 입력해 두면, <strong>소속 하위 파트너의 고객 접수 시에도 해당 코드가 자동 상속</strong>되어 적용됩니다.
                                     </p>
+                                    {subPartnerCount > 0 && (
+                                        <p className="text-indigo-700 font-bold bg-indigo-100/70 p-2 rounded-lg border border-indigo-200">
+                                            ℹ️ 현재 이 파트너의 하위 파트너({subPartnerCount}개)가 등록되어 있으며, 정보 수정 완료 시 하위 파트너들의 인증코드에도 본 코드가 자동으로 일괄 반영됩니다.
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>

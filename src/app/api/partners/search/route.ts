@@ -16,7 +16,8 @@ export async function GET(request: Request) {
             results: results.map(p => ({
                 partnerId: p.partnerId,
                 companyName: p.companyName,
-                ceoName: p.ceoName
+                ceoName: p.ceoName,
+                sonoAuthCode: p.sonoAuthCode || ''
             }))
         });
     } catch (error) {

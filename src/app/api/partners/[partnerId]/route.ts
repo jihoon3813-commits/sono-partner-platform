@@ -34,6 +34,7 @@ export async function GET(
             pointInfo: partner.pointInfo,
             brandColor: partner.brandColor,
             inquiryPhone: partner.inquiryPhone || partner.managerPhone || "",
+            sonoAuthCode: partner.sonoAuthCode || "",
         };
 
         return NextResponse.json({

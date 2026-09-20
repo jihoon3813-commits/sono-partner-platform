@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import { Application } from "@/lib/types";
 
 interface SonoRegisterModalProps {
@@ -65,7 +67,9 @@ export default function SonoRegisterModal({
     application,
     onSuccess,
 }: SonoRegisterModalProps) {
+    const partnersData = useQuery(api.partners.getAllPartners);
     const [authCode, setAuthCode] = useState("BIZI0011");
+    const [partnerBadgeText, setPartnerBadgeText] = useState("");
     const [orderQty, setOrderQty] = useState("1");
     const [callDate, setCallDate] = useState("");
     const [callTime, setCallTime] = useState("10:00 ~ 11:00");
@@ -97,20 +101,66 @@ export default function SonoRegisterModal({
 
             setResultBanner(null);
 
-            // 파트너의 유효 인증코드 조회
-            (async () => {
-                try {
-                    const res = await fetch(`/api/partners/${application.partnerId}`);
-                    const data = await res.json();
-                    if (data?.data?.sonoAuthCode) {
-                        setAuthCode(data.data.sonoAuthCode);
+            // 파트너 목록에서 유효 인증코드 계산
+            if (partnersData && partnersData.length > 0) {
+                const targetId = String(application.partnerId || '').trim().toLowerCase();
+                const targetName = String(application.partnerName || '').trim().toLowerCase();
+
+                const matchedPartner = partnersData.find(p => 
+                    (p.partnerId && p.partnerId.toLowerCase() === targetId) ||
+                    (p.loginId && p.loginId.toLowerCase() === targetId) ||
+                    (p.customUrl && p.customUrl.toLowerCase() === targetId) ||
+                    (targetName && p.companyName && p.companyName.toLowerCase() === targetName) ||
+                    (targetId && p.companyName && p.companyName.toLowerCase() === targetId)
+                );
+
+                let resolvedCode = "";
+                let inheritedFrom = "";
+                let curr = matchedPartner;
+                const visited = new Set<string>();
+
+                while (curr && !visited.has(curr.partnerId)) {
+                    visited.add(curr.partnerId);
+                    if (curr.sonoAuthCode && curr.sonoAuthCode.trim() !== '') {
+                        resolvedCode = curr.sonoAuthCode.trim();
+                        if (curr !== matchedPartner) {
+                            inheritedFrom = curr.companyName || curr.partnerId;
+                        }
+                        break;
                     }
-                } catch {
-                    // 기본값 BIZI0011 유지
+                    if (curr.parentPartnerId && curr.parentPartnerId.trim() !== '') {
+                        const parentId = curr.parentPartnerId.trim().toLowerCase();
+                        curr = partnersData.find(p =>
+                            (p.partnerId && p.partnerId.toLowerCase() === parentId) ||
+                            (p.loginId && p.loginId.toLowerCase() === parentId) ||
+                            (p.customUrl && p.customUrl.toLowerCase() === parentId) ||
+                            (p.companyName && p.companyName.toLowerCase() === parentId)
+                        );
+                    } else {
+                        break;
+                    }
                 }
-            })();
+
+                const pName = matchedPartner ? `${matchedPartner.companyName} (${matchedPartner.loginId})` : (application.partnerName || application.partnerId);
+                setPartnerBadgeText(inheritedFrom ? `${pName} [상위: ${inheritedFrom} 상속]` : pName);
+                setAuthCode(resolvedCode || "BIZI0011");
+            } else {
+                setPartnerBadgeText(application.partnerName || application.partnerId || "");
+                // API fallback
+                (async () => {
+                    try {
+                        const res = await fetch(`/api/partners/${application.partnerId}`);
+                        const data = await res.json();
+                        if (data?.data?.sonoAuthCode) {
+                            setAuthCode(data.data.sonoAuthCode);
+                        }
+                    } catch {
+                        // 기본값 BIZI0011 유지
+                    }
+                })();
+            }
         }
-    }, [isOpen, application]);
+    }, [isOpen, application, partnersData]);
 
     if (!isOpen || !application) return null;
 
@@ -250,8 +300,8 @@ export default function SonoRegisterModal({
                             <label className="text-xs font-bold text-gray-700">
                                 2. 소노접수 인증코드 (authCd)
                             </label>
-                            <span className="text-[11px] text-indigo-600 font-bold">
-                                파트너: {application.partnerName || application.partnerId}
+                            <span className="text-[11px] text-indigo-600 font-bold truncate max-w-[320px]" title={partnerBadgeText}>
+                                파트너: {partnerBadgeText || application.partnerName || application.partnerId}
                             </span>
                         </div>
                         <input

@@ -98,8 +98,24 @@ export const createPartner = mutation({
         const partnerId = `P-${Date.now()}`;
         const createdAt = nowKST();
 
+        let sonoAuthCode = args.sonoAuthCode ? args.sonoAuthCode.trim() : undefined;
+        if ((!sonoAuthCode || sonoAuthCode === '') && args.parentPartnerId) {
+            const pId = args.parentPartnerId.trim();
+            const parent = await ctx.db
+                .query("partners")
+                .withIndex("by_partnerId", (q) => q.eq("partnerId", pId))
+                .unique() || await ctx.db
+                .query("partners")
+                .withIndex("by_loginId", (q) => q.eq("loginId", pId))
+                .unique();
+            if (parent?.sonoAuthCode) {
+                sonoAuthCode = parent.sonoAuthCode.trim();
+            }
+        }
+
         const id = await ctx.db.insert("partners", {
             ...args,
+            sonoAuthCode,
             role: args.role || "master",
             partnerId,
             createdAt,
@@ -115,7 +131,7 @@ export const getEffectiveSonoAuthCode = query({
         const DEFAULT_CODE = "BIZI0011";
         if (!args.partnerId) return DEFAULT_CODE;
 
-        let currentId = args.partnerId;
+        let currentId = args.partnerId.trim();
         const visited = new Set<string>();
 
         while (currentId && !visited.has(currentId)) {
@@ -136,6 +152,12 @@ export const getEffectiveSonoAuthCode = query({
                     .query("partners")
                     .withIndex("by_customUrl", (q) => q.eq("customUrl", currentId))
                     .unique();
+            }
+            if (!partner) {
+                partner = await ctx.db
+                    .query("partners")
+                    .filter((q) => q.eq(q.field("companyName"), currentId))
+                    .first();
             }
 
             if (!partner) break;
@@ -219,6 +241,12 @@ export const updatePartner = mutation({
                 .withIndex("by_customUrl", (q) => q.eq("customUrl", args.partnerId))
                 .unique();
         }
+        if (!partner) {
+            partner = await ctx.db
+                .query("partners")
+                .filter((q) => q.eq(q.field("companyName"), args.partnerId))
+                .first();
+        }
         if (!partner) return false;
 
         // Ensure showLandingUrl is converted to boolean if passed as boolean/string/undefined
@@ -227,7 +255,45 @@ export const updatePartner = mutation({
             patchData.showLandingUrl = patchData.showLandingUrl === true || patchData.showLandingUrl === 'true';
         }
 
+        // 상위 파트너가 있고 sonoAuthCode가 비어있는 경우 상위 파트너의 코드 자동 상속
+        const targetParentId = patchData.parentPartnerId !== undefined ? patchData.parentPartnerId : partner.parentPartnerId;
+        if ((patchData.sonoAuthCode === undefined || patchData.sonoAuthCode === '') && targetParentId) {
+            const pId = targetParentId.trim();
+            const parent = await ctx.db
+                .query("partners")
+                .withIndex("by_partnerId", (q) => q.eq("partnerId", pId))
+                .unique() || await ctx.db
+                .query("partners")
+                .withIndex("by_loginId", (q) => q.eq("loginId", pId))
+                .unique();
+            if (parent?.sonoAuthCode) {
+                patchData.sonoAuthCode = parent.sonoAuthCode.trim();
+            }
+        }
+
         await ctx.db.patch(partner._id, patchData);
+
+        // 상위 파트너에 인증코드를 입력/수정한 경우 -> 하위 파트너들의 인증코드도 자동으로 일괄 전파
+        if (patchData.sonoAuthCode !== undefined && patchData.sonoAuthCode.trim() !== '') {
+            const newCode = patchData.sonoAuthCode.trim();
+            const allPartners = await ctx.db.query("partners").collect();
+
+            // 재귀적으로 모든 하위 파트너 업데이트
+            const updateDescendants = async (parentKeys: string[]) => {
+                const directChildren = allPartners.filter(p => 
+                    p.parentPartnerId && parentKeys.includes(p.parentPartnerId.trim())
+                );
+                for (const child of directChildren) {
+                    await ctx.db.patch(child._id, { sonoAuthCode: newCode });
+                    const childKeys = [child.partnerId, child.loginId, child.customUrl, child.companyName].filter(Boolean) as string[];
+                    await updateDescendants(childKeys);
+                }
+            };
+
+            const myKeys = [partner.partnerId, partner.loginId, partner.customUrl, partner.companyName].filter(Boolean) as string[];
+            await updateDescendants(myKeys);
+        }
+
         return true;
     }
 });
