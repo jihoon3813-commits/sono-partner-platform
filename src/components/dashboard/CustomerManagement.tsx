@@ -86,6 +86,10 @@ export default function CustomerManagement({
     const [bulkStatus, setBulkStatus] = useState("");
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
+    // 소노아임레디(THEHAPPYONE) 등록 상태 관리
+    const [isRegisteringSonoMap, setIsRegisteringSonoMap] = useState<{ [appNo: string]: boolean }>({});
+    const [isBulkRegisteringSono, setIsBulkRegisteringSono] = useState(false);
+
     // Filters
     const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter);
     const [productFilter, setProductFilter] = useState<string>("all");
@@ -330,6 +334,73 @@ export default function CustomerManagement({
 
     const displayApplications = isWidget ? sortedApplications.slice(0, 10) : paginatedApplications;
 
+    // 소노아임레디(THEHAPPYONE) 단건 즉시 등록/재전송
+    const handleRegisterSingleSono = async (app: Application, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!confirm(`소노아임레디(THEHAPPYONE)로 '${app.customerName}' 고객을 접수하시겠습니까?`)) {
+            return;
+        }
+
+        setIsRegisteringSonoMap(prev => ({ ...prev, [app.applicationNo]: true }));
+        try {
+            const res = await fetch("/api/sono/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ applicationNo: app.applicationNo })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert(`✅ [소노아임레디 접수 결과]\n${data.message}\n(인증코드: ${data.authCodeUsed || 'BIZI0012'}${data.agentNm ? ` / 소속: ${data.agentNm}` : ''})`);
+            } else {
+                alert(`❌ [소노아임레디 접수 실패]\n${data.message}`);
+            }
+            onRefresh();
+        } catch (err: any) {
+            alert(`⚠️ 통신 중 오류가 발생했습니다: ${err.message || String(err)}`);
+        } finally {
+            setIsRegisteringSonoMap(prev => ({ ...prev, [app.applicationNo]: false }));
+        }
+    };
+
+    // 소노아임레디(THEHAPPYONE) 선택 일괄 접수
+    const handleBulkRegisterSono = async () => {
+        if (selectedAppIds.length === 0) return;
+        if (!confirm(`선택한 ${selectedAppIds.length}명의 고객을 소노아임레디로 일괄 접수하시겠습니까?`)) {
+            return;
+        }
+
+        setIsBulkRegisteringSono(true);
+        let successCount = 0;
+        let duplicateCount = 0;
+        let failCount = 0;
+
+        try {
+            for (const appNo of selectedAppIds) {
+                try {
+                    const res = await fetch("/api/sono/register", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ applicationNo: appNo })
+                    });
+                    const data = await res.json();
+                    if (data.status === 'SUCCESS') successCount++;
+                    else if (data.status === 'DUPLICATE') duplicateCount++;
+                    else failCount++;
+                } catch {
+                    failCount++;
+                }
+            }
+
+            alert(`[소노아임레디 일괄 접수 완료]\n- 성공: ${successCount}건\n- 오늘 중복: ${duplicateCount}건\n- 실패: ${failCount}건`);
+            setSelectedAppIds([]);
+            onRefresh();
+        } catch (err: any) {
+            alert(`일괄 처리 중 오류 발생: ${err.message || String(err)}`);
+        } finally {
+            setIsBulkRegisteringSono(false);
+        }
+    };
+
     return (
         <div className={isWidget ? "" : "space-y-6"}>
             {isWidget ? (
@@ -436,6 +507,22 @@ export default function CustomerManagement({
                                             <span>상태 일괄 변경</span>
                                         </button>
                                     </div>
+
+                                    <button
+                                        onClick={handleBulkRegisterSono}
+                                        disabled={isBulkRegisteringSono}
+                                        className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap cursor-pointer"
+                                        title="선택한 고객을 소노아임레디로 일괄 전송 등록합니다."
+                                    >
+                                        {isBulkRegisteringSono ? (
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
+                                        ) : (
+                                            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                            </svg>
+                                        )}
+                                        <span>소노 일괄 접수 ({selectedAppIds.length})</span>
+                                    </button>
                                 </>
                             )}
 
@@ -821,6 +908,7 @@ export default function CustomerManagement({
                                         </button>
                                     </div>
                                 </th>
+                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center whitespace-nowrap min-w-[95px]">소노접수</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -933,12 +1021,45 @@ export default function CustomerManagement({
                                                     );
                                                 })()}
                                             </td>
+                                            <td className="px-2 py-4 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                                                <div className="flex items-center justify-center gap-1.5">
+                                                    {app.sonoRegisterStatus === 'SUCCESS' && (
+                                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200" title={app.sonoRegisterMessage || '접수 완료'}>
+                                                            🟢완료
+                                                        </span>
+                                                    )}
+                                                    {app.sonoRegisterStatus === 'DUPLICATE' && (
+                                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200" title={app.sonoRegisterMessage || '오늘 중복 접수'}>
+                                                            🟡중복
+                                                        </span>
+                                                    )}
+                                                    {app.sonoRegisterStatus === 'FAILED' && (
+                                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200" title={app.sonoRegisterMessage || '전송 실패'}>
+                                                            🔴실패
+                                                        </span>
+                                                    )}
+                                                    {!app.sonoRegisterStatus && (
+                                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-gray-50 text-gray-400 border border-gray-200">
+                                                            ⚪미접수
+                                                        </span>
+                                                    )}
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => handleRegisterSingleSono(app, e)}
+                                                        disabled={isRegisteringSonoMap[app.applicationNo]}
+                                                        className="px-2 py-0.5 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 rounded text-[10px] font-bold transition-all active:scale-95 disabled:opacity-50 cursor-pointer shrink-0"
+                                                        title="소노아임레디(THEHAPPYONE) 즉시 등록/재전송"
+                                                    >
+                                                        {isRegisteringSonoMap[app.applicationNo] ? "..." : (app.sonoRegisterStatus ? "재전송" : "접수")}
+                                                    </button>
+                                                </div>
+                                            </td>
                                         </tr>
                                     );
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan={isAdmin ? 10 : 9} className="px-6 py-20 text-center text-gray-400 font-medium">
+                                    <td colSpan={isAdmin ? 11 : 10} className="px-6 py-20 text-center text-gray-400 font-medium">
                                         신청 내역이 없습니다.
                                     </td>
                                 </tr>

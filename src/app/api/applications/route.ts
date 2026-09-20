@@ -7,8 +7,11 @@ import {
     getApplicationsByPartnerId,
     getPartnerById,
     getPartnerByLoginId,
-    getPartnerByCustomUrl
+    getPartnerByCustomUrl,
+    getEffectiveSonoAuthCode,
+    updateSonoRegisterStatus
 } from '@/lib/db';
+import { registerToSonoImready } from '@/lib/sonoService';
 
 // 고객 신청 생성
 export async function POST(request: Request) {
@@ -103,6 +106,42 @@ export async function POST(request: Request) {
         console.log('[API] Creating application in Convex...');
 
         const application = await createApplication(appData as any);
+
+        // 소노아임레디(THEHAPPYONE) 자동 접수 연동 (백그라운드 비동기 처리)
+        (async () => {
+            try {
+                const effectiveAuthCode = await getEffectiveSonoAuthCode(readablePartnerId || dbPartnerId);
+                console.log(`[API Auto-Sono] Triggering registration for ${application.applicationNo} with authCode: ${effectiveAuthCode}`);
+
+                const sonoResult = await registerToSonoImready({
+                    customerName: name,
+                    customerPhone: phone,
+                    authCode: effectiveAuthCode,
+                    orderQty: 1,
+                    preferredContactTime: preferredTime,
+                    partnerName: partnerName || partner.companyName,
+                    inquiry: inquiry,
+                });
+
+                await updateSonoRegisterStatus(
+                    application.applicationNo,
+                    sonoResult.status,
+                    sonoResult.message,
+                    sonoResult.authCodeUsed,
+                    sonoResult.timestamp
+                );
+                console.log(`[API Auto-Sono] Finished registration for ${application.applicationNo}:`, sonoResult.status);
+            } catch (sonoErr) {
+                console.error(`[API Auto-Sono] Failed for ${application.applicationNo}:`, sonoErr);
+                try {
+                    await updateSonoRegisterStatus(
+                        application.applicationNo,
+                        'FAILED',
+                        `자동 접수 처리 중 오류: ${sonoErr instanceof Error ? sonoErr.message : String(sonoErr)}`
+                    );
+                } catch (ignore) {}
+            }
+        })();
 
         // TODO: SMS 발송, 이메일 발송
 

@@ -279,6 +279,34 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
         }
     };
 
+    // 소노아임레디 즉시 등록/재전송 상태 및 핸들러
+    const [isRegisteringSono, setIsRegisteringSono] = useState(false);
+    const handleRegisterSono = async () => {
+        if (!confirm(`소노아임레디(THEHAPPYONE)로 '${customerName || application.customerName}' 고객을 즉시 접수/재전송하시겠습니까?`)) {
+            return;
+        }
+        setIsRegisteringSono(true);
+        try {
+            const res = await fetch("/api/sono/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ applicationNo: application.applicationNo })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert(`✅ [소노아임레디 접수 결과]\n${data.message}\n(인증코드: ${data.authCodeUsed || 'BIZI0012'}${data.agentNm ? ` / 소속: ${data.agentNm}` : ''})`);
+                onUpdate();
+            } else {
+                alert(`❌ [소노아임레디 접수 실패]\n${data.message}`);
+                onUpdate();
+            }
+        } catch (e: any) {
+            alert(`⚠️ 서버 통신 중 오류가 발생했습니다: ${e.message || String(e)}`);
+        } finally {
+            setIsRegisteringSono(false);
+        }
+    };
+
 
 
     const defaultStatusOptions: string[] = [
@@ -318,6 +346,88 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                 </div>
 
                 <div className="p-4 sm:p-6 space-y-5 sm:space-y-6 flex-1 overflow-y-auto pb-24">
+                    {/* Sono Imready (THEHAPPYONE) Status & Action Card */}
+                    <div className="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-4 sm:p-5 shadow-xs">
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                            <div className="flex items-center gap-2 min-w-0">
+                                <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 shrink-0"></span>
+                                <h3 className="text-sm font-black text-indigo-950 truncate">소노아임레디(THEHAPPYONE) 연동</h3>
+                            </div>
+                            <div>
+                                {application.sonoRegisterStatus === 'SUCCESS' && (
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                        🟢 접수완료
+                                    </span>
+                                )}
+                                {application.sonoRegisterStatus === 'DUPLICATE' && (
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 text-amber-800 border border-amber-300">
+                                        🟡 오늘중복
+                                    </span>
+                                )}
+                                {application.sonoRegisterStatus === 'FAILED' && (
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-rose-100 text-rose-800 border border-rose-300">
+                                        🔴 전송실패
+                                    </span>
+                                )}
+                                {!application.sonoRegisterStatus && (
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-gray-100 text-gray-600 border border-gray-300">
+                                        ⚪ 미접수
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* 세부 상태 안내 */}
+                        <div className="text-xs text-indigo-900/90 space-y-1 bg-white/80 rounded-xl p-3 border border-indigo-100/60 mb-3">
+                            <div className="flex justify-between">
+                                <span className="text-gray-500 font-medium">연동 결과:</span>
+                                <span className="font-bold text-right">{application.sonoRegisterMessage || '아직 소노아임레디에 접수되지 않았습니다.'}</span>
+                            </div>
+                            {application.sonoRegisteredAt && (
+                                <div className="flex justify-between">
+                                    <span className="text-gray-500 font-medium">처리 일시:</span>
+                                    <span className="font-medium text-gray-700">{formatDateTime(application.sonoRegisteredAt)}</span>
+                                </div>
+                            )}
+                            {application.sonoAuthCodeUsed && (
+                                <div className="flex justify-between">
+                                    <span className="text-gray-500 font-medium">사용 인증코드:</span>
+                                    <span className="font-bold text-indigo-700">{application.sonoAuthCodeUsed}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 액션 버튼 */}
+                        <div className="flex items-center justify-between gap-2 pt-1">
+                            <p className="text-[11px] text-gray-500">
+                                * direct.sonoimready.com 사이트에 즉시 등록합니다.
+                            </p>
+                            <button
+                                type="button"
+                                onClick={handleRegisterSono}
+                                disabled={isRegisteringSono}
+                                className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm hover:shadow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shrink-0 cursor-pointer"
+                            >
+                                {isRegisteringSono ? (
+                                    <>
+                                        <svg className="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span>소노 연동 전송 중...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        <span>{application.sonoRegisterStatus ? '소노 재전송' : '소노 즉시 등록'}</span>
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+
                     {/* Status Update/View Section */}
                     <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
                         <label className="text-xs font-bold text-gray-500 mb-2 block">진행 상태 {(isAdmin || canPartnerEditStatus) ? '변경' : ''}</label>

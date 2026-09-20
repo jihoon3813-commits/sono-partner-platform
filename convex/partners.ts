@@ -92,6 +92,7 @@ export const createPartner = mutation({
         approvedAt: v.optional(v.string()),
         approvedBy: v.optional(v.string()),
         inquiryPhone: v.optional(v.string()),
+        sonoAuthCode: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const partnerId = `P-${Date.now()}`;
@@ -105,6 +106,55 @@ export const createPartner = mutation({
         });
         return partnerId;
     },
+});
+
+// 상위 파트너 체인을 탐색하여 유효한 소노접수 인증코드(sonoAuthCode)를 가져오는 쿼리
+export const getEffectiveSonoAuthCode = query({
+    args: { partnerId: v.string() },
+    handler: async (ctx, args) => {
+        const DEFAULT_CODE = "BIZI0012";
+        if (!args.partnerId) return DEFAULT_CODE;
+
+        let currentId = args.partnerId;
+        const visited = new Set<string>();
+
+        while (currentId && !visited.has(currentId)) {
+            visited.add(currentId);
+            let partner = await ctx.db
+                .query("partners")
+                .withIndex("by_partnerId", (q) => q.eq("partnerId", currentId))
+                .unique();
+
+            if (!partner) {
+                partner = await ctx.db
+                    .query("partners")
+                    .withIndex("by_loginId", (q) => q.eq("loginId", currentId))
+                    .unique();
+            }
+            if (!partner) {
+                partner = await ctx.db
+                    .query("partners")
+                    .withIndex("by_customUrl", (q) => q.eq("customUrl", currentId))
+                    .unique();
+            }
+
+            if (!partner) break;
+
+            // 직접 설정된 소노인증코드가 있으면 반환
+            if (partner.sonoAuthCode && partner.sonoAuthCode.trim() !== "") {
+                return partner.sonoAuthCode.trim();
+            }
+
+            // 상위 파트너가 있으면 상위 파트너 탐색
+            if (partner.parentPartnerId && partner.parentPartnerId.trim() !== "") {
+                currentId = partner.parentPartnerId.trim();
+            } else {
+                break;
+            }
+        }
+
+        return DEFAULT_CODE;
+    }
 });
 
 export const validatePartnerCredentials = mutation({

@@ -154,6 +154,31 @@ export async function bulkSyncApplications(
     });
 }
 
+export async function getEffectiveSonoAuthCode(partnerId: string): Promise<string> {
+    try {
+        return await getClient().query("partners:getEffectiveSonoAuthCode" as any, { partnerId });
+    } catch (e) {
+        console.error("Error fetching effective sono auth code:", e);
+        return "BIZI0012";
+    }
+}
+
+export async function updateSonoRegisterStatus(
+    applicationNo: string,
+    status: string,
+    message: string,
+    authCodeUsed?: string,
+    registeredAt?: string
+): Promise<any> {
+    return await getClient().mutation("applications:updateSonoRegisterStatus" as any, {
+        applicationNo,
+        status,
+        message,
+        authCodeUsed,
+        registeredAt
+    });
+}
+
 // ============================================
 // 상태 변경 이력 함수
 // ============================================

@@ -941,4 +941,36 @@ export const migrateAllApplicationsCreatedAt = mutation({
     },
 });
 
+export const updateSonoRegisterStatus = mutation({
+    args: {
+        applicationNo: v.string(),
+        status: v.string(), // 'SUCCESS' | 'DUPLICATE' | 'FAILED'
+        message: v.string(),
+        authCodeUsed: v.optional(v.string()),
+        registeredAt: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const app = await ctx.db
+            .query("applications")
+            .withIndex("by_applicationNo", (q) => q.eq("applicationNo", args.applicationNo))
+            .unique();
+
+        if (!app) {
+            throw new Error(`Application not found: ${args.applicationNo}`);
+        }
+
+        const registeredAt = args.registeredAt || nowKST();
+
+        await ctx.db.patch(app._id, {
+            sonoRegisterStatus: args.status,
+            sonoRegisterMessage: args.message,
+            sonoRegisteredAt: registeredAt,
+            sonoAuthCodeUsed: args.authCodeUsed,
+            updatedAt: registeredAt,
+        });
+
+        return { success: true, applicationNo: args.applicationNo, status: args.status };
+    },
+});
+
 

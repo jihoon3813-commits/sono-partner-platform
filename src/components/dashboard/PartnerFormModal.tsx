@@ -50,7 +50,8 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
         status: "active" as "active" | "inactive" | "pending",
         parentPartnerId: "",
         parentPartnerName: "",
-        role: "master" as "master" | "tm"
+        role: "master" as "master" | "tm",
+        sonoAuthCode: ""
     });
 
     useEffect(() => {
@@ -78,7 +79,8 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                 status: partner.status || "active",
                 parentPartnerId: partner.parentPartnerId || "",
                 parentPartnerName: partner.parentPartnerName || "",
-                role: (partner.role || "master") as "master" | "tm"
+                role: (partner.role || "master") as "master" | "tm",
+                sonoAuthCode: partner.sonoAuthCode || ""
             });
         } else if (initialData) {
             setFormData(prev => ({
@@ -86,7 +88,8 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                 ...initialData,
                 showLandingUrl: initialData.showLandingUrl !== undefined ? initialData.showLandingUrl : true,
                 status: "active",
-                role: (initialData.role || "master") as "master" | "tm"
+                role: (initialData.role || "master") as "master" | "tm",
+                sonoAuthCode: initialData.sonoAuthCode || ""
             }));
         }
     }, [partner, initialData]);
@@ -625,6 +628,43 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                                     className="w-full bg-gray-50 border-none rounded-2xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-sono-primary"
                                     placeholder="파트너사명을 텍스트로 보이고 싶을 때 입력"
                                 />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Sono Imready Setting Section */}
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between border-l-4 border-indigo-500 pl-3">
+                            <h3 className="text-lg font-bold text-sono-dark">소노접수 연동 설정 (THEHAPPYONE)</h3>
+                            <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-full">
+                                자동 접수 API 연동
+                            </span>
+                        </div>
+                        <div className="bg-indigo-50/40 rounded-2xl p-4 sm:p-5 border border-indigo-100/80 space-y-3">
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <label className="text-xs font-bold text-gray-700 ml-1">
+                                        소노접수 웹 인증코드 (authCd)
+                                    </label>
+                                    <span className="text-[11px] text-indigo-600 font-semibold">
+                                        기본값: BIZI0012
+                                    </span>
+                                </div>
+                                <input
+                                    type="text"
+                                    value={formData.sonoAuthCode}
+                                    onChange={(e) => setFormData({ ...formData, sonoAuthCode: e.target.value })}
+                                    className="w-full bg-white border border-indigo-200/70 rounded-xl py-3 px-4 text-sm font-bold text-indigo-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    placeholder="예: BIZI0012 (미입력 시 기본 BIZI0012 또는 상위 파트너 설정값 적용)"
+                                />
+                                <div className="text-[11px] text-gray-500 space-y-1 ml-1 pt-1">
+                                    <p>
+                                        * 고객 신규 접수 시 <strong>소노아임레디 웹 접수(direct.sonoimready.com/THEHAPPYONE/write)</strong>로 자동 전송될 때 사용할 인증코드입니다.
+                                    </p>
+                                    <p>
+                                        * 상위 파트너(예: bestoneserve1)에 인증코드를 입력해 두면, <strong>소속 하위 파트너의 고객 접수 시에도 해당 코드가 자동 상속</strong>되어 적용됩니다.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

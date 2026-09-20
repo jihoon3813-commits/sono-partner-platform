@@ -28,6 +28,7 @@ export interface Partner {
     parentPartnerId?: string;
     parentPartnerName?: string;
     role?: string; // 'master' | 'tm'
+    sonoAuthCode?: string; // 소노접수 인증코드 (예: BIZI0012)
     createdAt: string;
     approvedAt: string;
     approvedBy: string;
@@ -69,6 +70,10 @@ export interface Application {
     duplicateConfirmed?: boolean;
     isAdditionalRegistration?: boolean;
     hasDuplicate?: boolean;
+    sonoRegisterStatus?: string; // 'SUCCESS' | 'DUPLICATE' | 'FAILED'
+    sonoRegisteredAt?: string;
+    sonoRegisterMessage?: string;
+    sonoAuthCodeUsed?: string;
 }
 
 // 계약 상태 (진행상태 설정에서 동적으로 관리됨)

@@ -29,6 +29,7 @@ export default defineSchema({
         parentPartnerId: v.optional(v.string()),
         parentPartnerName: v.optional(v.string()),
         role: v.optional(v.string()), // 'master', 'tm'
+        sonoAuthCode: v.optional(v.string()), // 소노접수 인증코드 (예: BIZI0012)
         createdAt: v.string(),
         approvedAt: v.optional(v.string()),
         approvedBy: v.optional(v.string()),
@@ -75,6 +76,11 @@ export default defineSchema({
         statusUpdatedAt: v.optional(v.string()), // 상태값 변경일시
         duplicateConfirmed: v.optional(v.boolean()), // 중복 확인 완료 여부
         isAdditionalRegistration: v.optional(v.boolean()), // 추가 접수 여부
+        // 소노아임레디(THEHAPPYONE) 자동 접수 관련 필드
+        sonoRegisterStatus: v.optional(v.string()), // 'SUCCESS', 'DUPLICATE', 'FAILED'
+        sonoRegisteredAt: v.optional(v.string()), // 접수 시도/성공 일시
+        sonoRegisterMessage: v.optional(v.string()), // 접수 결과 메시지 (예: '상담 신청 완료', '오늘 접수된 내용입니다' 등)
+        sonoAuthCodeUsed: v.optional(v.string()), // 전송 시 사용된 소노 인증코드
     })
         .index("by_applicationNo", ["applicationNo"])
         .index("by_partnerId", ["partnerId"])
