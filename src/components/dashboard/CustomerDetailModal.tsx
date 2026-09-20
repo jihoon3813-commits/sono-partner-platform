@@ -6,6 +6,7 @@ import { api } from "../../../convex/_generated/api";
 import { Application, ApplicationStatus } from "@/lib/types";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
 import { formatDateTime } from "@/lib/dateUtils";
+import SonoRegisterModal from "./SonoRegisterModal";
 
 interface CustomerDetailModalProps {
     application: Application;
@@ -279,35 +280,8 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
         }
     };
 
-    // 소노아임레디 즉시 등록/재전송 상태 및 핸들러
-    const [isRegisteringSono, setIsRegisteringSono] = useState(false);
-    const handleRegisterSono = async () => {
-        if (!confirm(`소노아임레디(THEHAPPYONE)로 '${customerName || application.customerName}' 고객을 즉시 접수/재전송하시겠습니까?`)) {
-            return;
-        }
-        setIsRegisteringSono(true);
-        try {
-            const res = await fetch("/api/sono/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ applicationNo: application.applicationNo })
-            });
-            const data = await res.json();
-            if (data.success) {
-                alert(`✅ [소노아임레디 접수 결과]\n${data.message}\n(인증코드: ${data.authCodeUsed || 'BIZI0012'}${data.agentNm ? ` / 소속: ${data.agentNm}` : ''})`);
-                onUpdate();
-            } else {
-                alert(`❌ [소노아임레디 접수 실패]\n${data.message}`);
-                onUpdate();
-            }
-        } catch (e: any) {
-            alert(`⚠️ 서버 통신 중 오류가 발생했습니다: ${e.message || String(e)}`);
-        } finally {
-            setIsRegisteringSono(false);
-        }
-    };
-
-
+    // 소노아임레디 접수 확인 모달 상태
+    const [isSonoModalOpen, setIsSonoModalOpen] = useState(false);
 
     const defaultStatusOptions: string[] = [
         '접수대기', '접수완료', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '배송완료', '청약철회', '해약', '정산완료'
@@ -328,10 +302,11 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     const canPartnerEditStatus = !isAdmin && statusOptions.length > 0 && !isRestrictedStatus;
 
     return (
-        <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4"
-            onClick={onClose}
-        >
+        <>
+            <div
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4"
+                onClick={onClose}
+            >
             <div
                 className="bg-white rounded-[20px] sm:rounded-[24px] w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col"
                 onClick={(e) => e.stopPropagation()}
@@ -404,26 +379,13 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             </p>
                             <button
                                 type="button"
-                                onClick={handleRegisterSono}
-                                disabled={isRegisteringSono}
-                                className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm hover:shadow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shrink-0 cursor-pointer"
+                                onClick={() => setIsSonoModalOpen(true)}
+                                className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm hover:shadow active:scale-95 flex items-center gap-1.5 shrink-0 cursor-pointer"
                             >
-                                {isRegisteringSono ? (
-                                    <>
-                                        <svg className="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        <span>소노 연동 전송 중...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                        <span>{application.sonoRegisterStatus ? '소노 재전송' : '소노 즉시 등록'}</span>
-                                    </>
-                                )}
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                <span>{application.sonoRegisterStatus ? '소노 접수 확인/재전송' : '소노 접수 확인/등록'}</span>
                             </button>
                         </div>
                     </div>
@@ -809,6 +771,17 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
             </div>
         </div>
 
+        {isSonoModalOpen && (
+            <SonoRegisterModal
+                isOpen={isSonoModalOpen}
+                onClose={() => setIsSonoModalOpen(false)}
+                application={application}
+                onSuccess={() => {
+                    onUpdate();
+                }}
+            />
+        )}
+    </>
     );
 }
 

@@ -5,7 +5,14 @@ import { registerToSonoImready } from '@/lib/sonoService';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { applicationNo, authCode: customAuthCode } = body;
+        const { 
+            applicationNo, 
+            authCode: customAuthCode,
+            callDate,
+            callTime,
+            orderQty,
+            memo
+        } = body;
 
         if (!applicationNo) {
             return NextResponse.json(
@@ -34,11 +41,13 @@ export async function POST(request: Request) {
             customerName: app.customerName,
             customerPhone: app.customerPhone,
             authCode: authCode,
-            orderQty: 1,
+            orderQty: orderQty || 1,
             preferredContactTime: app.preferredContactTime,
+            callDate: callDate,
+            callTime: callTime,
             partnerName: app.partnerName,
             inquiry: app.inquiry,
-            memo: app.remarks,
+            memo: memo !== undefined ? memo : app.remarks,
         });
 
         // 4. 결과를 DB에 저장

@@ -9,6 +9,8 @@ export interface SonoRegisterInput {
     authCode?: string; // 파트너별 인증코드 (기본 fallback: 'BIZI0012')
     orderQty?: string | number; // 구좌수 (1, 2, 3) 기본 1
     preferredContactTime?: string; // 희망 통화 시간
+    callDate?: string; // 통화 요청 날짜 (YYYY-MM-DD)
+    callTime?: string; // 통화 요청 시간 (예: "10:00 ~ 11:00")
     partnerName?: string;
     inquiry?: string;
     memo?: string;
@@ -221,7 +223,9 @@ export async function registerToSonoImready(input: SonoRegisterInput): Promise<S
         }
 
         // Step 4: 고객 상담 데이터 전송 (insertConsultData)
-        const { callDate, callTime } = getCallDateAndTime(input.preferredContactTime);
+        const defaultCall = getCallDateAndTime(input.preferredContactTime);
+        const callDate = input.callDate || defaultCall.callDate;
+        const callTime = input.callTime || defaultCall.callTime;
         const orderQty = String(input.orderQty || '1');
 
         let memoText = '';

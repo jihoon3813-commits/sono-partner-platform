@@ -6,6 +6,7 @@ import CustomerDetailModal from "./CustomerDetailModal";
 import CustomerRegistrationModal from "./CustomerRegistrationModal";
 import BulkUploadModal from "./BulkUploadModal";
 import LifeJoyExportModal from "./LifeJoyExportModal";
+import SonoRegisterModal from "./SonoRegisterModal";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
 import { getKSTDateString, getKSTMonthsAgoDateString, getKSTLastMonthRange, formatDateTime } from "@/lib/dateUtils";
 
@@ -89,6 +90,8 @@ export default function CustomerManagement({
     // 소노아임레디(THEHAPPYONE) 등록 상태 관리
     const [isRegisteringSonoMap, setIsRegisteringSonoMap] = useState<{ [appNo: string]: boolean }>({});
     const [isBulkRegisteringSono, setIsBulkRegisteringSono] = useState(false);
+    const [sonoTargetApp, setSonoTargetApp] = useState<Application | null>(null);
+    const [isSonoModalOpen, setIsSonoModalOpen] = useState(false);
 
     // Filters
     const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter);
@@ -1021,12 +1024,15 @@ export default function CustomerManagement({
                                                     )}
                                                     <button
                                                         type="button"
-                                                        onClick={(e) => handleRegisterSingleSono(app, e)}
-                                                        disabled={isRegisteringSonoMap[app.applicationNo]}
-                                                        className="px-2 py-0.5 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 rounded text-[10px] font-bold transition-all active:scale-95 disabled:opacity-50 cursor-pointer shrink-0"
-                                                        title="소노아임레디(THEHAPPYONE) 즉시 등록/재전송"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSonoTargetApp(app);
+                                                            setIsSonoModalOpen(true);
+                                                        }}
+                                                        className="px-2 py-0.5 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 rounded text-[10px] font-bold transition-all active:scale-95 cursor-pointer shrink-0"
+                                                        title="소노아임레디(THEHAPPYONE) 접수 확인 및 등록"
                                                     >
-                                                        {isRegisteringSonoMap[app.applicationNo] ? "..." : (app.sonoRegisterStatus ? "재전송" : "접수")}
+                                                        {app.sonoRegisterStatus ? "재전송" : "접수"}
                                                     </button>
                                                 </div>
                                             </td>
@@ -1123,6 +1129,18 @@ export default function CustomerManagement({
                     isAdmin={isAdmin}
                     partnerLoginId={getPartnerLoginId(selectedApp.partnerId, selectedApp.partnerName)}
                     currentUserRole={currentUser?.role || 'master'}
+                />
+            )}
+
+            {isSonoModalOpen && sonoTargetApp && (
+                <SonoRegisterModal
+                    isOpen={isSonoModalOpen}
+                    onClose={() => {
+                        setIsSonoModalOpen(false);
+                        setSonoTargetApp(null);
+                    }}
+                    application={sonoTargetApp}
+                    onSuccess={onRefresh}
                 />
             )}
 
