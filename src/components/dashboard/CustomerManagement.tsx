@@ -394,7 +394,7 @@ export default function CustomerManagement({
                 }
             }
 
-            alert(`[소노아임레디 일괄 접수 완료]\n- 성공: ${successCount}건\n- 오늘 중복: ${duplicateCount}건\n- 실패: ${failCount}건`);
+            alert(`[소노아임레디 일괄 접수 완료]\n- 신규 성공: ${successCount}건\n- 당일 기접수: ${duplicateCount}건\n- 실패: ${failCount}건`);
             setSelectedAppIds([]);
             onRefresh();
         } catch (err: any) {
@@ -1011,8 +1011,8 @@ export default function CustomerManagement({
                                                             </span>
                                                         )}
                                                         {app.sonoRegisterStatus === 'DUPLICATE' && (
-                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200" title={app.sonoRegisterMessage || '오늘 중복 접수'}>
-                                                                🟡중복
+                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200" title={app.sonoRegisterMessage || '오늘 이미 소노 전산에 접수 완료된 건입니다'}>
+                                                                🟡당일기접수
                                                             </span>
                                                         )}
                                                         {app.sonoRegisterStatus === 'FAILED' && (

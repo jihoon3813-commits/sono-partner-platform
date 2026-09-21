@@ -303,7 +303,7 @@ export async function registerToSonoImready(input: SonoRegisterInput): Promise<S
                 success: true,
                 status: 'DUPLICATE',
                 code: -2,
-                message: '오늘 이미 접수된 고객입니다. (중복 접수)',
+                message: '오늘 이미 소노 전산에 정상 접수된 고객입니다. (당일 접수건 확인)',
                 agentNm: sllrPart,
                 authCodeUsed: authCode,
                 timestamp: nowIso
