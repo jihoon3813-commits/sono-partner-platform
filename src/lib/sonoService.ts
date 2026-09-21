@@ -119,13 +119,24 @@ export async function registerToSonoImready(input: SonoRegisterInput): Promise<S
         // Step 1: 웹 접수 페이지 로드하여 세션 쿠키 및 _c5r7t 토큰 획득
         const pageRes = await fetch('https://direct.sonoimready.com/THEHAPPYONE/write', {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+                'Cache-Control': 'no-cache',
+                'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+                'Sec-Ch-Ua-Mobile': '?0',
+                'Sec-Ch-Ua-Platform': '"Windows"',
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'none',
+                'Sec-Fetch-User': '?1',
+                'Upgrade-Insecure-Requests': '1'
             },
             cache: 'no-store'
         });
 
         if (!pageRes.ok) {
-            throw new Error(`페이지 접속 실패 (HTTP ${pageRes.status})`);
+            throw new Error(`페이지 접속 실패 (HTTP ${pageRes.status} ${pageRes.statusText})`);
         }
 
         // 쿠키 추출
@@ -147,9 +158,18 @@ export async function registerToSonoImready(input: SonoRegisterInput): Promise<S
         const cookieStr = Array.from(cookieMap.entries()).map(([k, v]) => `${k}=${v}`).join('; ');
 
         const html = await pageRes.text();
-        const tokenMatch = html.match(/name="_c5r7t"\s+value="([^"]+)"/);
+        // 다각도 정규식 패턴 시도
+        const tokenMatch = html.match(/name=["']_c5r7t["']\s+value=["']([^"']+)["']/i)
+            || html.match(/value=["']([^"']+)["']\s+name=["']_c5r7t["']/i)
+            || html.match(/<input[^>]*name=["']_c5r7t["'][^>]*value=["']([^"']+)["']/i)
+            || html.match(/<input[^>]*value=["']([^"']+)["'][^>]*name=["']_c5r7t["']/i)
+            || html.match(/_c5r7t["']?\s*[:=]\s*["']([^"']+)["']/i);
+
         if (!tokenMatch || !tokenMatch[1]) {
-            throw new Error('보안 토큰(_c5r7t)을 찾을 수 없습니다.');
+            const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+            const title = titleMatch ? titleMatch[1].trim() : '제목없음';
+            const cleanSnippet = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 100);
+            throw new Error(`보안 토큰(_c5r7t)을 찾을 수 없습니다. (응답길이: ${html.length}, 페이지: "${title}", 본문: "${cleanSnippet}")`);
         }
         const c5r7t = tokenMatch[1];
 
@@ -157,7 +177,10 @@ export async function registerToSonoImready(input: SonoRegisterInput): Promise<S
             'Content-Type': 'application/json',
             'C5R7T': c5r7t,
             'Cookie': cookieStr,
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+            'X-Requested-With': 'XMLHttpRequest',
             'Referer': 'https://direct.sonoimready.com/THEHAPPYONE/write',
             'Origin': 'https://direct.sonoimready.com'
         };
@@ -228,17 +251,8 @@ export async function registerToSonoImready(input: SonoRegisterInput): Promise<S
         const callTime = input.callTime || defaultCall.callTime;
         const orderQty = String(input.orderQty || '1');
 
-        let memoText = '';
-        if (input.partnerName) {
-            memoText += `[${input.partnerName}] `;
-        }
-        if (input.inquiry) {
-            memoText += input.inquiry;
-        }
-        if (input.memo) {
-            memoText += ` ${input.memo}`;
-        }
-        memoText = memoText.trim().substring(0, 240);
+        // 특이사항(비고): 파트너명 등 접두사를 일절 붙이지 않고, 사용자가 직접 기재한 memo만 전송 (기본값: 빈칸)
+        const memoText = (input.memo || '').trim().substring(0, 240);
 
         const consultPayload = {
             b2bStts: 'THEHAPPYONE',

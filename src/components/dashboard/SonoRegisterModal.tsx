@@ -92,12 +92,8 @@ export default function SonoRegisterModal({
                 setOrderQty("1");
             }
 
-            // 메모 초기화
-            let defMemo = "";
-            if (application.partnerName) defMemo += `[${application.partnerName}] `;
-            if (application.inquiry) defMemo += application.inquiry;
-            if (application.remarks) defMemo += ` ${application.remarks}`;
-            setMemo(defMemo.trim().substring(0, 240));
+            // 메모 초기화: 비고란에는 기본값을 넣지 않음 (사용자 요청)
+            setMemo("");
 
             setResultBanner(null);
 

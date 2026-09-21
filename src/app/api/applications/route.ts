@@ -119,8 +119,7 @@ export async function POST(request: Request) {
                     authCode: effectiveAuthCode,
                     orderQty: 1,
                     preferredContactTime: preferredTime,
-                    partnerName: partnerName || partner.companyName,
-                    inquiry: inquiry,
+                    memo: '',
                 });
 
                 await updateSonoRegisterStatus(

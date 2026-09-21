@@ -45,9 +45,7 @@ export async function POST(request: Request) {
             preferredContactTime: app.preferredContactTime,
             callDate: callDate,
             callTime: callTime,
-            partnerName: app.partnerName,
-            inquiry: app.inquiry,
-            memo: memo !== undefined ? memo : app.remarks,
+            memo: memo ? String(memo).trim() : '',
         });
 
         // 4. 결과를 DB에 저장
