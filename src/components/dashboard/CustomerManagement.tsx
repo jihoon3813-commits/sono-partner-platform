@@ -887,7 +887,9 @@ export default function CustomerManagement({
                                         </button>
                                     </div>
                                 </th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center whitespace-nowrap min-w-[95px]">소노접수</th>
+                                {isAdmin && (
+                                    <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center whitespace-nowrap min-w-[95px]">소노접수</th>
+                                )}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -1000,48 +1002,50 @@ export default function CustomerManagement({
                                                     );
                                                 })()}
                                             </td>
-                                            <td className="px-2 py-4 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                                                <div className="flex items-center justify-center gap-1.5">
-                                                    {app.sonoRegisterStatus === 'SUCCESS' && (
-                                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200" title={app.sonoRegisterMessage || '접수 완료'}>
-                                                            🟢완료
-                                                        </span>
-                                                    )}
-                                                    {app.sonoRegisterStatus === 'DUPLICATE' && (
-                                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200" title={app.sonoRegisterMessage || '오늘 중복 접수'}>
-                                                            🟡중복
-                                                        </span>
-                                                    )}
-                                                    {app.sonoRegisterStatus === 'FAILED' && (
-                                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200" title={app.sonoRegisterMessage || '전송 실패'}>
-                                                            🔴실패
-                                                        </span>
-                                                    )}
-                                                    {!app.sonoRegisterStatus && (
-                                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-gray-50 text-gray-400 border border-gray-200">
-                                                            ⚪미접수
-                                                        </span>
-                                                    )}
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setSonoTargetApp(app);
-                                                            setIsSonoModalOpen(true);
-                                                        }}
-                                                        className="px-2 py-0.5 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 rounded text-[10px] font-bold transition-all active:scale-95 cursor-pointer shrink-0"
-                                                        title="소노아임레디(THEHAPPYONE) 접수 확인 및 등록"
-                                                    >
-                                                        {app.sonoRegisterStatus ? "재전송" : "접수"}
-                                                    </button>
-                                                </div>
-                                            </td>
+                                            {isAdmin && (
+                                                <td className="px-2 py-4 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                                                    <div className="flex items-center justify-center gap-1.5">
+                                                        {app.sonoRegisterStatus === 'SUCCESS' && (
+                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200" title={app.sonoRegisterMessage || '접수 완료'}>
+                                                                🟢완료
+                                                            </span>
+                                                        )}
+                                                        {app.sonoRegisterStatus === 'DUPLICATE' && (
+                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200" title={app.sonoRegisterMessage || '오늘 중복 접수'}>
+                                                                🟡중복
+                                                            </span>
+                                                        )}
+                                                        {app.sonoRegisterStatus === 'FAILED' && (
+                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200" title={app.sonoRegisterMessage || '전송 실패'}>
+                                                                🔴실패
+                                                            </span>
+                                                        )}
+                                                        {!app.sonoRegisterStatus && (
+                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-gray-50 text-gray-400 border border-gray-200">
+                                                                ⚪미접수
+                                                            </span>
+                                                        )}
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setSonoTargetApp(app);
+                                                                setIsSonoModalOpen(true);
+                                                            }}
+                                                            className="px-2 py-0.5 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 rounded text-[10px] font-bold transition-all active:scale-95 cursor-pointer shrink-0"
+                                                            title="소노아임레디(THEHAPPYONE) 접수 확인 및 등록"
+                                                        >
+                                                            {app.sonoRegisterStatus ? "재전송" : "접수"}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            )}
                                         </tr>
                                     );
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan={isAdmin ? 11 : 10} className="px-6 py-20 text-center text-gray-400 font-medium">
+                                    <td colSpan={isAdmin ? 12 : 10} className="px-6 py-20 text-center text-gray-400 font-medium">
                                         신청 내역이 없습니다.
                                     </td>
                                 </tr>
@@ -1132,7 +1136,7 @@ export default function CustomerManagement({
                 />
             )}
 
-            {isSonoModalOpen && sonoTargetApp && (
+            {isAdmin && isSonoModalOpen && sonoTargetApp && (
                 <SonoRegisterModal
                     isOpen={isSonoModalOpen}
                     onClose={() => {

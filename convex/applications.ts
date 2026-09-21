@@ -959,15 +959,40 @@ export const updateSonoRegisterStatus = mutation({
             throw new Error(`Application not found: ${args.applicationNo}`);
         }
 
-        const registeredAt = args.registeredAt || nowKST();
+        const now = nowKST();
+        const registeredAt = args.registeredAt || now;
+        const todayDate = now.slice(0, 10);
 
-        await ctx.db.patch(app._id, {
+        const patchData: any = {
             sonoRegisterStatus: args.status,
             sonoRegisterMessage: args.message,
             sonoRegisteredAt: registeredAt,
             sonoAuthCodeUsed: args.authCodeUsed,
             updatedAt: registeredAt,
-        });
+        };
+
+        // 소노 접수 성공(SUCCESS) 또는 오늘 중복(DUPLICATE) 시 고객 상태값을 '접수완료'로 변경하고 날짜를 당일로 세팅
+        if (args.status === 'SUCCESS' || args.status === 'DUPLICATE') {
+            const previousStatus = app.status;
+            patchData.status = '접수완료';
+            patchData.statusUpdatedAt = registeredAt;
+            patchData.registrationDate = todayDate;
+
+            // 상태 변경 이력 기록
+            if (previousStatus !== '접수완료') {
+                await ctx.db.insert("statusHistory", {
+                    historyId: `H-${Date.now()}`,
+                    applicationNo: args.applicationNo,
+                    previousStatus: previousStatus || '접수대기',
+                    newStatus: '접수완료',
+                    changedBy: '총괄어드민 (소노접수)',
+                    changedAt: registeredAt,
+                    memo: `소노아임레디 웹 접수 ${args.status === 'SUCCESS' ? '완료' : '확인(중복)'}`,
+                });
+            }
+        }
+
+        await ctx.db.patch(app._id, patchData);
 
         return { success: true, applicationNo: args.applicationNo, status: args.status };
     },
