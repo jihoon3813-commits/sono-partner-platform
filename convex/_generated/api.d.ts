@@ -15,6 +15,7 @@ import type * as applications from "../applications.js";
 import type * as careProducts from "../careProducts.js";
 import type * as crons from "../crons.js";
 import type * as dashboard from "../dashboard.js";
+import type * as dataManagement from "../dataManagement.js";
 import type * as partners from "../partners.js";
 import type * as products from "../products.js";
 import type * as promotions from "../promotions.js";
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   careProducts: typeof careProducts;
   crons: typeof crons;
   dashboard: typeof dashboard;
+  dataManagement: typeof dataManagement;
   partners: typeof partners;
   products: typeof products;
   promotions: typeof promotions;

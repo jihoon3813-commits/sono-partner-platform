@@ -490,6 +490,17 @@ const formatDateForDisplay = (val: string | number | undefined): string => {
                         <p className="text-gray-400 text-sm font-bold mt-1">고객의 납입 및 유지 현황을 관리합니다.</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
+                        {typeof window !== "undefined" && (
+                            <span className={`text-[11px] px-2.5 py-1 rounded-full font-bold border ${
+                                (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+                                    ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                                    : "bg-amber-50 border-amber-200 text-amber-700"
+                            }`}>
+                                {(window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+                                    ? "🛠️ 개발 DB (실서버 안전)"
+                                    : "🚀 운영 DB"}
+                            </span>
+                        )}
                         {isAdmin && (
                             <label className={`cursor-pointer px-6 py-3 bg-sono-primary text-white rounded-2xl font-black text-sm hover:bg-sono-dark transition-all shadow-lg active:scale-95 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                                 {isUploading ? '업로드 중...' : '엑셀 업로드'}

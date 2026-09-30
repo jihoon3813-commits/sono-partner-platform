@@ -3,6 +3,8 @@
  * 대상 사이트: https://direct.sonoimready.com/THEHAPPYONE/write
  */
 
+import { formatPhoneNumber } from './phoneUtils';
+
 export interface SonoRegisterInput {
     customerName: string;
     customerPhone: string;
@@ -17,6 +19,7 @@ export interface SonoRegisterInput {
     sellerName?: string; // 판매사원 성명 (기본: 김지훈)
     sellerPhone?: string; // 판매자 연락처 (기본: 01043223813)
     sellerBirthDay?: string; // 판매자 생년월일 8자리 (기본: 19811115)
+    allowDuplicate?: boolean; // 당일 재접수/중복 접수 허용 여부 (true 시 isDuplicate: 'false' 전송)
 }
 
 export interface SonoRegisterResult {
@@ -89,7 +92,11 @@ export async function registerToSonoImready(input: SonoRegisterInput): Promise<S
     const sellerBirthDay = (input.sellerBirthDay || '19811115').replace(/[^0-9]/g, '');
 
     const cleanCustomerName = (input.customerName || '').trim();
-    const cleanCustomerPhone = (input.customerPhone || '').replace(/[^0-9]/g, '');
+    const rawCustomerPhone = (input.customerPhone || '').replace(/[^0-9]/g, '');
+
+    // 소노아임레디 웹 접수 전산은 '010-XXXX-XXXX' 형태의 하이픈 포맷팅된 번호를 파싱합니다.
+    // 숫자만 전송 시 소노 전산에서 3자리/3자리/4자리(010-998-0529 등)로 잘못 분할 인식되는 문제가 발생하므로 하이픈 포맷 적용
+    const formattedCustomerPhone = formatPhoneNumber(rawCustomerPhone);
 
     const nowIso = new Date(Date.now() + 9 * 3600000).toISOString().replace('Z', '+09:00');
 
@@ -104,7 +111,7 @@ export async function registerToSonoImready(input: SonoRegisterInput): Promise<S
         };
     }
 
-    if (!cleanCustomerPhone || cleanCustomerPhone.length < 10) {
+    if (!rawCustomerPhone || rawCustomerPhone.length < 10) {
         return {
             success: false,
             status: 'FAILED',
@@ -258,13 +265,13 @@ export async function registerToSonoImready(input: SonoRegisterInput): Promise<S
             b2bStts: 'THEHAPPYONE',
             b2bCd: '',
             b2bNm: '더해피원',
-            isDuplicate: 'true',
+            isDuplicate: input.allowDuplicate ? 'false' : 'true',
             sllrPart: sllrPart,
             agentEmpNm: sellerName,
             sllrCtel: sellerPhone,
             birthDay: sellerBirthDay,
             name: cleanCustomerName,
-            hp: cleanCustomerPhone,
+            hp: formattedCustomerPhone,
             callDate: callDate,
             callTime: callTime,
             joinType: '2', // 전자계약

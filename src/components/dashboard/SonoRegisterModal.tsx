@@ -74,6 +74,7 @@ export default function SonoRegisterModal({
     const [callDate, setCallDate] = useState("");
     const [callTime, setCallTime] = useState("10:00 ~ 11:00");
     const [memo, setMemo] = useState("");
+    const [allowDuplicate, setAllowDuplicate] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [resultBanner, setResultBanner] = useState<{ type: 'success' | 'duplicate' | 'error'; message: string } | null>(null);
 
@@ -82,6 +83,9 @@ export default function SonoRegisterModal({
             const { callDate: defDate, callTime: defTime } = getDefaultCallDateTime(application.preferredContactTime);
             setCallDate(defDate);
             setCallTime(defTime);
+
+            // 당일 기접수 고객인 경우 기본으로 재접수 허용 플래그 설정
+            setAllowDuplicate(application.sonoRegisterStatus === 'DUPLICATE' || application.sonoRegisterStatus === 'SUCCESS');
 
             // 구좌 수 초기화
             if (application.planType) {
@@ -174,7 +178,8 @@ export default function SonoRegisterModal({
                     orderQty,
                     callDate,
                     callTime,
-                    memo: memo.trim()
+                    memo: memo.trim(),
+                    allowDuplicate
                 })
             });
 
@@ -399,6 +404,24 @@ export default function SonoRegisterModal({
                                 rows={2}
                                 className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-sono-dark focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
                             />
+                        </div>
+
+                        {/* 당일 재접수/중복 체크 해제 옵션 */}
+                        <div className="pt-1 flex items-center justify-between bg-gray-50/70 p-3 rounded-xl border border-gray-200/60">
+                            <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-bold text-gray-700">
+                                <input
+                                    type="checkbox"
+                                    checked={allowDuplicate}
+                                    onChange={(e) => setAllowDuplicate(e.target.checked)}
+                                    className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 cursor-pointer"
+                                />
+                                <span>당일 재접수 허용 (소노 전산 중복 체크 해제)</span>
+                            </label>
+                            {allowDuplicate && (
+                                <span className="text-[10px] font-bold text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full shrink-0">
+                                    기접수 건 덮어쓰기 전송
+                                </span>
+                            )}
                         </div>
                     </div>
                 </div>

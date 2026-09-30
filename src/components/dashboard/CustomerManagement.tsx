@@ -340,7 +340,12 @@ export default function CustomerManagement({
     // 소노아임레디(THEHAPPYONE) 단건 즉시 등록/재전송
     const handleRegisterSingleSono = async (app: Application, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (!confirm(`소노아임레디(THEHAPPYONE)로 '${app.customerName}' 고객을 접수하시겠습니까?`)) {
+        const isReRegister = app.sonoRegisterStatus === 'SUCCESS' || app.sonoRegisterStatus === 'DUPLICATE';
+        const confirmMsg = isReRegister
+            ? `'${app.customerName}' 고객은 당일 소노 접수 이력이 있습니다. 당일 재접수(중복 방지 해제)를 진행하시겠습니까?`
+            : `소노아임레디(THEHAPPYONE)로 '${app.customerName}' 고객을 접수하시겠습니까?`;
+
+        if (!confirm(confirmMsg)) {
             return;
         }
 
@@ -349,7 +354,10 @@ export default function CustomerManagement({
             const res = await fetch("/api/sono/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ applicationNo: app.applicationNo })
+                body: JSON.stringify({ 
+                    applicationNo: app.applicationNo,
+                    allowDuplicate: isReRegister
+                })
             });
             const data = await res.json();
             if (data.success) {

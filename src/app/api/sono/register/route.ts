@@ -11,7 +11,8 @@ export async function POST(request: Request) {
             callDate,
             callTime,
             orderQty,
-            memo
+            memo,
+            allowDuplicate
         } = body;
 
         if (!applicationNo) {
@@ -46,6 +47,7 @@ export async function POST(request: Request) {
             callDate: callDate,
             callTime: callTime,
             memo: memo ? String(memo).trim() : '',
+            allowDuplicate: Boolean(allowDuplicate),
         });
 
         // 4. 결과를 DB에 저장

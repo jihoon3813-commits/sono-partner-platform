@@ -18,13 +18,33 @@ function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        // 개발 환경(localhost)인 경우 로그인 폼 없이 총괄 관리자로 즉시 자동 로그인
+        const isDev = typeof window !== "undefined" && (
+            window.location.hostname === "localhost" ||
+            window.location.hostname === "127.0.0.1" ||
+            window.location.hostname.endsWith(".local")
+        );
+
+        if (isDev) {
+            const devAdminSession = {
+                partnerId: "admin",
+                name: "총괄 관리자",
+                customUrl: "admin",
+                level: "admin",
+            };
+            localStorage.setItem("partnerSession", JSON.stringify(devAdminSession));
+            sessionStorage.setItem("partnerSession", JSON.stringify(devAdminSession));
+            router.replace("/partner-center/dashboard");
+            return;
+        }
+
         const id = searchParams.get("id");
         const key = searchParams.get("k");
 
         if (id && key) {
             handleAutoLogin(id, key);
         }
-    }, [searchParams]);
+    }, [searchParams, router]);
 
     const handleAutoLogin = async (id: string, key: string) => {
         setIsLoading(true);

@@ -163,6 +163,37 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
                 </div>
 
                 <div className="space-y-6">
+                    {/* 환경 식별 배지 */}
+                    {typeof window !== "undefined" && (
+                        <div className={`p-3 rounded-xl border flex items-center justify-between text-xs font-semibold ${
+                            (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
+                                ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                                : "bg-amber-50 border-amber-200 text-amber-800"
+                        }`}>
+                            <div className="flex items-center gap-2">
+                                <span className={`w-2.5 h-2.5 rounded-full ${
+                                    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
+                                        ? "bg-emerald-500 animate-pulse"
+                                        : "bg-amber-500"
+                                }`}></span>
+                                <span>
+                                    {(window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
+                                        ? "🛠️ 개발 DB 연결됨 (Dev)"
+                                        : "🚀 실사이트 운영 DB 연결됨 (Prod)"}
+                                </span>
+                            </div>
+                            <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
+                                (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
+                                    ? "bg-emerald-100 text-emerald-700"
+                                    : "bg-amber-100 text-amber-700"
+                            }`}>
+                                {(window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
+                                    ? "실서버 영향 없음"
+                                    : "운영 서버 실시간 반영"}
+                            </span>
+                        </div>
+                    )}
+
                     <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex items-start gap-3">
                         <svg className="w-5 h-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
