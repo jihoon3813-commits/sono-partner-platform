@@ -38,6 +38,27 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
         return partnersData.find(p => p.partnerId === selectedPartnerId || p.companyName === selectedPartnerName || p.loginId === partnerLoginId);
     }, [partnersData, selectedPartnerId, selectedPartnerName, partnerLoginId]);
 
+    // Resolve parent partner for this application
+    const parentPartner = useMemo(() => {
+        if (!customerPartner || !partnersData) return null;
+        const parentId = customerPartner.parentPartnerId?.trim();
+        const parentName = customerPartner.parentPartnerName?.trim();
+        if (!parentId && !parentName) return null;
+        if (parentId === 'admin' || parentId === '') return null;
+        const parent = partnersData.find(p =>
+            (parentId && (
+                p.partnerId === parentId ||
+                p.loginId?.toLowerCase() === parentId.toLowerCase() ||
+                p.customUrl?.toLowerCase() === parentId.toLowerCase()
+            )) ||
+            (parentName && p.companyName?.trim() === parentName)
+        );
+        return {
+            name: parent?.companyName || parentName || parentId,
+            loginId: parent?.loginId || (parentId && parentId !== parentName ? parentId : "")
+        };
+    }, [customerPartner, partnersData]);
+
     // Allowed care products based on sales partner's selling product configuration
     const allowedCareProducts = useMemo(() => {
         if (!careProductsData || careProductsData.length === 0) return [];
@@ -573,6 +594,12 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             {isAdmin ? (
                                 <>
                                     <div className="flex items-center gap-2 text-sm">
+                                        <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0">상위 파트너</span>
+                                        <span className="text-xs sm:text-sm font-bold text-sono-dark">
+                                            {parentPartner ? `${parentPartner.name}${parentPartner.loginId ? ` (${parentPartner.loginId})` : ''}` : '-'}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm">
                                         <span className="w-16 sm:w-24 text-xs sm:text-sm text-gray-400 font-medium shrink-0">파트너사</span>
                                         <select
                                             value={selectedPartnerId}
@@ -617,6 +644,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                 </>
                             ) : (
                                 <>
+                                    <InfoRow label="상위 파트너" value={parentPartner ? `${parentPartner.name}${parentPartner.loginId ? ` (${parentPartner.loginId})` : ''}` : '-'} />
                                     <InfoRow label="파트너사" value={application.partnerName} />
                                     <InfoRow label="파트너 ID" value={partnerLoginId || application.partnerId} />
                                     <InfoRow label="접속경로" value={application.accessPath === 'H' ? '홈페이지 (H)' : '직접등록 (D)'} />

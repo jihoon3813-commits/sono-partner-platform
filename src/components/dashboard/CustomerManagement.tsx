@@ -170,6 +170,49 @@ export default function CustomerManagement({
         return "";
     };
 
+    const getPartnerLoginId = (partnerId: string, partnerName?: string) => {
+        if (!partners || partners.length === 0) return partnerId;
+
+        let p = partners.find(p => p.partnerId === partnerId || p.loginId === partnerId);
+        if (!p && partnerName) {
+            p = partners.find(p => p.companyName === partnerName);
+        }
+        return p?.loginId || partnerId;
+    };
+
+    const getParentPartnerInfo = (partnerId: string, partnerName?: string) => {
+        if (!partners || partners.length === 0) return null;
+
+        let p = partners.find(item => item.partnerId === partnerId || item.loginId === partnerId);
+        if (!p && partnerName) {
+            p = partners.find(item => item.companyName === partnerName);
+        }
+        if (!p) return null;
+
+        const parentId = p.parentPartnerId?.trim();
+        const parentName = p.parentPartnerName?.trim();
+
+        if (!parentId && !parentName) return null;
+        if (parentId === 'admin' || parentId === '') return null;
+
+        const parent = partners.find(item =>
+            (parentId && (
+                item.partnerId === parentId ||
+                item.loginId?.toLowerCase() === parentId.toLowerCase() ||
+                item.customUrl?.toLowerCase() === parentId.toLowerCase()
+            )) ||
+            (parentName && item.companyName?.trim() === parentName)
+        );
+
+        const resolvedName = parent?.companyName || parentName || parentId;
+        const resolvedLoginId = parent?.loginId || (parentId && parentId !== parentName && parentId !== resolvedName ? parentId : "");
+
+        return {
+            name: resolvedName,
+            loginId: resolvedLoginId
+        };
+    };
+
     // 1. Initial filtered applications based on search, date, and basic criteria
     const initialFiltered = (applications || []).filter(app => {
         if (!app) return false;
@@ -195,7 +238,11 @@ export default function CustomerManagement({
             }
         }
 
-        const searchMatch = nameMatch || cleanPhone.includes(cleanSTerm) || pName.includes(sTerm) || pId.includes(sTerm);
+        const parentInfo = getParentPartnerInfo(app.partnerId, app.partnerName);
+        const parentName = (parentInfo?.name || "").toLowerCase();
+        const parentLogin = (parentInfo?.loginId || "").toLowerCase();
+
+        const searchMatch = nameMatch || cleanPhone.includes(cleanSTerm) || pName.includes(sTerm) || pId.includes(sTerm) || (parentInfo && (parentName.includes(sTerm) || parentLogin.includes(sTerm)));
         if (!searchMatch) return false;
 
         // Date Filter
@@ -298,16 +345,6 @@ export default function CustomerManagement({
         } catch {
             return String(val);
         }
-    };
-
-    const getPartnerLoginId = (partnerId: string, partnerName?: string) => {
-        if (!partners || partners.length === 0) return partnerId;
-
-        let p = partners.find(p => p.partnerId === partnerId);
-        if (!p && partnerName) {
-            p = partners.find(p => p.companyName === partnerName);
-        }
-        return p?.loginId || partnerId;
     };
 
     // 3. Sorting logic
@@ -576,40 +613,45 @@ export default function CustomerManagement({
                                         await new Promise(resolve => setTimeout(resolve, 100));
 
                                         const headers = [
-                                            "No.", "신청번호", "신청일시", "파트너사", "시스템ID", "로그인ID", "고객명", "연락처",
+                                            "No.", "신청번호", "신청일시", "상위파트너", "파트너사", "시스템ID", "로그인ID", "고객명", "연락처",
                                             "상품명", "결합제품(가전)", "신청구좌", "주소", "우편번호", "생년월일",
                                             "성별", "이메일", "회원번호", "선호시간", "문의사항", "상태",
                                             "초회납입일", "신규등록일", "납입방법", "해약처리", "청약철회", "비고(사유)"
                                         ];
 
-                                        const rows = filteredApplications.map((app, index) => [
-                                            filteredApplications.length - index,
-                                            app.applicationNo,
-                                            formatDateTime(app.createdAt, (app as any)._creationTime),
-                                            app.partnerName,
-                                            app.partnerId,
-                                            getPartnerLoginId(app.partnerId),
-                                            app.customerName,
-                                            app.customerPhone,
-                                            app.productType,
-                                            app.products || "-",
-                                            app.planType,
-                                            app.customerAddress,
-                                            app.customerZipcode,
-                                            app.customerBirth || "-",
-                                            app.customerGender || "-",
-                                            app.customerEmail || "-",
-                                            app.partnerMemberId || "-",
-                                            app.preferredContactTime || "-",
-                                            app.inquiry?.replace(/\n/g, " ") || "-",
-                                            getDisplayStatus(app.status),
-                                            app.firstPaymentDate || "-",
-                                            app.registrationDate || "-",
-                                            app.paymentMethod || "-",
-                                            app.cancellationProcessing || "-",
-                                            app.withdrawalProcessing || "-",
-                                            app.remarks?.replace(/\n/g, " ") || "-"
-                                        ]);
+                                        const rows = filteredApplications.map((app, index) => {
+                                            const parentInfo = getParentPartnerInfo(app.partnerId, app.partnerName);
+                                            const parentDisplay = parentInfo ? `${parentInfo.name}${parentInfo.loginId ? ` (${parentInfo.loginId})` : ''}` : "-";
+                                            return [
+                                                filteredApplications.length - index,
+                                                app.applicationNo,
+                                                formatDateTime(app.createdAt, (app as any)._creationTime),
+                                                parentDisplay,
+                                                app.partnerName,
+                                                app.partnerId,
+                                                getPartnerLoginId(app.partnerId),
+                                                app.customerName,
+                                                app.customerPhone,
+                                                app.productType,
+                                                app.products || "-",
+                                                app.planType,
+                                                app.customerAddress,
+                                                app.customerZipcode,
+                                                app.customerBirth || "-",
+                                                app.customerGender || "-",
+                                                app.customerEmail || "-",
+                                                app.partnerMemberId || "-",
+                                                app.preferredContactTime || "-",
+                                                app.inquiry?.replace(/\n/g, " ") || "-",
+                                                getDisplayStatus(app.status),
+                                                app.firstPaymentDate || "-",
+                                                app.registrationDate || "-",
+                                                app.paymentMethod || "-",
+                                                app.cancellationProcessing || "-",
+                                                app.withdrawalProcessing || "-",
+                                                app.remarks?.replace(/\n/g, " ") || "-"
+                                            ];
+                                        });
 
                                         const csvContent = [
                                             headers.join(","),
@@ -653,7 +695,7 @@ export default function CustomerManagement({
                         <div className="relative flex-1 w-full">
                             <input
                                 type="text"
-                                placeholder="고객명, 연락처, 파트너사명 검색"
+                                placeholder="고객명, 연락처, 파트너사명, 상위파트너 검색"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none w-full shadow-sm"
@@ -872,6 +914,7 @@ export default function CustomerManagement({
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[50px]">경로</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">No.</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[120px]">일시</th>
+                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">상위파트너</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">파트너사</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center min-w-[60px]">고객명</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">연락처</th>
@@ -956,6 +999,20 @@ export default function CustomerManagement({
                                             </td>
                                             <td className="px-2 py-4 text-xs text-gray-500 text-center whitespace-nowrap">
                                                 {formatDateTime(app.createdAt, (app as any)._creationTime)}
+                                            </td>
+                                            <td className="px-2 py-4 text-center whitespace-nowrap">
+                                                {(() => {
+                                                    const parentInfo = getParentPartnerInfo(app.partnerId, app.partnerName);
+                                                    if (!parentInfo) {
+                                                        return <span className="text-xs text-gray-400 font-bold">-</span>;
+                                                    }
+                                                    return (
+                                                        <>
+                                                            <div className="text-sm font-bold text-sono-dark">{parentInfo.name}</div>
+                                                            {parentInfo.loginId && <div className="text-[10px] text-gray-400 font-bold">{parentInfo.loginId}</div>}
+                                                        </>
+                                                    );
+                                                })()}
                                             </td>
                                             <td className="px-2 py-4 text-center whitespace-nowrap">
                                                 <div className="text-sm font-bold text-sono-dark">{app.partnerName}</div>
@@ -1053,7 +1110,7 @@ export default function CustomerManagement({
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan={isAdmin ? 12 : 10} className="px-6 py-20 text-center text-gray-400 font-medium">
+                                    <td colSpan={isAdmin ? 13 : 11} className="px-6 py-20 text-center text-gray-400 font-medium">
                                         신청 내역이 없습니다.
                                     </td>
                                 </tr>
