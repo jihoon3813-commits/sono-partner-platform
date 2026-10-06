@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Application } from "@/lib/types";
+import { getDefaultCallDateTime } from "@/lib/callTimeUtils";
 
 interface SonoRegisterModalProps {
     isOpen: boolean;
@@ -12,54 +13,7 @@ interface SonoRegisterModalProps {
     onSuccess: () => void;
 }
 
-// 기본 통화 날짜 및 시간 계산
-function getDefaultCallDateTime(preferredTime?: string) {
-    const now = new Date();
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    const kst = new Date(utc + (9 * 60 * 60000));
 
-    const currentHour = kst.getHours();
-    let targetDate = new Date(kst);
-    if (currentHour >= 17) {
-        targetDate.setDate(targetDate.getDate() + 1);
-    }
-    
-    // 주말 처리
-    const day = targetDate.getDay();
-    if (day === 6) {
-        targetDate.setDate(targetDate.getDate() + 2);
-    } else if (day === 0) {
-        targetDate.setDate(targetDate.getDate() + 1);
-    }
-
-    const yyyy = targetDate.getFullYear();
-    const mm = String(targetDate.getMonth() + 1).padStart(2, '0');
-    const dd = String(targetDate.getDate()).padStart(2, '0');
-    const callDate = `${yyyy}-${mm}-${dd}`;
-
-    const validTimes = [
-        "10:00 ~ 11:00",
-        "11:00 ~ 12:00",
-        "14:00 ~ 15:00",
-        "15:00 ~ 16:00",
-        "16:00 ~ 17:00",
-        "17:00 ~ 18:00"
-    ];
-
-    let callTime = "10:00 ~ 11:00";
-    if (preferredTime) {
-        const matched = validTimes.find(t => preferredTime.includes(t.substring(0, 5)) || preferredTime.includes(t.substring(8, 13)));
-        if (matched) {
-            callTime = matched;
-        } else if (preferredTime.includes("오후") || preferredTime.includes("14") || preferredTime.includes("15")) {
-            callTime = "14:00 ~ 15:00";
-        } else if (preferredTime.includes("16") || preferredTime.includes("17")) {
-            callTime = "16:00 ~ 17:00";
-        }
-    }
-
-    return { callDate, callTime };
-}
 
 export default function SonoRegisterModal({
     isOpen,

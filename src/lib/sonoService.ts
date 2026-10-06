@@ -4,6 +4,7 @@
  */
 
 import { formatPhoneNumber } from './phoneUtils';
+import { getDefaultCallDateTime } from './callTimeUtils';
 
 export interface SonoRegisterInput {
     customerName: string;
@@ -34,55 +35,7 @@ export interface SonoRegisterResult {
 
 // 통화 요청 날짜 및 시간 계산 헬퍼
 function getCallDateAndTime(preferredTime?: string) {
-    // 한국 표준시 (KST) 기준 날짜 계산
-    const now = new Date();
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    const kst = new Date(utc + (9 * 60 * 60000));
-
-    const currentHour = kst.getHours();
-    
-    // 기본 날짜는 오늘(17시 이전) 또는 내일(17시 이후)
-    let targetDate = new Date(kst);
-    if (currentHour >= 17) {
-        targetDate.setDate(targetDate.getDate() + 1);
-    }
-    
-    // 일요일(0)이면 월요일(+1), 토요일(6)이면 월요일(+2)
-    const day = targetDate.getDay();
-    if (day === 6) {
-        targetDate.setDate(targetDate.getDate() + 2);
-    } else if (day === 0) {
-        targetDate.setDate(targetDate.getDate() + 1);
-    }
-
-    const yyyy = targetDate.getFullYear();
-    const mm = String(targetDate.getMonth() + 1).padStart(2, '0');
-    const dd = String(targetDate.getDate()).padStart(2, '0');
-    const callDate = `${yyyy}-${mm}-${dd}`;
-
-    // 가능한 옵션들
-    const validTimes = [
-        "10:00 ~ 11:00",
-        "11:00 ~ 12:00",
-        "14:00 ~ 15:00",
-        "15:00 ~ 16:00",
-        "16:00 ~ 17:00",
-        "17:00 ~ 18:00"
-    ];
-
-    let callTime = "10:00 ~ 11:00"; // 기본값
-    if (preferredTime) {
-        const matched = validTimes.find(t => preferredTime.includes(t.substring(0, 5)) || preferredTime.includes(t.substring(8, 13)));
-        if (matched) {
-            callTime = matched;
-        } else if (preferredTime.includes("오후") || preferredTime.includes("14") || preferredTime.includes("15")) {
-            callTime = "14:00 ~ 15:00";
-        } else if (preferredTime.includes("16") || preferredTime.includes("17")) {
-            callTime = "16:00 ~ 17:00";
-        }
-    }
-
-    return { callDate, callTime };
+    return getDefaultCallDateTime(preferredTime);
 }
 
 export async function registerToSonoImready(input: SonoRegisterInput): Promise<SonoRegisterResult> {
