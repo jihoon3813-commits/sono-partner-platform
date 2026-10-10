@@ -368,6 +368,64 @@ export default defineSchema({
         createdAt: v.string(),
     }).index("by_customerKey", ["customerKey"]),
 
+    // 유지율(8월 이후 가입) 관리 데이터 테이블
+    retentionRecords3: defineTable({
+        memberNo: v.string(), // 회원번호 (Col A)
+        uniqueNo: v.optional(v.string()), // 고유번호 (Col B)
+        customerName: v.string(), // 고객명 (Col C)
+        birth: v.string(), // 생년월일 (Col D)
+        phone: v.string(), // 휴대전화 (Col E)
+        productName: v.string(), // 가입상품 (Col F)
+        paymentStatus: v.string(), // 납입상태 (Col G)
+        joinStatus: v.string(), // 가입상태 (Col H)
+        joinDate: v.string(), // 가입일자 (Col I)
+        transferDate: v.optional(v.string()), // 이체일자 (Col J)
+        paymentMethod: v.string(), // 납입방법 (Col K)
+        cancelStatus: v.optional(v.string()), // 해약처리 (Col L)
+        cancelDate: v.optional(v.string()), // 해약처리일 (Col M)
+        approvalStatus: v.string(), // 승인상태 (Col N)
+        b2bCompany: v.string(), // B2B회사명 (Col O)
+        idNo: v.string(), // ID_NO (Col P)
+        discountCount: v.number(), // 특별할인회차 (Col Q)
+        actualPaymentCount: v.number(), // 실납입회차 (Col R)
+        subCompany: v.optional(v.string()), // 소속(업체명) (Col S)
+        transferorName: v.optional(v.string()), // 전해자명 (Col T)
+
+        // 매칭된 파트너 정보 (업로드 시/동기화 시 자동 바인딩 저장)
+        partnerId: v.optional(v.string()),
+        partnerName: v.optional(v.string()),
+        parentPartnerId: v.optional(v.string()),
+        parentPartnerName: v.optional(v.string()),
+
+        // 수동 선택 상태
+        refundStatus: v.optional(v.string()), // 환수여부 (100%~40%, 선택없음)
+        refundUpdatedAt: v.optional(v.string()),
+        revivalStatus: v.optional(v.string()), // 부활여부 (부활완료, 부활예정, 취소, 선택없음)
+        revivalUpdatedAt: v.optional(v.string()),
+        delinquencyResolveStatus: v.optional(v.string()), // 연체해결 (해결함, 미해결)
+        delinquencyResolveUpdatedAt: v.optional(v.string()),
+
+        uploadedAt: v.string(),
+    }).index("by_idNo", ["idNo"])
+      .index("by_partnerId", ["partnerId"])
+      .index("by_parentPartnerId", ["parentPartnerId"]),
+
+    // 파트너별 유지율(8월 이후 가입) ID_NO 매핑 테이블
+    partnerRetentionMappings3: defineTable({
+        partnerId: v.string(),
+        idNos: v.array(v.string()),
+        updatedAt: v.string(),
+    }).index("by_partnerId", ["partnerId"]),
+
+    // 유지율(8월 이후 가입) 관리 메모/이력 테이블
+    retentionMemos3: defineTable({
+        customerKey: v.string(),
+        content: v.string(),
+        createdBy: v.string(),
+        createdAt: v.string(),
+    }).index("by_customerKey", ["customerKey"]),
+
+
     // 스마트케어/상조 상품정보 테이블
     careProducts: defineTable({
         name: v.string(), // 상품명 (예: 스마트케어 4더블, 더해피450 ONE)

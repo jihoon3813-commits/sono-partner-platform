@@ -10,6 +10,7 @@ export const getTableCounts = query({
             statusHistory,
             retentionRecords,
             retentionRecords2,
+            retentionRecords3,
             retentionMemos,
             retentionMemos2,
             analytics,
@@ -24,6 +25,7 @@ export const getTableCounts = query({
             ctx.db.query("statusHistory").collect(),
             ctx.db.query("retentionRecords").collect(),
             ctx.db.query("retentionRecords2").collect(),
+            ctx.db.query("retentionRecords3").collect(),
             ctx.db.query("retentionMemos").collect(),
             ctx.db.query("retentionMemos2").collect(),
             ctx.db.query("analytics").collect(),
@@ -40,6 +42,7 @@ export const getTableCounts = query({
             statusHistory: statusHistory.length,
             retentionRecords: retentionRecords.length,
             retentionRecords2: retentionRecords2.length,
+            retentionRecords3: retentionRecords3.length,
             retentionMemos: retentionMemos.length,
             retentionMemos2: retentionMemos2.length,
             analytics: analytics.length,
@@ -69,6 +72,7 @@ export const purgeData = mutation({
             | "statusHistory"
             | "retentionRecords"
             | "retentionRecords2"
+            | "retentionRecords3"
             | "retentionMemos"
             | "retentionMemos2"
             | "analytics"
@@ -78,6 +82,7 @@ export const purgeData = mutation({
             "statusHistory",
             "retentionRecords",
             "retentionRecords2",
+            "retentionRecords3",
             "retentionMemos",
             "retentionMemos2",
             "analytics",

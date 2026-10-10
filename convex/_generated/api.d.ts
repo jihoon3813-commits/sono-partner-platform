@@ -23,6 +23,7 @@ import type * as requests from "../requests.js";
 import type * as resources from "../resources.js";
 import type * as retention from "../retention.js";
 import type * as retention2 from "../retention2.js";
+import type * as retention3 from "../retention3.js";
 import type * as settings from "../settings.js";
 import type * as telegram from "../telegram.js";
 import type * as utils from "../utils.js";
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   resources: typeof resources;
   retention: typeof retention;
   retention2: typeof retention2;
+  retention3: typeof retention3;
   settings: typeof settings;
   telegram: typeof telegram;
   utils: typeof utils;

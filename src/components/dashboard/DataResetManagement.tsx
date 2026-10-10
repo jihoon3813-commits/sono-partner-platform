@@ -68,6 +68,7 @@ export default function DataResetManagement() {
            tableCounts.statusHistory +
            tableCounts.retentionRecords +
            tableCounts.retentionRecords2 +
+           ((tableCounts as any).retentionRecords3 || 0) +
            tableCounts.retentionMemos +
            tableCounts.retentionMemos2 +
            tableCounts.analytics +
@@ -166,6 +167,17 @@ export default function DataResetManagement() {
                                 </div>
                             </div>
 
+                            {/* 유지율 3 (8월 이후 가입) */}
+                            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col justify-between">
+                                <span className="text-xs font-bold text-gray-500">연체(8월 이후 가입) (retentionRecords3)</span>
+                                <div className="mt-2 flex items-baseline justify-between">
+                                    <span className={`text-2xl font-black ${((tableCounts as any).retentionRecords3 || 0) > 0 ? "text-indigo-600" : "text-gray-400"}`}>
+                                        {((tableCounts as any).retentionRecords3 || 0).toLocaleString()}
+                                    </span>
+                                    <span className="text-xs text-gray-400 font-bold">건</span>
+                                </div>
+                            </div>
+
                             {/* 상태 이력 */}
                             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col justify-between">
                                 <span className="text-xs font-bold text-gray-500">상태 변경 이력 (statusHistory)</span>
@@ -243,7 +255,7 @@ export default function DataResetManagement() {
                                     등록된 <strong>파트너사 계정과 관리자 계정은 그대로 보존</strong>하며, 가입 신청 내역(고객), 상태 이력, 유지율/연체 엑셀 레코드만 깨끗하게 0건으로 비웁니다.
                                 </p>
                                 <div className="mt-3 text-[11px] text-gray-400 font-medium">
-                                    삭제 대상: applications, statusHistory, retentionRecords, retentionRecords2, retentionMemos, analytics
+                                    삭제 대상: applications, statusHistory, retentionRecords, retentionRecords2, retentionRecords3, retentionMemos, analytics
                                 </div>
                             </div>
                             <button
