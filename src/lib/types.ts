@@ -221,3 +221,19 @@ export interface CustomerApplyFormData {
     inquiry: string;
     privacyAgreed: boolean;
 }
+
+// 고객 상담 녹취 음성파일 정보
+export interface Recording {
+    _id: string;
+    applicationNo: string;
+    storageId: string;
+    fileName: string;
+    fileSize: number;
+    fileType: string;
+    duration?: number;
+    uploadedAt: string;
+    uploadedBy?: string;
+    memo?: string;
+    url?: string | null;
+}
+

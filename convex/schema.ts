@@ -446,4 +446,20 @@ export default defineSchema({
         createdAt: v.optional(v.string()),
         updatedAt: v.optional(v.string()),
     }).index("by_slotCount", ["slotCount"]),
+
+    // 상담 녹취 음성파일 테이블
+    recordings: defineTable({
+        applicationNo: v.string(), // 고객 신청번호
+        storageId: v.id("_storage"), // Convex Storage ID
+        fileName: v.string(), // 원본 파일명
+        fileSize: v.number(), // 바이트 단위 크기
+        fileType: v.string(), // 파일 MIME 타입 (예: audio/mpeg, audio/m4a)
+        duration: v.optional(v.number()), // 재생시간(초)
+        uploadedAt: v.string(), // 업로드 일시 (KST string)
+        uploadedBy: v.optional(v.string()), // 업로드한 사용자명/파트너명
+        memo: v.optional(v.string()), // 녹취 메모 (예: 계약안내 동의, 1차 상담 등)
+    })
+        .index("by_applicationNo", ["applicationNo"])
+        .index("by_uploadedAt", ["uploadedAt"]),
 });
+

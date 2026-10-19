@@ -6,6 +6,8 @@ import { api } from "../../../convex/_generated/api";
 import { Application, ApplicationStatus } from "@/lib/types";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
 import { formatDateTime } from "@/lib/dateUtils";
+import RecordingModal from "./RecordingModal";
+import { downloadFileWithCustomName, generateRecordingDownloadFileName, formatBytes } from "@/lib/downloadUtils";
 
 interface CustomerDetailModalProps {
     application: Application;
@@ -20,6 +22,8 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     const updateDetails = useMutation(api.applications.updateApplicationDetails);
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
     const statusHistory = useQuery(api.applications.getStatusHistory, { applicationNo: application.applicationNo });
+    const recordings = useQuery(api.recordings.getRecordingsByApplication, { applicationNo: application.applicationNo });
+    const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false);
 
     // Dynamic queries for care products, appliance products, and partners
     const careProductsData = useQuery(api.careProducts.get);
@@ -655,6 +659,95 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                         </div>
                     </div>
 
+                    {/* 상담 녹취 음성파일 섹션 */}
+                    <div className="border-t border-gray-100 pt-4">
+                        <div className="flex justify-between items-center mb-3">
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-base">🎙️</span>
+                                <h3 className="text-sm font-bold text-sono-primary">
+                                    상담 녹취 음성파일 ({recordings?.length || 0}건)
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsRecordingModalOpen(true)}
+                                className="px-3 py-1 bg-sono-primary/10 hover:bg-sono-primary text-sono-primary hover:text-white rounded-lg text-xs font-bold transition-all border border-sono-primary/20 shadow-sm"
+                            >
+                                {recordings && recordings.length > 0 ? "+ 추가/관리" : "+ 녹취 등록"}
+                            </button>
+                        </div>
+
+                        {recordings === undefined ? (
+                            <div className="text-xs text-gray-400 py-3 text-center">녹취 목록 확인 중...</div>
+                        ) : recordings.length === 0 ? (
+                            <div className="bg-gray-50/70 border border-gray-100 rounded-xl p-4 text-center">
+                                <p className="text-xs text-gray-400 font-medium">등록된 상담 녹취 파일이 없습니다.</p>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsRecordingModalOpen(true)}
+                                    className="mt-2 text-xs font-bold text-sono-primary hover:underline inline-flex items-center gap-1"
+                                >
+                                    <span>📤</span> 녹취 파일 업로드하기
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="space-y-2.5">
+                                {recordings.map((rec) => {
+                                    const customFileName = generateRecordingDownloadFileName({
+                                        uploadedAt: rec.uploadedAt,
+                                        parentPartnerName: parentPartner?.name,
+                                        partnerName: application.partnerName,
+                                        customerName: application.customerName,
+                                        customerPhone: application.customerPhone,
+                                        duration: rec.duration,
+                                        originalFileName: rec.fileName,
+                                    });
+
+                                    return (
+                                        <div key={rec._id} className="bg-gray-50/80 p-3 rounded-xl border border-gray-100 space-y-2">
+                                            <div className="flex items-center justify-between text-xs gap-2">
+                                                <div className="flex items-center gap-1.5 min-w-0">
+                                                    <span className="font-bold text-sono-dark truncate max-w-[200px]" title={rec.fileName}>
+                                                        {rec.fileName}
+                                                    </span>
+                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-200/70 text-gray-700 font-bold shrink-0">
+                                                        {formatBytes(rec.fileSize)}
+                                                    </span>
+                                                    {rec.duration && (
+                                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold shrink-0">
+                                                            {Math.floor(rec.duration / 60)}분 {Math.floor(rec.duration % 60)}초
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {rec.url && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => downloadFileWithCustomName(rec.url!, customFileName)}
+                                                        className="text-[11px] text-sono-primary font-bold hover:underline shrink-0 flex items-center gap-1"
+                                                        title={`다운로드: ${customFileName}`}
+                                                    >
+                                                        <span>다운로드</span>
+                                                        <span>⬇️</span>
+                                                    </button>
+                                                )}
+                                            </div>
+                                            {rec.memo && (
+                                                <p className="text-[11px] text-gray-600 bg-white p-2 rounded-lg border border-gray-100">
+                                                    💬 {rec.memo}
+                                                </p>
+                                            )}
+                                            {rec.url && (
+                                                <audio controls preload="metadata" src={rec.url} className="w-full h-8">
+                                                    오디오 재생 미지원
+                                                </audio>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+
                     {/* Status History Section */}
                     <div className="border-t border-gray-100 pt-4">
                         <h3 className="text-sm font-bold text-sono-primary mb-3">상태 변경 이력</h3>
@@ -725,6 +818,16 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                 </div>
             </div>
         </div>
+
+        {/* 녹취 관리 모달 */}
+        {isRecordingModalOpen && (
+            <RecordingModal
+                application={application}
+                parentPartnerName={parentPartner?.name}
+                onClose={() => setIsRecordingModalOpen(false)}
+                currentUserName={isAdmin ? "총괄관리자" : (partnerLoginId || "파트너")}
+            />
+        )}
     </>
     );
 }

@@ -19,6 +19,7 @@ import type * as dataManagement from "../dataManagement.js";
 import type * as partners from "../partners.js";
 import type * as products from "../products.js";
 import type * as promotions from "../promotions.js";
+import type * as recordings from "../recordings.js";
 import type * as requests from "../requests.js";
 import type * as resources from "../resources.js";
 import type * as retention from "../retention.js";
@@ -46,6 +47,7 @@ declare const fullApi: ApiFromModules<{
   partners: typeof partners;
   products: typeof products;
   promotions: typeof promotions;
+  recordings: typeof recordings;
   requests: typeof requests;
   resources: typeof resources;
   retention: typeof retention;

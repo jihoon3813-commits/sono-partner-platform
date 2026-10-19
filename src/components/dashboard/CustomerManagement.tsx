@@ -7,8 +7,10 @@ import CustomerRegistrationModal from "./CustomerRegistrationModal";
 import BulkUploadModal from "./BulkUploadModal";
 import LifeJoyExportModal from "./LifeJoyExportModal";
 import SonoRegisterModal from "./SonoRegisterModal";
+import RecordingModal from "./RecordingModal";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
 import { getKSTDateString, getKSTMonthsAgoDateString, getKSTLastMonthRange, formatDateTime } from "@/lib/dateUtils";
+import { formatBytes } from "@/lib/downloadUtils";
 
 interface CustomerManagementProps {
     applications: Application[];
@@ -92,6 +94,10 @@ export default function CustomerManagement({
     const [isBulkRegisteringSono, setIsBulkRegisteringSono] = useState(false);
     const [sonoTargetApp, setSonoTargetApp] = useState<Application | null>(null);
     const [isSonoModalOpen, setIsSonoModalOpen] = useState(false);
+
+    // 녹취 파일 관리 상태
+    const recordingStats = useQuery(api.recordings.getRecordingStats) || {};
+    const [recordingTargetApp, setRecordingTargetApp] = useState<Application | null>(null);
 
     // Filters
     const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter);
@@ -938,6 +944,7 @@ export default function CustomerManagement({
                                         </button>
                                     </div>
                                 </th>
+                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center whitespace-nowrap min-w-[70px]">녹취</th>
                                 {isAdmin && (
                                     <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center whitespace-nowrap min-w-[95px]">소노접수</th>
                                 )}
@@ -1067,6 +1074,36 @@ export default function CustomerManagement({
                                                     );
                                                 })()}
                                             </td>
+                                            <td className="px-2 py-4 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                                                {(() => {
+                                                    const stat = recordingStats[app.applicationNo];
+                                                    const count = stat ? stat.count : 0;
+                                                    const sizeText = stat && stat.totalSize > 0 ? formatBytes(stat.totalSize) : "";
+                                                    return (
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setRecordingTargetApp(app);
+                                                            }}
+                                                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all active:scale-95 border ${
+                                                                count > 0
+                                                                    ? "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm"
+                                                                    : "bg-gray-50 hover:bg-gray-100 text-gray-500 border-gray-200"
+                                                            }`}
+                                                            title={count > 0 ? `녹취 파일 ${count}건 (${sizeText}) - 클릭하여 듣기/관리` : "녹취 음성파일 업로드"}
+                                                        >
+                                                            <span>🎙️</span>
+                                                            <span>{count > 0 ? `${count}건` : "등록"}</span>
+                                                            {count > 0 && sizeText && (
+                                                                <span className="text-[9px] px-1 py-0.2 bg-white/90 rounded border border-emerald-200/80 text-emerald-700 font-extrabold">
+                                                                    {sizeText}
+                                                                </span>
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })()}
+                                            </td>
                                             {isAdmin && (
                                                 <td className="px-2 py-4 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                                     <div className="flex items-center justify-center gap-1.5">
@@ -1110,7 +1147,7 @@ export default function CustomerManagement({
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan={isAdmin ? 13 : 11} className="px-6 py-20 text-center text-gray-400 font-medium">
+                                    <td colSpan={isAdmin ? 14 : 12} className="px-6 py-20 text-center text-gray-400 font-medium">
                                         신청 내역이 없습니다.
                                     </td>
                                 </tr>
@@ -1241,6 +1278,16 @@ export default function CustomerManagement({
                     onClose={() => setIsLifeJoyExportModalOpen(false)}
                     applications={applications}
                     onSuccess={onRefresh}
+                />
+            )}
+
+            {/* 상담 녹취 음성파일 관리 모달 */}
+            {recordingTargetApp && (
+                <RecordingModal
+                    application={recordingTargetApp}
+                    parentPartnerName={getParentPartnerInfo(recordingTargetApp.partnerId, recordingTargetApp.partnerName)?.name}
+                    onClose={() => setRecordingTargetApp(null)}
+                    currentUserName={currentUser?.managerName || currentUser?.companyName || (isAdmin ? "총괄관리자" : "관리자")}
                 />
             )}
 
