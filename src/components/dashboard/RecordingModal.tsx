@@ -173,11 +173,22 @@ export default function RecordingModal({ application, parentPartnerName, onClose
 
             setUploadProgress("녹취 정보 저장 중...");
 
-            // 4. recordings 테이블에 메타데이터 저장
+            // 4. 저장할 표준 파일명 생성 (다운로드 시 설정한 파일명과 동일)
+            const standardFileName = generateRecordingDownloadFileName({
+                uploadedAt: new Date().toISOString(),
+                parentPartnerName: parentPartnerName,
+                partnerName: application.partnerName,
+                customerName: application.customerName,
+                customerPhone: application.customerPhone,
+                duration: durationSeconds,
+                originalFileName: uploadFile.name,
+            });
+
+            // 5. recordings 테이블에 메타데이터 저장
             await saveRecording({
                 applicationNo: application.applicationNo,
                 storageId: storageId as Id<"_storage">,
-                fileName: uploadFile.name,
+                fileName: standardFileName,
                 fileSize: uploadFile.size,
                 fileType: uploadFile.type || "audio/mpeg",
                 duration: durationSeconds,
@@ -306,12 +317,29 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                     <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg mb-2 shadow-sm border border-emerald-100">
                                         🎵
                                     </div>
-                                    <span className="text-sm font-bold text-sono-dark truncate max-w-md">
-                                        {selectedFile.name}
+                                    <span className="text-xs text-gray-400 font-medium">등록될 파일명:</span>
+                                    <span className="text-xs sm:text-sm font-bold text-sono-dark truncate max-w-md bg-white px-3 py-1 rounded-xl border border-gray-200 shadow-sm mt-0.5" title={generateRecordingDownloadFileName({
+                                        uploadedAt: new Date().toISOString(),
+                                        parentPartnerName: parentPartnerName,
+                                        partnerName: application.partnerName,
+                                        customerName: application.customerName,
+                                        customerPhone: application.customerPhone,
+                                        duration: undefined,
+                                        originalFileName: selectedFile.name,
+                                    })}>
+                                        {generateRecordingDownloadFileName({
+                                            uploadedAt: new Date().toISOString(),
+                                            parentPartnerName: parentPartnerName,
+                                            partnerName: application.partnerName,
+                                            customerName: application.customerName,
+                                            customerPhone: application.customerPhone,
+                                            duration: undefined,
+                                            originalFileName: selectedFile.name,
+                                        })}
                                     </span>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <span className="text-xs font-semibold text-gray-600">
-                                            원본 크기: {formatBytes(selectedFile.size)}
+                                    <div className="flex items-center gap-2 mt-1.5 flex-wrap justify-center">
+                                        <span className="text-xs font-semibold text-gray-500">
+                                            원본: {selectedFile.name} ({formatBytes(selectedFile.size)})
                                         </span>
                                         {useAutoCompress && (
                                             <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
@@ -437,20 +465,31 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                             </div>
                         ) : (
                             <div className="space-y-3">
-                                {recordings.map((rec) => (
-                                    <div
-                                        key={rec._id}
-                                        className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm hover:border-sono-primary/30 transition-all space-y-3"
-                                    >
-                                        <div className="flex items-start justify-between gap-3">
-                                            <div className="min-w-0 flex-1">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <span className="font-bold text-xs sm:text-sm text-sono-dark truncate block max-w-sm" title={rec.fileName}>
-                                                        {rec.fileName}
-                                                    </span>
-                                                    <span className="text-[10px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 font-bold shrink-0">
-                                                        {formatBytes(rec.fileSize)}
-                                                    </span>
+                                {recordings.map((rec) => {
+                                    const displayFileName = generateRecordingDownloadFileName({
+                                        uploadedAt: rec.uploadedAt,
+                                        parentPartnerName: parentPartnerName,
+                                        partnerName: application.partnerName,
+                                        customerName: application.customerName,
+                                        customerPhone: application.customerPhone,
+                                        duration: rec.duration,
+                                        originalFileName: rec.fileName,
+                                    });
+
+                                    return (
+                                        <div
+                                            key={rec._id}
+                                            className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm hover:border-sono-primary/30 transition-all space-y-3"
+                                        >
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <span className="font-bold text-xs sm:text-sm text-sono-dark truncate block max-w-sm" title={displayFileName}>
+                                                            {displayFileName}
+                                                        </span>
+                                                        <span className="text-[10px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 font-bold shrink-0">
+                                                            {formatBytes(rec.fileSize)}
+                                                        </span>
                                                     {rec.duration && (
                                                         <span className="text-[10px] px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-bold shrink-0">
                                                             ⏱️ {Math.floor(rec.duration / 60)}분 {Math.floor(rec.duration % 60)}초
@@ -530,7 +569,8 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                             </div>
                                         )}
                                     </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
                     </div>

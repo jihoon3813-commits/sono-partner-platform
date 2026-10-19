@@ -707,8 +707,8 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                         <div key={rec._id} className="bg-gray-50/80 p-3 rounded-xl border border-gray-100 space-y-2">
                                             <div className="flex items-center justify-between text-xs gap-2">
                                                 <div className="flex items-center gap-1.5 min-w-0">
-                                                    <span className="font-bold text-sono-dark truncate max-w-[200px]" title={rec.fileName}>
-                                                        {rec.fileName}
+                                                    <span className="font-bold text-sono-dark truncate max-w-[240px]" title={customFileName}>
+                                                        {customFileName}
                                                     </span>
                                                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-200/70 text-gray-700 font-bold shrink-0">
                                                         {formatBytes(rec.fileSize)}

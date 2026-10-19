@@ -31,6 +31,11 @@ export function generateRecordingDownloadFileName({
     duration?: number;
     originalFileName: string;
 }): string {
+    // 이미 등록일시_상위파트너_... 형태로 표준 포맷팅된 파일명인 경우 그대로 사용
+    if (originalFileName && /^\d{8}_.+_.+_.+_.+\.[a-zA-Z0-9]+$/.test(originalFileName)) {
+        return originalFileName;
+    }
+
     // 1. 등록일자 및 시각 추출
     let dateStr = "20261019";
     let timeStr = "00시00분";
