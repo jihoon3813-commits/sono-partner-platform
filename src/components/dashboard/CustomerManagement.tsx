@@ -11,6 +11,7 @@ import RecordingModal from "./RecordingModal";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
 import { getKSTDateString, getKSTMonthsAgoDateString, getKSTLastMonthRange, formatDateTime } from "@/lib/dateUtils";
 import { formatBytes } from "@/lib/downloadUtils";
+import { formatPhoneNumber } from "@/lib/phoneUtils";
 
 interface CustomerManagementProps {
     applications: Application[];
@@ -607,91 +608,125 @@ export default function CustomerManagement({
 
                             <button
                                 onClick={async () => {
-                                    if (!filteredApplications || filteredApplications.length === 0) {
-                                        alert("다운로드할 데이터가 없습니다.");
+                                    if (selectedAppIds.length === 0) {
+                                        alert("다운로드할 고객을 선택해 주세요.\n(목록 좌측의 체크박스를 선택하거나 최상단 체크박스로 전체 선택할 수 있습니다.)");
                                         return;
                                     }
+
                                     if (isDownloading) return;
 
                                     setIsDownloading(true);
                                     try {
-                                        // Give UI time to show loading state
-                                        await new Promise(resolve => setTimeout(resolve, 100));
+                                        await new Promise(resolve => setTimeout(resolve, 50));
 
-                                        const headers = [
-                                            "No.", "신청번호", "신청일시", "상위파트너", "파트너사", "시스템ID", "로그인ID", "고객명", "연락처",
-                                            "상품명", "결합제품(가전)", "신청구좌", "주소", "우편번호", "생년월일",
-                                            "성별", "이메일", "회원번호", "선호시간", "문의사항", "상태",
-                                            "초회납입일", "신규등록일", "납입방법", "해약처리", "청약철회", "비고(사유)"
-                                        ];
-
-                                        const rows = filteredApplications.map((app, index) => {
-                                            const parentInfo = getParentPartnerInfo(app.partnerId, app.partnerName);
-                                            const parentDisplay = parentInfo ? `${parentInfo.name}${parentInfo.loginId ? ` (${parentInfo.loginId})` : ''}` : "-";
-                                            return [
-                                                filteredApplications.length - index,
-                                                app.applicationNo,
-                                                formatDateTime(app.createdAt, (app as any)._creationTime),
-                                                parentDisplay,
-                                                app.partnerName,
-                                                app.partnerId,
-                                                getPartnerLoginId(app.partnerId),
-                                                app.customerName,
-                                                app.customerPhone,
-                                                app.productType,
-                                                app.products || "-",
-                                                app.planType,
-                                                app.customerAddress,
-                                                app.customerZipcode,
-                                                app.customerBirth || "-",
-                                                app.customerGender || "-",
-                                                app.customerEmail || "-",
-                                                app.partnerMemberId || "-",
-                                                app.preferredContactTime || "-",
-                                                app.inquiry?.replace(/\n/g, " ") || "-",
-                                                getDisplayStatus(app.status),
-                                                app.firstPaymentDate || "-",
-                                                app.registrationDate || "-",
-                                                app.paymentMethod || "-",
-                                                app.cancellationProcessing || "-",
-                                                app.withdrawalProcessing || "-",
-                                                app.remarks?.replace(/\n/g, " ") || "-"
-                                            ];
+                                        // 선택된 고객 추출 (현재 정렬 순서 우선 적용)
+                                        const targetApps = sortedApplications.filter(app => selectedAppIds.includes(app.applicationNo));
+                                        const targetNos = new Set(targetApps.map(a => a.applicationNo));
+                                        applications.forEach(app => {
+                                            if (selectedAppIds.includes(app.applicationNo) && !targetNos.has(app.applicationNo)) {
+                                                targetApps.push(app);
+                                            }
                                         });
 
-                                        const csvContent = [
-                                            headers.join(","),
-                                            ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
-                                        ].join("\n");
+                                        if (targetApps.length === 0) {
+                                            alert("선택된 고객 데이터가 없습니다.");
+                                            return;
+                                        }
 
-                                        const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
-                                        const link = document.createElement("a");
+                                        const exportRows = targetApps.map((app, index) => {
+                                            const parentInfo = getParentPartnerInfo(app.partnerId, app.partnerName);
+                                            const parentDisplay = parentInfo ? `${parentInfo.name}${parentInfo.loginId ? ` (${parentInfo.loginId})` : ''}` : "-";
+                                            const accessPathLabel = app.accessPath === "H" ? "홈페이지" : "직접등록";
+                                            const rawPlan = app.planType || "-";
+                                            const planDisplay = rawPlan !== "-" && !rawPlan.includes("구좌") ? `${rawPlan}구좌` : rawPlan;
+
+                                            return {
+                                                no: targetApps.length - index,
+                                                accessPath: accessPathLabel,
+                                                applicationNo: app.applicationNo || "-",
+                                                createdAt: formatDateTime(app.createdAt, (app as any)._creationTime),
+                                                parentPartner: parentDisplay,
+                                                partnerName: app.partnerName || "-",
+                                                partnerId: app.partnerId || "-",
+                                                partnerLoginId: getPartnerLoginId(app.partnerId, app.partnerName) || "-",
+                                                customerName: app.customerName || "-",
+                                                customerPhone: formatPhoneNumber(app.customerPhone) || "-",
+                                                productName: getProductTypeLabel(app.productType),
+                                                combinedProduct: app.products || "-",
+                                                planType: planDisplay,
+                                                address: app.customerAddress || "-",
+                                                zipcode: app.customerZipcode || "-",
+                                                birth: app.customerBirth || "-",
+                                                gender: app.customerGender || "-",
+                                                email: app.customerEmail || "-",
+                                                memberId: app.partnerMemberId || "-",
+                                                preferredTime: app.preferredContactTime || "-",
+                                                inquiry: app.inquiry?.trim() || "-",
+                                                status: getDisplayStatus(app.status),
+                                                firstPaymentDate: app.firstPaymentDate || "-",
+                                                registrationDate: app.registrationDate || "-",
+                                                paymentMethod: app.paymentMethod || "-",
+                                                cancellationProcessing: app.cancellationProcessing || "-",
+                                                withdrawalProcessing: app.withdrawalProcessing || "-",
+                                                remarks: app.remarks?.trim() || "-"
+                                            };
+                                        });
+
+                                        const response = await fetch("/api/excel/export-customers", {
+                                            method: "POST",
+                                            headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify({
+                                                rows: exportRows,
+                                                exportDate: new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })
+                                            })
+                                        });
+
+                                        if (!response.ok) {
+                                            const errData = await response.json().catch(() => ({}));
+                                            throw new Error(errData.error || "엑셀 파일 생성 중 오류가 발생했습니다.");
+                                        }
+
+                                        const blob = await response.blob();
                                         const url = URL.createObjectURL(blob);
+                                        const link = document.createElement("a");
                                         link.setAttribute("href", url);
-                                        link.setAttribute("download", `고객상담내역_${new Date().toISOString().slice(0, 10)}.csv`);
+
+                                        const yyyymmdd = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+                                        link.setAttribute("download", `고객상담내역_${yyyymmdd}_${targetApps.length}건.xlsx`);
                                         link.style.visibility = "hidden";
                                         document.body.appendChild(link);
                                         link.click();
                                         document.body.removeChild(link);
                                         URL.revokeObjectURL(url);
-                                    } catch (error) {
+                                    } catch (error: any) {
                                         console.error("Excel download error:", error);
-                                        alert("다운로드 중 오류가 발생했습니다.");
+                                        alert(`다운로드 중 오류가 발생했습니다: ${error.message || error}`);
                                     } finally {
                                         setIsDownloading(false);
                                     }
                                 }}
                                 disabled={isDownloading}
-                                className={`flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-sono-primary/10 text-sono-primary border border-sono-primary/20 rounded-xl text-xs sm:text-sm font-bold hover:bg-sono-primary/20 transition-all active:scale-95 text-center whitespace-nowrap shrink-0 ${isDownloading ? 'opacity-70 cursor-wait' : ''}`}
+                                className={`flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 ${
+                                    selectedAppIds.length > 0
+                                        ? 'bg-sono-primary text-white border border-sono-primary hover:bg-sono-secondary shadow-sm shadow-blue-500/20'
+                                        : 'bg-sono-primary/10 text-sono-primary border border-sono-primary/20 hover:bg-sono-primary/20'
+                                } rounded-xl text-xs sm:text-sm font-bold transition-all active:scale-95 text-center whitespace-nowrap shrink-0 ${isDownloading ? 'opacity-70 cursor-wait' : ''}`}
+                                title={selectedAppIds.length > 0 ? `선택한 ${selectedAppIds.length}명의 고객 내역을 엑셀로 다운로드합니다.` : "체크박스로 선택한 고객만 엑셀로 다운로드합니다."}
                             >
                                 {isDownloading ? (
-                                    <div className="w-4 h-4 border-2 border-sono-primary/30 border-t-sono-primary rounded-full animate-spin shrink-0" />
+                                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" />
                                 ) : (
                                     <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
                                 )}
-                                <span>{isDownloading ? '준비 중...' : '엑셀 다운로드'}</span>
+                                <span>
+                                    {isDownloading 
+                                        ? '준비 중...' 
+                                        : selectedAppIds.length > 0 
+                                            ? `선택 엑셀 다운로드 (${selectedAppIds.length})` 
+                                            : '엑셀 다운로드'}
+                                </span>
                             </button>
                         </div>
                     </div>
@@ -901,22 +936,22 @@ export default function CustomerManagement({
                     <table className="min-w-full text-left whitespace-nowrap">
                         <thead>
                             <tr className="bg-[#f9fafb] border-b border-gray-100">
-                                {isAdmin && (
-                                    <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[40px]">
-                                        <input
-                                            type="checkbox"
-                                            checked={displayApplications.length > 0 && selectedAppIds.length === displayApplications.length}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedAppIds(displayApplications.map(app => app.applicationNo));
-                                                } else {
-                                                    setSelectedAppIds([]);
-                                                }
-                                            }}
-                                            className="rounded border-gray-300 text-sono-primary focus:ring-sono-primary"
-                                        />
-                                    </th>
-                                )}
+                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[40px]">
+                                    <input
+                                        type="checkbox"
+                                        checked={displayApplications.length > 0 && displayApplications.every(app => selectedAppIds.includes(app.applicationNo))}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                const currentNos = displayApplications.map(app => app.applicationNo);
+                                                setSelectedAppIds(prev => Array.from(new Set([...prev, ...currentNos])));
+                                            } else {
+                                                const currentNos = new Set(displayApplications.map(app => app.applicationNo));
+                                                setSelectedAppIds(prev => prev.filter(id => !currentNos.has(id)));
+                                            }
+                                        }}
+                                        className="rounded border-gray-300 text-sono-primary focus:ring-sono-primary cursor-pointer"
+                                    />
+                                </th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[50px]">경로</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">No.</th>
                                 <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[120px]">일시</th>
@@ -970,25 +1005,23 @@ export default function CustomerManagement({
                                             onClick={() => setSelectedApp(app)}
                                             className="hover:bg-gray-50 transition-colors cursor-pointer"
                                         >
-                                            {isAdmin && (
-                                                <td className="px-2 py-4 text-center relative" onClick={(e) => e.stopPropagation()}>
-                                                    {isUpdated && (
-                                                        <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-red-500 rounded-full shadow-[0_0_4px_rgba(239,68,68,0.5)]" title="업데이트됨" />
-                                                    )}
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedAppIds.includes(app.applicationNo)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setSelectedAppIds(prev => [...prev, app.applicationNo]);
-                                                            } else {
-                                                                setSelectedAppIds(prev => prev.filter(id => id !== app.applicationNo));
-                                                            }
-                                                        }}
-                                                        className="rounded border-gray-300 text-sono-primary focus:ring-sono-primary"
-                                                    />
-                                                </td>
-                                            )}
+                                            <td className="px-2 py-4 text-center relative" onClick={(e) => e.stopPropagation()}>
+                                                {isUpdated && (
+                                                    <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-red-500 rounded-full shadow-[0_0_4px_rgba(239,68,68,0.5)]" title="업데이트됨" />
+                                                )}
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedAppIds.includes(app.applicationNo)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedAppIds(prev => [...prev, app.applicationNo]);
+                                                        } else {
+                                                            setSelectedAppIds(prev => prev.filter(id => id !== app.applicationNo));
+                                                        }
+                                                    }}
+                                                    className="rounded border-gray-300 text-sono-primary focus:ring-sono-primary cursor-pointer"
+                                                />
+                                            </td>
                                             <td className="px-2 py-4 text-center">
                                                 <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-black ${
                                                     app.accessPath === 'H' 
@@ -998,10 +1031,7 @@ export default function CustomerManagement({
                                                     {app.accessPath || 'D'}
                                                 </span>
                                             </td>
-                                            <td className={`px-2 py-4 text-center text-xs text-gray-400 font-bold relative ${!isAdmin ? 'pl-4' : ''}`}>
-                                                {!isAdmin && isUpdated && (
-                                                    <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-red-500 rounded-full shadow-[0_0_4px_rgba(239,68,68,0.5)]" title="업데이트됨" />
-                                                )}
+                                            <td className="px-2 py-4 text-center text-xs text-gray-400 font-bold relative">
                                                 {sortedApplications.length - ((currentPage - 1) * itemsPerPage + index)}
                                             </td>
                                             <td className="px-2 py-4 text-xs text-gray-500 text-center whitespace-nowrap">
@@ -1147,7 +1177,7 @@ export default function CustomerManagement({
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan={isAdmin ? 14 : 12} className="px-6 py-20 text-center text-gray-400 font-medium">
+                                    <td colSpan={isAdmin ? 14 : 13} className="px-6 py-20 text-center text-gray-400 font-medium">
                                         신청 내역이 없습니다.
                                     </td>
                                 </tr>
