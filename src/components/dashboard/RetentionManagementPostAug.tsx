@@ -1,8 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import * as XLSX from "xlsx";
 import { Partner } from "@/lib/types";
+import { findBestMatchingApplication, createApplicationBucketMap } from "@/lib/retentionMatcher";
 
 // 날짜 포맷 표준화 (Excel 시리얼 번호 및 다양한 포맷 지원)
 const normalizeDate = (val: string | number | undefined): string => {
@@ -219,112 +220,41 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
         });
     }, [allApplications]);
 
-    // 고객 매핑 맵 계산 (마스킹된 이름/휴대전화 -> 실명, 풀 전화번호, 등록일이 가장 오래된 파트너사명)
-    const customerMap = useMemo(() => {
-        const map = new Map<string, { fullName: string; fullPhone: string; partnerName: string }>();
-        if (!sortedApplications) return map;
+    // 전화번호 끝 2자리 인덱스 버킷 (초고속 매칭용)
+    const applicationsBucketMap = useMemo(() => {
+        return createApplicationBucketMap(sortedApplications);
+    }, [sortedApplications]);
 
-        for (const app of sortedApplications) {
-            if (!app.customerName || !app.customerPhone) continue;
+    // 레코드별 매핑 함수 (고객명 마스킹 김*훈 + 휴대전화 끝 2자리 역매칭)
+    const getMappedInfo = useCallback((maskedName: string, maskedPhone: string, r?: any) => {
+        const cleanName = (maskedName || "").trim();
+        const rawPhone = (maskedPhone || "").trim();
 
-            const appPhoneDigits = app.customerPhone.replace(/[^0-9]/g, '');
-            const appName = app.customerName.trim();
-            const key = `${appName}_${appPhoneDigits}`;
+        if (!sortedApplications || sortedApplications.length === 0 || !cleanName) {
+            return { fullName: cleanName, fullPhone: rawPhone, birth: r?.birth || "", partnerName: "-", partnerId: "", matched: false };
+        }
 
-            if (map.has(key)) continue; // 가장 오래된 신청건 우선 등록 유지
+        const recordObj = r ? { ...r, customerName: cleanName, phone: rawPhone } : { customerName: cleanName, phone: rawPhone };
+        const bestApp = findBestMatchingApplication(recordObj, sortedApplications, applicationsBucketMap);
 
-            let partnerName = app.partnerName || "";
-            if (!partnerName && app.partnerId) {
-                const pObj = partners.find((p: any) => p.partnerId === app.partnerId || p.loginId === app.partnerId);
+        if (bestApp) {
+            let partnerName = bestApp.partnerName || "";
+            if (!partnerName && bestApp.partnerId) {
+                const pObj = partners.find((p: any) => p.partnerId === bestApp.partnerId || p.loginId === bestApp.partnerId || p.customUrl === bestApp.partnerId);
                 if (pObj) partnerName = pObj.companyName;
             }
-
-            // 고유 식별 키 저장
-            map.set(key, {
-                fullName: appName,
-                fullPhone: app.customerPhone,
+            return {
+                fullName: bestApp.customerName || cleanName,
+                fullPhone: bestApp.customerPhone || rawPhone,
+                birth: bestApp.customerBirth || r?.birth || "",
                 partnerName: partnerName || "-",
-            });
-        }
-        return map;
-    }, [sortedApplications, partners]);
-
-    // 레코드별 매핑 함수 (가장 오래된 신청건의 파트너사 우선 매핑)
-    const getMappedInfo = (maskedName: string, maskedPhone: string) => {
-        const cleanPhoneDigits = maskedPhone.replace(/[^0-9]/g, '');
-        const cleanName = maskedName.trim();
-
-        if (!sortedApplications || sortedApplications.length === 0) {
-            return { fullName: cleanName, fullPhone: maskedPhone, partnerName: "-" };
+                partnerId: bestApp.partnerId || "",
+                matched: true,
+            };
         }
 
-        const last4 = cleanPhoneDigits.length >= 4 ? cleanPhoneDigits.slice(-4) : "";
-        const first3 = cleanPhoneDigits.length >= 3 ? cleanPhoneDigits.slice(0, 3) : "";
-
-        for (const app of sortedApplications) {
-            if (!app.customerName || !app.customerPhone) continue;
-
-            const appPhoneDigits = app.customerPhone.replace(/[^0-9]/g, '');
-            const appName = app.customerName.trim();
-
-            // 전화번호 일치 확인 (마스킹 포함)
-            let phoneMatch = false;
-            if (maskedPhone.includes('*') || cleanPhoneDigits.length < 10) {
-                phoneMatch = appPhoneDigits.startsWith(first3) && appPhoneDigits.endsWith(last4);
-            } else {
-                phoneMatch = (appPhoneDigits === cleanPhoneDigits);
-            }
-
-            if (!phoneMatch) continue;
-
-            // 이름 일치 확인 (마스킹 지원)
-            let nameMatch = false;
-            if (cleanName === appName) {
-                nameMatch = true;
-            } else if (cleanName.includes('*')) {
-                if (cleanName.length === appName.length) {
-                    let match = true;
-                    for (let i = 0; i < cleanName.length; i++) {
-                        if (cleanName[i] !== '*' && cleanName[i] !== appName[i]) {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (match) nameMatch = true;
-                } else if (cleanName.length === 2 && appName.length >= 2 && cleanName[0] === appName[0]) {
-                    nameMatch = true;
-                }
-            } else if (appName.includes('*')) {
-                if (appName.length === cleanName.length) {
-                    let match = true;
-                    for (let i = 0; i < appName.length; i++) {
-                        if (appName[i] !== '*' && appName[i] !== cleanName[i]) {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (match) nameMatch = true;
-                } else if (appName.length === 2 && cleanName.length >= 2 && appName[0] === cleanName[0]) {
-                    nameMatch = true;
-                }
-            }
-
-            if (nameMatch) {
-                let partnerName = app.partnerName || "";
-                if (!partnerName && app.partnerId) {
-                    const pObj = partners.find((p: any) => p.partnerId === app.partnerId || p.loginId === app.partnerId || p.customUrl === app.partnerId);
-                    if (pObj) partnerName = pObj.companyName;
-                }
-                return {
-                    fullName: appName,
-                    fullPhone: app.customerPhone,
-                    partnerName: partnerName || "-",
-                };
-            }
-        }
-
-        return { fullName: cleanName, fullPhone: maskedPhone, partnerName: "-" };
-    };
+        return { fullName: cleanName, fullPhone: rawPhone, birth: r?.birth || "", partnerName: "-", partnerId: "", matched: false };
+    }, [sortedApplications, applicationsBucketMap, partners]);
 
     const records = useMemo(() => {
         if (!rawRecords) return undefined;
@@ -443,7 +373,10 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
         const filtered = periodFilteredRecords;
 
         const getUniqueCount = (data: typeof filtered) => {
-            const keys = new Set(data.map((r: any) => `${r.customerName}_${r.birth}_${r.phone}`));
+            const keys = new Set(data.map((r: any) => {
+                const m = getMappedInfo(r.customerName, r.phone, r);
+                return `${m.fullName}_${m.fullPhone}`;
+            }));
             return keys.size;
         };
 
@@ -494,7 +427,7 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
         });
 
         return stats;
-    }, [periodFilteredRecords]);
+    }, [periodFilteredRecords, getMappedInfo]);
 
     // 납입상태 정렬 순위 계산
     // 1. 연체회차 높은순 -> 낮은순 (13회연체 = 9987, 12회연체 = 9988 ...)
@@ -534,19 +467,21 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
     };
 
     // 레코드별 파트너사명 정확 추출 (DB 바인딩 필드 우선 -> 신청서 DB, 소속/업체명, ID_NO 대조)
-    const getDisplayPartnerName = (r: any) => {
-        // 1. DB에 이미 바인딩되어 저장된 파트너명이 존재하고 허용 목록에 있으면 최우선 사용
-        if (r.partnerName && r.partnerName !== "-" && isAllowedPartnerName(r.partnerName)) {
+    // 레코드별 파트너사명 정확 추출 (신청서 매칭 우선 -> DB 바인딩 필드 -> 소속/업체명 -> ID_NO 대조 -> 라이프앤조이)
+    const getDisplayPartnerName = useCallback((r: any, mapped?: any) => {
+        const m = mapped || getMappedInfo(r.customerName, r.phone, r);
+
+        // 1순위: 신청서 DB(applications) 고객 매칭 결과의 파트너사 (라이프앤조이가 아닌 경우 최우선)
+        if (m.matched && m.partnerName && m.partnerName !== "-" && m.partnerName !== "라이프앤조이" && isAllowedPartnerName(m.partnerName)) {
+            return m.partnerName;
+        }
+
+        // 2순위: DB에 이미 바인딩되어 저장된 파트너명이 존재하고 라이프앤조이가 아닌 경우
+        if (r.partnerName && r.partnerName !== "-" && r.partnerName !== "라이프앤조이" && isAllowedPartnerName(r.partnerName)) {
             return r.partnerName;
         }
 
-        // 2. 신청서 DB(applications) 매칭 결과
-        const mapped = getMappedInfo(r.customerName, r.phone);
-        if (mapped.partnerName && mapped.partnerName !== "-" && isAllowedPartnerName(mapped.partnerName)) {
-            return mapped.partnerName;
-        }
-
-        // 3. 엑셀 소속(업체명)
+        // 3순위: 엑셀 소속(업체명)
         const sub = (r.subCompany || "").trim();
         if (sub && sub !== "-" && sub !== "소속없음" && sub !== "본사") {
             const found = partners.find((p: any) => 
@@ -559,14 +494,14 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
             if (isAllowedPartnerName(sub)) return sub;
         }
 
-        // 4. ID NO (Column P)가 파트너 LoginID / PartnerID와 일치하는 경우
+        // 4순위: ID NO (Column P)가 파트너 LoginID / PartnerID와 일치하는 경우
         const idNo = (r.idNo || "").trim();
         if (idNo && idNo !== "-") {
             const found = partners.find((p: any) => p.loginId === idNo || p.partnerId === idNo);
             if (found && isAllowedPartnerName(found.companyName)) return found.companyName;
         }
 
-        // 5. B2B 회사명
+        // 5순위: B2B 회사명
         const b2b = (r.b2bCompany || "").trim();
         if (b2b && b2b !== "-") {
             const found = partners.find((p: any) => 
@@ -576,8 +511,18 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
             if (found && isAllowedPartnerName(found.companyName)) return found.companyName;
         }
 
-        return "-";
-    };
+        // 6순위: 신청서 DB의 파트너가 라이프앤조이인 경우
+        if (m.matched && m.partnerName && m.partnerName !== "-" && isAllowedPartnerName(m.partnerName)) {
+            return m.partnerName;
+        }
+
+        // 7순위: DB에 바인딩된 파트너 (라이프앤조이 포함)
+        if (r.partnerName && r.partnerName !== "-" && isAllowedPartnerName(r.partnerName)) {
+            return r.partnerName;
+        }
+
+        return "라이프앤조이";
+    }, [getMappedInfo, isAllowedPartnerName, partners]);
 
     // 필터 옵션 추출 (모든 항목 동적 옵션)
     const filterOptions = useMemo(() => {
@@ -597,17 +542,18 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
         const paymentCounts = Array.from(new Set(mapped.map((r: any) => Number(r.actualPaymentCount)))).filter((n: any) => !isNaN(n)).sort((a: number, b: number) => a - b);
 
         return { products, partners: partnersList, statuses, paymentStatuses, methods, cancelStatuses, paymentCounts };
-    }, [records, getMappedInfo, partners]);
+    }, [records, getDisplayPartnerName]);
 
     // 검색 및 상세 필터링 + 정렬 (고객 실명/풀번호/파트너사 매핑 포함)
     const filteredRecords = useMemo(() => {
         let result = periodFilteredRecords.map((r: any) => {
-            const mapped = getMappedInfo(r.customerName, r.phone);
-            const pName = getDisplayPartnerName(r);
+            const mapped = getMappedInfo(r.customerName, r.phone, r);
+            const pName = getDisplayPartnerName(r, mapped);
             return {
                 ...r,
                 displayCustomerName: mapped.fullName,
                 displayPhone: mapped.fullPhone,
+                displayBirth: mapped.birth || r.birth || "",
                 partnerName: pName,
             };
         }).filter((r: any) => {
@@ -667,7 +613,7 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
         const groupKeysInOrder: string[] = [];
 
         result.forEach((r: any) => {
-            const key = `${r.displayCustomerName}_${r.birth}_${r.displayPhone}`;
+            const key = `${r.displayCustomerName}_${r.displayBirth || r.birth || ""}_${r.displayPhone}`;
             if (!groupsMap.has(key)) {
                 groupsMap.set(key, []);
                 groupKeysInOrder.push(key);
@@ -780,7 +726,7 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
     const groupedData = useMemo(() => {
         const counts: Record<string, number> = {};
         filteredRecords.forEach((r: any) => {
-            const key = `${r.displayCustomerName}_${r.birth}_${r.displayPhone}`;
+            const key = `${r.displayCustomerName}_${r.displayBirth || r.birth || ""}_${r.displayPhone}`;
             counts[key] = (counts[key] || 0) + 1;
         });
 
@@ -793,7 +739,7 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
         ];
 
         filteredRecords.forEach((r: any) => {
-            const key = `${r.displayCustomerName}_${r.birth}_${r.displayPhone}`;
+            const key = `${r.displayCustomerName}_${r.displayBirth || r.birth || ""}_${r.displayPhone}`;
             if (!groupColors[key]) {
                 groupColors[key] = colorList[colorIdx % colorList.length];
                 colorIdx++;
@@ -805,7 +751,7 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
 
     // 현재 검색/필터링 조건 기반 고유 고객수 계산
     const filteredUniqueCount = useMemo(() => {
-        const keys = new Set(filteredRecords.map((r: any) => `${r.displayCustomerName}_${r.birth}_${r.displayPhone}`));
+        const keys = new Set(filteredRecords.map((r: any) => `${r.displayCustomerName}_${r.displayBirth || r.birth || ""}_${r.displayPhone}`));
         return keys.size;
     }, [filteredRecords]);
 
@@ -825,7 +771,7 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
                 "가입일자": formatDateForDisplay(r.joinDate),
                 "파트너사명": r.partnerName,
                 "고객명": r.displayCustomerName,
-                "생년월일": r.birth,
+                "생년월일": r.displayBirth || r.birth || "-",
                 "휴대전화": r.displayPhone,
                 "가입상품": r.productName,
                 "가입상태": r.joinStatus,
@@ -1262,7 +1208,7 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
                                         </tr>
                                     ) : (
                                         filteredRecords.map((r: any, i: number) => {
-                                            const customerKey = `${r.displayCustomerName}_${r.birth}_${r.displayPhone}`;
+                                            const customerKey = `${r.displayCustomerName}_${r.displayBirth || r.birth || ""}_${r.displayPhone}`;
                                             const groupBg = groupedData.groupColors[customerKey] || "";
                                             const groupCount = groupedData.counts[customerKey];
                                             const isDuplicate = groupCount > 1;
@@ -1272,11 +1218,11 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
 
                                             if (isDuplicate) {
                                                 const prevRecord = i > 0 ? filteredRecords[i - 1] : null;
-                                                const prevKey = prevRecord ? `${prevRecord.displayCustomerName}_${prevRecord.birth}_${prevRecord.displayPhone}` : null;
+                                                const prevKey = prevRecord ? `${prevRecord.displayCustomerName}_${prevRecord.displayBirth || prevRecord.birth || ""}_${prevRecord.displayPhone}` : null;
                                                 isFirstInGroup = prevKey !== customerKey;
 
                                                 const nextRecord = i < filteredRecords.length - 1 ? filteredRecords[i + 1] : null;
-                                                const nextKey = nextRecord ? `${nextRecord.displayCustomerName}_${nextRecord.birth}_${nextRecord.displayPhone}` : null;
+                                                const nextKey = nextRecord ? `${nextRecord.displayCustomerName}_${nextRecord.displayBirth || nextRecord.birth || ""}_${nextRecord.displayPhone}` : null;
                                                 isLastInGroup = nextKey !== customerKey;
                                             }
 
@@ -1305,7 +1251,7 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
                                                     </td>
                                                     <td className="px-3 py-4 text-xs font-bold text-sono-primary text-center border-b border-gray-50">{r.partnerName}</td>
                                                     <td className="px-3 py-4 text-sm font-black text-sono-dark text-center border-b border-gray-50">{r.displayCustomerName}</td>
-                                                    <td className="px-3 py-4 text-[11px] text-gray-400 text-center border-b border-gray-50">{r.birth}</td>
+                                                    <td className="px-3 py-4 text-[11px] text-gray-400 text-center border-b border-gray-50">{r.displayBirth || r.birth || "-"}</td>
                                                     <td className="px-3 py-4 text-[11px] font-medium text-gray-600 text-center border-b border-gray-50">{r.displayPhone}</td>
                                                     <td className="px-3 py-4 text-[11px] font-bold text-gray-700 text-center border-b border-gray-50">{r.productName}</td>
                                                     <td className="px-3 py-2.5 text-center border-b border-gray-50 align-middle">
