@@ -255,12 +255,20 @@ export default function ProductDetailModal({
                                             </div>
 
                                             {/* 혜택 하이라이트 노출 */}
-                                            <div className="bg-[#fff3cd] border border-[#d69e2e] p-3 sm:p-3.5 text-xs font-bold text-[#0c2340] space-y-1 w-full box-border min-w-0">
-                                                <p className="flex items-center gap-1.5 font-black text-xs sm:text-sm">
-                                                    <span>🎁</span> 소노 아임레디 프리미엄 가전 전액 지원
-                                                </p>
+                                            <div className="bg-[#fff3cd] border border-[#d69e2e] p-3 sm:p-3.5 text-xs font-bold text-[#0c2340] space-y-1.5 w-full box-border min-w-0">
+                                                <div className="flex items-center justify-between flex-wrap gap-1">
+                                                    <p className="flex items-center gap-1.5 font-black text-xs sm:text-sm">
+                                                        <span>🎁</span> 소노아임레디 프리미엄 가전 렌탈(금) 전액 지원
+                                                    </p>
+                                                    <span className="bg-[#0c2340] text-amber-300 text-[10px] px-2 py-0.5 font-bold">
+                                                        렌탈 제휴카드 60개월 할인
+                                                    </span>
+                                                </div>
                                                 <p className="text-[#0c2340]/80 leading-relaxed font-medium text-[11px] sm:text-xs break-keep">
-                                                    본 가전은 소노그룹 제휴 혜택으로 가전 렌탈비 전액을 지원받아 실부담금 0원으로 이용하실 수 있습니다.
+                                                    본 가전은 소노아임레디 결합상품으로 가전 렌탈비 전액을 지원받아 실부담금 0원으로 이용하실 수 있습니다.
+                                                </p>
+                                                <p className="text-[#0c2340]/70 text-[10px] sm:text-[11px] font-normal pt-1 border-t border-[#d69e2e]/40">
+                                                    ※ 가전 렌탈 지원 혜택은 만기 납입 또는 라이프 서비스 이용 조건
                                                 </p>
                                             </div>
                                         </div>

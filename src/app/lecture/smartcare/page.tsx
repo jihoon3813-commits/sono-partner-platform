@@ -537,7 +537,7 @@ export default function SmartCareLecturePage() {
                         <div className="text-center space-y-4 mb-4">
                             <div className="inline-block bg-[#eef2ff] text-[#3b82f6] px-5 py-1.5 rounded-xl text-xs font-black tracking-widest uppercase">FUNERAL SERVICE</div>
                             <h2 className="text-5xl font-black text-sono-dark tracking-tighter leading-tight">
-                                품격 있는 마지막 인사, 대명소노가 함께합니다
+                                품격 있는 마지막 인사, 소노아임레디가 함께합니다
                             </h2>
                             <p className="text-lg text-gray-400 font-bold max-w-3xl mx-auto leading-relaxed break-keep">
                                 국가공인 장례지도사와 전문 도우미가 정성을 다해 고인의 명복을 빌며, <br />
@@ -593,7 +593,7 @@ export default function SmartCareLecturePage() {
                                     {
                                         title: "전문가와 같이",
                                         desc: "고객 만족도 99%*의 전문 장례지도사가 장례물품 준비부터 장례 진행, 행정 절차까지 유가족이 큰 어려움 없이 마무리할 수 있도록 관리해 드립니다.",
-                                        note: "*2026년 기준"
+                                        note: "*2025년 12월말 기준"
                                     },
                                     {
                                         title: "용품 보증 시스템",

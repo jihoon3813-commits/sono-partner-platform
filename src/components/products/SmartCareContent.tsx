@@ -674,6 +674,9 @@ export default function SmartCareContent({
                                 <p className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-amber-300 tracking-tight drop-shadow-md break-keep">
                                     최신가전 렌탈금 전액 지원과<br />만기 시 납입금 100% 환급 보장
                                 </p>
+                                <p className="text-xs sm:text-sm text-amber-200/90 font-medium">
+                                    ※ 만기 후 익월 해약 또는 라이프서비스 사용 시
+                                </p>
                                 <p className="text-base md:text-lg text-white/95 leading-relaxed font-semibold drop-shadow-sm break-keep">
                                     국내 대표 토탈 라이프케어 브랜드 소노아임레디가 제안하는 스마트 라이프 솔루션
                                 </p>
@@ -698,6 +701,9 @@ export default function SmartCareContent({
                                         </div>
                                         <p className="text-white font-bold text-xs sm:text-sm leading-relaxed break-keep mb-3">
                                             삼성, LG 등 최신 프리미엄 가전제품의 <span className="text-amber-300 underline underline-offset-4 decoration-2">월 렌탈료를 100% 전액 지원</span>하여 이용할 수 있는 스마트케어 시그니처 혜택
+                                        </p>
+                                        <p className="text-[11px] text-amber-200/80 mb-3 font-medium">
+                                            ※ 만기 후 익월 해약 또는 라이프서비스 사용 시
                                         </p>
                                     </div>
                                     <div className="flex items-center justify-between border-t border-white/10 pt-3 mt-1">
@@ -787,7 +793,7 @@ export default function SmartCareContent({
                             </span>
                             <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">스마트케어 핵심 혜택</h2>
                             <p className="text-slate-500 font-medium text-sm md:text-base mt-3 max-w-xl mx-auto break-keep">
-                                최고급 가전 지원 혜택부터 100% 환급 보장까지 파트너 및 회원님께 제공되는 특별한 시그니처 혜택
+                                최고급 가전 렌탈금 지원 혜택부터 100% 환급 보장까지 파트너 및 회원님께 제공되는 특별한 시그니처 혜택
                             </p>
                         </div>
 
@@ -796,7 +802,7 @@ export default function SmartCareContent({
                                 {
                                     title: "BENEFIT 01",
                                     name: "프리미엄 가전 렌탈금 전액 지원",
-                                    desc: "삼성, LG 등 최고급 브랜드의 최신 가전 렌탈비 전액을 지원받아 즉시 이용합니다.",
+                                    desc: "삼성, LG 등 최고급 브랜드의 최신 가전 렌탈비 전액을 지원받아 즉시 이용합니다. (※ 만기 후 익월 해약 또는 라이프서비스 사용 시)",
                                     image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785975702/premium_appliance_rental_support_logo_dqmmm8.png"
                                 },
                                 {
@@ -814,7 +820,7 @@ export default function SmartCareContent({
                                 {
                                     title: "BENEFIT 04",
                                     name: "소노그룹 멤버십 혜택",
-                                    desc: "가입 즉시 전국 소노호텔 & 리조트 객실 및 부대시설, 레저 할인 우대 혜택을 곧바로 누립니다.",
+                                    desc: "가입 즉시 전국 16개 지점 소노호텔앤리조트 객실 및 부대시설 우대 혜택을 누립니다.",
                                     image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932611/04_sono_hotel_resort_benefit_with_logo_1_cw84ct.png"
                                 }
                             ].map((benefit, index) => (
@@ -861,16 +867,30 @@ export default function SmartCareContent({
                                 원하는 구좌 수를 선택하고 최신 가전을 골라보세요.
                             </p>
                             
-                            {/* 좌우 드래그 안내 뱃지 */}
-                            <div className="mt-3 inline-flex items-center gap-2 bg-[#1f2d42]/80 border border-blue-500/30 text-blue-300 text-[11px] sm:text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
-                                <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
-                                </svg>
-                                <span>좌우로 마우스 드래그하여 5가지 플랜 비교</span>
-                                <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                </svg>
+                            {/* 스마트케어 상품 필수 안내사항 (Slide 5) */}
+                            <div className="mt-4 max-w-2xl mx-auto bg-amber-950/60 border border-amber-500/40 p-3.5 sm:p-4 text-left text-xs sm:text-sm text-amber-200/90 space-y-1 rounded-none shadow-md">
+                                <p className="font-black text-amber-300">[스마트케어 상품 필수 안내사항]</p>
+                                <p>※ 라이프서비스는 가입 상품에 따라 서비스 이용 횟수 상이</p>
+                                <p>※ 본 상품은 ㈜소노스테이션 상조 서비스 계약 및 ㈜비에스온 렌탈서비스 계약 별도 체결되는 상품</p>
+                                <p>※ 만기 후 익월 해약 또는 라이프서비스 사용 시 가전 렌탈금 지원</p>
                             </div>
+
+                            {/* 좌우 드래그 안내 뱃지 & 렌탈 제휴카드 60개월 할인 (Slide 7) */}
+                            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                                <div className="inline-flex items-center gap-2 bg-[#1f2d42]/80 border border-blue-500/30 text-blue-300 text-[11px] sm:text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
+                                    <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                                    </svg>
+                                    <span>좌우로 마우스 드래그하여 5가지 플랜 비교</span>
+                                    <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                    </svg>
+                                </div>
+                                <span className="inline-block bg-amber-400 text-slate-950 font-black text-[11px] sm:text-xs px-3.5 py-1.5 rounded-full shadow-lg">
+                                    ★ 렌탈 제휴카드 60개월 할인
+                                </span>
+                            </div>
+
                         </div>
 
                         <div className="relative group px-1 sm:px-4">
@@ -1481,7 +1501,7 @@ export default function SmartCareContent({
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         <div className="text-center mb-16 md:mb-24">
                             <span className="bg-slate-900 text-white font-black text-xs px-4 py-2 rounded-none mb-6 inline-block uppercase tracking-wider">FUNERAL SERVICE</span>
-                            <h2 className="section-title leading-tight">품격 있는 마지막 인사,<br className="md:hidden" /> 대명소노가 함께합니다</h2>
+                            <h2 className="section-title leading-tight">품격 있는 마지막 인사,<br className="md:hidden" /> 소노아임레디가 함께합니다</h2>
                             <p className="section-subtitle max-w-2xl mx-auto">
                                 국가공인 장례지도사와 전문 도우미가 정성을 다해
                                 고인의 명복을 빌며, 유가족의 슬픔을 함께 나누는 신뢰의 서비스를 약속드립니다.
@@ -1539,7 +1559,7 @@ export default function SmartCareContent({
                                     {
                                         title: "전문가와 같이",
                                         desc: "고객 만족도 99%*의 전문 장례지도사가 장례물품 준비부터 장례 진행, 행정 절차까지 유가족이 큰 어려움 없이 마무리할 수 있도록 곁에서 세심하게 관리해 드립니다.",
-                                        sub: "*2026년 기준",
+                                        sub: "*2025년 12월말 기준",
                                         img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932614/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_09_20_04_5_1_illnk5.png"
                                     },
                                     {
@@ -2174,7 +2194,7 @@ export default function SmartCareContent({
                                     highlight: "객실 정가 대비 최대 70% 할인",
                                     partner: "소노호텔앤리조트 (구 대명리조트)",
                                     title: "전국 소노호텔앤리조트 객실 우대",
-                                    subtitle: "쏠비치, 소노펠리체, 소노캄 등 전국 18개 리조트 회원 가격 혜택",
+                                    subtitle: "전국 16개 지점 소노호텔앤리조트 객실을 할인 가격으로 이용 가능합니다.",
                                     img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913144/benefit_list_bg01_ouicgo.jpg",
                                     target: "회원 본인에 한해 이용 가능 (연 10박 제한, 양도 불가)",
                                     method: "컨택센터(1588-8511) 또는 홈페이지 하단 [리조트 예약] 후 비수기 주중 이용",
@@ -2183,7 +2203,7 @@ export default function SmartCareContent({
                                         "호텔 [패밀리 / 슈페리어] 객실 할인: 비수기 주중 이용 시 무기명 회원가 + 1만원 (일~목요일) / + 2만원 (금요일)",
                                         "리조트 [패밀리 / 스위트] 객실 할인: 비수기 주중 이용 시 무기명 회원가 + 1만원 (일~목요일) / + 2만원 (금요일)"
                                     ],
-                                    note: "※ 리조트 사용의 경우 연 10박으로 제한되며, 회원 본인에 한해서만 이용이 가능합니다.\n※ 예약방법 : 당사 컨택센터(1588-8511) 또는 홈페이지 하단의 [리조트 예약] > 소노호텔앤리조트(구 대명리조트) 홈페이지를 통해 잔여 객실 확인 후 비수기 주중 객실만 예약 가능합니다.\n※ 리조트 객실 이용은 관련 법령에 의한 리조트 정회원 우선 예약 제도에 따라 이용이 제한될 수 있으며, 리조트 상황에 따라 객실은 조기 마감될 수 있습니다.\n※ 성수기 안내 : 여름 성수기 (7월 중순 ~ 8월 말), 겨울 성수기 (12월 중순 ~ 1월 말), 연휴, 휴일 전 일, 토요일은 예약이 제외됩니다.\n※ 현장에서 모바일 멤버십 카드 및 신분증 지참 필수 (미지참 시 우대 혜택 적용 제외)"
+                                    note: "※ 전국 16개 지점 소노호텔앤리조트 객실을 할인 가격으로 이용 가능합니다.\n※ 멤버십 혜택은 당사 및 제휴사의 사정 및 시즌에 따라 변동 될 수 있습니다.\n※ 회원 본인 모바일 멤버십 카드, 신분증 지참 필수\n※ 리조트 사용의 경우 연 10박으로 제한되며, 회원 본인에 한해서만 이용이 가능합니다.\n※ 예약방법 : 당사 컨택센터(1588-8511) 또는 홈페이지 하단의 [리조트 예약] > 소노호텔앤리조트(구 대명리조트) 홈페이지를 통해 잔여 객실 확인 후 비수기 주중 객실만 예약 가능합니다.\n※ 리조트 객실 이용은 관련 법령에 의한 리조트 정회원 우선 예약 제도에 따라 이용이 제한될 수 있으며, 리조트 상황에 따라 객실은 조기 마감될 수 있습니다.\n※ 성수기 안내 : 여름 성수기 (7월 중순 ~ 8월 말), 겨울 성수기 (12월 중순 ~ 1월 말), 연휴, 휴일 전 일, 토요일은 예약이 제외됩니다."
                                 },
                                 {
                                     badge: "오션월드/워터파크",
@@ -2706,6 +2726,10 @@ export default function SmartCareContent({
                                     <div className="space-y-1 min-w-0">
                                         <h5 className="font-black text-amber-700 text-xs md:text-sm">전환 서비스 유의사항</h5>
                                         <p className="text-slate-600 text-xs md:text-sm leading-relaxed">{detail.notes}</p>
+                                        <p className="text-slate-600 text-xs md:text-sm leading-relaxed pt-1.5 border-t border-amber-200/60 mt-1.5">
+                                            ※ 가입 상품 금액 이상의 서비스 이용 시, 잔여 부금 및 차액 납부 후 이용 가능<br />
+                                            ※ 제휴 상황에 따라 일부 서비스는 변동될 수 있으며, 자세한 내용은 소노아임레디 홈페이지 확인
+                                        </p>
                                     </div>
                                 </div>
 
@@ -2948,7 +2972,7 @@ export default function SmartCareContent({
                                         </h4>
                                         <div className="ml-3.5">
                                             <p className="text-slate-600 text-sm md:text-base font-bold leading-relaxed break-keep">
-                                                대명소노아임레디 고객센터 <a href="tel:1588-8511" className="text-slate-900 border-b-2 border-slate-900 hover:text-sono-primary transition-all font-black text-lg">1588-8511</a> 연결 후 상담원을 통해 결제 카드 변경을 요청하세요.
+                                                소노아임레디 고객센터 <a href="tel:1588-8511" className="text-slate-900 border-b-2 border-slate-900 hover:text-sono-primary transition-all font-black text-lg">1588-8511</a> 연결 후 상담원을 통해 결제 카드 변경을 요청하세요.
                                             </p>
                                         </div>
                                     </div>

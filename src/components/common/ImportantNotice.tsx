@@ -61,7 +61,7 @@ export default function ImportantNotice({ className = "" }: ImportantNoticeProps
                             </div>
 
                             <p className="text-[11px] sm:text-xs text-slate-400 font-medium leading-normal">
-                                (주)소소스테이션은 성지회계법인의 공인회계사를 통해 외부 회계감사를 받고 있습니다.
+                                (주)소노스테이션은 성지회계법인의 공인회계사를 통해 외부 회계감사를 받고 있습니다.
                             </p>
                         </div>
                     </div>

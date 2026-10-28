@@ -98,7 +98,10 @@ export default function AffiliateCardBenefit({
                             </tr>
                             <tr className="bg-blue-50/40">
                                 <td className="py-3 sm:py-3.5 px-2 sm:px-4 border-r border-slate-200 text-xs sm:text-sm font-black text-blue-600">
-                                    제휴카드 할인 시
+                                    <div>
+                                        <span>제휴카드 할인 시</span>
+                                        <span className="block text-[10px] text-blue-700 font-extrabold">(렌탈 제휴카드 60개월 할인)</span>
+                                    </div>
                                 </td>
                                 <td className="py-3 sm:py-3.5 px-2 sm:px-3 border-r border-slate-200 text-xs sm:text-sm font-black text-blue-600">
                                     180회
@@ -156,9 +159,14 @@ export default function AffiliateCardBenefit({
 
                 {/* 중앙 텍스트 안내 */}
                 <div className="flex-1 text-center sm:text-left space-y-1">
-                    <h5 className="text-sm sm:text-base font-black text-slate-900">
-                        BS렌탈 플러스 하나카드
-                    </h5>
+                    <div className="space-y-0.5">
+                        <span className="inline-block bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-none mb-1">
+                            렌탈 제휴카드 60개월 할인
+                        </span>
+                        <h5 className="text-sm sm:text-base font-black text-slate-900">
+                            BS렌탈 플러스 하나카드
+                        </h5>
+                    </div>
                     <p className="text-xs sm:text-sm font-bold text-blue-600">
                         최대 월 2.3만원 할인
                     </p>

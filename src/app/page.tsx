@@ -77,7 +77,7 @@ export default function HomePage() {
                                 ABOUT US
                             </div>
                             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#1e293b] tracking-tight mb-5 leading-tight">
-                                <span className="block sm:inline">대명소노그룹의 </span>
+                                <span className="block sm:inline">소노트리니티그룹의 </span>
                                 <span className="block sm:inline">라이프케어 브랜드</span>
                             </h2>
                             <p className="text-[#334155] font-bold text-lg sm:text-xl mb-3">
@@ -151,7 +151,7 @@ export default function HomePage() {
                                 },
                                 {
                                     image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785823470/photo_story_company03_c80m69.jpg",
-                                    title: "대명소노그룹사",
+                                    title: "소노트리니티그룹사",
                                     sub: "2024년 기준 대규모기업"
                                 },
                                 {
@@ -186,7 +186,7 @@ export default function HomePage() {
                         {/* Bottom Full Description Paragraph */}
                         <div className="max-w-4xl mx-auto text-center px-4">
                             <p className="text-[#64748b] text-xs sm:text-sm md:text-base leading-relaxed font-normal break-keep">
-                                지난 40년 이상 국내 레저사업을 이끌어온 대명소노그룹의 서비스 노하우를 바탕으로 설립된 (주)소노스테이션의 대표 브랜드 소노아임레디. 소노아임레디는 상조 서비스를 중심으로 여행, 교육, 웨딩 등 삶에 필요한 서비스를 제공하고 있습니다. 다양한 라이프케어 서비스를 소비자가 원하는 시점에 선택하여 이용할 수 있도록 항상 준비되어 있습니다. 소노아임레디를 통해 고객의 삶을 더욱 풍요롭게 하는 것이 우리 브랜드의 목표입니다.
+                                40년 이상의 레저 사업 노하우를 바탕으로 설립된 소노아임레디 브랜드는 고객의 삶을 더욱 풍요롭게 만드는 서비스를 제공합니다.
                             </p>
                         </div>
 
@@ -246,7 +246,7 @@ export default function HomePage() {
                                             <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-normal break-keep">{domain.desc}</p>
                                         </div>
                                         <div className="mt-6 sm:mt-8 pt-4 border-t border-slate-100 flex items-center justify-between">
-                                            <span className="text-xs font-bold text-slate-400">대명소노그룹</span>
+                                            <span className="text-xs font-bold text-slate-400">소노트리니티그룹</span>
                                             <img src={domain.brandLogo} alt={domain.title} className="h-5 sm:h-6 w-auto object-contain opacity-80" />
                                         </div>
                                     </div>

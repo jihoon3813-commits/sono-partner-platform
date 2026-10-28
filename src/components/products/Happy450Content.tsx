@@ -493,7 +493,7 @@ export default function Happy450Content({
                                 {
                                     title: "BENEFIT 02",
                                     name: "8대 하이브리드 서비스 전환 보장",
-                                    desc: "어학연수, 웨딩, 리빙, 골프, 크루즈, 여행 등 원하는 시점에 원하는 서비스로 자유롭게 전환 가능합니다.",
+                                    desc: "어학연수, 웨딩, 리빙, 골프, 크루즈, 여행 등 언제든지 다른 서비스로 전환 이용 가능합니다.",
                                     image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932609/02_hybrid_service_conversion_logo_1_mynjl3.png"
                                 },
                                 {
@@ -504,8 +504,8 @@ export default function Happy450Content({
                                 },
                                 {
                                     title: "BENEFIT 04",
-                                    name: "소노호텔&리조트 회원우대",
-                                    desc: "전국 소노호텔&리조트 객실 및 오션월드, 스키 등 멤버십 혜택을 제공합니다.",
+                                    name: "소노호텔앤리조트 우대할인 혜택",
+                                    desc: "전국 16개 지점 소노호텔앤리조트 객실 및 부대시설 우대 혜택을 제공합니다.",
                                     image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932611/04_sono_hotel_resort_benefit_with_logo_1_cw84ct.png"
                                 },
                                 {
@@ -857,7 +857,7 @@ export default function Happy450Content({
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         <div className="text-center mb-16 md:mb-24">
                             <span className="bg-slate-900 text-white font-black text-xs px-4 py-2 rounded-none mb-6 inline-block uppercase tracking-wider">FUNERAL SERVICE</span>
-                            <h2 className="section-title leading-tight">품격 있는 마지막 인사,<br className="md:hidden" /> 대명소노가 함께합니다</h2>
+                            <h2 className="section-title leading-tight">품격 있는 마지막 인사,<br className="md:hidden" /> 소노아임레디가 함께합니다</h2>
                             <p className="section-subtitle max-w-2xl mx-auto">
                                 국가공인 장례지도사와 전문 도우미가 정성을 다해
                                 고인의 명복을 빌며, 유가족의 슬픔을 함께 나누는 신뢰의 서비스를 약속드립니다.
@@ -934,7 +934,7 @@ export default function Happy450Content({
                                     {
                                         title: "전문가와 같이",
                                         desc: "고객 만족도 99%*의 전문 장례지도사가 장례물품 준비부터 장례 진행, 행정 절차까지 유가족이 큰 어려움 없이 마무리할 수 있도록 곁에서 세심하게 관리해 드립니다.",
-                                        sub: "*2026년 기준",
+                                        sub: "*2025년 12월말 기준",
                                         img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932614/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_09_20_04_5_1_illnk5.png"
                                     },
                                     {
@@ -1659,7 +1659,7 @@ export default function Happy450Content({
                                     highlight: "객실 정가 대비 최대 70% 할인",
                                     partner: "소노호텔앤리조트 (구 대명리조트)",
                                     title: "전국 소노호텔앤리조트 객실 우대",
-                                    subtitle: "쏠비치, 소노펠리체, 소노캄 등 전국 18개 리조트 회원 가격 혜택",
+                                    subtitle: "전국 16개 지점 소노호텔앤리조트 객실을 할인 가격으로 이용 가능합니다.",
                                     img: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785913144/benefit_list_bg01_ouicgo.jpg",
                                     target: "회원 본인에 한해 이용 가능 (연 10박 제한, 양도 불가)",
                                     method: "컨택센터(1588-8511) 또는 홈페이지 하단 [리조트 예약] 후 비수기 주중 이용",
@@ -1668,7 +1668,7 @@ export default function Happy450Content({
                                         "호텔 [패밀리 / 슈페리어] 객실 할인: 비수기 주중 이용 시 무기명 회원가 + 1만원 (일~목요일) / + 2만원 (금요일)",
                                         "리조트 [패밀리 / 스위트] 객실 할인: 비수기 주중 이용 시 무기명 회원가 + 1만원 (일~목요일) / + 2만원 (금요일)"
                                     ],
-                                    note: "※ 리조트 사용의 경우 연 10박으로 제한되며, 회원 본인에 한해서만 이용이 가능합니다.\n※ 예약방법 : 당사 컨택센터(1588-8511) 또는 홈페이지 하단의 [리조트 예약] > 소노호텔앤리조트(구 대명리조트) 홈페이지를 통해 잔여 객실 확인 후 비수기 주중 객실만 예약 가능합니다.\n※ 리조트 객실 이용은 관련 법령에 의한 리조트 정회원 우선 예약 제도에 따라 이용이 제한될 수 있으며, 리조트 상황에 따라 객실은 조기 마감될 수 있습니다.\n※ 성수기 안내 : 여름 성수기 (7월 중순 ~ 8월 말), 겨울 성수기 (12월 중순 ~ 1월 말), 연휴, 휴일 전 일, 토요일은 예약이 제외됩니다.\n※ 현장에서 모바일 멤버십 카드 및 신분증 지참 필수 (미지참 시 우대 혜택 적용 제외)"
+                                    note: "※ 전국 16개 지점 소노호텔앤리조트 객실을 할인 가격으로 이용 가능합니다.\n※ 멤버십 혜택은 당사 및 제휴사의 사정 및 시즌에 따라 변동 될 수 있습니다.\n※ 회원 본인 모바일 멤버십 카드, 신분증 지참 필수\n※ 리조트 사용의 경우 연 10박으로 제한되며, 회원 본인에 한해서만 이용이 가능합니다.\n※ 예약방법 : 당사 컨택센터(1588-8511) 또는 홈페이지 하단의 [리조트 예약] > 소노호텔앤리조트(구 대명리조트) 홈페이지를 통해 잔여 객실 확인 후 비수기 주중 객실만 예약 가능합니다.\n※ 리조트 객실 이용은 관련 법령에 의한 리조트 정회원 우선 예약 제도에 따라 이용이 제한될 수 있으며, 리조트 상황에 따라 객실은 조기 마감될 수 있습니다.\n※ 성수기 안내 : 여름 성수기 (7월 중순 ~ 8월 말), 겨울 성수기 (12월 중순 ~ 1월 말), 연휴, 휴일 전 일, 토요일은 예약이 제외됩니다."
                                 },
                                 {
                                     badge: "오션월드/워터파크",
@@ -2191,6 +2191,10 @@ export default function Happy450Content({
                                     <div className="space-y-1 min-w-0">
                                         <h5 className="font-black text-amber-700 text-xs md:text-sm">전환 서비스 유의사항</h5>
                                         <p className="text-slate-600 text-xs md:text-sm leading-relaxed">{detail.notes}</p>
+                                        <p className="text-slate-600 text-xs md:text-sm leading-relaxed pt-1.5 border-t border-amber-200/60 mt-1.5">
+                                            ※ 가입 상품 금액 이상의 서비스 이용 시, 잔여 부금 및 차액 납부 후 이용 가능<br />
+                                            ※ 제휴 상황에 따라 일부 서비스는 변동될 수 있으며, 자세한 내용은 소노아임레디 홈페이지 확인
+                                        </p>
                                     </div>
                                 </div>
 
@@ -2406,7 +2410,7 @@ export default function Happy450Content({
                                         </h4>
                                         <div className="ml-3.5">
                                             <p className="text-slate-600 text-sm md:text-base font-bold leading-relaxed break-keep">
-                                                대명소노아임레디 고객센터 <a href="tel:1588-8511" className="text-slate-900 border-b-2 border-slate-900 hover:text-sono-primary transition-all font-black text-lg">1588-8511</a> 연결 후 상담원을 통해 결제 카드 변경을 요청하세요.
+                                                소노아임레디 고객센터 <a href="tel:1588-8511" className="text-slate-900 border-b-2 border-slate-900 hover:text-sono-primary transition-all font-black text-lg">1588-8511</a> 연결 후 상담원을 통해 결제 카드 변경을 요청하세요.
                                             </p>
                                         </div>
                                     </div>
