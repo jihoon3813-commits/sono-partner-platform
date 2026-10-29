@@ -119,6 +119,7 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
                     loginPassword: formData.loginPassword,
                     partnerGroup: parentPartner.partnerGroup || "전체 상품 판매",
                     showLandingUrl: parentPartner.showLandingUrl !== undefined ? parentPartner.showLandingUrl : true,
+                    landingVisibility: parentPartner.landingVisibility,
                     status: formData.status,
                     parentPartnerId: parentPartner.partnerId,
                     parentPartnerName: parentPartner.companyName,

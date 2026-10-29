@@ -1,0 +1,11 @@
+{
+  "name": "maeum-251-antigravity",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "마음든든 2·5·1 사이트 전달용 소스",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "start": "node scripts/serve.mjs"
+  }
+}

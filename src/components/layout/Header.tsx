@@ -155,8 +155,8 @@ export default function Header({
 
                 {/* 모바일 메뉴 레이어 */}
                 {isMenuOpen && (
-                    <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-xl p-8 animate-fade-in">
-                        <div className="flex flex-col gap-6 font-bold">
+                    <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-xl p-5 sm:p-8 animate-fade-in max-h-[85vh] overflow-y-auto no-scrollbar">
+                        <div className="flex flex-col gap-4 sm:gap-6 font-bold text-base sm:text-xl">
                             <button
                                 onClick={handleFaqClick}
                                 className="text-xl text-sono-dark text-left"
@@ -169,7 +169,7 @@ export default function Header({
                                     <Link href={smartcareHref} className="text-xl text-sono-dark" onClick={() => setIsMenuOpen(false)}>스마트케어</Link>
                                     <button
                                         onClick={handleInquiryClick}
-                                        className="btn-primary w-full py-4 text-lg mt-4 !rounded-none"
+                                        className="btn-primary w-full py-3.5 sm:py-4 text-base sm:text-lg mt-2 sm:mt-4 !rounded-none"
                                     >
                                         {isPremiumMallMode ? "프리미엄몰 접수" : "가입신청"}
                                     </button>
@@ -179,18 +179,18 @@ export default function Header({
                                     <Link href="/" className="text-xl text-sono-dark" onClick={() => setIsMenuOpen(false)}>제휴 안내</Link>
                                     <Link href="/products/happy450" className="text-xl text-sono-dark text-left" onClick={(e) => { setIsMenuOpen(false); handleRestrictedProductClick(e); }}>더 해피 450 ONE</Link>
                                     <Link href="/products/smartcare" className="text-xl text-sono-dark" onClick={() => setIsMenuOpen(false)}>스마트케어</Link>
-                                    <div className="grid grid-cols-2 gap-4 mt-6">
+                                    <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-4 sm:mt-6">
                                         <Link
                                             href="/partner-center"
                                             target="_blank"
-                                            className="btn-outline text-center py-4 !rounded-none"
+                                            className="btn-outline text-center py-3 sm:py-4 !rounded-none text-sm sm:text-base"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             파트너센터
                                         </Link>
                                         <Link
                                             href="/partner/apply"
-                                            className="btn-primary text-center py-4 !rounded-none"
+                                            className="btn-primary text-center py-3 sm:py-4 !rounded-none text-sm sm:text-base"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
                                             제휴신청

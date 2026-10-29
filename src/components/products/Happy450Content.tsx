@@ -332,7 +332,7 @@ export default function Happy450Content({
             <main>
                 {/* 히어로 섹션 */}
                 <section
-                    className="relative min-h-[75vh] flex items-center bg-sono-dark overflow-hidden pt-12 bg-cover bg-center bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785937204/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_10_39_37_pzb3ym.png')] md:bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785308928/ChatGPT_Image_2026%EB%85%84_7%EC%9B%94_29%EC%9D%BC_%EC%98%A4%ED%9B%84_03_38_13_1_1_mpokg4.png')]"
+                    className="relative min-h-[50vh] sm:min-h-[65vh] md:min-h-[75vh] flex items-center bg-sono-dark overflow-hidden pt-6 sm:pt-12 bg-cover bg-center bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785937204/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_10_39_37_pzb3ym.png')] md:bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785308928/ChatGPT_Image_2026%EB%85%84_7%EC%9B%94_29%EC%9D%BC_%EC%98%A4%ED%9B%84_03_38_13_1_1_mpokg4.png')]"
                     style={{
                         // backgroundImage: overridden by tailwind bg-url classes
                         backgroundSize: 'cover',
@@ -343,15 +343,15 @@ export default function Happy450Content({
                     <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/60 to-slate-950/30 z-0"></div>
                     <div className="absolute inset-0 bg-black/25 z-0"></div>
 
-                    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-20 relative z-10 w-full">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-14 md:py-20 relative z-10 w-full min-w-0">
                         <div className="max-w-4xl animate-fade-in text-left">
                             <span className="inline-block bg-gradient-to-r from-amber-500 to-yellow-600 text-white font-black border border-white/20 mb-8 px-4 py-2 rounded-none text-sm shadow-xl tracking-wider">
                                 ★ 인증 제휴 전용 상조 서비스
                             </span>
-                            <h1 className="leading-[1.12] mb-6 tracking-tighter filter drop-shadow-2xl">
-                                <span className="block text-4xl md:text-6xl lg:text-7xl font-black text-white drop-shadow-md">더 해피 450 ONE</span>
+                            <h1 className="leading-[1.15] mb-4 sm:mb-6 tracking-tighter filter drop-shadow-2xl break-keep break-words">
+                                <span className="block text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white drop-shadow-md">더 해피 450 ONE</span>
                             </h1>
-                            <div className="space-y-3 mb-10">
+                            <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-10">
                                 <p className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-amber-300 tracking-tight drop-shadow-md break-keep">
                                     호텔&리조트 혜택부터 헬스케어 서비스까지 이용하고도<br />만기 시 납입금 100% 환급 보장
                                 </p>
@@ -368,7 +368,7 @@ export default function Happy450Content({
                                         const el = document.getElementById("affiliate-card");
                                         if (el) el.scrollIntoView({ behavior: "smooth" });
                                     }}
-                                    className="relative group flex flex-col justify-between bg-slate-950/40 backdrop-blur-md border border-amber-400/30 hover:border-amber-400 p-6 rounded-none shadow-2xl overflow-hidden text-left cursor-pointer transition-all"
+                                    className="relative group flex flex-col justify-between bg-slate-950/40 backdrop-blur-md border border-amber-400/30 hover:border-amber-400 p-4 sm:p-6 rounded-none shadow-2xl overflow-hidden text-left min-w-0 cursor-pointer transition-all"
                                 >
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-400"></div>
                                     <div>
@@ -409,7 +409,7 @@ export default function Happy450Content({
                                         const el = document.getElementById("gccare");
                                         if (el) el.scrollIntoView({ behavior: "smooth" });
                                     }}
-                                    className="relative group flex flex-col justify-between bg-slate-950/40 backdrop-blur-md border border-emerald-500/30 hover:border-emerald-400 p-6 rounded-none shadow-2xl overflow-hidden text-left cursor-pointer transition-all"
+                                    className="relative group flex flex-col justify-between bg-slate-950/40 backdrop-blur-md border border-emerald-500/30 hover:border-emerald-400 p-4 sm:p-6 rounded-none shadow-2xl overflow-hidden text-left min-w-0 cursor-pointer transition-all"
                                 >
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-300 to-emerald-500"></div>
                                     <div>
@@ -448,7 +448,7 @@ export default function Happy450Content({
                             </div>
 
                             {/* 가입신청 및 파트너센터 이동 버튼 (투명 보더라인 디자인) */}
-                            <div className="flex flex-col sm:flex-row gap-5 mt-10">
+                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 mt-6 sm:mt-10">
                                 <button
                                     onClick={() => setIsModalOpen(true)}
                                     className="border-2 border-amber-400 text-amber-300 hover:bg-amber-400 hover:text-slate-950 bg-transparent px-10 py-5 rounded-none font-black text-lg transition-all backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] text-center"
@@ -458,7 +458,7 @@ export default function Happy450Content({
                                 {!partnerMode && (
                                     <Link
                                         href="/partner-center"
-                                        className="border-2 border-white/60 text-white hover:bg-white hover:text-slate-950 bg-transparent px-10 py-5 rounded-none font-black text-lg transition-all backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] text-center"
+                                        className="border-2 border-white/60 text-white hover:bg-white hover:text-slate-950 bg-transparent px-6 py-3.5 sm:px-10 sm:py-4 rounded-none font-black text-base sm:text-lg transition-all backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] text-center"
                                     >
                                         파트너센터 바로가기
                                     </Link>
@@ -470,9 +470,9 @@ export default function Happy450Content({
                 </section>
 
                 {/* 핵심 혜택 섹션 (3x3 격자형 6개 혜택) */}
-                <section className="py-20 md:py-32 bg-slate-900 text-white relative overflow-hidden">
+                <section className="py-8 sm:py-14 md:py-24 bg-slate-900 text-white relative overflow-hidden">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
-                        <div className="text-center mb-16 md:mb-24">
+                        <div className="text-center mb-6 sm:mb-10 md:mb-16">
                             <span className="bg-amber-500/20 text-amber-300 text-xs font-black px-4 py-2 rounded-none uppercase tracking-wider mb-4 inline-block border border-amber-500/30">
                                 KEY BENEFITS
                             </span>
@@ -482,7 +482,7 @@ export default function Happy450Content({
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-6 md:gap-8">
                             {[
                                 {
                                     title: "BENEFIT 01",
@@ -526,7 +526,7 @@ export default function Happy450Content({
                                     className="bg-slate-800/90 border border-slate-700/80 rounded-none overflow-hidden shadow-xl hover:shadow-2xl hover:border-amber-400/50 transition-all duration-300 flex flex-col group text-left"
                                 >
                                     {/* 이미지 비주얼 영역 (직각) */}
-                                    <div className="relative h-56 sm:h-64 overflow-hidden bg-slate-950 rounded-none">
+                                    <div className="relative h-28 sm:h-52 md:h-64 overflow-hidden bg-slate-950 rounded-none">
                                         <img 
                                             src={benefit.image} 
                                             alt={benefit.name} 
@@ -536,7 +536,7 @@ export default function Happy450Content({
                                     </div>
 
                                     {/* 내용 영역 */}
-                                    <div className="p-6 md:p-8 flex flex-col flex-grow">
+                                    <div className="p-3 sm:p-5 md:p-8 flex flex-col flex-grow">
                                         <div className="mb-3">
                                             <span className="bg-amber-500/10 text-amber-400 text-[10px] font-black px-2.5 py-1 rounded-none border border-amber-500/20 tracking-wider uppercase inline-block">
                                                 {benefit.title}
@@ -555,9 +555,9 @@ export default function Happy450Content({
                     </div>
                 </section>
                 {/* 납입 플랜 (그레이 섹션 배경 & 진한 다크 직각 카드 스타일) */}
-                <section className="py-20 md:py-32 bg-slate-100 text-slate-900">
+                <section className="py-8 sm:py-14 md:py-24 bg-slate-100 text-slate-900">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="text-center mb-16 md:mb-24">
+                        <div className="text-center mb-6 sm:mb-10 md:mb-16">
                             <span className="bg-slate-900 text-white text-xs font-black px-4 py-2 rounded-none mb-6 inline-block uppercase tracking-wider">PLAN</span>
                             <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4">합리적인 월 납입 플랜</h2>
                             <p className="text-slate-600 text-base md:text-xl font-medium">부담 없는 납입금으로<br className="md:hidden" /> 미래의 상조 서비스를 준비하세요.</p>
@@ -690,10 +690,10 @@ export default function Happy450Content({
                 </section>
 
                 {/* 제휴카드 혜택 (진한 다크 럭셔리 & 직각 사각형 스타일) */}
-                <section id="affiliate-card" className="py-20 md:py-32 bg-slate-900 text-white scroll-mt-10">
+                <section id="affiliate-card" className="py-8 sm:py-14 md:py-20 bg-slate-900 text-white scroll-mt-10">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="relative p-4 sm:p-6 md:p-12 lg:p-20 rounded-none border-[3px] border-amber-500/20 bg-slate-950 shadow-[0_0_50px_rgba(0,0,0,0.3)] hover:border-amber-500/35 transition-all duration-500">
-                            <div className="text-center mb-16 md:mb-24">
+                            <div className="text-center mb-6 sm:mb-10 md:mb-16">
                                 <span className="bg-amber-400/20 text-amber-300 text-xs font-bold px-4 py-2 rounded-none mb-6 inline-block uppercase tracking-wider border border-amber-500/30">AFFILIATE CARD</span>
                                 <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4">제휴카드 할인 혜택</h2>
                                 <p className="text-slate-400 text-base md:text-xl font-medium">제휴카드로 결제 시 매월 납입금 부담을 더 줄여드립니다.</p>
@@ -853,9 +853,9 @@ export default function Happy450Content({
                     </div>
                 </section>
                 {/* 상조 서비스 */}
-                <section className="py-16 md:py-32 bg-white">
+                <section className="py-8 sm:py-14 md:py-20 bg-white">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="text-center mb-16 md:mb-24">
+                        <div className="text-center mb-6 sm:mb-10 md:mb-16">
                             <span className="bg-slate-900 text-white font-black text-xs px-4 py-2 rounded-none mb-6 inline-block uppercase tracking-wider">FUNERAL SERVICE</span>
                             <h2 className="section-title leading-tight">품격 있는 마지막 인사,<br className="md:hidden" /> 소노아임레디가 함께합니다</h2>
                             <p className="section-subtitle max-w-2xl mx-auto">
@@ -981,7 +981,7 @@ export default function Happy450Content({
 
 
                 {/* 의전 서비스 상세 구성 (샤프한 직각 사각형 스타일) */}
-                <section className="py-16 md:py-24 bg-slate-100">
+                <section className="py-8 sm:py-14 md:py-20 bg-slate-100">
                     <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12">
                         <div className="text-center mb-12">
                             <span className="bg-slate-900 text-white font-black text-xs px-4 py-2 rounded-none mb-3 inline-block uppercase tracking-wider">SERVICE DETAILS</span>
@@ -1175,7 +1175,7 @@ export default function Happy450Content({
                     </div>
                 </section>
 
-                <section className="py-16 md:py-32 bg-[#f9fafb] text-slate-900">
+                <section className="py-8 sm:py-14 md:py-20 bg-[#f9fafb] text-slate-900">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         <div className="flex items-center justify-between mb-12 border-b border-gray-200 pb-6">
                             <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight flex items-center gap-2">
@@ -1387,7 +1387,7 @@ export default function Happy450Content({
                 </section>
 
                                 {/* GC케어 헬스케어서비스 (초록/오렌지 그라데이션 + 파트너 로고 + 업계최초 라벨 + 밝은 박스/표 + 하단 링크 적용) */}
-                <section id="gccare" className="py-20 md:py-32 bg-gradient-to-b from-[#0a351d] via-[#051c0e] to-[#010904] text-white border-t border-slate-900 relative overflow-hidden text-left scroll-mt-10">
+                <section id="gccare" className="py-8 sm:py-14 md:py-20 bg-gradient-to-b from-[#0a351d] via-[#051c0e] to-[#010904] text-white border-t border-slate-900 relative overflow-hidden text-left scroll-mt-10">
                     {/* 추가적인 초록색 및 오렌지색 그라데이션 빛 효과 */}
                     <div className="absolute top-1/4 left-1/3 w-[600px] h-[600px] bg-green-500/10 rounded-full blur-[140px] pointer-events-none"></div>
                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-500/15 rounded-full blur-[100px] pointer-events-none"></div>
@@ -1395,7 +1395,7 @@ export default function Happy450Content({
 
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
                         {/* 헤더 */}
-                        <div className="text-center mb-16 md:mb-24">
+                        <div className="text-center mb-6 sm:mb-10 md:mb-16">
                             {/* NEW 라벨 */}
                             <div className="mb-6">
                                 <span className="bg-emerald-500/20 text-emerald-400 text-xs font-black px-4 py-1.5 rounded-full border border-emerald-500/30 uppercase tracking-widest inline-block animate-pulse">
@@ -1609,7 +1609,7 @@ export default function Happy450Content({
                 </section>
 
                 {/* 소노그룹 멤버십 (밝은 연그레이 배경 + 6대 제휴사 카드 그리드 스타일 + 리조트 예약방법 안내박스 + 하단 대형 단일 버튼) */}
-                <section className="py-20 md:py-32 bg-slate-50 border-t border-slate-200/60 text-slate-900 relative text-left">
+                <section className="py-8 sm:py-14 md:py-20 bg-slate-50 border-t border-slate-200/60 text-slate-900 relative text-left">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         {/* 헤더 영역 */}
                         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-16 md:mb-24 pb-8 border-b border-slate-200">
@@ -1891,7 +1891,7 @@ export default function Happy450Content({
                 </section>
 
                 {/* 소노아임레디몰 (어두운 프리미엄 스타일) */}
-                <section className="py-20 md:py-32 bg-gradient-to-br from-[#0f172a] via-[#090d16] to-[#020408] text-white border-t border-slate-900 relative overflow-hidden text-left">
+                <section className="py-8 sm:py-14 md:py-20 bg-gradient-to-br from-[#0f172a] via-[#090d16] to-[#020408] text-white border-t border-slate-900 relative overflow-hidden text-left">
                     {/* 은은한 그라데이션 빛 효과 */}
                     <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-amber-500/5 rounded-full blur-[120px] pointer-events-none"></div>
                     <div className="absolute bottom-1/4 left-1/4 w-[300px] h-[300px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
@@ -1953,7 +1953,7 @@ export default function Happy450Content({
                 </section>
 
                 {/* 레디캐시 안내 (샤프한 직각 사각형 스타일) */}
-                <section className="py-16 md:py-24 bg-slate-200">
+                <section className="py-8 sm:py-14 md:py-20 bg-slate-200">
                     <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12">
                         <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-8 tracking-tight">레디캐시 안내</h3>
                         <ul className="space-y-4 md:space-y-6">
@@ -1977,7 +1977,7 @@ export default function Happy450Content({
                 <ImportantNotice />
 
                 {/* CTA (샤프한 직각 사각형 스타일) */}
-                <section className="py-20 md:py-32 bg-slate-950 text-white relative overflow-hidden border-t border-slate-900">
+                <section className="py-10 sm:py-16 md:py-24 bg-slate-950 text-white relative overflow-hidden border-t border-slate-900">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-tr from-blue-600/5 to-amber-500/5 rounded-full blur-[120px] pointer-events-none"></div>
                     <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 text-center relative z-10">
                         <h2 className="text-3xl md:text-5xl font-black mb-8 md:mb-10 tracking-tighter leading-tight">

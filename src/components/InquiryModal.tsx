@@ -388,7 +388,7 @@ export default function InquiryModal({
             <div className="absolute inset-0 bg-sono-dark/60 backdrop-blur-sm" onClick={handleClose} />
 
             <div className="relative bg-white rounded-none shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-slide-up no-scrollbar">
-                <div className="sticky top-0 bg-white/80 backdrop-blur-md px-6 md:px-8 py-5 md:py-6 flex items-center justify-between border-b border-gray-50 z-10">
+                <div className="sticky top-0 bg-white/80 backdrop-blur-md px-4 sm:px-6 md:px-8 py-3.5 sm:py-5 flex items-center justify-between border-b border-gray-100 z-10">
                     <h2 className="text-xl md:text-2xl font-bold text-sono-dark tracking-tight">
                         {isPremiumMallMode ? "프리미엄몰 접수" : "상담 신청"}
                     </h2>
@@ -400,7 +400,7 @@ export default function InquiryModal({
                 </div>
 
                 {isSubmitted ? (
-                    <div className="p-10 md:p-12 text-center">
+                    <div className="p-6 sm:p-10 md:p-12 text-center break-keep break-words">
                         <div className="w-16 md:w-20 h-16 md:h-20 rounded-none bg-[#00d084]/10 mx-auto mb-8 flex items-center justify-center text-[#00d084]">
                             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -456,7 +456,7 @@ export default function InquiryModal({
                         </div>
                     </div>
                 ) : (
-                    <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6 md:space-y-8">
+                    <form onSubmit={handleSubmit} className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 break-keep break-words min-w-0">
                         {isPremiumMallMode && (
                             <div className="text-center space-y-4 mb-4">
                                 <img 
@@ -498,20 +498,20 @@ export default function InquiryModal({
                         )}
 
                         {!isPremiumMallMode && (
-                            <div className="grid md:grid-cols-2 gap-6">
+                            <div className="grid md:grid-cols-2 gap-3.5 sm:gap-6 min-w-0">
                                 <div>
                                     <label className="input-label !text-[#4e5968] !font-bold mb-2 block">성함 <span className="text-sono-primary">*</span></label>
-                                    <input type="text" name="name" value={formData.name} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4" placeholder="홍길동" required />
+                                    <input type="text" name="name" value={formData.name} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-3 sm:!py-4" placeholder="홍길동" required />
                                 </div>
                                 <div>
                                     <label className="input-label !text-[#4e5968] !font-bold mb-2 block">연락처 <span className="text-sono-primary">*</span></label>
-                                    <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4" placeholder="010-1234-5678" required />
+                                    <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-3 sm:!py-4" placeholder="010-1234-5678" required />
                                 </div>
                                 {["smartcare", "스마트케어", "스마트 케어"].includes(formData.selectedProduct || productType) && (
                                     <>
                                         <div>
                                             <label className="input-label !text-[#4e5968] !font-bold mb-2 block">생년월일 (8자리) <span className="text-sono-primary">*</span></label>
-                                            <input type="tel" name="birthdate" value={formData.birthdate} onChange={handleBirthdateChange} inputMode="numeric" maxLength={8} className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4" placeholder="19800101" required />
+                                            <input type="tel" name="birthdate" value={formData.birthdate} onChange={handleBirthdateChange} inputMode="numeric" maxLength={8} className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-3 sm:!py-4" placeholder="19800101" required />
                                         </div>
                                         <div>
                                             <label className="input-label !text-[#4e5968] !font-bold mb-2 block">성별 <span className="text-sono-primary">*</span></label>
@@ -536,7 +536,7 @@ export default function InquiryModal({
                                         name="preferredTime"
                                         value={formData.preferredTime}
                                         onChange={handleChange}
-                                        className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4 w-full cursor-pointer text-[#4e5968] font-medium"
+                                        className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-3 sm:!py-4 w-full cursor-pointer text-[#4e5968] font-medium"
                                         required
                                     >
                                         <option value="">통화가능 시간을 선택해주세요</option>
@@ -591,7 +591,7 @@ export default function InquiryModal({
                                         <label className="input-label !text-[#4e5968] !font-bold mb-3 block">가전제품 선택</label>
                                         <div
                                             ref={productListRef}
-                                            className="flex flex-col h-[380px] overflow-y-auto border border-gray-400 bg-white rounded-none divide-y divide-gray-300 no-scrollbar"
+                                            className="flex flex-col h-[240px] sm:h-[340px] overflow-y-auto border border-gray-300 bg-white rounded-none divide-y divide-gray-200 no-scrollbar min-w-0"
                                         >
                                             <button
                                                 type="button"
@@ -673,11 +673,11 @@ export default function InquiryModal({
                             <div>
                                 <label className="input-label !text-[#4e5968] !font-bold mb-2 block">주소</label>
                                 <div className="flex gap-2 mb-2">
-                                    <input type="text" value={formData.zonecode} readOnly inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4 flex-1" placeholder="우편번호" />
+                                    <input type="text" value={formData.zonecode} readOnly inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-3 sm:!py-4 flex-1" placeholder="우편번호" />
                                     <button type="button" onClick={openAddressSearch} className="bg-[#0c2340] hover:bg-[#0a1f38] text-white font-bold px-6 rounded-none transition-colors">검색</button>
                                 </div>
-                                <input type="text" value={formData.address} readOnly className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4 mb-2" placeholder="기본 주소" />
-                                <input type="text" name="addressDetail" value={formData.addressDetail} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-4" placeholder="상세 주소" />
+                                <input type="text" value={formData.address} readOnly className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-3 sm:!py-4 mb-2" placeholder="기본 주소" />
+                                <input type="text" name="addressDetail" value={formData.addressDetail} onChange={handleChange} className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-3 sm:!py-4" placeholder="상세 주소" />
                             </div>
                         )}
 

@@ -18,7 +18,16 @@ function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        // 개발 환경(localhost)인 경우 로그인 폼 없이 총괄 관리자로 즉시 자동 로그인
+        const id = searchParams.get("id");
+        const key = searchParams.get("k");
+
+        // 1. 관리자 바로가기(자동 로그인: id, k 파라미터가 있는 경우) 최우선 처리
+        if (id && key) {
+            handleAutoLogin(id, key);
+            return;
+        }
+
+        // 2. 파라미터가 없는 순수 접속이고 개발 환경(localhost)인 경우에만 총괄 관리자로 자동 로그인
         const isDev = typeof window !== "undefined" && (
             window.location.hostname === "localhost" ||
             window.location.hostname === "127.0.0.1" ||
@@ -37,13 +46,6 @@ function LoginForm() {
             router.replace("/partner-center/dashboard");
             return;
         }
-
-        const id = searchParams.get("id");
-        const key = searchParams.get("k");
-
-        if (id && key) {
-            handleAutoLogin(id, key);
-        }
     }, [searchParams, router]);
 
     const handleAutoLogin = async (id: string, key: string) => {
@@ -57,10 +59,12 @@ function LoginForm() {
 
             const data = await response.json();
 
-            if (response.ok) {
-                // 관리자 바로가기(자동 로그인) 시에는 기존 세션과 충돌하지 않도록 sessionStorage 사용
-                sessionStorage.setItem("partnerSession", JSON.stringify(data.partner));
-                router.push("/partner-center/dashboard");
+            if (response.ok && data.success && data.partner) {
+                // 관리자 바로가기(자동 로그인) 세션 저장
+                const sessionStr = JSON.stringify(data.partner);
+                sessionStorage.setItem("partnerSession", sessionStr);
+                localStorage.setItem("partnerSession", sessionStr);
+                router.replace("/partner-center/dashboard");
             } else {
                 setError(data.message || "자동 로그인에 실패했습니다.");
                 setIsLoading(false);

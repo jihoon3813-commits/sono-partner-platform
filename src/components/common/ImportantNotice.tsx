@@ -6,20 +6,21 @@ interface ImportantNoticeProps {
 
 export default function ImportantNotice({ className = "" }: ImportantNoticeProps) {
     return (
-        <section className={`py-16 md:py-24 bg-[#f8fafc] border-t border-slate-200/60 ${className}`}>
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className={`py-8 sm:py-14 md:py-20 bg-[#f8fafc] border-t border-slate-200/60 ${className}`}>
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0">
+            
                 {/* Section Title */}
-                <div className="text-center mb-10 md:mb-14">
+                <div className="text-center mb-6 sm:mb-10">
                     <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">
                         중요정보 고지사항
                     </h2>
                 </div>
 
                 {/* 2x2 Grid Panels (Attachment 1 Style - Sharp Rectangular Panels) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6 md:gap-8">
                     
                     {/* Panel 1: 환급기준 및 환급시기 */}
-                    <div className="bg-[#f0f4f9] border border-slate-200/70 p-6 sm:p-8 rounded-none flex flex-col justify-between shadow-xs">
+                    <div className="bg-[#f0f4f9] border border-slate-200/70 p-4 sm:p-6 rounded-none flex flex-col justify-between shadow-xs min-w-0 break-keep break-words">
                         <div>
                             <h3 className="text-[#2563eb] text-base sm:text-lg font-bold mb-4 flex items-center gap-2">
                                 <span className="text-[#2563eb] text-xs">■</span>
@@ -39,7 +40,7 @@ export default function ImportantNotice({ className = "" }: ImportantNoticeProps
                     </div>
 
                     {/* Panel 2: 총 고객환급의무액 및 자산 현황 */}
-                    <div className="bg-[#f0f4f9] border border-slate-200/70 p-6 sm:p-8 rounded-none flex flex-col justify-between shadow-xs">
+                    <div className="bg-[#f0f4f9] border border-slate-200/70 p-4 sm:p-6 rounded-none flex flex-col justify-between shadow-xs min-w-0 break-keep break-words">
                         <div>
                             <h3 className="text-[#2563eb] text-base sm:text-lg font-bold mb-4 flex items-center gap-2">
                                 <span className="text-[#2563eb] text-xs">■</span>
@@ -47,15 +48,15 @@ export default function ImportantNotice({ className = "" }: ImportantNoticeProps
                             </h3>
 
                             {/* Inner White Stat Box */}
-                            <div className="bg-white border border-slate-200/80 rounded-none p-4 sm:p-5 shadow-xs mb-3">
+                            <div className="bg-white border border-slate-200/80 rounded-none p-3 sm:p-4 shadow-xs mb-3 min-w-0">
                                 <div className="grid grid-cols-2 divide-x divide-slate-100">
                                     <div className="pr-3 sm:pr-4">
                                         <p className="text-[11px] sm:text-xs font-bold text-slate-500 mb-1">총 고객환급의무액</p>
-                                        <p className="text-sm sm:text-lg font-black text-[#2563eb] tracking-tight">1,129,868,124천원</p>
+                                        <p className="text-xs sm:text-base md:text-lg font-black text-[#2563eb] tracking-tight break-all sm:break-normal">1,129,868,124천원</p>
                                     </div>
                                     <div className="pl-3 sm:pl-4">
                                         <p className="text-[11px] sm:text-xs font-bold text-slate-500 mb-1">상조 관련 자산</p>
-                                        <p className="text-sm sm:text-lg font-black text-[#2563eb] tracking-tight">1,230,275,029천원</p>
+                                        <p className="text-xs sm:text-base md:text-lg font-black text-[#2563eb] tracking-tight break-all sm:break-normal">1,230,275,029천원</p>
                                     </div>
                                 </div>
                             </div>
@@ -67,7 +68,7 @@ export default function ImportantNotice({ className = "" }: ImportantNoticeProps
                     </div>
 
                     {/* Panel 3: 고객 불입금 관리방법 */}
-                    <div className="bg-[#f0f4f9] border border-slate-200/70 p-6 sm:p-8 rounded-none flex flex-col justify-between shadow-xs">
+                    <div className="bg-[#f0f4f9] border border-slate-200/70 p-4 sm:p-6 rounded-none flex flex-col justify-between shadow-xs min-w-0 break-keep break-words">
                         <div>
                             <h3 className="text-[#2563eb] text-base sm:text-lg font-bold mb-4 flex items-center gap-2">
                                 <span className="text-[#2563eb] text-xs">■</span>
@@ -80,7 +81,7 @@ export default function ImportantNotice({ className = "" }: ImportantNoticeProps
                     </div>
 
                     {/* Panel 4: 소비자 유의사항 */}
-                    <div className="bg-[#f0f4f9] border border-slate-200/70 p-6 sm:p-8 rounded-none flex flex-col justify-between shadow-xs">
+                    <div className="bg-[#f0f4f9] border border-slate-200/70 p-4 sm:p-6 rounded-none flex flex-col justify-between shadow-xs min-w-0 break-keep break-words">
                         <div>
                             <h3 className="text-[#2563eb] text-base sm:text-lg font-bold mb-4 flex items-center gap-2">
                                 <span className="text-[#2563eb] text-xs">■</span>

@@ -89,6 +89,13 @@ export const approvePartnerRequest = mutation({
         parentPartnerId: v.optional(v.string()),
         parentPartnerName: v.optional(v.string()),
         showLandingUrl: v.optional(v.boolean()),
+        landingVisibility: v.optional(
+            v.object({
+                smartcare: v.optional(v.boolean()),
+                happy450: v.optional(v.boolean()),
+                maeum: v.optional(v.boolean()),
+            })
+        ),
     },
     handler: async (ctx, args) => {
         const request = await ctx.db
@@ -130,6 +137,7 @@ export const approvePartnerRequest = mutation({
             parentPartnerId: args.parentPartnerId,
             parentPartnerName: args.parentPartnerName,
             showLandingUrl: args.showLandingUrl,
+            landingVisibility: args.landingVisibility,
             createdAt: nowKST(),
             approvedAt: nowKST(),
             approvedBy: args.approvedBy,

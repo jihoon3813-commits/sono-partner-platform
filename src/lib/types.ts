@@ -16,6 +16,11 @@ export interface Partner {
     memberCount: string;
     partnerGroup?: string;
     showLandingUrl?: boolean;
+    landingVisibility?: {
+        smartcare?: boolean;
+        happy450?: boolean;
+        maeum?: boolean;
+    };
     customUrl: string;
     logoUrl: string;
     logoText?: string;

@@ -1,0 +1,3418 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap');
+                
+                .maeum-wrapper {
+                    --navy: #173b3b;
+                    --teal: #316d60;
+                    --cream: #f5f1e8;
+                    --ink: #253c3b;
+                    --muted: #62736b;
+                    --line: #dce3d8;
+                    font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+                    letter-spacing: -0.04em;
+                    color: var(--ink);
+                    background: #fffefb;
+                    margin: 0;
+                    padding: 0;
+                    scroll-behavior: smooth;
+                }
+
+                .maeum-wrapper * {
+                    box-sizing: border-box;
+                    font-family: inherit;
+                }
+
+                .maeum-wrapper b,
+                .maeum-wrapper strong {
+                    font-weight: 700 !important;
+                }
+
+                .maeum-wrapper h1,
+                .maeum-wrapper h2,
+                .maeum-wrapper h3,
+                .maeum-wrapper h4 {
+                    font-family: 'Noto Sans KR', sans-serif;
+                    color: var(--navy);
+                }
+
+                .maeum-wrapper h1 {
+                    font-size: 48px;
+                    font-weight: 800 !important;
+                    letter-spacing: -0.065em;
+                    line-height: 1.35;
+                    margin: 26px 0 20px;
+                }
+
+                .maeum-wrapper h1 em {
+                    font-style: normal;
+                    font-weight: 900 !important;
+                    color: var(--teal);
+                }
+
+                .maeum-wrapper h2 {
+                    font-size: 38px;
+                    font-weight: 800 !important;
+                    line-height: 1.45;
+                    letter-spacing: -0.055em;
+                    margin-top: 22px;
+                }
+
+                .maeum-wrapper h3 {
+                    font-size: 23px;
+                    font-weight: 700 !important;
+                    margin: 14px 0;
+                }
+
+                .maeum-wrapper h4 {
+                    font-size: 18px;
+                    font-weight: 700 !important;
+                }
+
+                .maeum-wrapper .brand strong {
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper .ribbon-label strong {
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper .ribbon-step strong {
+                    font-weight: 700 !important;
+                }
+
+                .maeum-wrapper .ribbon-bottom strong {
+                    font-weight: 700 !important;
+                }
+
+                .maeum-wrapper .audcard h3 {
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper .benefit h2 {
+                    color: white !important;
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper .amount {
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper .amount b {
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper .time h3 {
+                    font-weight: 700 !important;
+                }
+
+                .maeum-wrapper .ceremony-overlay p {
+                    font-weight: 700 !important;
+                }
+
+                .maeum-wrapper .ceremony-card h3 {
+                    font-weight: 700 !important;
+                }
+
+                .maeum-wrapper .service-stat {
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper .service-stat b {
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper .plan .cost {
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper .stay-content h3 {
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper .partner-card h3 {
+                    font-weight: 700 !important;
+                }
+
+                .maeum-wrapper .partner-card p strong {
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper .launch-card strong {
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper .new-member-body h3 {
+                    font-weight: 700 !important;
+                }
+
+                .maeum-wrapper .reviewcard h3 {
+                    font-weight: 700 !important;
+                }
+
+                .maeum-wrapper .footrow strong {
+                    font-weight: 800 !important;
+                }
+
+                .maeum-wrapper a {
+                    color: inherit;
+                    text-decoration: none;
+                }
+
+                .maeum-wrapper button, 
+                .maeum-wrapper input, 
+                .maeum-wrapper select {
+                    font: inherit;
+                }
+
+                .maeum-wrapper button {
+                    cursor: pointer;
+                    -webkit-tap-highlight-color: transparent;
+                }
+
+                .maeum-wrapper .wrap {
+                    max-width: 1220px;
+                    margin: auto;
+                    padding: 0 32px;
+                }
+
+                .maeum-wrapper header {
+                    height: 88px;
+                    position: sticky;
+                    top: 0;
+                    z-index: 50;
+                    background: #fffefbf2;
+                    border-bottom: 1px solid var(--line);
+                    backdrop-filter: blur(12px);
+                }
+
+                .maeum-wrapper .nav {
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+                .maeum-wrapper .brand {
+                    display: flex;
+                    gap: 16px;
+                    align-items: center;
+                }
+
+                .maeum-wrapper .brand-logo {
+                    height: 32px;
+                    width: auto;
+                    object-fit: contain;
+                    border-right: 1px solid #ccd3ce;
+                    padding-right: 16px;
+                }
+
+                .maeum-wrapper .brand small {
+                    font-size: 11px;
+                    letter-spacing: 0.08em;
+                    line-height: 1.6;
+                    border-right: 1px solid #ccd3ce;
+                    padding-right: 16px;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .brand strong {
+                    font-size: 24px;
+                    letter-spacing: -0.08em;
+                    font-weight: 800;
+                    color: var(--navy);
+                }
+
+                .maeum-wrapper .partner-badge-header {
+                    font-size: 11px;
+                    font-weight: 700;
+                    background: #eaf0e6;
+                    color: var(--teal);
+                    padding: 4px 10px;
+                    border-radius: 20px;
+                    border: 1px solid #ceddc6;
+                }
+
+                .maeum-wrapper .navlinks {
+                    display: flex;
+                    gap: 18px;
+                    align-items: center;
+                    font-size: 14px;
+                }
+
+                .maeum-wrapper .button {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    background: var(--teal);
+                    color: white;
+                    padding: 14px 22px;
+                    border: 1px solid var(--teal);
+                    border-radius: 7px;
+                    font-weight: 600;
+                    font-size: 14px;
+                    transition: 0.2s;
+                    cursor: pointer;
+                }
+
+                .maeum-wrapper .button:hover {
+                    background: #24564f;
+                    transform: translateY(-2px);
+                }
+
+                .maeum-wrapper .button.light {
+                    background: transparent;
+                    color: var(--ink);
+                    border-color: #bbc8bf;
+                }
+
+                .maeum-wrapper .button.light:hover {
+                    background: #f0f5ee;
+                    color: var(--teal);
+                }
+
+                .maeum-wrapper .nav .button {
+                    padding: 10px 18px;
+                    font-size: 13px;
+                }
+
+                .maeum-wrapper .ui-icon {
+                    width: 42px;
+                    height: 42px;
+                    flex-shrink: 0;
+                    display: inline-block;
+                    vertical-align: middle;
+                    color: var(--teal);
+                }
+
+                .maeum-wrapper section {
+                    padding: 90px 0;
+                    border-top: 1px solid #d9e1d7;
+                    position: relative;
+                }
+
+                .maeum-wrapper section:before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: -1px;
+                    width: 80px;
+                    height: 3px;
+                    background: #b8c6aa;
+                }
+
+                .maeum-wrapper .chapter {
+                    font-size: 12px;
+                    letter-spacing: 0.05em;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    font-weight: 700;
+                    color: var(--teal);
+                }
+
+                .maeum-wrapper .chapter-no {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 31px;
+                    height: 31px;
+                    border: 1px solid currentColor;
+                    border-radius: 50%;
+                    font-family: Georgia, serif;
+                    font-size: 13px;
+                    opacity: 0.85;
+                }
+
+                .maeum-wrapper .center {
+                    text-align: center;
+                }
+
+                .maeum-wrapper .center .chapter {
+                    justify-content: center;
+                }
+
+                .maeum-wrapper h1 {
+                    font-size: 48px;
+                    font-weight: 800;
+                    letter-spacing: -0.065em;
+                    line-height: 1.35;
+                    margin: 26px 0 20px;
+                    color: var(--navy);
+                }
+
+                .maeum-wrapper h1 em {
+                    font-style: normal;
+                    font-weight: 900;
+                    color: var(--teal);
+                }
+
+                .maeum-wrapper h2 {
+                    font-size: 38px;
+                    font-weight: 800;
+                    line-height: 1.45;
+                    letter-spacing: -0.055em;
+                    margin-top: 22px;
+                    color: var(--navy);
+                }
+
+                .maeum-wrapper h3 {
+                    font-size: 23px;
+                    font-weight: 700;
+                    margin: 14px 0;
+                    color: var(--navy);
+                }
+
+                .maeum-wrapper h4 {
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: var(--navy);
+                }
+
+                .maeum-wrapper b,
+                .maeum-wrapper strong {
+                    font-weight: 700;
+                }
+
+                .maeum-wrapper .lead {
+                    font-size: 15px;
+                    line-height: 1.9;
+                    color: #58665f;
+                }
+
+                .maeum-wrapper .sectiondesc {
+                    color: var(--muted);
+                    font-size: 15px;
+                    line-height: 1.9;
+                }
+
+                .maeum-wrapper .hero {
+                    background: linear-gradient(115deg, #f5f1e8, #eeeee2);
+                    padding-top: 55px;
+                    overflow: hidden;
+                }
+
+                .maeum-wrapper .herogrid {
+                    display: grid;
+                    grid-template-columns: 1.03fr 1fr;
+                    gap: 65px;
+                    align-items: center;
+                    padding-bottom: 45px;
+                }
+
+                .maeum-wrapper .eyebrow {
+                    font-size: 12px;
+                    letter-spacing: 0.13em;
+                    font-weight: 700;
+                    color: var(--teal);
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                .maeum-wrapper .hero .button {
+                    margin-top: 25px;
+                }
+
+                .maeum-wrapper .price {
+                    font-size: 12px;
+                    color: var(--muted);
+                    margin-top: 17px;
+                }
+
+                .maeum-wrapper .reviewlink {
+                    display: inline-block;
+                    margin-top: 16px;
+                    color: var(--teal);
+                    font-size: 12px;
+                    text-decoration: underline;
+                    text-underline-offset: 4px;
+                    font-weight: 500;
+                }
+
+                .maeum-wrapper .hero-photo {
+                    margin: 0;
+                    position: relative;
+                    isolation: isolate;
+                }
+
+                .maeum-wrapper .hero-photo:before {
+                    content: '';
+                    position: absolute;
+                    inset: 16px -16px -16px 16px;
+                    border: 1px solid #becbb3;
+                    border-radius: 200px 200px 15px 15px;
+                    z-index: -1;
+                }
+
+                .maeum-wrapper .hero-photo img {
+                    display: block;
+                    width: 100%;
+                    height: 465px;
+                    object-fit: cover;
+                    object-position: 52% 45%;
+                    border-radius: 200px 200px 12px 12px;
+                    background: #dce2d5;
+                }
+
+                .maeum-wrapper .hero-photo figcaption {
+                    position: absolute;
+                    right: 14px;
+                    bottom: 10px;
+                    color: white;
+                    text-shadow: 0 1px 5px #000;
+                    font-size: 9px;
+                    letter-spacing: 0;
+                }
+
+                .maeum-wrapper .photo-seal {
+                    position: absolute;
+                    bottom: 42px;
+                    left: -32px;
+                    background: #fffdf5f5;
+                    box-shadow: 0 8px 28px #183d2914;
+                    padding: 18px 23px;
+                    border-radius: 8px;
+                    display: flex;
+                    gap: 15px;
+                    align-items: center;
+                    border: 1px solid #fff;
+                }
+
+                .maeum-wrapper .photo-seal .ui-icon {
+                    width: 38px;
+                    height: 38px;
+                }
+
+                .maeum-wrapper .photo-seal span {
+                    font-size: 12px;
+                    line-height: 1.8;
+                    color: #68745f;
+                }
+
+                .maeum-wrapper .photo-seal strong {
+                    color: var(--ink);
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .plan-ribbon {
+                    display: grid;
+                    grid-template-columns: 220px 1fr;
+                    background: var(--navy);
+                    color: white;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    position: relative;
+                    margin-top: 25px;
+                }
+
+                .maeum-wrapper .ribbon-label {
+                    padding: 27px 32px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    border-right: 1px solid #ffffff23;
+                }
+
+                .maeum-wrapper .ribbon-label small {
+                    font-size: 9px;
+                    letter-spacing: 0.18em;
+                    color: #c1d4ba;
+                }
+
+                .maeum-wrapper .ribbon-label strong {
+                    font-size: 22px;
+                    font-weight: 800;
+                    line-height: 1.6;
+                    margin-top: 9px;
+                }
+
+                .maeum-wrapper .ribbon-steps {
+                    display: grid;
+                    grid-template-columns: 1fr 1.3fr 1fr;
+                    align-items: stretch;
+                }
+
+                .maeum-wrapper .ribbon-step {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 17px;
+                    padding: 14px 12px;
+                }
+
+                .maeum-wrapper .ribbon-step.highlighted {
+                    background: #30584b;
+                }
+
+                .maeum-wrapper .ribbon-step b {
+                    font: 88px/1.2 Georgia, serif;
+                    color: #b2c4b6;
+                    font-weight: 400;
+                }
+
+                .maeum-wrapper .ribbon-step.highlighted b {
+                    color: #ecdfb4;
+                    font-size: 108px;
+                }
+
+                .maeum-wrapper .ribbon-step span {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+
+                .maeum-wrapper .ribbon-step strong {
+                    font-size: 16px;
+                    font-weight: 700;
+                    white-space: nowrap;
+                }
+
+                .maeum-wrapper .ribbon-step small {
+                    font-size: 10px;
+                    color: #c5d5c8;
+                }
+
+                .maeum-wrapper .ribbon-bottom {
+                    grid-column: 1/-1;
+                    border-top: 1px solid #ffffff22;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 9px;
+                    padding: 11px;
+                    font-size: 11px;
+                    color: #c5d5c8;
+                }
+
+                .maeum-wrapper .ribbon-bottom strong {
+                    color: white;
+                    font-weight: 500;
+                }
+
+                .maeum-wrapper .ribbon-bottom .ui-icon {
+                    width: 19px;
+                    height: 19px;
+                    color: #c5d5c8;
+                }
+
+                .maeum-wrapper .heronote {
+                    border: 0;
+                    font-size: 11px;
+                    padding: 20px 0 23px;
+                    line-height: 1.8;
+                    color: #657262;
+                }
+
+                .maeum-wrapper .truststrip {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    padding: 27px 0 29px;
+                    border-bottom: 1px solid var(--line);
+                    text-align: center;
+                    font-size: 13px;
+                }
+
+                .maeum-wrapper .truststrip > div + div {
+                    border-left: 1px solid var(--line);
+                }
+
+                .maeum-wrapper .truststrip .ui-icon {
+                    display: block;
+                    margin: 0 auto 10px;
+                    width: 32px;
+                    height: 32px;
+                }
+
+                .maeum-wrapper .truststrip small {
+                    display: block;
+                    font-size: 11px;
+                    color: var(--muted);
+                    margin-top: 6px;
+                }
+
+                /* Reviews */
+                .maeum-wrapper .reviews {
+                    background: #f2f5ef;
+                    padding: 80px 0;
+                }
+
+                .maeum-wrapper .reviewheading {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 35px;
+                    align-items: flex-end;
+                }
+
+                .maeum-wrapper .reviewheading > p {
+                    max-width: 335px;
+                    font-size: 13px;
+                    line-height: 1.9;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .reviewintro {
+                    padding: 18px 22px;
+                    background: white;
+                    border-left: 3px solid var(--teal);
+                    font-size: 12px;
+                    line-height: 1.9;
+                    margin: 25px 0;
+                    border-radius: 0 8px 8px 0;
+                }
+
+                .maeum-wrapper .reviewfilters {
+                    display: flex;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    margin: 27px 0 22px;
+                }
+
+                .maeum-wrapper .reviewfilter {
+                    border: 1px solid var(--line);
+                    border-radius: 30px;
+                    background: white;
+                    color: var(--ink);
+                    padding: 10px 17px;
+                    font-size: 12px;
+                    transition: 0.2s;
+                }
+
+                .maeum-wrapper .reviewfilter.active {
+                    background: var(--navy);
+                    color: white;
+                    border-color: var(--navy);
+                }
+
+                .maeum-wrapper .reviewgrid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 22px;
+                }
+
+                .maeum-wrapper .reviewcard {
+                    background: white;
+                    border: 1px solid #dbe3d6;
+                    border-radius: 10px;
+                    padding: 27px;
+                    box-shadow: 0 5px 15px #244d3210;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .maeum-wrapper .reviewmeta {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    font-size: 10px;
+                    color: var(--muted);
+                    gap: 12px;
+                }
+
+                .maeum-wrapper .reviewbadge {
+                    display: inline-block;
+                    padding: 6px 10px;
+                    background: #eff3ec;
+                    border-radius: 4px;
+                    color: #43614e;
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .review-art {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    margin-top: 22px;
+                    border-bottom: 1px solid #e4e9df;
+                    padding-bottom: 18px;
+                }
+
+                .maeum-wrapper .review-art .ui-icon {
+                    width: 37px;
+                    height: 37px;
+                }
+
+                .maeum-wrapper .review-art span {
+                    font-size: 11px;
+                    color: #76836d;
+                    letter-spacing: 0.04em;
+                }
+
+                .maeum-wrapper .reviewcard h3 {
+                    font-size: 21px;
+                    font-weight: 700;
+                    line-height: 1.55;
+                    margin: 20px 0 15px;
+                }
+
+                .maeum-wrapper .reviewcard p {
+                    font-size: 13px;
+                    line-height: 1.95;
+                    color: #64716b;
+                    margin: 0 0 22px;
+                }
+
+                .maeum-wrapper .reviewbottom {
+                    margin-top: auto;
+                    padding-top: 18px;
+                    border-top: 1px solid var(--line);
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 15px;
+                }
+
+                .maeum-wrapper .reviewbottom span {
+                    font-size: 10px;
+                    line-height: 1.7;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .reviewbottom a {
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--teal);
+                    white-space: nowrap;
+                }
+
+                .maeum-wrapper .reviewpolicy {
+                    display: flex;
+                    gap: 30px;
+                    align-items: center;
+                    padding: 22px 0;
+                    font-size: 11px;
+                    line-height: 1.9;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .reviewpolicy strong {
+                    white-space: nowrap;
+                    color: var(--ink);
+                    font-size: 13px;
+                }
+
+                /* Audience */
+                .maeum-wrapper #audience {
+                    background: #fffdf8;
+                }
+
+                .maeum-wrapper .audience {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 22px;
+                    margin-top: 38px;
+                }
+
+                .maeum-wrapper .audcard {
+                    padding: 30px;
+                    text-align: left;
+                    background: #fff;
+                    border: 1px solid var(--line);
+                    border-radius: 12px;
+                    position: relative;
+                    color: var(--ink);
+                    transition: 0.2s;
+                    min-height: 285px;
+                    overflow: hidden;
+                    cursor: pointer;
+                }
+
+                .maeum-wrapper .audcard.active {
+                    border: 2px solid var(--teal);
+                    padding: 29px;
+                    background: #f0f5eb;
+                }
+
+                .maeum-wrapper .audcard:hover {
+                    border-color: var(--teal);
+                }
+
+                .maeum-wrapper .aud-art {
+                    display: block;
+                    width: 92px;
+                    height: 92px;
+                    border-radius: 50%;
+                    background: #e3eadc;
+                    border: 1px solid #d7e0cf;
+                    padding: 16px;
+                    margin-bottom: 22px;
+                }
+
+                .maeum-wrapper .aud-art .ui-icon {
+                    width: 60px;
+                    height: 60px;
+                }
+
+                .maeum-wrapper .audcard .tag {
+                    position: absolute;
+                    right: 28px;
+                    top: 32px;
+                    font-size: 11px;
+                    color: var(--teal);
+                    background: #e5eee5;
+                    border-radius: 20px;
+                    padding: 6px 12px;
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .audcard h3 {
+                    font-size: 24px;
+                    font-weight: 800;
+                }
+
+                .maeum-wrapper .audcard p {
+                    font-size: 14px;
+                    color: var(--muted);
+                    line-height: 1.8;
+                }
+
+                .maeum-wrapper .audcard .arrow {
+                    display: block;
+                    margin-top: 23px;
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: var(--teal);
+                }
+
+                .maeum-wrapper .audcard:after {
+                    content: '';
+                    position: absolute;
+                    width: 180px;
+                    height: 180px;
+                    border: 1px solid #d1ddc6;
+                    border-radius: 50%;
+                    right: -78px;
+                    bottom: -75px;
+                    pointer-events: none;
+                }
+
+                .maeum-wrapper .smallnote {
+                    font-size: 11px;
+                    color: var(--muted);
+                    line-height: 1.9;
+                    margin-top: 20px;
+                }
+
+                /* Benefit / Calculator */
+                .maeum-wrapper .benefit {
+                    background: #173b3b;
+                    color: white;
+                    isolation: isolate;
+                    overflow: hidden;
+                    position: relative;
+                }
+
+                .maeum-wrapper .benefit:before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: -1px;
+                    width: 150px;
+                    height: 3px;
+                    background: #c8d1b1;
+                }
+
+                .maeum-wrapper .benefit:after {
+                    content: '';
+                    position: absolute;
+                    left: -200px;
+                    bottom: -280px;
+                    width: 650px;
+                    height: 650px;
+                    border: 1px solid #ffffff10;
+                    border-radius: 50%;
+                    z-index: -1;
+                    box-shadow: 0 0 0 65px #ffffff03, 0 0 0 130px #ffffff02;
+                }
+
+                .maeum-wrapper .benefit h2 {
+                    color: white;
+                }
+
+                .maeum-wrapper .benefit .chapter {
+                    color: #b6cbb6;
+                }
+
+                .maeum-wrapper .split {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 90px;
+                    align-items: center;
+                }
+
+                .maeum-wrapper .benefit .sectiondesc {
+                    color: #bac5ca;
+                }
+
+                .maeum-wrapper .benefit .smallnote {
+                    color: #a8b9c0;
+                }
+
+                .maeum-wrapper .calc {
+                    background: white;
+                    color: var(--ink);
+                    padding: 32px;
+                    border-radius: 14px;
+                    box-shadow: 0 20px 60px #09232245;
+                }
+
+                .maeum-wrapper .calc-icon {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin-bottom: 25px;
+                    padding-bottom: 19px;
+                    border-bottom: 1px solid var(--line);
+                }
+
+                .maeum-wrapper .calc-icon .ui-icon {
+                    width: 34px;
+                    height: 34px;
+                }
+
+                .maeum-wrapper .calc-icon span {
+                    font-size: 12px;
+                    color: #566e61;
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .calc label {
+                    font-size: 12px;
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .calc select {
+                    border: 0;
+                    background: #eef3ee;
+                    padding: 9px 12px;
+                    border-radius: 4px;
+                    color: var(--teal);
+                    float: right;
+                    font-size: 12px;
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .rangehead {
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 12px;
+                    margin-top: 18px;
+                }
+
+                .maeum-wrapper .calc input[type=range] {
+                    width: 100%;
+                    accent-color: var(--teal);
+                    margin-top: 20px;
+                    cursor: pointer;
+                }
+
+                .maeum-wrapper .calc .row {
+                    display: flex;
+                    justify-content: space-between;
+                    margin: 23px 0;
+                    font-size: 14px;
+                }
+
+                .maeum-wrapper .calc .row span {
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .balance-viz {
+                    height: 18px;
+                    display: flex;
+                    width: 100%;
+                    overflow: hidden;
+                    border-radius: 6px;
+                    gap: 3px;
+                    margin-top: 27px;
+                }
+
+                .maeum-wrapper .balance-viz > div {
+                    transition: width 0.2s;
+                }
+
+                .maeum-wrapper #paid-bar {
+                    background: #d1dac8;
+                }
+
+                .maeum-wrapper #balance-bar {
+                    background: var(--teal);
+                }
+
+                .maeum-wrapper .bar-key {
+                    display: flex;
+                    gap: 18px;
+                    margin-top: 11px;
+                    font-size: 10px;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .bar-key span {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+
+                .maeum-wrapper .bar-key i {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 2px;
+                    background: #d1dac8;
+                }
+
+                .maeum-wrapper .bar-key span + span i {
+                    background: var(--teal);
+                }
+
+                .maeum-wrapper .calc .result {
+                    margin-top: 27px;
+                }
+
+                .maeum-wrapper .calc .result small {
+                    color: var(--teal);
+                    font-weight: 600;
+                    font-size: 12px;
+                }
+
+                .maeum-wrapper .amount {
+                    font-size: 40px;
+                    font-weight: 800;
+                    letter-spacing: -0.04em;
+                    color: var(--teal);
+                    margin-top: 8px;
+                }
+
+                .maeum-wrapper .amount span {
+                    font-size: 18px;
+                    margin-left: 7px;
+                }
+
+                .maeum-wrapper .calc .smallnote {
+                    color: var(--muted);
+                }
+
+                /* Structure 2-5-1 */
+                .maeum-wrapper #structure {
+                    background: #f5f2e9;
+                }
+
+                .maeum-wrapper .year-map {
+                    background: #fffefb;
+                    padding: 28px 30px;
+                    border-radius: 12px;
+                    margin-top: 35px;
+                    border: 1px solid #dfe4d8;
+                }
+
+                .maeum-wrapper .year-map-title {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 20px;
+                    font-size: 11px;
+                    color: var(--muted);
+                    align-items: center;
+                    margin-bottom: 24px;
+                }
+
+                .maeum-wrapper .year-map-title strong {
+                    font-size: 14px;
+                    color: var(--ink);
+                }
+
+                .maeum-wrapper .year-track {
+                    display: grid;
+                    grid-template-columns: repeat(8, 1fr);
+                    gap: 7px;
+                }
+
+                .maeum-wrapper .year-cell {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 9px;
+                    align-items: center;
+                    padding: 14px 6px;
+                    border-radius: 6px;
+                    background: #e7e9df;
+                    color: #707e6c;
+                }
+
+                .maeum-wrapper .year-cell span {
+                    font-size: 11px;
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .year-cell .ui-icon {
+                    width: 30px;
+                    height: 30px;
+                    color: inherit;
+                }
+
+                .maeum-wrapper .year-cell.covered {
+                    background: #326d60;
+                    color: #f6f4e9;
+                }
+
+                .maeum-wrapper .year-cell.finishing {
+                    background: #e9dfc4;
+                    color: #8b7951;
+                }
+
+                .maeum-wrapper .year-key {
+                    display: grid;
+                    grid-template-columns: 2fr 5fr 1fr;
+                    gap: 7px;
+                    margin-top: 12px;
+                    font-size: 11px;
+                    text-align: center;
+                    color: #68765d;
+                }
+
+                .maeum-wrapper .year-key span {
+                    padding-top: 9px;
+                    border-top: 2px solid #c2cbb7;
+                }
+
+                .maeum-wrapper .year-key .yk-covered {
+                    color: var(--teal);
+                    border-color: var(--teal);
+                    font-weight: 700;
+                }
+
+                .maeum-wrapper .year-key .yk-finish {
+                    border-color: #b9a574;
+                }
+
+                .maeum-wrapper .year-map > p {
+                    font-size: 11px;
+                    color: var(--muted);
+                    margin: 22px 0 0;
+                    text-align: center;
+                }
+
+                .maeum-wrapper .timeline {
+                    display: grid;
+                    grid-template-columns: 1fr 1.35fr 1fr;
+                    margin-top: 23px;
+                    border: 1px solid var(--line);
+                    border-radius: 8px;
+                    overflow: hidden;
+                }
+
+                .maeum-wrapper .time {
+                    padding: 26px;
+                    background: #fffdf7;
+                }
+
+                .maeum-wrapper .time.highlight {
+                    background: #e8efdf;
+                    border-left: 1px solid #cad9c8;
+                    border-right: 1px solid #cad9c8;
+                }
+
+                .maeum-wrapper .time .num {
+                    font-family: Georgia, serif;
+                    font-size: 52px;
+                    color: var(--teal);
+                }
+
+                .maeum-wrapper .time .num span {
+                    font-family: 'Noto Sans KR';
+                    font-size: 16px;
+                    margin-left: 8px;
+                }
+
+                .maeum-wrapper .time h3 {
+                    font-size: 21px;
+                    font-weight: 700;
+                    margin: 8px 0;
+                }
+
+                .maeum-wrapper .time p {
+                    font-size: 13px;
+                    line-height: 1.9;
+                    color: #59695e;
+                }
+
+                .maeum-wrapper .pill {
+                    font-size: 11px;
+                    border-radius: 20px;
+                    background: #fff;
+                    display: inline-block;
+                    padding: 6px 12px;
+                    margin-bottom: 8px;
+                    color: var(--ink);
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .highlight .pill {
+                    background: var(--teal);
+                    color: white;
+                }
+
+                .maeum-wrapper .paymentline {
+                    padding: 17px;
+                    text-align: center;
+                    font-size: 13px;
+                    border-bottom: 1px solid var(--line);
+                    background: white;
+                    margin-top: 15px;
+                    border-radius: 8px;
+                }
+
+                .maeum-wrapper .notice {
+                    margin-top: 20px;
+                    background: #eeeadc;
+                    padding: 20px 24px;
+                    font-size: 12px;
+                    line-height: 1.9;
+                    border-left: 3px solid #a4ac94;
+                    border-radius: 0 6px 6px 0;
+                }
+
+                /* Ceremony */
+                .maeum-wrapper .ceremony {
+                    background: #fffefb;
+                }
+
+                .maeum-wrapper .ceremony-head {
+                    display: flex;
+                    align-items: flex-end;
+                    justify-content: space-between;
+                    gap: 35px;
+                }
+
+                .maeum-wrapper .ceremony-head .sectiondesc {
+                    max-width: 365px;
+                }
+
+                .maeum-wrapper .ceremony-visual {
+                    height: 270px;
+                    position: relative;
+                    margin: 30px 0 34px;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    background: #efece2;
+                }
+
+                .maeum-wrapper .ceremony-visual img {
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    object-position: 60% 50%;
+                }
+
+                .maeum-wrapper .ceremony-overlay {
+                    position: absolute;
+                    inset: 0;
+                    padding: 39px 44px;
+                    background: linear-gradient(90deg, #f0ede4ed, #f0ede499 40%, transparent 65%);
+                }
+
+                .maeum-wrapper .ceremony-overlay > span {
+                    font-size: 9px;
+                    letter-spacing: 0.2em;
+                    color: #6f806c;
+                    font-weight: 700;
+                }
+
+                .maeum-wrapper .ceremony-overlay p {
+                    font-size: 26px;
+                    line-height: 1.6;
+                    font-weight: 700;
+                    color: #355045;
+                    margin: 15px 0;
+                }
+
+                .maeum-wrapper .ceremony-overlay small {
+                    font-size: 9px;
+                    color: #6d766a;
+                    position: absolute;
+                    bottom: 15px;
+                    left: 44px;
+                }
+
+                .maeum-wrapper .ceremony-tabs {
+                    display: flex;
+                    gap: 8px;
+                    border-bottom: 1px solid var(--line);
+                    margin: 0 0 28px;
+                    padding-bottom: 18px;
+                }
+
+                .maeum-wrapper .ceremony-tab {
+                    padding: 14px 25px;
+                    border: 1px solid var(--line);
+                    border-radius: 5px;
+                    background: white;
+                    color: var(--ink);
+                    font-size: 14px;
+                    font-weight: 600;
+                    transition: 0.2s;
+                }
+
+                .maeum-wrapper .ceremony-tab.active {
+                    background: var(--navy);
+                    border-color: var(--navy);
+                    color: white;
+                }
+
+                .maeum-wrapper .ceremony-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 18px;
+                }
+
+                .maeum-wrapper .ceremony-card {
+                    padding: 28px;
+                    background: #f5f6ef;
+                    border-radius: 9px;
+                    border: 1px solid #e5e9e0;
+                    position: relative;
+                }
+
+                .maeum-wrapper .service-no {
+                    font: 12px Georgia, serif;
+                    letter-spacing: 0.1em;
+                    color: var(--teal);
+                    border-bottom: 1px solid #cbd8ca;
+                    padding-bottom: 14px;
+                    padding-right: 35px;
+                    display: block;
+                }
+
+                .maeum-wrapper .service-icon {
+                    width: 65px;
+                    height: 65px;
+                    padding: 11px;
+                    background: #e4eddb;
+                    border-radius: 15px;
+                    margin-top: 24px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .maeum-wrapper .service-icon .ui-icon {
+                    width: 43px;
+                    height: 43px;
+                }
+
+                .maeum-wrapper .ceremony-card h3 {
+                    font-size: 22px;
+                    margin: 18px 0;
+                }
+
+                .maeum-wrapper .ceremony-card p {
+                    font-size: 13px;
+                    line-height: 1.9;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .service-stat {
+                    font-size: 27px;
+                    font-weight: 700;
+                    color: var(--teal);
+                    margin: 14px 0;
+                }
+
+                .maeum-wrapper .service-stat small {
+                    font-size: 13px;
+                    font-weight: 400;
+                    margin-left: 5px;
+                }
+
+                .maeum-wrapper .service-facts {
+                    margin: 20px 0 0;
+                    padding: 0;
+                    list-style: none;
+                }
+
+                .maeum-wrapper .service-facts li {
+                    font-size: 12px;
+                    padding: 10px 0;
+                    border-top: 1px solid #dce3d6;
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 10px;
+                }
+
+                .maeum-wrapper .service-facts li span {
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .ceremony-common {
+                    margin-top: 20px;
+                    padding: 29px;
+                    border: 1px solid var(--line);
+                    border-radius: 6px;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr 1fr;
+                    gap: 25px;
+                    background: white;
+                }
+
+                .maeum-wrapper .ceremony-common .ui-icon {
+                    width: 29px;
+                    height: 29px;
+                    display: block;
+                    margin-bottom: 13px;
+                }
+
+                .maeum-wrapper .ceremony-common strong {
+                    font-size: 14px;
+                }
+
+                .maeum-wrapper .ceremony-common p {
+                    font-size: 12px;
+                    line-height: 1.9;
+                    color: var(--muted);
+                    margin: 8px 0 0;
+                }
+
+                .maeum-wrapper .ceremony-flower {
+                    margin-top: 18px;
+                    background: #e8efdf;
+                    border-radius: 5px;
+                    padding: 18px 25px;
+                    display: flex;
+                    gap: 20px;
+                    align-items: center;
+                    font-size: 13px;
+                }
+
+                .maeum-wrapper .ceremony-flower .ui-icon {
+                    width: 30px;
+                    height: 30px;
+                }
+
+                .maeum-wrapper .ceremony-flower span {
+                    font-size: 12px;
+                    color: #65755e;
+                }
+
+                .maeum-wrapper .spec-details {
+                    margin-top: 25px;
+                    border: 1px solid var(--line);
+                    border-radius: 6px;
+                    padding: 0 24px;
+                    background: #fff;
+                }
+
+                .maeum-wrapper .spec-details summary {
+                    font-size: 14px;
+                    padding: 24px 35px 24px 0;
+                    cursor: pointer;
+                    font-weight: 600;
+                    position: relative;
+                    list-style: none;
+                }
+
+                .maeum-wrapper .spec-details summary:after {
+                    content: '+';
+                    position: absolute;
+                    right: 5px;
+                    color: var(--teal);
+                    font-size: 22px;
+                    top: 17px;
+                }
+
+                .maeum-wrapper .spec-details[open] summary:after {
+                    content: '−';
+                }
+
+                .maeum-wrapper .spec-scroll {
+                    overflow-x: auto;
+                    margin-bottom: 20px;
+                    border: 1px solid var(--line);
+                }
+
+                .maeum-wrapper .spec-table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    min-width: 760px;
+                    font-size: 12px;
+                    line-height: 1.7;
+                    text-align: center;
+                }
+
+                .maeum-wrapper .spec-table caption {
+                    text-align: left;
+                    padding: 12px;
+                    font-size: 11px;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .spec-table th, 
+                .maeum-wrapper .spec-table td {
+                    padding: 13px 12px;
+                    border: 1px solid var(--line);
+                }
+
+                .maeum-wrapper .spec-table thead th {
+                    background: var(--navy);
+                    color: white;
+                    font-size: 13px;
+                }
+
+                .maeum-wrapper .spec-table tbody th {
+                    text-align: left;
+                    font-weight: 500;
+                    min-width: 185px;
+                    background: #f7f8f4;
+                }
+
+                .maeum-wrapper .spec-table .spec-group th {
+                    background: #eaf0e6;
+                    color: var(--teal);
+                    font-weight: 700;
+                    padding: 10px 12px;
+                }
+
+                .maeum-wrapper .spec-table td {
+                    width: 25%;
+                }
+
+                .maeum-wrapper .service-footnote {
+                    font-size: 11px;
+                    line-height: 1.9;
+                    color: var(--muted);
+                    margin: 20px 0 0;
+                }
+
+                .maeum-wrapper .service-link {
+                    display: inline-block;
+                    margin-top: 20px;
+                    font-size: 13px;
+                    color: var(--teal);
+                    font-weight: 600;
+                }
+
+                /* Plans */
+                .maeum-wrapper .planssection {
+                    background: #e9efe4;
+                }
+
+                .maeum-wrapper .plans {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 20px;
+                    margin-top: 38px;
+                }
+
+                .maeum-wrapper .plan {
+                    background: white;
+                    border: 1px solid #cfdbca;
+                    border-radius: 12px;
+                    padding: 30px;
+                    position: relative;
+                    box-shadow: 0 5px 15px #294d3110;
+                }
+
+                .maeum-wrapper .plan.featured {
+                    background: #fffef8;
+                    border: 2px solid #326d60;
+                    padding: 29px;
+                    box-shadow: 0 12px 30px #294d3118;
+                }
+
+                .maeum-wrapper .plan-icon {
+                    width: 52px;
+                    height: 52px;
+                    background: #eef3e8;
+                    border-radius: 12px;
+                    padding: 9px;
+                    margin-bottom: 23px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .maeum-wrapper .plan-icon .ui-icon {
+                    width: 34px;
+                    height: 34px;
+                }
+
+                .maeum-wrapper .plan.featured .plan-icon {
+                    background: #e0ead6;
+                }
+
+                .maeum-wrapper .planbadge {
+                    position: absolute;
+                    top: -12px;
+                    right: 22px;
+                    background: var(--teal);
+                    color: #fff;
+                    font-size: 11px;
+                    padding: 5px 12px;
+                    border-radius: 4px;
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .plan .overline {
+                    font-size: 11px;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .plan .cost {
+                    font-size: 29px;
+                    font-weight: 800;
+                    margin: 18px 0 4px;
+                    color: var(--navy);
+                }
+
+                .maeum-wrapper .plan .cost small {
+                    font-weight: 400;
+                    font-size: 12px;
+                }
+
+                .maeum-wrapper .plan .total {
+                    font-size: 11px;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .plan ul {
+                    list-style: none;
+                    padding: 17px 0;
+                    margin: 20px 0;
+                    border-top: 1px solid var(--line);
+                    border-bottom: 1px solid var(--line);
+                }
+
+                .maeum-wrapper .plan li {
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 12px;
+                    padding: 10px 0;
+                }
+
+                .maeum-wrapper .plan li span {
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .plan .button {
+                    width: 100%;
+                    font-size: 13px;
+                    padding: 13px;
+                }
+
+                /* Membership */
+                .maeum-wrapper .membership-section {
+                    background: #fffdf7;
+                }
+
+                .maeum-wrapper .membership-title {
+                    display: flex;
+                    align-items: flex-end;
+                    justify-content: space-between;
+                    gap: 40px;
+                    margin-bottom: 38px;
+                }
+
+                .maeum-wrapper .membership-title h2 {
+                    margin-bottom: 0;
+                }
+
+                .maeum-wrapper .membership-title > div:last-child {
+                    max-width: 380px;
+                }
+
+                .maeum-wrapper .member-status {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    color: var(--teal);
+                    font-size: 11px;
+                    border: 1px solid #ceddc6;
+                    background: #edf4e7;
+                    border-radius: 30px;
+                    padding: 8px 13px;
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .member-status:before {
+                    content: '';
+                    height: 6px;
+                    width: 6px;
+                    border-radius: 50%;
+                    background: var(--teal);
+                }
+
+                .maeum-wrapper .stay-grid {
+                    display: grid;
+                    grid-template-columns: 0.95fr 1.05fr;
+                    gap: 55px;
+                    align-items: center;
+                    background: #f4f4eb;
+                    border: 1px solid #e0e5d6;
+                    border-radius: 14px;
+                    padding: 35px;
+                }
+
+                .maeum-wrapper .resort-figure {
+                    margin: 0;
+                    position: relative;
+                }
+
+                .maeum-wrapper .resort-figure > svg,
+                .maeum-wrapper .resort-figure > img {
+                    width: 100%;
+                    height: auto;
+                    aspect-ratio: 6 / 5;
+                    object-fit: cover;
+                    display: block;
+                    border-radius: 135px 135px 10px 10px;
+                    border: 1px solid #dae2d5;
+                }
+
+                .maeum-wrapper .resort-figure figcaption {
+                    font-size: 9px;
+                    color: var(--muted);
+                    text-align: center;
+                    margin-top: 12px;
+                }
+
+                .maeum-wrapper .resort-label {
+                    position: absolute;
+                    bottom: 44px;
+                    left: 18px;
+                    background: #fffdf3ef;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    display: flex;
+                    gap: 14px;
+                    align-items: center;
+                    box-shadow: 0 7px 20px #20473115;
+                }
+
+                .maeum-wrapper .resort-label span {
+                    font-size: 11px;
+                    line-height: 1.8;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .resort-label strong {
+                    font-size: 13px;
+                    color: var(--ink);
+                }
+
+                .maeum-wrapper .resort-label .ui-icon {
+                    width: 34px;
+                    height: 34px;
+                }
+
+                .maeum-wrapper .stay-brand {
+                    display: flex;
+                    gap: 10px;
+                    align-items: center;
+                    color: var(--teal);
+                    font-size: 9px;
+                    letter-spacing: 0.13em;
+                    font-weight: 700;
+                }
+
+                .maeum-wrapper .stay-brand .ui-icon {
+                    width: 27px;
+                    height: 27px;
+                }
+
+                .maeum-wrapper .stay-content h3 {
+                    font-size: 27px;
+                    font-weight: 800;
+                    margin: 12px 0;
+                }
+
+                .maeum-wrapper .stay-sub {
+                    font-size: 13px;
+                    color: var(--muted);
+                    line-height: 1.8;
+                    margin: 0 0 24px;
+                }
+
+                .maeum-wrapper .stay-prices {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    border: 1px solid #d5dfcb;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    background: #fffef8;
+                }
+
+                .maeum-wrapper .stay-prices > div {
+                    padding: 19px 18px;
+                }
+
+                .maeum-wrapper .stay-prices > div + div {
+                    border-left: 1px solid #d5dfcb;
+                }
+
+                .maeum-wrapper .stay-prices span {
+                    display: block;
+                    font-size: 11px;
+                    color: var(--muted);
+                    margin-bottom: 9px;
+                }
+
+                .maeum-wrapper .stay-prices strong {
+                    font-size: 15px;
+                    white-space: nowrap;
+                    font-weight: 500;
+                }
+
+                .maeum-wrapper .stay-prices em {
+                    font-size: 22px;
+                    color: var(--teal);
+                    font-style: normal;
+                    font-weight: 700;
+                }
+
+                .maeum-wrapper .stay-price-note {
+                    font-size: 10px;
+                    color: #6d7966;
+                    line-height: 1.9;
+                    margin: 12px 0 20px;
+                }
+
+                .maeum-wrapper .stay-mini {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    margin-bottom: 22px;
+                }
+
+                .maeum-wrapper .stay-mini > div {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+                }
+
+                .maeum-wrapper .stay-mini strong {
+                    font-size: 21px;
+                    color: var(--ink);
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .stay-mini span {
+                    font-size: 11px;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .room-types {
+                    border-top: 1px solid #d8dfd0;
+                    font-size: 12px;
+                }
+
+                .maeum-wrapper .room-types > div {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 15px;
+                    padding: 12px 0;
+                    border-bottom: 1px solid #d8dfd0;
+                }
+
+                .maeum-wrapper .room-types span {
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .room-types b {
+                    font-weight: 500;
+                }
+
+                .maeum-wrapper .stay-terms {
+                    border: 0;
+                }
+
+                .maeum-wrapper .stay-terms summary {
+                    font-size: 12px;
+                    padding: 18px 28px 12px 0;
+                    color: var(--teal);
+                    cursor: pointer;
+                    list-style: none;
+                    position: relative;
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .stay-terms summary:after {
+                    content: '+';
+                    position: absolute;
+                    right: 5px;
+                    font-size: 17px;
+                    top: 14px;
+                }
+
+                .maeum-wrapper .stay-terms[open] summary:after {
+                    content: '−';
+                }
+
+                .maeum-wrapper .stay-terms p {
+                    font-size: 11px;
+                    margin: 5px 0 0;
+                    line-height: 1.9;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .partner-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 22px;
+                    margin-top: 24px;
+                }
+
+                .maeum-wrapper .partner-card {
+                    display: grid;
+                    grid-template-columns: 132px 1fr;
+                    align-items: center;
+                    gap: 25px;
+                    border: 1px solid #e0e4d8;
+                    border-radius: 12px;
+                    padding: 24px;
+                    background: #fff;
+                }
+
+                .maeum-wrapper .partner-art {
+                    border-radius: 70px 70px 10px 10px;
+                    height: 170px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 22px;
+                    background: #e9ede3;
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                .maeum-wrapper .partner-art.has-img:before,
+                .maeum-wrapper .partner-art:has(.partner-img):before {
+                    display: none;
+                }
+
+                .maeum-wrapper .partner-art .partner-img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    display: block;
+                    border-radius: inherit;
+                }
+
+                .maeum-wrapper .partner-art:before {
+                    content: '';
+                    position: absolute;
+                    width: 125px;
+                    height: 125px;
+                    border: 1px solid #ffffff7a;
+                    border-radius: 50%;
+                    top: 24px;
+                    left: 35px;
+                }
+
+                .maeum-wrapper .partner-art .ui-icon {
+                    width: 65px;
+                    height: 65px;
+                    z-index: 1;
+                }
+
+                .maeum-wrapper .partner-art span {
+                    font-size: 8px;
+                    letter-spacing: 0.12em;
+                    color: #6b8068;
+                    z-index: 1;
+                    font-weight: 700;
+                }
+
+                .maeum-wrapper .partner-art.nature {
+                    background: #e4eddf;
+                }
+
+                .maeum-wrapper .partner-art.wellness {
+                    background: #f1ece0;
+                }
+
+                .maeum-wrapper .partner-art.wellness .ui-icon {
+                    color: #8c805e;
+                }
+
+                .maeum-wrapper .partner-art.wellness span {
+                    color: #8c805e;
+                }
+
+                .maeum-wrapper .partner-label {
+                    font-size: 10px;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .partner-card h3 {
+                    font-size: 22px;
+                    font-weight: 700;
+                    margin: 10px 0 17px;
+                }
+
+                .maeum-wrapper .partner-card p {
+                    font-size: 14px;
+                    margin: 0 0 12px;
+                }
+
+                .maeum-wrapper .partner-card p strong {
+                    font-size: 25px;
+                    color: var(--teal);
+                }
+
+                .maeum-wrapper .partner-card small {
+                    font-size: 10px;
+                    color: var(--muted);
+                    line-height: 1.8;
+                    display: block;
+                }
+
+                .maeum-wrapper .member-next {
+                    margin-top: 30px;
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 20px;
+                    font-size: 12px;
+                    padding-top: 22px;
+                    border-top: 1px solid var(--line);
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .member-next a {
+                    color: var(--teal);
+                    font-weight: 600;
+                    white-space: nowrap;
+                }
+
+                /* New Membership */
+                .maeum-wrapper .new-membership {
+                    background: #eaf0e5;
+                }
+
+                .maeum-wrapper .new-membership:before {
+                    background: #97ae8b;
+                    width: 150px;
+                }
+
+                .maeum-wrapper .new-member-heading {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 40px;
+                    margin-bottom: 36px;
+                }
+
+                .maeum-wrapper .new-member-heading h2 {
+                    margin-bottom: 14px;
+                }
+
+                .maeum-wrapper .launch-card {
+                    width: 255px;
+                    flex-shrink: 0;
+                    border: 1px solid #c8d5bf;
+                    background: #f9fbf3;
+                    border-radius: 14px;
+                    padding: 25px 29px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    box-shadow: 0 8px 22px #284c2e08;
+                }
+
+                .maeum-wrapper .launch-card .ui-icon {
+                    width: 35px;
+                    height: 35px;
+                    margin-bottom: 17px;
+                }
+
+                .maeum-wrapper .launch-card span {
+                    font-size: 12px;
+                    color: var(--teal);
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .launch-card strong {
+                    font-size: 28px;
+                    margin: 8px 0 10px;
+                    letter-spacing: -0.02em;
+                    font-weight: 700;
+                    color: var(--navy);
+                }
+
+                .maeum-wrapper .launch-card small {
+                    font-size: 10px;
+                    color: var(--muted);
+                }
+
+                .maeum-wrapper .new-member-grid {
+                    display: grid;
+                    grid-template-columns: repeat(5, 1fr);
+                    gap: 15px;
+                }
+
+                .maeum-wrapper .new-member-card {
+                    background: #fffef9;
+                    border: 1px solid #d9e2d1;
+                    border-radius: 11px;
+                    overflow: hidden;
+                }
+
+                .maeum-wrapper .new-member-art {
+                    height: 145px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: #dbe8d8;
+                    position: relative;
+                    isolation: isolate;
+                    overflow: hidden;
+                }
+
+                .maeum-wrapper .new-member-art:before {
+                    content: '';
+                    width: 105px;
+                    height: 105px;
+                    position: absolute;
+                    border: 1px solid #ffffffba;
+                    border-radius: 50%;
+                    top: 23px;
+                    left: calc(50% - 32px);
+                    z-index: -1;
+                }
+
+                .maeum-wrapper .new-member-art:after {
+                    content: '';
+                    position: absolute;
+                    width: 105px;
+                    height: 105px;
+                    background: #ffffff20;
+                    border-radius: 50%;
+                    top: -50px;
+                    left: -30px;
+                    z-index: -1;
+                }
+
+                .maeum-wrapper .new-member-art .ui-icon {
+                    width: 64px;
+                    height: 64px;
+                    color: #487057;
+                }
+
+                .maeum-wrapper .category-no {
+                    position: absolute;
+                    top: 15px;
+                    left: 16px;
+                    font: 11px Georgia, serif;
+                    color: #6b8264;
+                }
+
+                .maeum-wrapper .art-culture {
+                    background: #f0e7d3;
+                }
+
+                .maeum-wrapper .art-culture .ui-icon {
+                    color: #98805b;
+                }
+
+                .maeum-wrapper .art-home {
+                    background: #e3e8db;
+                }
+
+                .maeum-wrapper .art-home .ui-icon {
+                    color: #778466;
+                }
+
+                .maeum-wrapper .art-book {
+                    background: #dde8e5;
+                }
+
+                .maeum-wrapper .art-book .ui-icon {
+                    color: #567d75;
+                }
+
+                .maeum-wrapper .art-rail {
+                    background: #e0e6ec;
+                }
+
+                .maeum-wrapper .art-rail .ui-icon {
+                    color: #5f7c8b;
+                }
+
+                .maeum-wrapper .new-member-body {
+                    padding: 23px 18px 25px;
+                }
+
+                .maeum-wrapper .new-member-body h3 {
+                    font-size: 18px;
+                    font-weight: 700;
+                    margin: 0 0 8px;
+                    white-space: nowrap;
+                }
+
+                .maeum-wrapper .new-member-body > p {
+                    font-size: 10px;
+                    color: var(--muted);
+                    margin: 0 0 22px;
+                }
+
+                .maeum-wrapper .new-member-body ul {
+                    list-style: none;
+                    padding: 16px 0 0;
+                    margin: 0;
+                    border-top: 1px solid #e2e7dc;
+                }
+
+                .maeum-wrapper .new-member-body li {
+                    font-size: 12px;
+                    line-height: 1.7;
+                    padding: 5px 0 5px 12px;
+                    position: relative;
+                }
+
+                .maeum-wrapper .new-member-body li:before {
+                    content: '';
+                    position: absolute;
+                    width: 3px;
+                    height: 3px;
+                    left: 0;
+                    top: 14px;
+                    background: #879b7d;
+                    border-radius: 50%;
+                }
+
+                .maeum-wrapper .new-member-note {
+                    margin-top: 27px;
+                    padding: 20px 24px;
+                    background: #f5f8ef;
+                    border-left: 3px solid #8fa97e;
+                    border-radius: 0 7px 7px 0;
+                    font-size: 12px;
+                }
+
+                .maeum-wrapper .new-member-note strong {
+                    font-size: 13px;
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .new-member-note p {
+                    color: var(--muted);
+                    font-size: 11px;
+                    line-height: 1.9;
+                    margin: 8px 0 0;
+                }
+
+                /* FAQ */
+                .maeum-wrapper #faq {
+                    background: #f0f3ee;
+                    padding: 75px 0 85px;
+                }
+
+                .maeum-wrapper .faq {
+                    max-width: 840px;
+                    margin: 36px auto 0;
+                    background: white;
+                    border: 1px solid #dbe3d6;
+                    border-radius: 12px;
+                    padding: 4px 28px;
+                }
+
+                .maeum-wrapper details {
+                    border-bottom: 1px solid var(--line);
+                }
+
+                .maeum-wrapper details:last-child {
+                    border-bottom: 0;
+                }
+
+                .maeum-wrapper summary {
+                    padding: 23px 35px 23px 5px;
+                    cursor: pointer;
+                    font-size: 15px;
+                    font-weight: 500;
+                    list-style: none;
+                    position: relative;
+                }
+
+                .maeum-wrapper summary:after {
+                    content: '+';
+                    position: absolute;
+                    right: 5px;
+                    color: var(--teal);
+                    font-size: 22px;
+                    top: 17px;
+                }
+
+                .maeum-wrapper details[open] summary:after {
+                    content: '−';
+                }
+
+                .maeum-wrapper details p {
+                    font-size: 13px;
+                    color: var(--muted);
+                    line-height: 1.9;
+                    margin: 0 30px 24px 0;
+                    padding-left: 5px;
+                }
+
+                /* Consult */
+                .maeum-wrapper .consult {
+                    background: #f2ecdf;
+                }
+
+                .maeum-wrapper .reviewanchor {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 25px;
+                    align-items: center;
+                    margin: 0 0 40px;
+                    padding: 20px 24px;
+                    background: #fffdf8;
+                    border: 1px solid #e0dfd2;
+                    border-radius: 8px;
+                    font-size: 13px;
+                }
+
+                .maeum-wrapper .reviewanchor a {
+                    color: var(--teal);
+                    font-weight: 600;
+                    white-space: nowrap;
+                }
+
+                .maeum-wrapper .consultgrid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 80px;
+                }
+
+                .maeum-wrapper .checks {
+                    padding: 0;
+                    list-style: none;
+                    font-size: 14px;
+                    line-height: 2.4;
+                    color: #53685a;
+                    margin-top: 25px;
+                }
+
+                .maeum-wrapper .checks li:before {
+                    content: '✓';
+                    margin-right: 12px;
+                    color: var(--teal);
+                    font-weight: 700;
+                }
+
+                .maeum-wrapper .formbox {
+                    background: white;
+                    padding: 32px;
+                    border: 1px solid var(--line);
+                    border-radius: 12px;
+                    box-shadow: 0 12px 35px #4843260b;
+                }
+
+                .maeum-wrapper .form-title {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    padding-bottom: 22px;
+                    margin-bottom: 25px;
+                    border-bottom: 1px solid var(--line);
+                }
+
+                .maeum-wrapper .form-title .ui-icon {
+                    width: 37px;
+                    height: 37px;
+                }
+
+                .maeum-wrapper .form-title strong {
+                    font-size: 18px;
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .form-title small {
+                    display: block;
+                    font-size: 11px;
+                    color: var(--muted);
+                    margin-top: 7px;
+                }
+
+                .maeum-wrapper .formbox label {
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin: 18px 0 8px;
+                }
+
+                .maeum-wrapper .formbox label:first-child {
+                    margin-top: 0;
+                }
+
+                .maeum-wrapper .choices {
+                    display: flex;
+                    gap: 8px;
+                }
+
+                .maeum-wrapper .choice {
+                    flex: 1;
+                    border: 1px solid var(--line);
+                    background: white;
+                    padding: 12px;
+                    border-radius: 4px;
+                    font-size: 13px;
+                    color: var(--ink);
+                    cursor: pointer;
+                    transition: 0.2s;
+                }
+
+                .maeum-wrapper .choice.active {
+                    background: #e9f0e8;
+                    border-color: var(--teal);
+                    color: var(--teal);
+                    font-weight: 700;
+                }
+
+                .maeum-wrapper .formbox select {
+                    width: 100%;
+                    padding: 13px;
+                    border: 1px solid var(--line);
+                    border-radius: 4px;
+                    background: #fff;
+                    color: var(--ink);
+                    font-size: 13px;
+                }
+
+                .maeum-wrapper .formbox .button {
+                    width: 100%;
+                    margin-top: 24px;
+                }
+
+                .maeum-wrapper .formbox .demo {
+                    font-size: 11px;
+                    color: var(--muted);
+                    line-height: 1.8;
+                    margin: 16px 0 0;
+                }
+
+                .maeum-wrapper .summarybox {
+                    background: #eff4ed;
+                    padding: 16px;
+                    font-size: 13px;
+                    line-height: 1.9;
+                    margin-top: 20px;
+                    border-radius: 6px;
+                    border: 1px solid #ceddc6;
+                }
+
+                /* Footer */
+                .maeum-wrapper footer {
+                    background: #173b3b;
+                    color: #c1cdce;
+                    padding: 40px 0 90px;
+                    font-size: 11px;
+                    line-height: 1.9;
+                    border-top: 4px solid #b7c6a8;
+                }
+
+                .maeum-wrapper .footrow {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                }
+
+                .maeum-wrapper .footrow strong {
+                    font-size: 22px;
+                    color: white;
+                }
+
+                .maeum-wrapper .mobilebar {
+                    display: none;
+                }
+
+                /* Responsive */
+                @media (max-width: 1100px) {
+                    .maeum-wrapper .herogrid { gap: 35px; }
+                    .maeum-wrapper .hero h1 { font-size: 43px; }
+                    .maeum-wrapper .hero-photo img { height: 430px; }
+                    .maeum-wrapper .photo-seal { left: -15px; }
+                    .maeum-wrapper .plan-ribbon { grid-template-columns: 185px 1fr; }
+                    .maeum-wrapper .ribbon-label { padding: 23px; }
+                    .maeum-wrapper .ribbon-label strong { font-size: 19px; }
+                    .maeum-wrapper .ribbon-step { gap: 12px; }
+                    .maeum-wrapper .ribbon-step strong { font-size: 14px; }
+                    .maeum-wrapper .ribbon-step b { font-size: 75px; }
+                    .maeum-wrapper .ribbon-step.highlighted b { font-size: 90px; }
+                    .maeum-wrapper .benefit .split { gap: 45px; }
+                    .maeum-wrapper .service-stat { font-size: 23px; }
+                    .maeum-wrapper .stay-grid { gap: 28px; padding: 27px; }
+                    .maeum-wrapper .stay-prices > div { padding: 16px 12px; }
+                    .maeum-wrapper .partner-card { grid-template-columns: 105px 1fr; gap: 20px; padding: 20px; }
+                    .maeum-wrapper .partner-art { height: 160px; }
+                    .maeum-wrapper .new-member-grid { gap: 10px; }
+                    .maeum-wrapper .new-member-body { padding: 20px 13px; }
+                }
+
+                @media (max-width: 900px) {
+    .maeum-wrapper .navlinks a:not(.button) { display: none; }
+    .maeum-wrapper .brand { gap: 10px; min-width: 0; flex-shrink: 1; }
+    .maeum-wrapper .brand strong { font-size: 18px; white-space: nowrap; }
+    .maeum-wrapper .navlinks { flex-shrink: 0; }
+    .maeum-wrapper .nav .button { white-space: nowrap; padding: 8px 14px; font-size: 12px; }
+    .maeum-wrapper .herogrid { grid-template-columns: 1fr; gap: 20px; }
+    .maeum-wrapper .hero h1 { font-size: 30px; margin: 16px 0; }
+    .maeum-wrapper .hero-photo img { height: 320px; }
+    .maeum-wrapper .hero .lead { font-size: 13px; }
+    .maeum-wrapper .photo-seal { padding: 10px 14px; gap: 8px; left: 10px; bottom: 20px; }
+    .maeum-wrapper .plan-ribbon { grid-template-columns: 1fr; }
+    .maeum-wrapper .ribbon-label {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        border: 0;
+        border-bottom: 1px solid #ffffff23;
+        padding: 12px 18px;
+    }
+    .maeum-wrapper .ribbon-label strong { margin: 0; font-size: 15px; }
+    .maeum-wrapper .ribbon-step b { font-size: 44px; }
+    .maeum-wrapper .ribbon-step.highlighted b { font-size: 52px; }
+    .maeum-wrapper .split, .maeum-wrapper .consultgrid { gap: 20px; }
+    .maeum-wrapper .ceremony-grid { grid-template-columns: 1fr; gap: 14px; }
+    .maeum-wrapper .ceremony-common { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .maeum-wrapper .ceremony-card { padding: 18px 16px; padding-left: 16px; min-height: 0; }
+    .maeum-wrapper .service-icon { position: static; width: 32px; height: 32px; padding: 5px; margin: 0 0 8px 0; border-radius: 6px; display: inline-flex; }
+    .maeum-wrapper .service-icon .ui-icon { width: 20px; height: 20px; }
+    .maeum-wrapper .service-facts { display: block; margin-top: 10px; }
+    .maeum-wrapper .service-facts li { padding: 6px 0; font-size: 11px; }
+    .maeum-wrapper .membership-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+    .maeum-wrapper .membership-title > div:last-child {
+        max-width: 100%;
+    }
+    .maeum-wrapper .stay-grid { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
+    .maeum-wrapper .partner-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .maeum-wrapper .new-member-heading {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+    .maeum-wrapper .launch-card {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    .maeum-wrapper .new-member-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+}
+
+@media (max-width: 680px) {
+    /* 1. 상하 여백 대폭 축소 (스크롤 최소화) */
+    .maeum-wrapper section { padding: 26px 0 !important; }
+    .maeum-wrapper section:before { display: none !important; }
+    .maeum-wrapper .hero { padding-top: 12px !important; padding-bottom: 18px !important; }
+    .maeum-wrapper .wrap { padding: 0 16px !important; width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; }
+    .maeum-wrapper header { height: 56px !important; }
+    .maeum-wrapper .nav { height: 100% !important; align-items: center !important; justify-content: space-between !important; }
+    .maeum-wrapper .brand { gap: 8px !important; min-width: 0 !important; flex-shrink: 1 !important; }
+    .maeum-wrapper .brand-logo { height: 19px !important; padding-right: 6px !important; }
+    .maeum-wrapper .brand small { font-size: 8px !important; padding-right: 6px !important; }
+    .maeum-wrapper .brand strong { font-size: 15px !important; white-space: nowrap !important; }
+    .maeum-wrapper .navlinks { display: flex !important; align-items: center !important; flex-shrink: 0 !important; }
+    .maeum-wrapper .nav .button {
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+        white-space: nowrap !important;
+        height: 32px !important;
+        line-height: 1 !important;
+        border-radius: 6px !important;
+        flex-shrink: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+    }
+
+    /* 2. 큰글씨 크기 줄이기 */
+    .maeum-wrapper h1 { font-size: 24px !important; margin: 8px 0 !important; line-height: 1.3 !important; letter-spacing: -0.04em !important; }
+    .maeum-wrapper h2 { font-size: 20px !important; margin-top: 6px !important; line-height: 1.35 !important; letter-spacing: -0.04em !important; }
+    .maeum-wrapper h3 { font-size: 15px !important; margin: 4px 0 !important; }
+    .maeum-wrapper h4 { font-size: 13px !important; }
+    .maeum-wrapper .hero h1 { font-size: 24px !important; margin: 8px 0 10px !important; }
+    .maeum-wrapper .hero .lead { font-size: 12px !important; line-height: 1.5 !important; margin-bottom: 10px !important; }
+    .maeum-wrapper .sectiondesc { font-size: 11px !important; line-height: 1.5 !important; margin-top: 4px !important; }
+    .maeum-wrapper .eyebrow { font-size: 10px !important; margin-bottom: 2px !important; }
+    .maeum-wrapper .price { font-size: 11px !important; margin-top: 6px !important; }
+
+    /* 3. 우측 삐져나감 완전 방지 */
+    .maeum-wrapper { overflow-x: hidden !important; width: 100% !important; max-width: 100vw !important; position: relative !important; }
+    .maeum-wrapper * { max-width: 100% !important; word-break: keep-all !important; overflow-wrap: break-word !important; }
+    .maeum-wrapper .herogrid,
+    .maeum-wrapper .split,
+    .maeum-wrapper .stay-grid,
+    .maeum-wrapper .consultgrid { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .maeum-wrapper .hero-photo img { height: 230px !important; border-radius: 80px 80px 10px 10px !important; }
+    .maeum-wrapper .hero-photo:before { inset: 5px 0 0 5px !important; border-radius: 80px 80px 10px 10px !important; }
+    .maeum-wrapper .photo-seal { left: 8px !important; right: auto !important; bottom: 10px !important; padding: 7px 11px !important; max-width: calc(100% - 16px) !important; font-size: 10px !important; border-radius: 8px !important; }
+    .maeum-wrapper .photo-seal .ui-icon { width: 18px !important; height: 18px !important; }
+
+    /* 리본 (마음든든 2·5·1) 보기 편하게 개선 */
+    .maeum-wrapper .plan-ribbon { margin-top: 10px !important; border-radius: 10px !important; }
+    .maeum-wrapper .ribbon-label { padding: 10px 14px !important; }
+    .maeum-wrapper .ribbon-label small { font-size: 9px !important; }
+    .maeum-wrapper .ribbon-label strong { font-size: 13.5px !important; }
+    .maeum-wrapper .ribbon-steps {
+        display: grid !important;
+        grid-template-columns: 1fr 1.25fr 1fr !important;
+        align-items: stretch !important;
+    }
+    .maeum-wrapper .ribbon-step {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        gap: 3px !important;
+        padding: 10px 4px !important;
+    }
+    .maeum-wrapper .ribbon-step b {
+        font-size: 32px !important;
+        line-height: 1 !important;
+        margin-bottom: 2px !important;
+    }
+    .maeum-wrapper .ribbon-step.highlighted b {
+        font-size: 36px !important;
+        line-height: 1 !important;
+        margin-bottom: 2px !important;
+    }
+    .maeum-wrapper .ribbon-step span {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 2px !important;
+        width: 100% !important;
+    }
+    .maeum-wrapper .ribbon-step strong {
+        font-size: 11.5px !important;
+        white-space: nowrap !important;
+        line-height: 1.2 !important;
+    }
+    .maeum-wrapper .ribbon-step small {
+        font-size: 8.5px !important;
+        line-height: 1.25 !important;
+        opacity: 0.85 !important;
+        display: block !important;
+        word-break: keep-all !important;
+        text-align: center !important;
+    }
+    .maeum-wrapper .ribbon-bottom { padding: 8px 12px !important; font-size: 10.5px !important; }
+    .maeum-wrapper .ribbon-bottom .ui-icon { width: 16px !important; height: 16px !important; }
+
+    .maeum-wrapper .heronote { font-size: 10px !important; margin-top: 8px !important; line-height: 1.45 !important; }
+
+    /* Trust Strip 3개 나란히 */
+    .maeum-wrapper .truststrip { gap: 4px !important; padding: 8px 4px !important; margin-top: 8px !important; }
+    .maeum-wrapper .truststrip > div { font-size: 10px !important; padding: 6px 2px !important; }
+    .maeum-wrapper .truststrip b { font-size: 11px !important; }
+    .maeum-wrapper .truststrip small { font-size: 8px !important; }
+    .maeum-wrapper .truststrip .ui-icon { width: 18px !important; height: 18px !important; margin-bottom: 2px !important; }
+
+    /* 4. 박스형 안내는 2열로 배치 */
+    /* 가입 대상 선택 (.audience) -> 2열 배치 */
+    .maeum-wrapper .audience {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        margin-top: 10px !important;
+    }
+    .maeum-wrapper .audcard {
+        padding: 12px 10px !important;
+        border-radius: 8px !important;
+        text-align: left !important;
+        min-height: 0 !important;
+    }
+    .maeum-wrapper .aud-art {
+        width: 26px !important;
+        height: 26px !important;
+        margin-bottom: 5px !important;
+        border-radius: 6px !important;
+    }
+    .maeum-wrapper .aud-art .ui-icon { width: 15px !important; height: 15px !important; }
+    .maeum-wrapper .audcard .tag { font-size: 9px !important; padding: 2px 5px !important; margin-bottom: 4px !important; display: inline-block !important; }
+    .maeum-wrapper .audcard h3 { font-size: 13px !important; margin: 3px 0 !important; line-height: 1.3 !important; }
+    .maeum-wrapper .audcard p { font-size: 10px !important; line-height: 1.35 !important; color: var(--muted) !important; margin-bottom: 6px !important; }
+    .maeum-wrapper .audcard .arrow { font-size: 9px !important; font-weight: 700 !important; margin-top: 2px !important; }
+
+    /* 계산기 (.calc) */
+    .maeum-wrapper .calc { padding: 14px 10px !important; border-radius: 8px !important; margin-top: 10px !important; }
+    .maeum-wrapper .calc-icon { gap: 5px !important; margin-bottom: 8px !important; font-size: 11px !important; }
+    .maeum-wrapper .calc-icon .ui-icon { width: 16px !important; height: 16px !important; }
+    .maeum-wrapper .amount { font-size: 22px !important; }
+    .maeum-wrapper .amount b { font-size: 22px !important; }
+    .maeum-wrapper .rangehead { font-size: 11px !important; margin: 6px 0 2px !important; }
+    .maeum-wrapper .row { font-size: 11px !important; padding: 5px 0 !important; }
+    .maeum-wrapper .result { padding: 10px 8px !important; margin-top: 8px !important; border-radius: 6px !important; }
+
+    /* 8년 흐름 타임라인 우측 삐져나감 완전 방지 */
+    .maeum-wrapper .year-map { padding: 12px 10px !important; overflow: hidden !important; }
+    .maeum-wrapper .year-map-title { margin-bottom: 12px !important; }
+    .maeum-wrapper .year-map-title span { font-size: 10px !important; }
+    .maeum-wrapper .year-map-title strong { font-size: 13px !important; }
+    .maeum-wrapper .year-track {
+        display: grid !important;
+        grid-template-columns: repeat(8, 1fr) !important;
+        gap: 3px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .maeum-wrapper .year-cell {
+        min-width: 0 !important;
+        padding: 6px 1px !important;
+        gap: 3px !important;
+        border-radius: 4px !important;
+        box-sizing: border-box !important;
+    }
+    .maeum-wrapper .year-cell span {
+        font-size: 9.5px !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+    }
+    .maeum-wrapper .year-cell .ui-icon {
+        width: 15px !important;
+        height: 15px !important;
+    }
+    .maeum-wrapper .year-key {
+        display: grid !important;
+        grid-template-columns: 2fr 5fr 1fr !important;
+        gap: 3px !important;
+        margin-top: 8px !important;
+        font-size: 9px !important;
+    }
+    .maeum-wrapper .year-key > div,
+    .maeum-wrapper .year-key > span {
+        font-size: 9px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+    .maeum-wrapper .year-map > p {
+        font-size: 9.5px !important;
+        margin: 10px 0 0 !important;
+    }
+
+    /* 타임라인 (.timeline) 박스 내 상하 여백 최소화 */
+    .maeum-wrapper .timeline {
+        grid-template-columns: 1fr !important;
+        gap: 6px !important;
+        margin-top: 8px !important;
+    }
+    .maeum-wrapper .time {
+        padding: 10px 14px !important;
+        border-radius: 8px !important;
+    }
+    .maeum-wrapper .time .num {
+        font-size: 26px !important;
+        line-height: 1 !important;
+        margin-bottom: 2px !important;
+        display: flex !important;
+        align-items: baseline !important;
+    }
+    .maeum-wrapper .time .num span {
+        font-size: 12px !important;
+        margin-left: 4px !important;
+    }
+    .maeum-wrapper .time .pill {
+        font-size: 9.5px !important;
+        padding: 2px 7px !important;
+        margin-bottom: 4px !important;
+        line-height: 1.2 !important;
+    }
+    .maeum-wrapper .time h3 {
+        font-size: 13.5px !important;
+        margin: 2px 0 3px !important;
+        line-height: 1.3 !important;
+    }
+    .maeum-wrapper .time p {
+        font-size: 10.5px !important;
+        line-height: 1.4 !important;
+        margin: 0 !important;
+        color: #59695e !important;
+    }
+    .maeum-wrapper .paymentline {
+        padding: 9px 12px !important;
+        font-size: 11px !important;
+        margin-top: 6px !important;
+    }
+    .maeum-wrapper .notice {
+        padding: 10px 12px !important;
+        font-size: 10px !important;
+        line-height: 1.45 !important;
+        margin-top: 6px !important;
+    }
+
+    /* 의전서비스 헤드: 텍스트 좌측 쏠림 해결 (상하 세로 배치) */
+    .maeum-wrapper .ceremony-head {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+        margin-bottom: 10px !important;
+    }
+    .maeum-wrapper .ceremony-head h2 {
+        font-size: 20px !important;
+        line-height: 1.35 !important;
+        margin: 2px 0 0 !important;
+    }
+    .maeum-wrapper .ceremony-head .sectiondesc {
+        max-width: 100% !important;
+        margin-top: 0 !important;
+        font-size: 11px !important;
+        line-height: 1.5 !important;
+    }
+
+    /* 의전서비스 비주얼 & 오버레이: 텍스트 겹침/배치 이상 완전 해결 */
+    .maeum-wrapper .ceremony-visual {
+        position: relative !important;
+        height: 160px !important;
+        max-height: 160px !important;
+        margin: 10px 0 12px !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+    .maeum-wrapper .ceremony-visual img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: right center !important;
+    }
+    .maeum-wrapper .ceremony-overlay {
+        position: absolute !important;
+        inset: 0 !important;
+        padding: 14px 16px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        background: linear-gradient(90deg, rgba(240, 237, 228, 0.95) 0%, rgba(240, 237, 228, 0.85) 55%, rgba(240, 237, 228, 0.2) 100%) !important;
+    }
+    .maeum-wrapper .ceremony-overlay > span {
+        font-size: 9px !important;
+        letter-spacing: 0.12em !important;
+        color: #6f806c !important;
+        font-weight: 700 !important;
+        margin-bottom: 3px !important;
+        display: block !important;
+    }
+    .maeum-wrapper .ceremony-overlay p {
+        font-size: 16px !important;
+        line-height: 1.35 !important;
+        margin: 0 0 6px 0 !important;
+        font-weight: 700 !important;
+        color: #355045 !important;
+    }
+    .maeum-wrapper .ceremony-overlay small {
+        position: static !important;
+        font-size: 9px !important;
+        color: #707b6d !important;
+        display: block !important;
+        margin: 0 !important;
+        line-height: 1.3 !important;
+    }
+
+    /* 의전 탭 및 카드 */
+    .maeum-wrapper .ceremony-tabs { gap: 4px !important; margin-bottom: 10px !important; }
+    .maeum-wrapper .ceremony-tab { flex: 1 !important; padding: 8px 4px !important; font-size: 11px !important; border-radius: 6px !important; }
+    .maeum-wrapper .ceremony-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+    .maeum-wrapper .ceremony-card {
+        padding: 12px 10px !important;
+        padding-left: 10px !important;
+        min-height: 0 !important;
+        border-radius: 8px !important;
+    }
+    /* 아이콘을 왼쪽에 두지 않고 상단에 24px 크기로 작게 배치 */
+    .maeum-wrapper .service-icon {
+        position: static !important;
+        width: 24px !important;
+        height: 24px !important;
+        padding: 3px !important;
+        margin: 0 0 4px 0 !important;
+        border-radius: 5px !important;
+        display: inline-flex !important;
+    }
+    .maeum-wrapper .service-icon .ui-icon { width: 16px !important; height: 16px !important; }
+    .maeum-wrapper .service-no { font-size: 9px !important; padding-bottom: 4px !important; margin-bottom: 4px !important; }
+    .maeum-wrapper .ceremony-card h3 { font-size: 14px !important; margin: 3px 0 !important; }
+    .maeum-wrapper .ceremony-card p { font-size: 11px !important; line-height: 1.45 !important; }
+    .maeum-wrapper .service-stat { font-size: 16px !important; margin: 4px 0 !important; }
+    .maeum-wrapper .service-stat small { font-size: 10px !important; }
+    .maeum-wrapper .service-facts { display: block !important; margin-top: 6px !important; }
+    .maeum-wrapper .service-facts li { font-size: 10px !important; padding: 4px 0 !important; }
+
+    /* 박스형 안내 2열 배치: 의전 공통 용품 (.ceremony-common) */
+    .maeum-wrapper .ceremony-common {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        padding: 10px 8px !important;
+        gap: 6px !important;
+        border-radius: 8px !important;
+        margin-top: 10px !important;
+    }
+    .maeum-wrapper .ceremony-common > div:nth-child(3) {
+        grid-column: span 2 !important;
+    }
+    .maeum-wrapper .ceremony-common .ui-icon {
+        width: 16px !important;
+        height: 16px !important;
+        margin-bottom: 3px !important;
+    }
+    .maeum-wrapper .ceremony-common strong { font-size: 11px !important; display: block !important; }
+    .maeum-wrapper .ceremony-common p { font-size: 10px !important; line-height: 1.35 !important; margin: 2px 0 0 !important; }
+
+    .maeum-wrapper .ceremony-flower {
+        padding: 8px 10px !important;
+        font-size: 10px !important;
+        gap: 6px !important;
+        border-radius: 6px !important;
+        margin-top: 8px !important;
+    }
+    .maeum-wrapper .ceremony-flower .ui-icon { width: 18px !important; height: 18px !important; flex-shrink: 0 !important; }
+
+    /* 5. 가격 플랜은 좌우 슬라이드로 표현 (.plans) */
+    .maeum-wrapper .plans {
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: 10px !important;
+        padding: 6px 2px 14px !important;
+        margin: 6px 0 0 !important;
+        scrollbar-width: none !important;
+    }
+    .maeum-wrapper .plans::-webkit-scrollbar {
+        display: none !important;
+    }
+    .maeum-wrapper .plan {
+        flex: 0 0 80% !important;
+        min-width: 240px !important;
+        max-width: 275px !important;
+        scroll-snap-align: center !important;
+        margin: 0 !important;
+        padding: 14px 12px !important;
+        border-radius: 8px !important;
+        box-sizing: border-box !important;
+    }
+    .maeum-wrapper .plan-icon {
+        width: 24px !important;
+        height: 24px !important;
+        padding: 3px !important;
+        margin: 0 0 4px 0 !important;
+        border-radius: 5px !important;
+        display: inline-flex !important;
+    }
+    .maeum-wrapper .plan-icon .ui-icon { width: 16px !important; height: 16px !important; }
+    .maeum-wrapper .plan .overline { font-size: 9px !important; }
+    .maeum-wrapper .plan h3 { font-size: 15px !important; margin: 3px 0 !important; }
+    .maeum-wrapper .cost { font-size: 20px !important; margin: 4px 0 !important; }
+    .maeum-wrapper .cost small { font-size: 11px !important; }
+    .maeum-wrapper .total { font-size: 10px !important; margin-bottom: 8px !important; }
+    .maeum-wrapper .plan ul { margin-bottom: 10px !important; }
+    .maeum-wrapper .plan ul li { font-size: 10px !important; padding: 4px 0 !important; }
+    .maeum-wrapper .plan .button { padding: 8px 10px !important; font-size: 11px !important; }
+
+    /* 슬라이드 힌트 안내 태그 */
+    .maeum-wrapper .plans-slide-hint {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        font-size: 10px !important;
+        color: var(--teal) !important;
+        font-weight: 700 !important;
+        margin: 4px 0 !important;
+    }
+
+    /* 06. 멤버십 헤드: 텍스트 좌/우 쏠림 해결 */
+    .maeum-wrapper .membership-title {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+        margin-bottom: 14px !important;
+    }
+    .maeum-wrapper .membership-title h2 {
+        font-size: 20px !important;
+        line-height: 1.35 !important;
+        margin: 2px 0 0 !important;
+    }
+    .maeum-wrapper .membership-title > div:last-child {
+        max-width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+    }
+    .maeum-wrapper .member-status {
+        font-size: 10px !important;
+        padding: 4px 10px !important;
+        gap: 6px !important;
+        border-radius: 20px !important;
+        margin-top: 2px !important;
+    }
+    .maeum-wrapper .membership-title .sectiondesc {
+        font-size: 11px !important;
+        line-height: 1.5 !important;
+        margin: 0 !important;
+        color: var(--muted) !important;
+    }
+
+    /* 06. 리조트: 이미지 위 생뚱맞은 버튼/라벨 제거 및 사진/박스 우측 삐져나감 방지 */
+    .maeum-wrapper .resort-figure {
+        margin: 0 !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    .maeum-wrapper .resort-figure > img {
+        width: 100% !important;
+        aspect-ratio: 16 / 10 !important;
+        height: auto !important;
+        border-radius: 14px 14px 8px 8px !important;
+        object-fit: cover !important;
+    }
+    .maeum-wrapper .resort-label {
+        display: none !important; /* 이미지 위 생뚱맞은 버튼/라벨 숨김 */
+    }
+    .maeum-wrapper .resort-figure figcaption {
+        font-size: 9px !important;
+        margin-top: 6px !important;
+    }
+
+    /* 06. 소노호텔앤리조트 가격 및 안내 박스 우측 삐져나감 해결 */
+    .maeum-wrapper .stay-grid {
+        padding: 14px 12px !important;
+        gap: 12px !important;
+        border-radius: 10px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .maeum-wrapper .stay-content {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        min-width: 0 !important;
+    }
+    .maeum-wrapper .stay-brand {
+        font-size: 8.5px !important;
+        gap: 6px !important;
+    }
+    .maeum-wrapper .stay-brand .ui-icon {
+        width: 18px !important;
+        height: 18px !important;
+    }
+    .maeum-wrapper .stay-content h3 {
+        font-size: 17px !important;
+        margin: 4px 0 !important;
+    }
+    .maeum-wrapper .stay-sub {
+        font-size: 11px !important;
+        line-height: 1.45 !important;
+        margin: 0 0 10px !important;
+    }
+    .maeum-wrapper .stay-prices {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        border-radius: 6px !important;
+    }
+    .maeum-wrapper .stay-prices > div {
+        padding: 10px 8px !important;
+        box-sizing: border-box !important;
+        min-width: 0 !important;
+    }
+    .maeum-wrapper .stay-prices span {
+        font-size: 9.5px !important;
+        margin-bottom: 4px !important;
+        white-space: nowrap !important;
+    }
+    .maeum-wrapper .stay-prices strong {
+        font-size: 11.5px !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: baseline !important;
+        gap: 2px !important;
+        white-space: normal !important;
+        line-height: 1.2 !important;
+    }
+    .maeum-wrapper .stay-prices em {
+        font-size: 15px !important;
+        white-space: nowrap !important;
+    }
+    .maeum-wrapper .stay-price-note {
+        font-size: 9.5px !important;
+        line-height: 1.45 !important;
+        margin: 8px 0 12px !important;
+        word-break: keep-all !important;
+    }
+    .maeum-wrapper .stay-mini {
+        gap: 8px !important;
+        margin-bottom: 12px !important;
+    }
+    .maeum-wrapper .stay-mini > div {
+        gap: 2px !important;
+    }
+    .maeum-wrapper .stay-mini strong {
+        font-size: 16px !important;
+    }
+    .maeum-wrapper .stay-mini span {
+        font-size: 10px !important;
+    }
+    .maeum-wrapper .room-types {
+        font-size: 11px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .maeum-wrapper .room-types > div {
+        padding: 7px 0 !important;
+        gap: 6px !important;
+        box-sizing: border-box !important;
+    }
+    .maeum-wrapper .room-types span {
+        font-size: 10.5px !important;
+        white-space: nowrap !important;
+    }
+    .maeum-wrapper .room-types b {
+        font-size: 10.5px !important;
+        text-align: right !important;
+        word-break: keep-all !important;
+    }
+    .maeum-wrapper .stay-terms summary {
+        font-size: 11px !important;
+        padding: 10px 24px 6px 0 !important;
+    }
+    .maeum-wrapper .stay-terms summary:after {
+        top: 8px !important;
+        font-size: 15px !important;
+    }
+    .maeum-wrapper .stay-terms p {
+        font-size: 10px !important;
+        line-height: 1.5 !important;
+    }
+
+    /* 06. 제휴 파트너 카드: 이미지 좌측말고 위로(상단 배치), 텍스트 우측 쏠림 완전 해결 */
+    .maeum-wrapper .partner-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        margin-top: 10px !important;
+    }
+    .maeum-wrapper .partner-card {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 10px 9px 12px !important;
+        border-radius: 8px !important;
+        gap: 8px !important;
+        box-sizing: border-box !important;
+        text-align: left !important;
+    }
+    .maeum-wrapper .partner-art {
+        width: 100% !important;
+        height: 85px !important;
+        min-height: 85px !important;
+        border-radius: 40px 40px 6px 6px !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+    }
+    .maeum-wrapper .partner-art .partner-img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+    }
+    .maeum-wrapper .partner-card > div:last-child {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+    .maeum-wrapper .partner-label {
+        font-size: 9px !important;
+        line-height: 1.3 !important;
+        color: var(--muted) !important;
+        margin-bottom: 2px !important;
+    }
+    .maeum-wrapper .partner-card h3 {
+        font-size: 13.5px !important;
+        font-weight: 700 !important;
+        margin: 2px 0 4px !important;
+        line-height: 1.3 !important;
+    }
+    .maeum-wrapper .partner-card p {
+        font-size: 11px !important;
+        margin: 0 0 4px !important;
+        line-height: 1.3 !important;
+    }
+    .maeum-wrapper .partner-card p strong {
+        font-size: 16px !important;
+        color: var(--teal) !important;
+    }
+    .maeum-wrapper .partner-card small {
+        font-size: 9px !important;
+        line-height: 1.35 !important;
+        color: var(--muted) !important;
+        word-break: keep-all !important;
+    }
+    .maeum-wrapper .member-next {
+        margin-top: 14px !important;
+        padding-top: 12px !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+        align-items: flex-start !important;
+        font-size: 11px !important;
+    }
+    .maeum-wrapper .member-next a {
+        font-size: 11px !important;
+    }
+
+    /* 07. 신규 멤버십: 상단 텍스트 좌측 쏠림 해결 및 박스 우측 삐져나감 수정 */
+    .maeum-wrapper .new-member-heading {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        margin-bottom: 14px !important;
+    }
+    .maeum-wrapper .new-member-heading > div:first-child {
+        width: 100% !important;
+    }
+    .maeum-wrapper .new-member-heading h2 {
+        font-size: 20px !important;
+        line-height: 1.35 !important;
+        margin: 2px 0 4px !important;
+    }
+    .maeum-wrapper .new-member-heading .sectiondesc {
+        font-size: 11px !important;
+        line-height: 1.5 !important;
+        margin: 0 !important;
+    }
+    .maeum-wrapper .launch-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 12px 14px !important;
+        border-radius: 8px !important;
+        margin-top: 4px !important;
+        box-shadow: none !important;
+    }
+    .maeum-wrapper .launch-card .ui-icon {
+        width: 24px !important;
+        height: 24px !important;
+        margin-bottom: 6px !important;
+    }
+    .maeum-wrapper .launch-card span {
+        font-size: 10.5px !important;
+    }
+    .maeum-wrapper .launch-card strong {
+        font-size: 22px !important;
+        margin: 3px 0 5px !important;
+        line-height: 1.2 !important;
+    }
+    .maeum-wrapper .launch-card small {
+        font-size: 9.5px !important;
+    }
+
+    /* 07. 신규 멤버십 그리드: 2열 배치 및 아래 박스 항목 상하 여백 최소화 */
+    .maeum-wrapper .new-member-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        margin-top: 10px !important;
+    }
+    .maeum-wrapper .new-member-card {
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+    .maeum-wrapper .new-member-art {
+        height: 60px !important;
+        min-height: 60px !important;
+    }
+    .maeum-wrapper .new-member-art .ui-icon {
+        width: 30px !important;
+        height: 30px !important;
+    }
+    .maeum-wrapper .new-member-art:before,
+    .maeum-wrapper .new-member-art:after {
+        width: 55px !important;
+        height: 55px !important;
+    }
+    .maeum-wrapper .category-no {
+        top: 6px !important;
+        left: 8px !important;
+        font-size: 10px !important;
+    }
+    .maeum-wrapper .new-member-body {
+        padding: 8px 8px 10px !important;
+    }
+    .maeum-wrapper .new-member-body h3 {
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        margin: 0 0 2px !important;
+        line-height: 1.3 !important;
+    }
+    .maeum-wrapper .new-member-body > p {
+        font-size: 9.5px !important;
+        line-height: 1.3 !important;
+        margin: 0 0 6px !important;
+        color: var(--muted) !important;
+    }
+    .maeum-wrapper .new-member-body ul {
+        list-style: none !important;
+        padding: 6px 0 0 !important;
+        margin: 0 !important;
+        border-top: 1px solid #e2e7dc !important;
+    }
+    .maeum-wrapper .new-member-body li {
+        font-size: 10.5px !important;
+        line-height: 1.3 !important;
+        padding: 2.5px 0 2.5px 8px !important; /* 상하 여백 최소화 */
+        position: relative !important;
+    }
+    .maeum-wrapper .new-member-body li:before {
+        top: 7px !important;
+        width: 2.5px !important;
+        height: 2.5px !important;
+    }
+    .maeum-wrapper .new-member-note {
+        margin-top: 14px !important;
+        padding: 12px 14px !important;
+        border-radius: 8px !important;
+    }
+    .maeum-wrapper .new-member-note strong {
+        font-size: 11px !important;
+    }
+    .maeum-wrapper .new-member-note p {
+        font-size: 9.5px !important;
+        line-height: 1.45 !important;
+        margin-top: 4px !important;
+    }
+
+    /* 후기 및 FAQ */
+    .maeum-wrapper .reviewgrid { grid-template-columns: 1fr !important; gap: 6px !important; }
+    .maeum-wrapper .reviewcard { padding: 12px 10px !important; }
+    .maeum-wrapper .faq { padding: 10px !important; font-size: 11px !important; }
+
+    /* 모바일 하단 플로팅 바 */
+    .maeum-wrapper .mobilebar {
+        display: flex !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 40 !important;
+        background: #fffefbf5 !important;
+        padding: 8px 12px !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        border-top: 1px solid var(--line) !important;
+        backdrop-filter: blur(10px) !important;
+    }
+    .maeum-wrapper .mobilebar span { font-size: 9px !important; }
+    .maeum-wrapper .mobilebar strong { font-size: 12px !important; display: block !important; }
+    .maeum-wrapper .mobilebar .button { padding: 8px 12px !important; font-size: 11px !important; }
+    .maeum-wrapper footer { padding: 20px 0 80px !important; }
+}

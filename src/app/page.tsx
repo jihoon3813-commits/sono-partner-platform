@@ -12,7 +12,7 @@ export default function HomePage() {
                     SECTION 1: HERO SHOWCASE (Dark Ultra-Luxe Architectural Image Banner)
                    ========================================================================= */}
                 <section
-                    className="relative min-h-[92vh] flex items-center bg-[#090d16] text-white overflow-hidden pt-20 border-b border-neutral-800"
+                    className="relative min-h-[60vh] sm:min-h-[75vh] md:min-h-[88vh] flex items-center bg-[#090d16] text-white overflow-hidden pt-16 sm:pt-20 border-b border-neutral-800"
                     style={{
                         backgroundImage: 'url("https://res.cloudinary.com/lyjyvy54/image/upload/v1785823512/cd512f0c-e032-48ef-80d4-ffa6c9ede92f_v5lqff.png")',
                         backgroundSize: 'cover',
@@ -23,24 +23,24 @@ export default function HomePage() {
                     <div className="absolute inset-0 bg-gradient-to-r from-[#090d16] via-[#090d16]/85 to-transparent z-0"></div>
                     <div className="absolute inset-0 bg-black/40 z-0"></div>
 
-                    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-24 relative z-10 w-full">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-10 sm:py-16 md:py-20 relative z-10 w-full">
                         <div className="max-w-3xl">
                             
                             {/* Hero Text Content */}
-                            <div className="inline-block bg-sono-primary text-white border border-white/20 mb-6 px-4 py-1.5 rounded-none text-xs font-bold tracking-wider uppercase">
+                            <div className="inline-block bg-sono-primary text-white border border-white/20 mb-3 sm:mb-6 px-3 py-1 sm:px-4 sm:py-1.5 rounded-none text-[11px] sm:text-xs font-bold tracking-wider uppercase">
                                 상조를 넘어 라이프케어로
                             </div>
-                            <h1 className="leading-[1.12] mb-8 tracking-tight">
+                            <h1 className="leading-[1.15] mb-4 sm:mb-8 tracking-tight break-keep break-words">
                                 <span className="block text-lg sm:text-xl md:text-2xl mb-4 text-slate-300 font-bold tracking-normal">
                                     소노아임레디 공식총판과 함께
                                 </span>
-                                <span className="text-3xl sm:text-5xl md:text-6xl font-black text-white block leading-[1.15]">
+                                <span className="text-2xl sm:text-4xl md:text-6xl font-black text-white block leading-[1.18]">
                                     파트너사의 비즈니스에<br />
                                     <span className="text-sono-gold">새로운 수익 모델</span>을<br />
                                     도입하세요.
                                 </span>
                             </h1>
-                            <p className="text-base sm:text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-2xl font-normal break-keep">
+                            <p className="text-sm sm:text-base md:text-xl text-slate-300 mb-6 sm:mb-10 leading-relaxed max-w-2xl font-normal break-keep break-words">
                                 소노아임레디 공식총판의 제휴파트너가 되어 파트너사의 회원들에게 최고 수준의 라이프케어 혜택을 제공하고, 파트너사는 매월 안정적인 지속 수수료 수익을 확보할 수 있습니다.
                             </p>
 
@@ -48,13 +48,13 @@ export default function HomePage() {
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <Link 
                                     href="/partner/apply" 
-                                    className="bg-sono-primary text-white hover:bg-blue-600 px-9 py-4 font-bold text-lg rounded-none transition-colors duration-200 text-center shadow-md border border-sono-primary"
+                                    className="bg-sono-primary text-white hover:bg-blue-600 px-6 py-3 sm:px-9 sm:py-4 font-bold text-base sm:text-lg rounded-none transition-colors duration-200 text-center shadow-md border border-sono-primary"
                                 >
                                     제휴 파트너 신청하기
                                 </Link>
                                 <Link 
                                     href="/products/smartcare" 
-                                    className="border border-white/40 bg-white/10 text-white hover:bg-white/20 px-9 py-4 font-bold text-lg rounded-none backdrop-blur-sm transition-colors duration-200 text-center"
+                                    className="border border-white/40 bg-white/10 text-white hover:bg-white/20 px-6 py-3 sm:px-9 sm:py-4 font-bold text-base sm:text-lg rounded-none backdrop-blur-sm transition-colors duration-200 text-center"
                                 >
                                     상품 알아보기
                                 </Link>
@@ -68,15 +68,15 @@ export default function HomePage() {
                 {/* =========================================================================
                     SECTION 2: ABOUT US - BRAND & KEY STRENGTHS (Matching Image 1 Design)
                    ========================================================================= */}
-                <section className="py-20 bg-[#edf2f8] border-b border-slate-200">
+                <section className="py-8 sm:py-14 md:py-20 bg-[#edf2f8] border-b border-slate-200">
                     <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
                         
                         {/* Header: Badge, Title & Subtitle */}
-                        <div className="text-center max-w-3xl mx-auto mb-12">
+                        <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-10 md:mb-12">
                             <div className="inline-block bg-[#dbeafe] text-[#2563eb] px-5 py-1.5 rounded-full font-extrabold text-xs tracking-wider uppercase mb-5 shadow-sm">
                                 ABOUT US
                             </div>
-                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#1e293b] tracking-tight mb-5 leading-tight">
+                            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-[#1e293b] tracking-tight mb-3 sm:mb-5 leading-tight break-keep break-words">
                                 <span className="block sm:inline">소노트리니티그룹의 </span>
                                 <span className="block sm:inline">라이프케어 브랜드</span>
                             </h2>
@@ -89,7 +89,7 @@ export default function HomePage() {
                         </div>
 
                         {/* S - I - R Key Cards (Mobile Touch Horizontal Slider / Desktop 3-Column Grid) */}
-                        <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory pb-4 mb-12 scrollbar-none md:grid md:grid-cols-3 md:gap-5 md:pb-0">
+                        <div className="flex overflow-x-auto gap-3 sm:gap-4 snap-x snap-mandatory pb-3 sm:pb-4 mb-6 sm:mb-10 md:mb-12 scrollbar-none md:grid md:grid-cols-3 md:gap-5 md:pb-0">
                             {/* S Card */}
                             <div className="bg-white rounded-none border border-slate-200 shadow-sm flex flex-col group hover:border-slate-400 transition-all duration-300 overflow-hidden min-w-[85%] sm:min-w-[70%] md:min-w-0 snap-center shrink-0 md:shrink">
                                 <div className="h-44 relative overflow-hidden bg-slate-50 flex items-center justify-center">
@@ -137,7 +137,7 @@ export default function HomePage() {
                         </div>
 
                         {/* 4 Visual Photographic Grid Cards (2x2 on Mobile, 4-Column on Desktop) */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-14">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5 mb-6 sm:mb-10 md:mb-14">
                             {[
                                 {
                                     image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785823467/photo_story_company01_zx8zsa.jpg",
@@ -197,7 +197,7 @@ export default function HomePage() {
                 {/* =========================================================================
                     SECTION 3: ABOUT SONO BRAND ARCHITECTURE (Cool Slate Gray Section)
                    ========================================================================= */}
-                <section className="py-20 bg-[#f1f5f9] border-b border-slate-200">
+                <section className="py-8 sm:py-14 md:py-20 bg-[#f1f5f9] border-b border-slate-200">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         
                         {/* 3 Major Business Domain Image Cards (Mobile Touch Horizontal Slider / Desktop 3-Column Grid) */}
@@ -261,16 +261,16 @@ export default function HomePage() {
                 {/* =========================================================================
                     NEW SECTION: INNOVATION & KEY SERVICE AREAS (Matching Page Design System)
                    ========================================================================= */}
-                <section className="py-24 bg-white border-b border-slate-200">
+                <section className="py-8 sm:py-14 md:py-20 bg-white border-b border-slate-200">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         
                         {/* Section Header */}
-                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-8 border-b border-slate-200">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-10 md:mb-16 pb-4 sm:pb-6 md:pb-8 border-b border-slate-200">
                             <div>
                                 <span className="text-sono-primary text-xs font-black tracking-widest uppercase block mb-2">
                                     INNOVATION & SERVICES
                                 </span>
-                                <h2 className="text-xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight whitespace-nowrap">
+                                <h2 className="text-xl sm:text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight break-keep break-words">
                                     혁신 서비스 &amp; 주요 사업 영역
                                 </h2>
                             </div>
@@ -280,20 +280,20 @@ export default function HomePage() {
                         </div>
 
                         {/* 2 Column Cards Grid */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 items-stretch">
                             
                             {/* Left Box: 업계 최초 혁신 서비스 (Dark Luxe Navy Card) */}
-                            <div className="bg-[#0f1a36] border border-neutral-800 rounded-none p-6 sm:p-10 text-white shadow-xl flex flex-col justify-between relative">
+                            <div className="bg-[#0f1a36] border border-neutral-800 rounded-none p-4 sm:p-6 md:p-10 text-white shadow-xl flex flex-col justify-between relative min-w-0">
                                 <div>
                                     <span className="text-sono-gold text-[11px] sm:text-xs font-extrabold tracking-widest uppercase block mb-2">
                                         INDUSTRY FIRST
                                     </span>
-                                    <h3 className="text-lg sm:text-2xl md:text-3xl font-black text-white tracking-tight mb-6 pb-4 border-b border-white/10 whitespace-nowrap">
+                                    <h3 className="text-base sm:text-2xl md:text-3xl font-black text-white tracking-tight mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-white/10 break-keep break-words">
                                         업계 최초 혁신 서비스
                                     </h3>
 
                                     {/* Checklist Items */}
-                                    <div className="space-y-6 sm:space-y-7">
+                                    <div className="space-y-4 sm:space-y-6">
                                         
                                         {/* Item 1 */}
                                         <div className="flex items-start gap-3.5">
@@ -351,12 +351,12 @@ export default function HomePage() {
                             </div>
 
                             {/* Right Box: 주요 서비스 영역 (Crisp White Card) */}
-                            <div className="bg-slate-50 border border-slate-200 rounded-none p-6 sm:p-10 flex flex-col justify-between">
+                            <div className="bg-slate-50 border border-slate-200 rounded-none p-4 sm:p-6 md:p-10 flex flex-col justify-between min-w-0">
                                 <div>
                                     <span className="text-sono-primary text-[11px] sm:text-xs font-extrabold tracking-widest uppercase block mb-2">
                                         SERVICE DOMAINS
                                     </span>
-                                    <h3 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-6 pb-4 border-b border-slate-200 whitespace-nowrap">
+                                    <h3 className="text-base sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-200 break-keep break-words">
                                         주요 서비스 영역
                                     </h3>
 
@@ -436,14 +436,14 @@ export default function HomePage() {
                 {/* =========================================================================
                     SECTION 4: PRODUCT LINEUP (Deep Premium Navy Section)
                    ========================================================================= */}
-                <section className="py-24 bg-[#0b1329] text-white border-b border-neutral-800">
+                <section className="py-8 sm:py-14 md:py-20 bg-[#0b1329] text-white border-b border-neutral-800">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         
-                        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-20">
+                        <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-10 md:mb-16">
                             <span className="text-sono-gold text-xs font-black tracking-widest uppercase block mb-2">
                                 PRODUCTS LINEUP
                             </span>
-                            <h2 className="text-xl sm:text-4xl md:text-5xl font-black text-white tracking-tight mb-4 whitespace-nowrap">
+                            <h2 className="text-xl sm:text-3xl md:text-5xl font-black text-white tracking-tight mb-3 sm:mb-4 break-keep break-words">
                                 제휴 파트너 채널 전용 상품
                             </h2>
                             <p className="text-slate-300 text-xs sm:text-lg leading-relaxed font-normal break-keep">
@@ -452,7 +452,7 @@ export default function HomePage() {
                         </div>
 
                         {/* Product Cards Grid */}
-                        <div className="grid md:grid-cols-2 gap-8 sm:gap-10">
+                        <div className="grid md:grid-cols-2 gap-4 sm:gap-8">
 
                             {/* Product 1: 더 해피 450 ONE */}
                             <div className="border border-neutral-700 bg-[#0f1a36] rounded-none overflow-hidden relative flex flex-col">
@@ -564,14 +564,14 @@ export default function HomePage() {
                 {/* =========================================================================
                     SECTION 6: PARTNER BENEFITS & REVENUE MODEL (Cool Slate Gray Section)
                    ========================================================================= */}
-                <section className="py-24 bg-[#f8fafc] border-b border-slate-200">
+                <section className="py-8 sm:py-14 md:py-20 bg-[#f8fafc] border-b border-slate-200">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         
-                        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-20">
+                        <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-10 md:mb-16">
                             <span className="text-sono-primary text-xs font-black tracking-widest uppercase block mb-2 sm:mb-3">
                                 PARTNER BENEFITS
                             </span>
-                            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-5 leading-tight">
+                            <h2 className="text-xl sm:text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-3 sm:mb-5 leading-tight break-keep break-words">
                                 <span className="block sm:inline">제휴 파트너에게 드리는 </span>
                                 <span className="block sm:inline">4가지 핵심 혜택</span>
                             </h2>
@@ -581,7 +581,7 @@ export default function HomePage() {
                         </div>
 
                         {/* 4 Photo-Driven Feature Cards (No Icons) */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                             {[
                                 {
                                     title: "안정적인 지속 수수료",
@@ -633,14 +633,14 @@ export default function HomePage() {
                 {/* =========================================================================
                     SECTION 7: HOW IT WORKS & REVENUE MODEL (Luxury Dark Editorial Section)
                    ========================================================================= */}
-                <section className="py-24 bg-[#111827] text-white border-b border-neutral-800">
+                <section className="py-8 sm:py-14 md:py-20 bg-[#111827] text-white border-b border-neutral-800">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         
-                        <div className="text-center max-w-3xl mx-auto mb-20">
+                        <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-10 md:mb-16">
                             <span className="text-sono-gold text-xs font-black tracking-widest uppercase block mb-3">
                                 HOW IT WORKS
                             </span>
-                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight mb-6">
+                            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white tracking-tight mb-4 sm:mb-6 break-keep break-words">
                                 파트너는 홍보만 하세요.<br />상담과 계약은 전담 센터가 진행합니다.
                             </h2>
                             <p className="text-slate-300 text-base sm:text-lg leading-relaxed font-normal break-keep">
@@ -701,11 +701,11 @@ export default function HomePage() {
                 {/* =========================================================================
                     SECTION 8: PARTNERSHIP PROCESS (Pure White Crisp Section)
                    ========================================================================= */}
-                <section className="py-24 bg-white border-b border-slate-200">
+                <section className="py-8 sm:py-14 md:py-20 bg-white border-b border-slate-200">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         
-                        <div className="text-center max-w-3xl mx-auto mb-16">
-                            <span className="text-sono-primary text-xs font-black tracking-widest uppercase block mb-3">
+                        <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-10 md:mb-14">
+                            <span className="text-sono-primary text-xs font-black tracking-widest uppercase block mb-2 sm:mb-3">
                                 PROCESS
                             </span>
                             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
@@ -737,7 +737,7 @@ export default function HomePage() {
                             ))}
                         </div>
 
-                        <div className="text-center mt-16">
+                        <div className="text-center mt-6 sm:mt-10 md:mt-14">
                             <Link 
                                 href="/partner/apply" 
                                 className="bg-sono-primary text-white hover:bg-blue-600 px-10 py-4 font-bold text-lg rounded-none transition-colors duration-200 inline-block shadow-md"
@@ -753,10 +753,10 @@ export default function HomePage() {
                 {/* =========================================================================
                     SECTION 9: FREQUENTLY ASKED QUESTIONS (Cool Slate Gray Section)
                    ========================================================================= */}
-                <section className="py-24 bg-[#f8fafc] border-b border-slate-200">
+                <section className="py-8 sm:py-14 md:py-20 bg-[#f8fafc] border-b border-slate-200">
                     <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12">
                         
-                        <div className="text-center mb-16">
+                        <div className="text-center mb-6 sm:mb-10 md:mb-14">
                             <span className="text-sono-primary text-xs font-black tracking-widest uppercase block mb-3">
                                 FAQ
                             </span>
@@ -785,11 +785,11 @@ export default function HomePage() {
                                 }
                             ].map((faq, index) => (
                                 <details key={index} className="border border-slate-200 bg-white rounded-none group transition-all">
-                                    <summary className="list-none cursor-pointer p-6 font-bold text-slate-900 text-base md:text-lg flex items-center justify-between">
+                                    <summary className="list-none cursor-pointer p-4 sm:p-6 font-bold text-slate-900 text-sm sm:text-base md:text-lg flex items-center justify-between break-keep break-words">
                                         <span>{faq.q}</span>
                                         <span className="text-slate-400 group-open:rotate-180 transition-transform duration-200 ml-4">+</span>
                                     </summary>
-                                    <div className="px-6 pb-6 pt-2 text-sm text-slate-600 leading-relaxed border-t border-slate-100 font-normal">
+                                    <div className="px-4 pb-4 pt-2 sm:px-6 sm:pb-6 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 font-normal break-keep break-words">
                                         {faq.a}
                                     </div>
                                 </details>
@@ -804,7 +804,7 @@ export default function HomePage() {
                     SECTION 10: FINAL CTA BANNER (Dark Luxury Architectural Banner)
                    ========================================================================= */}
                 <section 
-                    className="py-24 bg-[#090d16] text-white relative overflow-hidden"
+                    className="py-10 sm:py-16 md:py-24 bg-[#090d16] text-white relative overflow-hidden"
                     style={{
                         backgroundImage: 'url("https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070&auto=format&fit=crop")',
                         backgroundSize: 'cover',
@@ -817,7 +817,7 @@ export default function HomePage() {
                         <span className="text-sono-gold text-xs font-black tracking-widest uppercase block mb-4">
                             START PARTNERSHIP TODAY
                         </span>
-                        <h2 className="text-3xl sm:text-5xl font-black mb-8 tracking-tight leading-tight">
+                        <h2 className="text-xl sm:text-3xl md:text-5xl font-black mb-4 sm:mb-8 tracking-tight leading-tight break-keep break-words">
                             소노아임레디 공식총판의 제휴파트너가 되어<br />
                             <span className="text-sono-gold">안정적인 새로운 수익 모델</span>을 구축하세요
                         </h2>
@@ -826,7 +826,7 @@ export default function HomePage() {
                         </p>
                         <Link 
                             href="/partner/apply" 
-                            className="bg-sono-primary text-white hover:bg-blue-600 px-12 py-5 font-bold text-xl rounded-none transition-colors duration-200 inline-block shadow-xl border border-sono-primary"
+                            className="bg-sono-primary text-white hover:bg-blue-600 px-6 py-3.5 sm:px-12 sm:py-4 font-bold text-base sm:text-xl rounded-none transition-colors duration-200 inline-block shadow-xl border border-sono-primary"
                         >
                             제휴 파트너 신청하기
                         </Link>

@@ -31,6 +31,10 @@ export default function PartnerSmartCareDirectPage({ params }: { params: Promise
             window.location.replace("/disclosure");
             return;
         }
+        if (lowerId === "admin") {
+            window.location.replace("/admin/smartcare");
+            return;
+        }
         if (isReservedKeyword(lowerId)) {
             window.location.replace("/");
             return;

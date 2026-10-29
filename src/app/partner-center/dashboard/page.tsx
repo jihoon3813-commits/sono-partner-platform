@@ -52,6 +52,7 @@ export default function PartnerDashboard() {
     const [baseUrl, setBaseUrl] = useState("");
     const [copySuccessSmartCare, setCopySuccessSmartCare] = useState(false);
     const [copySuccessHappy450, setCopySuccessHappy450] = useState(false);
+    const [copySuccessMaeum, setCopySuccessMaeum] = useState(false);
     const [copySuccessInquiry, setCopySuccessInquiry] = useState(false);
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
     const [selectedRequest, setSelectedRequest] = useState<PartnerRequest | null>(null);
@@ -252,10 +253,15 @@ export default function PartnerDashboard() {
                 (partner?.loginId && (p.loginId === partner.loginId || p.partnerId === partner.loginId || p.customUrl === partner.loginId)) ||
                 (partner?.customUrl && (p.customUrl === partner.customUrl || p.partnerId === partner.customUrl || p.loginId === partner.customUrl))
             );
-            if (found && (found.showLandingUrl !== partner.showLandingUrl || found.partnerGroup !== partner.partnerGroup)) {
+            if (found && (
+                found.showLandingUrl !== partner.showLandingUrl || 
+                found.partnerGroup !== partner.partnerGroup ||
+                JSON.stringify(found.landingVisibility) !== JSON.stringify(partner.landingVisibility)
+            )) {
                 const updated = {
                     ...partner,
                     showLandingUrl: found.showLandingUrl,
+                    landingVisibility: found.landingVisibility,
                     partnerGroup: found.partnerGroup
                 };
                 setPartner(updated);
@@ -271,11 +277,16 @@ export default function PartnerDashboard() {
         }
     }, [realTimeData, partner]);
 
+    const activePartnerObj = currentPartner || partner;
     const isLandingHidden = 
-        currentPartner?.showLandingUrl === false || 
-        currentPartner?.showLandingUrl === "false" || 
-        partner?.showLandingUrl === false || 
-        partner?.showLandingUrl === "false";
+        activePartnerObj?.showLandingUrl === false || 
+        activePartnerObj?.showLandingUrl === "false";
+
+    const landingVisibility = activePartnerObj?.landingVisibility;
+    const isSmartCareVisible = !isLandingHidden && (landingVisibility?.smartcare !== false);
+    const isHappy450Visible = !isLandingHidden && (landingVisibility?.happy450 !== false);
+    const isMaeumVisible = !isLandingHidden && (landingVisibility?.maeum === true);
+    const hasAnyVisibleLanding = isSmartCareVisible || isHappy450Visible || isMaeumVisible;
 
     const isLandingUrlVisible = Boolean(realTimeData) && !isLandingHidden;
 
@@ -671,8 +682,8 @@ export default function PartnerDashboard() {
                                     </div>
                                 </div>
 
-                                {/* 1. 상품 2종 공식 대표 URL 카드 박스 (2 Columns Grid) */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                {/* 1. 상품 3종 공식 대표 URL 카드 박스 (Admin: 3 Columns Grid) */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                                     {/* Product Card 1: 스마트케어 (SmartCare) */}
                                     <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-sono-primary/40 transition-all flex flex-col justify-between">
                                         <div>
@@ -743,14 +754,14 @@ export default function PartnerDashboard() {
                                     </div>
 
                                     {/* Product Card 2: 더 해피 450 ONE (Happy450) */}
-                                    <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-slate-400 transition-all flex flex-col justify-between">
+                                    <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-amber-500/40 transition-all flex flex-col justify-between">
                                         <div>
                                             <div className="flex items-center justify-between mb-3">
                                                 <div className="flex items-center gap-1.5">
-                                                    <span className="bg-slate-100 text-slate-700 text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                    <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
                                                         일반 상조 플랜
                                                     </span>
-                                                    <span className="bg-slate-800 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                    <span className="bg-amber-800 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
                                                         인증 제휴 전용
                                                     </span>
                                                 </div>
@@ -767,13 +778,13 @@ export default function PartnerDashboard() {
                                                     <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
                                                         기본 상조 서비스, 레디캐시, 만기 100% 전액 환급 스탠다드 상조 전용 플랜
                                                     </p>
-                                                    <p className="text-xs font-bold text-slate-700 mt-1.5">월 18,000원부터</p>
+                                                    <p className="text-xs font-bold text-amber-700 mt-1.5">월 18,000원부터</p>
                                                 </div>
                                             </div>
 
                                             <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl mb-4 font-mono text-xs text-slate-700 truncate">
                                                 <span className="text-slate-400 font-sans block text-[10px] font-bold uppercase mb-0.5">더 해피 450 공식 대표 URL</span>
-                                                <span className="font-bold text-slate-800 truncate block">{baseUrl.replace(/^https?:\/\//, "")}/products/happy450</span>
+                                                <span className="font-bold text-amber-800 truncate block">{baseUrl.replace(/^https?:\/\//, "")}/products/happy450</span>
                                             </div>
                                         </div>
 
@@ -789,7 +800,7 @@ export default function PartnerDashboard() {
                                                 className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
                                                     copySuccessHappy450 
                                                     ? "bg-emerald-500 text-white" 
-                                                    : "bg-slate-100 text-slate-700 hover:bg-slate-800 hover:text-white"
+                                                    : "bg-amber-50 text-amber-800 hover:bg-amber-600 hover:text-white"
                                                 }`}
                                             >
                                                 <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -801,7 +812,76 @@ export default function PartnerDashboard() {
                                                 href="/products/happy450"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-100 text-slate-800 hover:bg-slate-900 hover:text-white text-xs font-bold transition-all shadow-sm"
+                                                className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 text-white hover:bg-amber-600 text-xs font-bold transition-all shadow-sm"
+                                            >
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                                <span>페이지 이동</span>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {/* Product Card 3: 마음든든 (Maeum 251) */}
+                                    <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-emerald-600/40 transition-all flex flex-col justify-between">
+                                        <div>
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase">
+                                                        NEW 안심 플랜
+                                                    </span>
+                                                    <span className="bg-[#173b3b] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                        2·5·1 잔금 보장
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-3.5 items-start mb-4">
+                                                <img 
+                                                    src="/images/maeum/family-moment.png" 
+                                                    alt="마음든든" 
+                                                    className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl shrink-0 border border-slate-100 shadow-sm"
+                                                />
+                                                <div>
+                                                    <h4 className="text-base md:text-lg font-black text-slate-900 mb-1">마음든든</h4>
+                                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                                        2·5·1 구조 잔금 보장 혜택, 약정 의전서비스 및 소노 호텔·리조트 멤버십 제공
+                                                    </p>
+                                                    <p className="text-xs font-bold text-emerald-700 mt-1.5">월 32,000원부터</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl mb-4 font-mono text-xs text-slate-700 truncate">
+                                                <span className="text-slate-400 font-sans block text-[10px] font-bold uppercase mb-0.5">마음든든 공식 대표 URL</span>
+                                                <span className="font-bold text-emerald-800 truncate block">{baseUrl.replace(/^https?:\/\//, "")}/products/maeum</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                                            <button
+                                                onClick={() => {
+                                                    const url = `${baseUrl}/products/maeum`;
+                                                    navigator.clipboard.writeText(url).then(() => {
+                                                        setCopySuccessMaeum(true);
+                                                        setTimeout(() => setCopySuccessMaeum(false), 2000);
+                                                    });
+                                                }}
+                                                className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+                                                    copySuccessMaeum 
+                                                    ? "bg-emerald-500 text-white" 
+                                                    : "bg-emerald-50 text-emerald-800 hover:bg-emerald-700 hover:text-white"
+                                                }`}
+                                            >
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                </svg>
+                                                <span>{copySuccessMaeum ? "복사 완료!" : "URL 복사"}</span>
+                                            </button>
+                                            <a
+                                                href="/products/maeum"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 text-white hover:bg-emerald-700 text-xs font-bold transition-all shadow-sm"
                                             >
                                                 <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -814,159 +894,238 @@ export default function PartnerDashboard() {
                             </>
                         ) : isLandingUrlVisible && partner?.customUrl ? (
                             <>
-                                {/* Section Header (Partner) */}
-                                <div className="flex items-center justify-between px-1">
-                                    <div>
-                                        <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                                            <span className="w-2 h-2 bg-sono-primary inline-block rounded-full"></span>
-                                            파트너 전용 상품 연결 URL 관리
-                                        </h3>
-                                        <p className="text-xs text-slate-500 font-medium mt-0.5">
-                                            고객에게 공유할 상품별 직접 연결 URL 및 상담 전용 주소를 복사하여 홍보에 활용하세요. (URL 경로: /{partner.customUrl}/...)
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* 1. 상품 2종 파트너 전용 URL 카드 박스 (2 Columns Grid - Admin Theme) */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                                    {/* Product Card 1: 스마트케어 (SmartCare) */}
-                                    <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-sono-primary/40 transition-all flex flex-col justify-between">
-                                        <div>
-                                            <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center gap-1.5">
-                                                    <span className="bg-sono-gold text-slate-900 text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase">
-                                                        BEST POPULAR
-                                                    </span>
-                                                    <span className="bg-sono-primary text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
-                                                        가전 결합 상품
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex gap-3.5 items-start mb-4">
-                                                <img 
-                                                    src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785825079/2024112600085_0_vbmtin.jpg" 
-                                                    alt="스마트케어" 
-                                                    className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl shrink-0 border border-slate-100 shadow-sm"
-                                                />
-                                                <div>
-                                                    <h4 className="text-base md:text-lg font-black text-slate-900 mb-1">스마트케어 (SmartCare)</h4>
-                                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                                                        삼성/LG 최신 가전 렌탈 지원금 전액 제공, 만기 100% 전액 환급 베스트셀러 결합 상품
-                                                    </p>
-                                                    <p className="text-xs font-bold text-sono-primary mt-1.5">월 33,000원부터</p>
-                                                </div>
-                                            </div>
-
-                                            <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl mb-4 font-mono text-xs text-slate-700 truncate">
-                                                <span className="text-slate-400 font-sans block text-[10px] font-bold uppercase mb-0.5">스마트케어 파트너 전용 URL</span>
-                                                <span className="font-bold text-sono-primary truncate block">{baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/smartcare</span>
+                                {/* Section Header & Cards (Partner - Filtered by landingVisibility) */}
+                                {hasAnyVisibleLanding && (
+                                    <>
+                                        <div className="flex items-center justify-between px-1">
+                                            <div>
+                                                <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+                                                    <span className="w-2 h-2 bg-sono-primary inline-block rounded-full"></span>
+                                                    파트너 전용 상품 연결 URL 관리
+                                                </h3>
+                                                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                                                    고객에게 공유할 상품별 직접 연결 URL 및 상담 전용 주소를 복사하여 홍보에 활용하세요. (URL 경로: /{partner.customUrl}/...)
+                                                </p>
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
-                                            <button
-                                                onClick={() => {
-                                                    const url = `${baseUrl}/${partner.customUrl}/smartcare`;
-                                                    navigator.clipboard.writeText(url).then(() => {
-                                                        setCopySuccessSmartCare(true);
-                                                        setTimeout(() => setCopySuccessSmartCare(false), 2000);
-                                                    });
-                                                }}
-                                                className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
-                                                    copySuccessSmartCare 
-                                                    ? "bg-emerald-500 text-white" 
-                                                    : "bg-sono-primary/10 text-sono-primary hover:bg-sono-primary hover:text-white"
-                                                }`}
-                                            >
-                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                                </svg>
-                                                <span>{copySuccessSmartCare ? "복사 완료!" : "URL 복사"}</span>
-                                            </button>
-                                            <a
-                                                href={`/${partner.customUrl}/smartcare`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 text-white hover:bg-sono-primary text-xs font-bold transition-all shadow-sm"
-                                            >
-                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                </svg>
-                                                <span>페이지 이동</span>
-                                            </a>
-                                        </div>
-                                    </div>
+                                        {/* 상품 파트너 전용 URL 카드 박스 (조건부 렌더링) */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                                            {/* Product Card 1: 스마트케어 (SmartCare) */}
+                                            {isSmartCareVisible && (
+                                                <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-sono-primary/40 transition-all flex flex-col justify-between">
+                                                    <div>
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className="bg-sono-gold text-slate-900 text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase">
+                                                                    BEST POPULAR
+                                                                </span>
+                                                                <span className="bg-sono-primary text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                                    가전 결합 상품
+                                                                </span>
+                                                            </div>
+                                                        </div>
 
-                                    {/* Product Card 2: 더 해피 450 ONE (Happy450) */}
-                                    <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-slate-400 transition-all flex flex-col justify-between">
-                                        <div>
-                                            <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center gap-1.5">
-                                                    <span className="bg-slate-100 text-slate-700 text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
-                                                        일반 상조 플랜
-                                                    </span>
-                                                    <span className="bg-slate-800 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
-                                                        인증 제휴 전용
-                                                    </span>
+                                                        <div className="flex gap-3.5 items-start mb-4">
+                                                            <img 
+                                                                src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785825079/2024112600085_0_vbmtin.jpg" 
+                                                                alt="스마트케어" 
+                                                                className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl shrink-0 border border-slate-100 shadow-sm"
+                                                            />
+                                                            <div>
+                                                                <h4 className="text-base md:text-lg font-black text-slate-900 mb-1">스마트케어 (SmartCare)</h4>
+                                                                <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                                                    삼성/LG 최신 가전 렌탈 지원금 전액 제공, 만기 100% 전액 환급 베스트셀러 결합 상품
+                                                                </p>
+                                                                <p className="text-xs font-bold text-sono-primary mt-1.5">월 33,000원부터</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl mb-4 font-mono text-xs text-slate-700 truncate">
+                                                            <span className="text-slate-400 font-sans block text-[10px] font-bold uppercase mb-0.5">스마트케어 파트너 전용 URL</span>
+                                                            <span className="font-bold text-sono-primary truncate block">{baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/smartcare</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                                                        <button
+                                                            onClick={() => {
+                                                                const url = `${baseUrl}/${partner.customUrl}/smartcare`;
+                                                                navigator.clipboard.writeText(url).then(() => {
+                                                                    setCopySuccessSmartCare(true);
+                                                                    setTimeout(() => setCopySuccessSmartCare(false), 2000);
+                                                                });
+                                                            }}
+                                                            className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+                                                                copySuccessSmartCare 
+                                                                ? "bg-emerald-500 text-white" 
+                                                                : "bg-sono-primary/10 text-sono-primary hover:bg-sono-primary hover:text-white"
+                                                            }`}
+                                                        >
+                                                            <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                            </svg>
+                                                            <span>{copySuccessSmartCare ? "복사 완료!" : "URL 복사"}</span>
+                                                        </button>
+                                                        <a
+                                                            href={`/${partner.customUrl}/smartcare`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 text-white hover:bg-sono-primary text-xs font-bold transition-all shadow-sm"
+                                                        >
+                                                            <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                            </svg>
+                                                            <span>페이지 이동</span>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )}
 
-                                            <div className="flex gap-3.5 items-start mb-4">
-                                                <img 
-                                                    src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785308928/ChatGPT_Image_2026%EB%85%84_7%EC%9B%94_29%EC%9D%BC_%EC%98%A4%ED%9B%84_03_38_13_1_1_mpokg4.png" 
-                                                    alt="더 해피 450 ONE" 
-                                                    className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl shrink-0 border border-slate-100 shadow-sm"
-                                                />
-                                                <div>
-                                                    <h4 className="text-base md:text-lg font-black text-slate-900 mb-1">더 해피 450 ONE</h4>
-                                                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                                                        기본 상조 서비스, 레디캐시, 만기 100% 전액 환급 스탠다드 상조 전용 플랜
-                                                    </p>
-                                                    <p className="text-xs font-bold text-slate-700 mt-1.5">월 18,000원부터</p>
+                                            {/* Product Card 2: 더 해피 450 ONE (Happy450) */}
+                                            {isHappy450Visible && (
+                                                <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-amber-500/40 transition-all flex flex-col justify-between">
+                                                    <div>
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                                    일반 상조 플랜
+                                                                </span>
+                                                                <span className="bg-amber-800 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                                    인증 제휴 전용
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex gap-3.5 items-start mb-4">
+                                                            <img 
+                                                                src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785308928/ChatGPT_Image_2026%EB%85%84_7%EC%9B%94_29%EC%9D%BC_%EC%98%A4%ED%9B%84_03_38_13_1_1_mpokg4.png" 
+                                                                alt="더 해피 450 ONE" 
+                                                                className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl shrink-0 border border-slate-100 shadow-sm"
+                                                            />
+                                                            <div>
+                                                                <h4 className="text-base md:text-lg font-black text-slate-900 mb-1">더 해피 450 ONE</h4>
+                                                                <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                                                    기본 상조 서비스, 레디캐시, 만기 100% 전액 환급 스탠다드 상조 전용 플랜
+                                                                </p>
+                                                                <p className="text-xs font-bold text-amber-700 mt-1.5">월 18,000원부터</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl mb-4 font-mono text-xs text-slate-700 truncate">
+                                                            <span className="text-slate-400 font-sans block text-[10px] font-bold uppercase mb-0.5">더 해피 450 파트너 전용 URL</span>
+                                                            <span className="font-bold text-amber-800 truncate block">{baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/happy450</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                                                        <button
+                                                            onClick={() => {
+                                                                const url = `${baseUrl}/${partner.customUrl}/happy450`;
+                                                                navigator.clipboard.writeText(url).then(() => {
+                                                                    setCopySuccessHappy450(true);
+                                                                    setTimeout(() => setCopySuccessHappy450(false), 2000);
+                                                                });
+                                                            }}
+                                                            className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+                                                                copySuccessHappy450 
+                                                                ? "bg-emerald-500 text-white" 
+                                                                : "bg-amber-50 text-amber-800 hover:bg-amber-600 hover:text-white"
+                                                            }`}
+                                                        >
+                                                            <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                            </svg>
+                                                            <span>{copySuccessHappy450 ? "복사 완료!" : "URL 복사"}</span>
+                                                        </button>
+                                                        <a
+                                                            href={`/${partner.customUrl}/happy450`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 text-white hover:bg-amber-600 text-xs font-bold transition-all shadow-sm"
+                                                        >
+                                                            <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                            </svg>
+                                                            <span>페이지 이동</span>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )}
 
-                                            <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl mb-4 font-mono text-xs text-slate-700 truncate">
-                                                <span className="text-slate-400 font-sans block text-[10px] font-bold uppercase mb-0.5">더 해피 450 파트너 전용 URL</span>
-                                                <span className="font-bold text-slate-800 truncate block">{baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/happy450</span>
-                                            </div>
-                                        </div>
+                                            {/* Product Card 3: 마음든든 (Maeum 251) */}
+                                            {isMaeumVisible && (
+                                                <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md hover:border-emerald-600/40 transition-all flex flex-col justify-between">
+                                                    <div>
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase">
+                                                                    NEW 안심 플랜
+                                                                </span>
+                                                                <span className="bg-[#173b3b] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase">
+                                                                    2·5·1 잔금 보장
+                                                                </span>
+                                                            </div>
+                                                        </div>
 
-                                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
-                                            <button
-                                                onClick={() => {
-                                                    const url = `${baseUrl}/${partner.customUrl}/happy450`;
-                                                    navigator.clipboard.writeText(url).then(() => {
-                                                        setCopySuccessHappy450(true);
-                                                        setTimeout(() => setCopySuccessHappy450(false), 2000);
-                                                    });
-                                                }}
-                                                className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
-                                                    copySuccessHappy450 
-                                                    ? "bg-emerald-500 text-white" 
-                                                    : "bg-slate-100 text-slate-700 hover:bg-slate-800 hover:text-white"
-                                                }`}
-                                            >
-                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                                </svg>
-                                                <span>{copySuccessHappy450 ? "복사 완료!" : "URL 복사"}</span>
-                                            </button>
-                                            <a
-                                                href={`/${partner.customUrl}/happy450`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-100 text-slate-800 hover:bg-slate-900 hover:text-white text-xs font-bold transition-all shadow-sm"
-                                            >
-                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                </svg>
-                                                <span>페이지 이동</span>
-                                            </a>
+                                                        <div className="flex gap-3.5 items-start mb-4">
+                                                            <img 
+                                                                src="/images/maeum/family-moment.png" 
+                                                                alt="마음든든" 
+                                                                className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl shrink-0 border border-slate-100 shadow-sm"
+                                                            />
+                                                            <div>
+                                                                <h4 className="text-base md:text-lg font-black text-slate-900 mb-1">마음든든</h4>
+                                                                <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                                                    2·5·1 구조 잔금 보장 혜택, 약정 의전서비스 및 소노 호텔·리조트 멤버십 제공
+                                                                </p>
+                                                                <p className="text-xs font-bold text-emerald-700 mt-1.5">월 32,000원부터</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl mb-4 font-mono text-xs text-slate-700 truncate">
+                                                            <span className="text-slate-400 font-sans block text-[10px] font-bold uppercase mb-0.5">마음든든 파트너 전용 URL</span>
+                                                            <span className="font-bold text-emerald-800 truncate block">{baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/maeum</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                                                        <button
+                                                            onClick={() => {
+                                                                const url = `${baseUrl}/${partner.customUrl}/maeum`;
+                                                                navigator.clipboard.writeText(url).then(() => {
+                                                                    setCopySuccessMaeum(true);
+                                                                    setTimeout(() => setCopySuccessMaeum(false), 2000);
+                                                                });
+                                                            }}
+                                                            className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+                                                                copySuccessMaeum 
+                                                                ? "bg-emerald-500 text-white" 
+                                                                : "bg-emerald-50 text-emerald-800 hover:bg-emerald-700 hover:text-white"
+                                                            }`}
+                                                        >
+                                                            <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                            </svg>
+                                                            <span>{copySuccessMaeum ? "복사 완료!" : "URL 복사"}</span>
+                                                        </button>
+                                                        <a
+                                                            href={`/${partner.customUrl}/maeum`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 text-white hover:bg-emerald-700 text-xs font-bold transition-all shadow-sm"
+                                                        >
+                                                            <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                            </svg>
+                                                            <span>페이지 이동</span>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
-                                    </div>
-                                </div>
+                                    </>
+                                )}
 
                                 {/* 2. 상담신청 전용 URL 독립 카드 박스 (Full Width Card Box) */}
                                 <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-5 md:p-6 shadow-md flex flex-col md:flex-row items-center justify-between gap-4 border border-indigo-900/60 mt-4">

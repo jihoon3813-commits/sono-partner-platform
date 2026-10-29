@@ -17,11 +17,11 @@ export default function Footer({ partnerMode = false, productType }: FooterProps
     }
 
     return (
-        <footer className="bg-white border-t border-slate-200 pt-16 pb-12 text-slate-600">
+        <footer className="bg-white border-t border-slate-200 pt-8 sm:pt-12 md:pt-16 pb-8 sm:pb-12 text-slate-600 min-w-0 break-keep break-words">
             <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                 
                 {/* Upper Footer: Brand Info & Quick Links */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 pb-12 border-b border-slate-100">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 pb-6 sm:pb-10 border-b border-slate-100">
                     
                     {/* Brand Info (5 cols) */}
                     <div className="md:col-span-5 space-y-4">
@@ -83,7 +83,7 @@ export default function Footer({ partnerMode = false, productType }: FooterProps
                 </div>
 
                 {/* Notice Box: 필수 안내사항 */}
-                <div className="py-8 border-b border-slate-100 text-[11px] text-slate-400 leading-relaxed space-y-1">
+                <div className="py-4 sm:py-6 border-b border-slate-100 text-[11px] text-slate-400 leading-relaxed space-y-1">
                     <p className="font-bold text-slate-600 mb-1.5">[필수 안내사항]</p>
                     <p>① 본 상품은 상조 상품이며, 계약체결 시 계약서 및 가입 녹취 내용 미인지에 따른 손실은 계약자 등에게 귀속됩니다.</p>
                     <p>② 가입 상품에 따라 혜택 및 서비스 보장 종류 등 차등이 있을 수 있습니다.</p>
@@ -92,7 +92,7 @@ export default function Footer({ partnerMode = false, productType }: FooterProps
                 </div>
 
                 {/* Bottom Footer: Copyright & Legal Links */}
-                <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
+                <div className="pt-4 sm:pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 text-xs text-slate-400">
                     <p className="font-normal">COPYRIGHT © SINCE 2025 LIFE&JOY CO., LTD. ALL RIGHTS RESERVED.</p>
                     <div className="flex items-center gap-6">
                         {productType === 'happy450' && (

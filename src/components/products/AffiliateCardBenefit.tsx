@@ -52,8 +52,8 @@ export default function AffiliateCardBenefit({
         <div className={`w-full space-y-3 sm:space-y-4 ${className}`}>
             {/* 1. 가격구성 테이블 */}
             <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-center border-collapse text-xs sm:text-sm">
+                <div className="overflow-x-auto no-scrollbar">
+                    <table className="w-full min-w-[480px] text-center border-collapse text-xs sm:text-sm">
                         <thead>
                             <tr className="border-b border-slate-200 bg-slate-50/50 text-slate-500 font-bold">
                                 <th className="py-2.5 sm:py-3.5 px-2 sm:px-4 border-r border-slate-200 font-bold" rowSpan={2}>
@@ -130,7 +130,7 @@ export default function AffiliateCardBenefit({
             </div>
 
             {/* 2. 만기 환급금 혜택 배너 */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 md:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 shadow-xs text-center sm:text-left">
+            <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 p-3 sm:p-4 md:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 shadow-xs text-center sm:text-left min-w-0 break-keep">
                 <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-center sm:justify-start">
                     <span className="text-xs sm:text-sm font-bold text-slate-800 shrink-0">
                         만기 환급금 혜택
@@ -147,7 +147,7 @@ export default function AffiliateCardBenefit({
             </div>
 
             {/* 3. 제휴카드 신청 안내 카드 */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
+            <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 p-3 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 shadow-xs min-w-0 break-keep">
                 {/* 좌측 카드 이미지 */}
                 <div className="flex items-center justify-center shrink-0 w-24 sm:w-28">
                     <img 

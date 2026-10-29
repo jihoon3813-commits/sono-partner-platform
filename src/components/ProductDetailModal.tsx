@@ -165,7 +165,7 @@ export default function ProductDetailModal({
 
                 {/* 모달 바디 (스크롤 영역) */}
                 <div className="overflow-y-auto overflow-x-hidden flex-1 bg-white w-full no-scrollbar">
-                    <div className="p-3.5 sm:p-6 md:p-8 space-y-6 sm:space-y-10 w-full box-border min-w-0">
+                    <div className="p-3 sm:p-5 md:p-8 space-y-4 sm:space-y-6 w-full box-border min-w-0 break-keep break-words">
 
                         {isLoading ? (
                             <div className="py-16 sm:py-20 flex flex-col items-center justify-center gap-3 sm:gap-4 text-center">
@@ -196,7 +196,7 @@ export default function ProductDetailModal({
                                     {/* 상단 썸네일 및 핵심 요약 카드 */}
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 md:gap-8 items-center bg-[#f9fafb] p-3 sm:p-5 border border-gray-300 w-full box-border overflow-hidden min-w-0">
                                         {/* 썸네일 이미지 */}
-                                        <div className="md:col-span-5 flex items-center justify-center bg-white p-3 sm:p-6 border border-gray-200 h-[170px] sm:h-[200px] md:h-[240px] relative w-full min-w-0">
+                                        <div className="md:col-span-5 flex items-center justify-center bg-white p-3 sm:p-6 border border-gray-200 h-[140px] sm:h-[180px] md:h-[220px] relative w-full min-w-0">
                                             <img
                                                 src={item.image}
                                                 alt={item.name}
@@ -295,7 +295,7 @@ export default function ProductDetailModal({
                                                 <tbody>
                                                     {item.specs.map((spec, sIdx) => (
                                                         <tr key={sIdx} className={sIdx % 2 === 0 ? "bg-white" : "bg-[#f9fafb]"}>
-                                                            <th className="w-[95px] sm:w-[130px] p-2 sm:p-3 font-bold text-[#0c2340] bg-gray-100/70 border-r border-b border-gray-300 break-keep text-xs sm:text-sm shrink-0 align-middle">
+                                                            <th className="w-[85px] sm:w-[120px] p-2 sm:p-3 font-bold text-[#0c2340] bg-gray-100/70 border-r border-b border-gray-300 break-keep text-xs sm:text-sm shrink-0 align-middle">
                                                                 {spec.label}
                                                             </th>
                                                             <td className="p-2 sm:p-3 font-medium text-gray-800 border-b border-gray-300 text-xs sm:text-sm align-middle break-words min-w-0">

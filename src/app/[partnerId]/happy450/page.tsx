@@ -31,6 +31,10 @@ export default function PartnerHappy450DirectPage({ params }: { params: Promise<
             window.location.replace("/disclosure");
             return;
         }
+        if (lowerId === "admin") {
+            window.location.replace("/admin/happy450");
+            return;
+        }
         if (isReservedKeyword(lowerId)) {
             window.location.replace("/");
             return;

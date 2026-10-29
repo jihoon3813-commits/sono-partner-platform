@@ -17,6 +17,13 @@ export default defineSchema({
         memberCount: v.string(),
         partnerGroup: v.optional(v.string()), // 'ALL' (전체 상품 판매) | 'COMBINED' (결합 상품 판매)
         showLandingUrl: v.optional(v.boolean()),
+        landingVisibility: v.optional(
+            v.object({
+                smartcare: v.optional(v.boolean()),
+                happy450: v.optional(v.boolean()),
+                maeum: v.optional(v.boolean()),
+            })
+        ),
         customUrl: v.string(), // 도메인/p/뒤에 붙는 url
         logoUrl: v.optional(v.string()),
         logoText: v.optional(v.string()),

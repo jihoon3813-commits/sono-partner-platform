@@ -652,7 +652,7 @@ export default function SmartCareContent({
             <main className="pb-32"> {/* Add padding for fixed bottom bar */}
                 {/* 히어로 섹션 */}
                 <section
-                    className="relative min-h-[75vh] flex items-center bg-sono-dark overflow-hidden pt-12 bg-cover bg-center bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785980602/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_6%EC%9D%BC_%EC%98%A4%EC%A0%84_10_12_51_fvzqk5.png')] md:bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785975702/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_6%EC%9D%BC_%EC%98%A4%EC%A0%84_01_26_52_nl5poy.png')]"
+                    className="relative min-h-[50vh] sm:min-h-[65vh] md:min-h-[75vh] flex items-center bg-sono-dark overflow-hidden pt-6 sm:pt-12 bg-cover bg-center bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785980602/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_6%EC%9D%BC_%EC%98%A4%EC%A0%84_10_12_51_fvzqk5.png')] md:bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785975702/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_6%EC%9D%BC_%EC%98%A4%EC%A0%84_01_26_52_nl5poy.png')]"
                     style={{
                         backgroundSize: 'cover',
                         backgroundPosition: 'center'
@@ -662,16 +662,16 @@ export default function SmartCareContent({
                     <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/60 to-slate-950/30 z-0"></div>
                     <div className="absolute inset-0 bg-black/25 z-0"></div>
 
-                    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-20 relative z-10 w-full">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-14 md:py-20 relative z-10 w-full min-w-0">
                         <div className="max-w-4xl animate-fade-in text-left">
-                            <span className="inline-block bg-gradient-to-r from-[#3b82f6] to-blue-600 text-white font-black border border-white/20 mb-8 px-4 py-2 rounded-none text-sm shadow-xl tracking-wider">
+                            <span className="inline-block bg-gradient-to-r from-[#3b82f6] to-blue-600 text-white font-black border border-white/20 mb-4 sm:mb-8 px-3 py-1 sm:px-4 sm:py-2 rounded-none text-xs sm:text-sm shadow-xl tracking-wider">
                                 ★ PREMIUM HYBRID SERVICE
                             </span>
                             <h1 className="leading-[1.12] mb-6 tracking-tighter filter drop-shadow-2xl">
-                                <span className="block text-4xl md:text-6xl lg:text-7xl font-black text-white drop-shadow-md">스마트케어</span>
+                                <span className="block text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white drop-shadow-md">스마트케어</span>
                             </h1>
-                            <div className="space-y-3 mb-10">
-                                <p className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-amber-300 tracking-tight drop-shadow-md break-keep">
+                            <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-10">
+                                <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-amber-300 tracking-tight drop-shadow-md break-keep break-words">
                                     최신가전 렌탈금 전액 지원과<br />만기 시 납입금 100% 환급 보장
                                 </p>
                                 <p className="text-xs sm:text-sm text-amber-200/90 font-medium">
@@ -683,9 +683,9 @@ export default function SmartCareContent({
                             </div>
 
                             {/* 두 개의 혜택 요약 카드 (가전지원 + 멤버십) */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 max-w-3xl animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6 mt-6 sm:mt-12 max-w-3xl animate-fade-in" style={{ animationDelay: '0.4s' }}>
                                 {/* 프리미엄 가전 지원 카드 */}
-                                <div className="relative group flex flex-col justify-between bg-slate-950/40 backdrop-blur-md border border-amber-400/30 p-6 rounded-none shadow-2xl overflow-hidden text-left">
+                                <div className="relative group flex flex-col justify-between bg-slate-950/40 backdrop-blur-md border border-amber-400/30 p-4 sm:p-4 sm:p-6 rounded-none shadow-2xl overflow-hidden text-left min-w-0 min-w-0">
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-400"></div>
                                     <div>
                                         <div className="flex items-center gap-3 mb-3">
@@ -756,18 +756,18 @@ export default function SmartCareContent({
 
 
                             {/* 버튼 영역 */}
-                            <div className="flex flex-col sm:flex-row gap-5 mt-10">
+                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 mt-6 sm:mt-10">
                                 {partnerMode ? (
                                     <button
                                         onClick={() => setIsModalOpen(true)}
-                                        className="border-2 border-amber-400 text-amber-300 hover:bg-amber-400 hover:text-slate-950 bg-transparent px-10 py-5 rounded-none font-black text-lg transition-all backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] text-center"
+                                        className="border-2 border-amber-400 text-amber-300 hover:bg-amber-400 hover:text-slate-950 bg-transparent px-6 py-3.5 sm:px-10 sm:py-4 rounded-none font-black text-base sm:text-lg transition-all backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] text-center"
                                     >
                                         {ctaText}
                                     </button>
                                 ) : (
                                     <Link
                                         href="/partner/apply"
-                                        className="border-2 border-amber-400 text-amber-300 hover:bg-amber-400 hover:text-slate-950 bg-transparent px-10 py-5 rounded-none font-black text-lg transition-all backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] text-center"
+                                        className="border-2 border-amber-400 text-amber-300 hover:bg-amber-400 hover:text-slate-950 bg-transparent px-6 py-3.5 sm:px-10 sm:py-4 rounded-none font-black text-base sm:text-lg transition-all backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] text-center"
                                     >
                                         {ctaText}
                                     </Link>
@@ -776,7 +776,7 @@ export default function SmartCareContent({
                                     onClick={() => {
                                         document.getElementById("appliance-section")?.scrollIntoView({ behavior: "smooth" });
                                     }}
-                                    className="border-2 border-white/60 text-white hover:bg-white hover:text-slate-950 bg-transparent px-10 py-5 rounded-none font-black text-lg transition-all backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] text-center"
+                                    className="border-2 border-white/60 text-white hover:bg-white hover:text-slate-950 bg-transparent px-6 py-3.5 sm:px-10 sm:py-4 rounded-none font-black text-base sm:text-lg transition-all backdrop-blur-md hover:scale-[1.02] active:scale-[0.98] text-center"
                                 >
                                     가전 라인업 보기
                                 </button>
@@ -785,7 +785,7 @@ export default function SmartCareContent({
                     </div>
                 </section>
                 {/* 3대 핵심 혜택 */}
-                <section className="py-20 md:py-32 bg-slate-100 text-slate-900 relative overflow-hidden">
+                <section className="py-8 sm:py-14 md:py-24 bg-slate-100 text-slate-900 relative overflow-hidden">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
                         <div className="text-center mb-16 md:mb-24">
                             <span className="bg-blue-600/10 text-blue-600 text-xs font-black px-4 py-2 rounded-none uppercase tracking-wider mb-4 inline-block border border-blue-500/30">
@@ -797,7 +797,7 @@ export default function SmartCareContent({
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6 md:gap-8">
                             {[
                                 {
                                     title: "BENEFIT 01",
@@ -829,7 +829,7 @@ export default function SmartCareContent({
                                     className="bg-white border border-slate-200 rounded-none overflow-hidden shadow-sm hover:shadow-xl hover:border-blue-500/40 transition-all duration-300 flex flex-col group text-left"
                                 >
                                     {/* 이미지 비주얼 영역 (직각) */}
-                                    <div className="relative h-48 sm:h-52 overflow-hidden bg-slate-950 rounded-none">
+                                    <div className="relative h-28 sm:h-48 md:h-52 overflow-hidden bg-slate-950 rounded-none">
                                         <img 
                                             src={benefit.image} 
                                             alt={benefit.name} 
@@ -839,14 +839,14 @@ export default function SmartCareContent({
                                     </div>
 
                                     {/* 내용 영역 */}
-                                    <div className="p-6 flex flex-col flex-grow">
+                                    <div className="p-3 sm:p-5 md:p-6 flex flex-col flex-grow">
                                         <span className="text-[10px] font-black text-blue-600 tracking-wider uppercase mb-2 block">
                                             {benefit.title}
                                         </span>
-                                        <h3 className="text-base sm:text-lg font-black text-slate-900 mb-2 tracking-tight group-hover:text-blue-600 transition-colors break-keep">
+                                        <h3 className="text-xs sm:text-base md:text-lg font-black text-slate-900 mb-1 sm:mb-2 tracking-tight group-hover:text-blue-600 transition-colors break-keep">
                                             {benefit.name}
                                         </h3>
-                                        <p className="text-slate-500 text-xs leading-relaxed font-medium break-keep">
+                                        <p className="text-slate-500 text-[10px] sm:text-xs leading-relaxed font-medium break-keep">
                                             {benefit.desc}
                                         </p>
                                     </div>
@@ -938,7 +938,7 @@ export default function SmartCareContent({
                                                 setSelectedPlanId(plan._id);
                                             }}
                                             style={{ scrollSnapStop: 'always' }}
-                                            className={`relative !p-4 sm:!p-5 flex flex-col justify-between transition-all rounded-[24px] snap-center snap-always [scroll-snap-stop:always] shrink-0 w-[285px] sm:w-[315px] md:w-[325px] cursor-pointer select-none ${
+                                            className={`relative !p-4 sm:!p-5 flex flex-col justify-between transition-all rounded-[24px] snap-center snap-always [scroll-snap-stop:always] shrink-0 w-[270px] sm:w-[315px] md:w-[325px] min-w-0 cursor-pointer select-none ${
                                                 isActive 
                                                     ? "bg-white text-slate-900 shadow-[0_20px_50px_rgba(37,99,235,0.25)] border-[3px] border-[#2563eb] ring-4 ring-blue-500/20 z-10 scale-[1.02]" 
                                                     : "bg-white/95 text-slate-900 border border-slate-200 hover:border-blue-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
@@ -1061,12 +1061,12 @@ export default function SmartCareContent({
                         </div>
                     </div>
                 </section>
-                <section className="py-20 md:py-32 bg-slate-50 border-t border-slate-200" id="appliance-section">
+                <section className="py-8 sm:py-14 md:py-24 bg-slate-50 border-t border-slate-200" id="appliance-section">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="text-center mb-8 sm:mb-16 md:mb-24">
+                        <div className="text-center mb-6 sm:mb-10 md:mb-16">
                             <span className="badge-primary mb-4 px-5 py-2">PREMIUM LINEUP</span>
                             <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter mb-4">스마트케어 가전 라인업</h2>
-                            <p className="section-subtitle max-w-2xl mx-auto mb-8 sm:mb-16 text-gray-500 font-medium text-xs sm:text-base leading-snug">
+                            <p className="section-subtitle max-w-2xl mx-auto mb-4 sm:mb-8 text-gray-500 font-medium text-xs sm:text-base leading-snug break-keep">
                                 <span className="block">라이프 스타일에 딱 맞는 최신 가전을 선택해 보세요.</span>
                                 <span className="block">렌탈료 전액 지원으로 부담 없이 시작할 수 있습니다.</span>
                                 <span className="block mt-2 text-xs md:text-sm text-gray-400 font-normal">
@@ -1077,7 +1077,7 @@ export default function SmartCareContent({
 
                         {/* 프로모션 섹션 - 필터 위로 이동 */}
                         {promotionAppliances.length > 0 && (
-                            <div className="mb-20 animate-fade-in text-left">
+                            <div className="mb-8 sm:mb-14 animate-fade-in text-left">
                                 <div className="flex items-center gap-3 mb-8">
                                     <div className="bg-sono-primary text-white p-2.5 rounded-none shadow-lg shadow-sono-primary/20">
                                         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -1497,7 +1497,7 @@ export default function SmartCareContent({
 
 
                 {/* 상조 서비스 */}
-                <section className="py-16 md:py-32 bg-white">
+                <section className="py-8 sm:py-14 md:py-20 bg-white">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         <div className="text-center mb-16 md:mb-24">
                             <span className="bg-slate-900 text-white font-black text-xs px-4 py-2 rounded-none mb-6 inline-block uppercase tracking-wider">FUNERAL SERVICE</span>
@@ -1606,7 +1606,7 @@ export default function SmartCareContent({
 
 
                 {/* 의전 서비스 상세 구성 (스마트케어 4 / 스마트케어 5 탭 분기) */}
-                <section className="py-16 md:py-24 bg-slate-100">
+                <section className="py-8 sm:py-14 md:py-20 bg-slate-100">
                     <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12">
                         <div className="text-center mb-8">
                             <span className="bg-slate-900 text-white font-black text-xs px-4 py-2 rounded-none mb-3 inline-block uppercase tracking-wider">SERVICE DETAILS</span>
@@ -1931,9 +1931,9 @@ export default function SmartCareContent({
                     </div>
                 </section>
 
-                <section className="py-16 md:py-32 bg-[#f9fafb] text-slate-900">
+                <section className="py-8 sm:py-14 md:py-20 bg-[#f9fafb] text-slate-900">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="flex items-center justify-between mb-12 border-b border-gray-200 pb-6">
+                        <div className="flex items-center justify-between mb-6 sm:mb-10 border-b border-gray-200 pb-4 sm:pb-6">
                             <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                                 전환(하이브리드) 서비스
                                 <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
@@ -2144,7 +2144,7 @@ export default function SmartCareContent({
 
 
                 {/* 소노그룹 멤버십 (밝은 연그레이 배경 + 6대 제휴사 카드 그리드 스타일 + 리조트 예약방법 안내박스 + 하단 대형 단일 버튼) */}
-                <section id="membership-benefits" className="py-20 md:py-32 bg-slate-50 border-t border-slate-200/60 text-slate-900 relative text-left">
+                <section id="membership-benefits" className="py-8 sm:py-14 md:py-20 bg-slate-50 border-t border-slate-200/60 text-slate-900 relative text-left">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                         {/* 헤더 영역 */}
                         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-16 md:mb-24 pb-8 border-b border-slate-200">
@@ -2426,7 +2426,7 @@ export default function SmartCareContent({
                 </section>
 
                 {/* 소노아임레디몰 (어두운 프리미엄 스타일) */}
-                <section className="py-20 md:py-32 bg-gradient-to-br from-[#0f172a] via-[#090d16] to-[#020408] text-white border-t border-slate-900 relative overflow-hidden text-left">
+                <section className="py-8 sm:py-14 md:py-20 bg-gradient-to-br from-[#0f172a] via-[#090d16] to-[#020408] text-white border-t border-slate-900 relative overflow-hidden text-left">
                     {/* 은은한 그라데이션 빛 효과 */}
                     <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-amber-500/5 rounded-full blur-[120px] pointer-events-none"></div>
                     <div className="absolute bottom-1/4 left-1/4 w-[300px] h-[300px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
@@ -2488,7 +2488,7 @@ export default function SmartCareContent({
                 </section>
 
                 {/* 레디캐시 안내 (샤프한 직각 사각형 스타일) */}
-                <section className="py-16 md:py-24 bg-slate-200">
+                <section className="py-8 sm:py-14 md:py-20 bg-slate-200">
                     <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12">
                         <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-8 tracking-tight">레디캐시 안내</h3>
                         <ul className="space-y-4 md:space-y-6">
@@ -2512,24 +2512,24 @@ export default function SmartCareContent({
                 <ImportantNotice />
 
                 {/* CTA (샤프한 직각 사각형 스타일) */}
-                <section className="py-20 md:py-32 bg-slate-950 text-white relative overflow-hidden border-t border-slate-900">
+                <section className="py-10 sm:py-16 md:py-24 bg-slate-950 text-white relative overflow-hidden border-t border-slate-900">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-tr from-blue-600/5 to-amber-500/5 rounded-full blur-[120px] pointer-events-none"></div>
                     <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 text-center relative z-10">
                         <h2 className="text-3xl md:text-5xl font-black mb-8 md:mb-10 tracking-tighter leading-tight">
                             최고의 혜택을 담은 스마트케어 상품을<br />지금 바로 만나보세요.
                         </h2>
-                        <p className="text-lg md:text-xl text-slate-400 mb-10 md:mb-12 font-medium">
+                        <p className="text-sm sm:text-base md:text-xl text-slate-400 mb-6 sm:mb-10 font-medium break-keep break-words">
                             본 상품은 소노 아임레디와 제휴한 제휴사 회원에게만 제공하는 혜택이 포함되어 있습니다.
                         </p>
                         {partnerMode ? (
                             <button
                                 onClick={() => setIsModalOpen(true)}
-                                className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-lg md:text-xl px-12 py-5 rounded-none shadow-xl transition-all inline-block active:scale-95 duration-150"
+                                className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-base sm:text-lg md:text-xl px-8 py-3.5 sm:px-12 sm:py-4 rounded-none shadow-xl transition-all inline-block active:scale-95 duration-150"
                             >
                                 {ctaText}
                             </button>
                         ) : (
-                            <Link href="/partner/apply" className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-lg md:text-xl px-12 py-5 rounded-none shadow-xl transition-all inline-block active:scale-95 duration-150">
+                            <Link href="/partner/apply" className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-base sm:text-lg md:text-xl px-8 py-3.5 sm:px-12 sm:py-4 rounded-none shadow-xl transition-all inline-block active:scale-95 duration-150">
                                 {ctaText}
                             </Link>
                         )}

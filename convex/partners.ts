@@ -35,10 +35,23 @@ export const getPartnerById = query({
 export const getPartnerByLoginId = query({
     args: { loginId: v.string() },
     handler: async (ctx, args) => {
-        return await ctx.db
+        let partner = await ctx.db
             .query("partners")
             .withIndex("by_loginId", (q) => q.eq("loginId", args.loginId))
             .unique();
+        if (!partner) {
+            partner = await ctx.db
+                .query("partners")
+                .withIndex("by_partnerId", (q) => q.eq("partnerId", args.loginId))
+                .unique();
+        }
+        if (!partner) {
+            partner = await ctx.db
+                .query("partners")
+                .withIndex("by_customUrl", (q) => q.eq("customUrl", args.loginId))
+                .unique();
+        }
+        return partner;
     },
 });
 
@@ -88,6 +101,13 @@ export const createPartner = mutation({
         shopUrl: v.optional(v.string()),
         partnerGroup: v.optional(v.string()),
         showLandingUrl: v.optional(v.boolean()),
+        landingVisibility: v.optional(
+            v.object({
+                smartcare: v.optional(v.boolean()),
+                happy450: v.optional(v.boolean()),
+                maeum: v.optional(v.boolean()),
+            })
+        ),
         role: v.optional(v.string()),
         approvedAt: v.optional(v.string()),
         approvedBy: v.optional(v.string()),
@@ -251,6 +271,18 @@ export const updatePartner = mutation({
 
         // Ensure showLandingUrl is converted to boolean if passed as boolean/string/undefined
         const patchData = { ...args.updates };
+        if (patchData.landingVisibility !== undefined && patchData.landingVisibility !== null) {
+            const lv = patchData.landingVisibility || {};
+            patchData.landingVisibility = {
+                smartcare: lv.smartcare !== false && lv.smartcare !== "false",
+                happy450: lv.happy450 !== false && lv.happy450 !== "false",
+                maeum: lv.maeum === true || lv.maeum === "true",
+            };
+            const hasAny = patchData.landingVisibility.smartcare || patchData.landingVisibility.happy450 || patchData.landingVisibility.maeum;
+            if (patchData.showLandingUrl === undefined) {
+                patchData.showLandingUrl = hasAny;
+            }
+        }
         if (patchData.showLandingUrl !== undefined) {
             patchData.showLandingUrl = patchData.showLandingUrl === true || patchData.showLandingUrl === 'true';
         }
