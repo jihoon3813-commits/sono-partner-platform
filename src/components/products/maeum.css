@@ -528,7 +528,7 @@
 
                 .maeum-wrapper .ribbon-steps {
                     display: grid;
-                    grid-template-columns: 1fr 1.3fr 1fr;
+                    grid-template-columns: 1fr 1.15fr 1fr;
                     align-items: stretch;
                 }
 
@@ -536,40 +536,68 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: 17px;
-                    padding: 14px 12px;
+                    gap: 16px;
+                    padding: 16px 20px;
                 }
 
                 .maeum-wrapper .ribbon-step.highlighted {
-                    background: #30584b;
+                    background: #2b5143;
+                }
+
+                .maeum-wrapper .step-num {
+                    display: inline-flex;
+                    align-items: baseline;
+                    justify-content: center;
+                    min-width: 58px;
                 }
 
                 .maeum-wrapper .ribbon-step b {
-                    font: 88px/1.2 Georgia, serif;
+                    font-family: Georgia, serif;
+                    font-size: 76px;
+                    line-height: 0.9;
                     color: #b2c4b6;
                     font-weight: 400;
+                    letter-spacing: -0.02em;
                 }
 
                 .maeum-wrapper .ribbon-step.highlighted b {
-                    color: #ecdfb4;
-                    font-size: 108px;
+                    color: #f7e8b6;
+                    font-size: 78px;
                 }
 
-                .maeum-wrapper .ribbon-step span {
+                .maeum-wrapper .step-num .unit {
+                    font-size: 17px;
+                    font-weight: 700;
+                    color: #a3b8a6;
+                    margin-left: 3px;
+                    line-height: 1;
+                }
+
+                .maeum-wrapper .ribbon-step.highlighted .step-num .unit {
+                    color: #ebdca7;
+                }
+
+                .maeum-wrapper .step-info {
                     display: flex;
                     flex-direction: column;
-                    gap: 10px;
+                    justify-content: center;
+                    gap: 4px;
+                    text-align: left;
                 }
 
-                .maeum-wrapper .ribbon-step strong {
+                .maeum-wrapper .step-info strong {
                     font-size: 16px;
                     font-weight: 700;
+                    color: #ffffff;
+                    line-height: 1.3;
                     white-space: nowrap;
                 }
 
-                .maeum-wrapper .ribbon-step small {
-                    font-size: 10px;
-                    color: #c5d5c8;
+                .maeum-wrapper .step-info small {
+                    font-size: 11px;
+                    color: #b5c7ba;
+                    line-height: 1.3;
+                    white-space: nowrap;
                 }
 
                 .maeum-wrapper .ribbon-bottom {
@@ -2532,9 +2560,9 @@
                     .maeum-wrapper .ribbon-label { padding: 23px; }
                     .maeum-wrapper .ribbon-label strong { font-size: 19px; }
                     .maeum-wrapper .ribbon-step { gap: 12px; }
-                    .maeum-wrapper .ribbon-step strong { font-size: 14px; }
-                    .maeum-wrapper .ribbon-step b { font-size: 75px; }
-                    .maeum-wrapper .ribbon-step.highlighted b { font-size: 90px; }
+                    .maeum-wrapper .step-info strong { font-size: 14px; }
+                    .maeum-wrapper .ribbon-step b { font-size: 68px; }
+                    .maeum-wrapper .ribbon-step.highlighted b { font-size: 70px; }
                     .maeum-wrapper .benefit .split { gap: 45px; }
                     .maeum-wrapper .service-stat { font-size: 23px; }
                     .maeum-wrapper .stay-grid { gap: 28px; padding: 27px; }
@@ -2567,7 +2595,8 @@
     }
     .maeum-wrapper .ribbon-label strong { margin: 0; font-size: 15px; }
     .maeum-wrapper .ribbon-step b { font-size: 44px; }
-    .maeum-wrapper .ribbon-step.highlighted b { font-size: 52px; }
+    .maeum-wrapper .ribbon-step.highlighted b { font-size: 46px; }
+    .maeum-wrapper .step-num .unit { font-size: 14px; }
     .maeum-wrapper .split, .maeum-wrapper .consultgrid { gap: 20px; }
     .maeum-wrapper .ceremony-grid { grid-template-columns: 1fr; gap: 14px; }
     .maeum-wrapper .ceremony-common { grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -2657,7 +2686,7 @@
     .maeum-wrapper .ribbon-label strong { font-size: 13.5px !important; }
     .maeum-wrapper .ribbon-steps {
         display: grid !important;
-        grid-template-columns: 1fr 1.25fr 1fr !important;
+        grid-template-columns: 1fr 1.15fr 1fr !important;
         align-items: stretch !important;
     }
     .maeum-wrapper .ribbon-step {
@@ -2666,32 +2695,44 @@
         align-items: center !important;
         justify-content: center !important;
         text-align: center !important;
-        gap: 3px !important;
-        padding: 10px 4px !important;
+        gap: 2px !important;
+        padding: 8px 3px !important;
+    }
+    .maeum-wrapper .step-num {
+        display: inline-flex !important;
+        align-items: baseline !important;
+        justify-content: center !important;
+        min-width: 0 !important;
     }
     .maeum-wrapper .ribbon-step b {
-        font-size: 32px !important;
+        font-size: 28px !important;
         line-height: 1 !important;
-        margin-bottom: 2px !important;
+        margin-bottom: 0 !important;
     }
     .maeum-wrapper .ribbon-step.highlighted b {
-        font-size: 36px !important;
+        font-size: 30px !important;
         line-height: 1 !important;
-        margin-bottom: 2px !important;
+        margin-bottom: 0 !important;
     }
-    .maeum-wrapper .ribbon-step span {
+    .maeum-wrapper .step-num .unit {
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        margin-left: 1px !important;
+    }
+    .maeum-wrapper .step-info {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        gap: 2px !important;
+        text-align: center !important;
+        gap: 1px !important;
         width: 100% !important;
     }
-    .maeum-wrapper .ribbon-step strong {
+    .maeum-wrapper .step-info strong {
         font-size: 11.5px !important;
         white-space: nowrap !important;
         line-height: 1.2 !important;
     }
-    .maeum-wrapper .ribbon-step small {
+    .maeum-wrapper .step-info small {
         font-size: 8.5px !important;
         line-height: 1.25 !important;
         opacity: 0.85 !important;

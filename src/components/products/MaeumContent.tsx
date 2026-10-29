@@ -164,25 +164,31 @@ export default function MaeumContent({
                             </div>
                             <div className="ribbon-steps">
                                 <div className="ribbon-step">
-                                    <b>2</b>
-                                    <span>
-                                        <strong>년 준비</strong>
+                                    <div className="step-num">
+                                        <b>2</b><span className="unit">년</span>
+                                    </div>
+                                    <div className="step-info">
+                                        <strong>준비</strong>
                                         <small>1~24회차 · 보장 제외</small>
-                                    </span>
+                                    </div>
                                 </div>
                                 <div className="ribbon-step highlighted">
-                                    <b>5</b>
-                                    <span>
-                                        <strong>년 잔금 보장</strong>
+                                    <div className="step-num">
+                                        <b>5</b><span className="unit">년</span>
+                                    </div>
+                                    <div className="step-info">
+                                        <strong>잔금 보장</strong>
                                         <small>25~84회차 · 지정 1인</small>
-                                    </span>
+                                    </div>
                                 </div>
                                 <div className="ribbon-step">
-                                    <b>1</b>
-                                    <span>
-                                        <strong>년 납입 마무리</strong>
+                                    <div className="step-num">
+                                        <b>1</b><span className="unit">년</span>
+                                    </div>
+                                    <div className="step-info">
+                                        <strong>납입 마무리</strong>
                                         <small>85~96회차 · 보장 제외</small>
-                                    </span>
+                                    </div>
                                 </div>
                             </div>
                             <div className="ribbon-bottom">
