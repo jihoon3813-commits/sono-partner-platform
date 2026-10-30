@@ -329,7 +329,7 @@ export default function Happy450LecturePage() {
                                 품격 있는 마지막 인사, 소노아임레디가 함께합니다
                             </h2>
                             <p className="text-lg text-gray-400 font-bold max-w-3xl mx-auto leading-relaxed break-keep">
-                                국가공인 장례지도사와 전문 도우미가 정성을 다해 고인의 명복을 빌며, <br />
+                                고객 만족 99% 전문 장례 지도사가 정성을 다해 고인의 명복을 빌며, <br />
                                 유가족의 슬픔을 함께 나누는 신뢰의 서비스를 약속드립니다.
                             </p>
                         </div>
@@ -558,7 +558,13 @@ export default function Happy450LecturePage() {
 
                         {/* Expanded Grid Section */}
                         <div className="space-y-4 flex-grow">
-                            <div className="flex items-center gap-1 text-sono-dark font-black text-lg">전환(하이브리드) 서비스 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg></div>
+                            <div className="flex items-end justify-between gap-2">
+                                <div className="flex items-center gap-1 text-sono-dark font-black text-lg">전환(하이브리드) 서비스 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg></div>
+                                <div className="text-[11px] text-gray-500 font-medium text-right leading-tight">
+                                    <p>※ 가입 상품 금액 이상의 서비스 이용 시, 잔여 부금 및 차액 납부 후 이용 가능</p>
+                                    <p>※ 제휴 상황에 따라 일부 서비스는 변동될 수 있으며, 자세한 내용은 소노아임레디 홈페이지 확인</p>
+                                </div>
+                            </div>
                             <div className="grid grid-cols-4 gap-4">
                                 {[
                                     { title: "여행", img: "https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/photo_best02_product01.jpg", url: "https://www.sonoimready.com/front/sc/chgServList?prdctCd=%EC%97%AC%ED%96%89" },

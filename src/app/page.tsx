@@ -84,7 +84,7 @@ export default function HomePage() {
                                 &quot;인생의 모든 순간이 준비될 때까지&quot;
                             </p>
                             <p className="text-[#64748b] font-medium text-sm sm:text-base leading-relaxed break-keep">
-                                40년 이상의 레저 사업 노하우를 바탕으로 고객의 삶을 더욱 풍요롭게 만드는 토탈 라이프케어 서비스를 제공합니다.
+                                40년 이상의 레저 사업 노하우를 바탕으로 설립된 소노아임레디 브랜드는 고객의 삶을 더욱 풍요롭게 만드는 서비스를 제공합니다.
                             </p>
                         </div>
 
@@ -480,7 +480,7 @@ export default function HomePage() {
                                     <div>
                                         <h3 className="text-2xl sm:text-3xl font-black text-white mb-2 sm:mb-3">더 해피 450 ONE</h3>
                                         <p className="text-slate-300 text-xs sm:text-sm mb-4 sm:mb-6 leading-relaxed font-normal">
-                                            기본 상조 서비스와 함께 레디캐시, 소노그룹 멤버십, 만기 시 납입금 100% 환급 혜택을 제공하는 스탠다드 상조 서비스입니다.
+                                            기본 상조 서비스와 함께 레디캐시, 소노아임레디 멤버십, 만기 시 납입금 100% 환급 혜택을 제공하는 스탠다드 상조 서비스입니다.
                                         </p>
                                         <div className="space-y-2.5 sm:space-y-3 mb-5 sm:mb-8 border-t border-neutral-700/60 pt-4 sm:pt-6">
                                             {["제휴몰 포인트 지급", "레디캐시 적립 서비스", "만기 시 납입금 100% 환급"].map((feature, idx) => (
@@ -521,8 +521,11 @@ export default function HomePage() {
                                 <div className="p-5 sm:p-8 flex-1 flex flex-col justify-between">
                                     <div>
                                         <h3 className="text-2xl sm:text-3xl font-black text-white mb-2 sm:mb-3">스마트케어</h3>
-                                        <p className="text-slate-300 text-xs sm:text-sm mb-4 sm:mb-6 leading-relaxed font-normal">
+                                        <p className="text-slate-300 text-xs sm:text-sm mb-1.5 sm:mb-2 leading-relaxed font-normal">
                                             삼성/LG 최신 프리미엄 가전제품 렌탈금 전액 지원과 상조 서비스, 만기 100% 환급까지 모든 혜택이 결합된 베스트셀러 상품입니다.
+                                        </p>
+                                        <p className="text-sono-gold/90 text-[11px] sm:text-xs mb-4 sm:mb-6 font-medium">
+                                            ※ 만기 후 익월 해약 또는 라이프서비스 사용 시
                                         </p>
                                         <div className="space-y-2.5 sm:space-y-3 mb-5 sm:mb-8 border-t border-neutral-700/60 pt-4 sm:pt-6">
                                             {[

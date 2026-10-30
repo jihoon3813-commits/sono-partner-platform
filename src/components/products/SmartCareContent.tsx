@@ -720,7 +720,7 @@ export default function SmartCareContent({
                                     </div>
                                 </div>
 
-                                {/* 소노그룹 멤버십 혜택 카드 */}
+                                {/* 소노아임레디 멤버십 혜택 카드 */}
                                 <div className="relative group flex flex-col justify-between bg-slate-950/40 backdrop-blur-md border border-emerald-500/30 p-6 rounded-none shadow-2xl overflow-hidden text-left">
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-300 to-emerald-500"></div>
                                     <div>
@@ -731,12 +731,12 @@ export default function SmartCareContent({
                                                 </svg>
                                             </div>
                                             <h3 className="text-emerald-400 text-lg font-black tracking-tight flex items-center gap-2">
-                                                소노그룹 멤버십 혜택
+                                                소노아임레디 멤버십 혜택
                                                 <span className="bg-emerald-500 text-white text-[9px] px-1.5 py-0.5 rounded-none animate-pulse font-bold">FREE</span>
                                             </h3>
                                         </div>
                                         <p className="text-white font-bold text-xs sm:text-sm leading-relaxed break-keep mb-3">
-                                            전국 소노호텔 & 리조트 객실 특별 우대 요금 및 오션월드, 스키장 등 <span className="text-emerald-400 underline underline-offset-4 decoration-2">소노그룹 레저 인프라 멤버십 혜택</span> 우대 혜택 제공
+                                            전국 소노호텔 & 리조트 객실 특별 우대 요금 및 오션월드, 스키장 등 <span className="text-emerald-400 underline underline-offset-4 decoration-2">소노트리니티그룹 레저 인프라 멤버십 혜택</span> 우대 혜택 제공
                                         </p>
                                     </div>
                                     <div className="flex items-center justify-between border-t border-white/10 pt-3 mt-1">
@@ -781,6 +781,12 @@ export default function SmartCareContent({
                                     가전 라인업 보기
                                 </button>
                             </div>
+
+                            {/* 스마트케어 상품 필수 안내사항 (단서 조항) */}
+                            <div className="mt-4 sm:mt-5 space-y-1 text-xs sm:text-sm text-slate-300 font-medium">
+                                <p>※ 라이프서비스는 가입 상품에 따라 서비스 이용 횟수 상이</p>
+                                <p>※ 본 상품은 ㈜소노스테이션 상조 서비스 계약 및 ㈜비에스온 렌탈서비스 계약 별도 체결되는 상품</p>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -803,25 +809,25 @@ export default function SmartCareContent({
                                     title: "BENEFIT 01",
                                     name: "프리미엄 가전 렌탈금 전액 지원",
                                     desc: "삼성, LG 등 최고급 브랜드의 최신 가전 렌탈비 전액을 지원받아 즉시 이용합니다. (※ 만기 후 익월 해약 또는 라이프서비스 사용 시)",
-                                    image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785975702/premium_appliance_rental_support_logo_dqmmm8.png"
+                                    image: "/images/benefits/benefit_appliance.png"
                                 },
                                 {
                                     title: "BENEFIT 02",
                                     name: "100% 안심 환급 시스템",
                                     desc: "만기 후 익월 해약 시 까지 상조나 전환 서비스를 이용하지 않으시면 납입금 100% 전액을 환급해 드립니다.",
-                                    image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932610/06_full_refund_logo_1_ija0rc.png"
+                                    image: "/images/benefits/benefit_refund.png"
                                 },
                                 {
                                     title: "BENEFIT 03",
                                     name: "하이브리드 전환 서비스",
                                     desc: "상조 외에도 크루즈, 해외여행, 골프, 교육, 어학연수 등 원하는 라이프케어 서비스로 즉각 전환합니다.",
-                                    image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932609/02_hybrid_service_conversion_logo_1_mynjl3.png"
+                                    image: "/images/benefits/benefit_hybrid.png"
                                 },
                                 {
                                     title: "BENEFIT 04",
-                                    name: "소노그룹 멤버십 혜택",
+                                    name: "소노아임레디 멤버십 혜택",
                                     desc: "가입 즉시 전국 16개 지점 소노호텔앤리조트 객실 및 부대시설 우대 혜택을 누립니다.",
-                                    image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932611/04_sono_hotel_resort_benefit_with_logo_1_cw84ct.png"
+                                    image: "/images/benefits/benefit_resort.png"
                                 }
                             ].map((benefit, index) => (
                                 <div 
@@ -829,7 +835,7 @@ export default function SmartCareContent({
                                     className="bg-white border border-slate-200 rounded-none overflow-hidden shadow-sm hover:shadow-xl hover:border-blue-500/40 transition-all duration-300 flex flex-col group text-left"
                                 >
                                     {/* 이미지 비주얼 영역 (직각) */}
-                                    <div className="relative h-28 sm:h-48 md:h-52 overflow-hidden bg-slate-950 rounded-none">
+                                    <div className="relative aspect-[5/3] overflow-hidden bg-slate-950 rounded-none">
                                         <img 
                                             src={benefit.image} 
                                             alt={benefit.name} 
@@ -1027,7 +1033,12 @@ export default function SmartCareContent({
                                                     />
                                                     <div className="flex-1 text-left min-w-0">
                                                         <p className="text-[11px] font-black text-slate-900 truncate">BS렌탈 플러스 하나카드</p>
-                                                        <p className="text-[10px] font-extrabold text-blue-600">최대 월 2.3만원 할인</p>
+                                                        <div className="flex items-center justify-between gap-1 flex-wrap my-0.5">
+                                                            <span className="text-[10px] font-extrabold text-blue-600 shrink-0">최대 월 2.3만원 할인</span>
+                                                            <span className="text-[8.5px] sm:text-[9px] font-extrabold text-blue-800 bg-blue-100/90 border border-blue-200/80 px-1.5 py-0.5 rounded leading-none shrink-0">
+                                                                렌탈 제휴카드 60개월 할인
+                                                            </span>
+                                                        </div>
                                                         <p className="text-[9px] text-slate-400 truncate">30만↑ 1.3만 / 120만↑ 2.3만</p>
                                                     </div>
                                                 </div>
@@ -1503,7 +1514,7 @@ export default function SmartCareContent({
                             <span className="bg-slate-900 text-white font-black text-xs px-4 py-2 rounded-none mb-6 inline-block uppercase tracking-wider">FUNERAL SERVICE</span>
                             <h2 className="section-title leading-tight">품격 있는 마지막 인사,<br className="md:hidden" /> 소노아임레디가 함께합니다</h2>
                             <p className="section-subtitle max-w-2xl mx-auto">
-                                국가공인 장례지도사와 전문 도우미가 정성을 다해
+                                고객 만족 99% 전문 장례 지도사가 정성을 다해
                                 고인의 명복을 빌며, 유가족의 슬픔을 함께 나누는 신뢰의 서비스를 약속드립니다.
                             </p>
                         </div>
@@ -1933,11 +1944,15 @@ export default function SmartCareContent({
 
                 <section className="py-8 sm:py-14 md:py-20 bg-[#f9fafb] text-slate-900">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="flex items-center justify-between mb-6 sm:mb-10 border-b border-gray-200 pb-4 sm:pb-6">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-10 border-b border-gray-200 pb-4 sm:pb-6 gap-3">
                             <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                                 전환(하이브리드) 서비스
                                 <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
                             </h2>
+                            <div className="text-xs md:text-sm text-slate-500 font-medium space-y-0.5 text-left md:text-right shrink-0">
+                                <p>※ 가입 상품 금액 이상의 서비스 이용 시, 잔여 부금 및 차액 납부 후 이용 가능</p>
+                                <p>※ 제휴 상황에 따라 일부 서비스는 변동될 수 있으며, 자세한 내용은 소노아임레디 홈페이지 확인</p>
+                            </div>
                         </div>
 
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">

@@ -44,7 +44,7 @@ export default function ImportantNotice({ className = "" }: ImportantNoticeProps
                         <div>
                             <h3 className="text-[#2563eb] text-base sm:text-lg font-bold mb-4 flex items-center gap-2">
                                 <span className="text-[#2563eb] text-xs">■</span>
-                                <span>총 고객환급의무액 및 자산 현황</span>
+                                <span>총 고객환급의무액 및 자산 현황 <span className="text-xs sm:text-sm font-medium text-slate-500 ml-1">(2025년 12월말 기준)</span></span>
                             </h3>
 
                             {/* Inner White Stat Box */}

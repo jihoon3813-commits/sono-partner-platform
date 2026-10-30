@@ -353,7 +353,7 @@ export default function Happy450Content({
                             </h1>
                             <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-10">
                                 <p className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-amber-300 tracking-tight drop-shadow-md break-keep">
-                                    호텔&리조트 혜택부터 헬스케어 서비스까지 이용하고도<br />만기 시 납입금 100% 환급 보장
+                                    소노호텔앤리조트 멤버십 혜택부터 헬스케어 서비스까지 이용하고도<br />만기 시 납입금 100% 환급 보장
                                 </p>
                                 <p className="text-base md:text-lg text-white/95 leading-relaxed font-semibold drop-shadow-sm break-keep">
                                     국내 대표 토탈 라이프케어 브랜드 소노아임레디가 제안하는 프리미엄 라이프케어 솔루션
@@ -488,37 +488,37 @@ export default function Happy450Content({
                                     title: "BENEFIT 01",
                                     name: "장례서비스 약관보장",
                                     desc: "20년이 지나도 1원도 추가 비용 없이 약관에 있는 의전서비스 일체를 제공해 드립니다.",
-                                    image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932608/01_funeral_terms_guarantee_logo_1_rq81kz.png"
+                                    image: "/images/benefits/benefit_funeral.png"
                                 },
                                 {
                                     title: "BENEFIT 02",
                                     name: "8대 하이브리드 서비스 전환 보장",
                                     desc: "어학연수, 웨딩, 리빙, 골프, 크루즈, 여행 등 언제든지 다른 서비스로 전환 이용 가능합니다.",
-                                    image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932609/02_hybrid_service_conversion_logo_1_mynjl3.png"
+                                    image: "/images/benefits/benefit_hybrid.png"
                                 },
                                 {
                                     title: "BENEFIT 03",
                                     name: "제휴카드 파격할인",
                                     desc: "소노아임레디 제휴카드 매월 청구할인 혜택을 제공합니다.",
-                                    image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932609/03_affiliate_card_discount_logo_1_mht0ov.png"
+                                    image: "/images/benefits/benefit_card.png"
                                 },
                                 {
                                     title: "BENEFIT 04",
                                     name: "소노호텔앤리조트 우대할인 혜택",
                                     desc: "전국 16개 지점 소노호텔앤리조트 객실 및 부대시설 우대 혜택을 제공합니다.",
-                                    image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932611/04_sono_hotel_resort_benefit_with_logo_1_cw84ct.png"
+                                    image: "/images/benefits/benefit_resort.png"
                                 },
                                 {
                                     title: "BENEFIT 05",
                                     name: "GC헬스케어 특별혜택",
                                     desc: "GC케어가 제공하는 프리미엄 건강 상담 및 헬스케어 서비스 연계 우대 혜택을 제공합니다.",
-                                    image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932611/Group_1_8_1_guxnwi.png"
+                                    image: "/images/benefits/benefit_healthcare.png"
                                 },
                                 {
                                     title: "BENEFIT 06",
                                     name: "납입금 100% 전액환급",
                                     desc: "상조 서비스를 이용하지 않더라도 만기 납입 완료 후 익월 해약 시 납입하신 금액 100% 전액을 환급해 드립니다.",
-                                    image: "https://res.cloudinary.com/lyjyvy54/image/upload/v1785932610/06_full_refund_logo_1_ija0rc.png"
+                                    image: "/images/benefits/benefit_refund.png"
                                 }
                             ].map((benefit, index) => (
                                 <div 
@@ -526,7 +526,7 @@ export default function Happy450Content({
                                     className="bg-slate-800/90 border border-slate-700/80 rounded-none overflow-hidden shadow-xl hover:shadow-2xl hover:border-amber-400/50 transition-all duration-300 flex flex-col group text-left"
                                 >
                                     {/* 이미지 비주얼 영역 (직각) */}
-                                    <div className="relative h-28 sm:h-52 md:h-64 overflow-hidden bg-slate-950 rounded-none">
+                                    <div className="relative aspect-[5/3] overflow-hidden bg-slate-950 rounded-none">
                                         <img 
                                             src={benefit.image} 
                                             alt={benefit.name} 
@@ -635,7 +635,7 @@ export default function Happy450Content({
                                             {[
                                                 "제휴몰 포인트 지급",
                                                 "레디캐시 전환",
-                                                "소노그룹 멤버십",
+                                                "소노아임레디 멤버십",
                                                 "납입금 100% 환급"
                                             ].map((text, i) => (
                                                 <li key={i} className="flex items-center gap-3 text-slate-200">
@@ -859,7 +859,7 @@ export default function Happy450Content({
                             <span className="bg-slate-900 text-white font-black text-xs px-4 py-2 rounded-none mb-6 inline-block uppercase tracking-wider">FUNERAL SERVICE</span>
                             <h2 className="section-title leading-tight">품격 있는 마지막 인사,<br className="md:hidden" /> 소노아임레디가 함께합니다</h2>
                             <p className="section-subtitle max-w-2xl mx-auto">
-                                국가공인 장례지도사와 전문 도우미가 정성을 다해
+                                고객 만족 99% 전문 장례 지도사가 정성을 다해
                                 고인의 명복을 빌며, 유가족의 슬픔을 함께 나누는 신뢰의 서비스를 약속드립니다.
                             </p>
                         </div>
@@ -1177,11 +1177,15 @@ export default function Happy450Content({
 
                 <section className="py-8 sm:py-14 md:py-20 bg-[#f9fafb] text-slate-900">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-                        <div className="flex items-center justify-between mb-12 border-b border-gray-200 pb-6">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 border-b border-gray-200 pb-4 sm:pb-6 gap-3">
                             <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                                 전환(하이브리드) 서비스
                                 <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
                             </h2>
+                            <div className="text-xs md:text-sm text-slate-500 font-medium space-y-0.5 text-left md:text-right shrink-0">
+                                <p>※ 가입 상품 금액 이상의 서비스 이용 시, 잔여 부금 및 차액 납부 후 이용 가능</p>
+                                <p>※ 제휴 상황에 따라 일부 서비스는 변동될 수 있으며, 자세한 내용은 소노아임레디 홈페이지 확인</p>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
