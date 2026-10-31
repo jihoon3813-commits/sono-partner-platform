@@ -1723,6 +1723,261 @@
                     padding: 13px;
                 }
 
+                .maeum-wrapper .plan-period-summary {
+                    margin-top: 14px;
+                    padding: 8px 10px;
+                    background: #f2f7ee;
+                    border-radius: 6px;
+                    font-size: 11.5px;
+                    font-weight: 600;
+                    color: #27544b;
+                    text-align: center;
+                    border: 1px solid #dce8d8;
+                }
+
+                /* 05-1. 상품 구성 금액 및 납입 구조 표 (Image 2 연동) */
+                .maeum-wrapper .plan-pricing-table-wrap {
+                    margin-top: 36px;
+                    background: #ffffff;
+                    border: 1px solid #cfdbca;
+                    border-radius: 12px;
+                    padding: 28px;
+                    box-shadow: 0 4px 20px rgba(23, 59, 59, 0.06);
+                }
+
+                .maeum-wrapper .pricing-table-header {
+                    margin-bottom: 20px;
+                }
+
+                .maeum-wrapper .table-badge {
+                    display: inline-block;
+                    padding: 4px 10px;
+                    background: #eaf2e8;
+                    color: var(--teal);
+                    font-size: 11px;
+                    font-weight: 700;
+                    border-radius: 4px;
+                    margin-bottom: 8px;
+                    letter-spacing: 0.02em;
+                }
+
+                .maeum-wrapper .pricing-table-header h3 {
+                    font-size: 20px;
+                    font-weight: 800;
+                    color: var(--navy);
+                    margin: 0 0 6px;
+                }
+
+                .maeum-wrapper .pricing-table-header p {
+                    font-size: 13px;
+                    color: var(--muted);
+                    margin: 0;
+                    line-height: 1.5;
+                }
+
+                .maeum-wrapper .price-structure-table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    min-width: 720px;
+                    font-size: 12px;
+                    line-height: 1.6;
+                    background: #ffffff;
+                }
+
+                .maeum-wrapper .price-structure-table th,
+                .maeum-wrapper .price-structure-table td {
+                    padding: 12px 14px;
+                    border: 1px solid #dbe4d7;
+                    text-align: center;
+                    vertical-align: middle;
+                }
+
+                .maeum-wrapper .price-structure-table .table-super-header th {
+                    background: #173b3b;
+                    color: #ffffff;
+                    font-size: 15px;
+                    font-weight: 700;
+                    letter-spacing: 0.05em;
+                    padding: 12px;
+                }
+
+                .maeum-wrapper .price-structure-table .table-col-header th {
+                    background: #254a48;
+                    color: #f0f5ed;
+                    font-size: 12.5px;
+                    font-weight: 600;
+                    padding: 10px 8px;
+                }
+
+                .maeum-wrapper .price-structure-table .table-col-header th.col-featured {
+                    background: #2d5e56;
+                    color: #ffffff;
+                    font-weight: 700;
+                }
+
+                .maeum-wrapper .price-structure-table .row-total-price {
+                    background: #f4f8f2;
+                }
+
+                .maeum-wrapper .price-structure-table .row-total-price th {
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: var(--navy);
+                    text-align: left;
+                    padding-left: 18px;
+                    background: #eef4eb;
+                }
+
+                .maeum-wrapper .price-structure-table .row-total-price td {
+                    font-size: 13.5px;
+                    font-weight: 700;
+                    color: var(--navy);
+                }
+
+                .maeum-wrapper .price-structure-table .group-header-cell {
+                    background: #f7f9f5;
+                    font-weight: 700;
+                    color: var(--navy);
+                    font-size: 12.5px;
+                    border-right: 2px solid #cedbc9;
+                }
+
+                .maeum-wrapper .price-structure-table .group-header-cell.refund-group {
+                    background: #faf8f3;
+                }
+
+                .maeum-wrapper .price-structure-table .sub-term-cell {
+                    background: #fbfcf9;
+                    text-align: left;
+                    font-weight: 600;
+                    color: #2c423d;
+                    padding-left: 16px;
+                    font-size: 12px;
+                }
+
+                .maeum-wrapper .price-structure-table .sub-term-cell small {
+                    display: inline-block;
+                    color: #6b7c74;
+                    font-weight: 400;
+                    margin-left: 4px;
+                }
+
+                .maeum-wrapper .price-structure-table .amount-cell {
+                    font-weight: 600;
+                    color: #253c3b;
+                    font-size: 12.5px;
+                }
+
+                .maeum-wrapper .price-structure-table .col-featured {
+                    background: #f9fdf8;
+                    color: #1a4f43;
+                    font-weight: 700;
+                }
+
+                .maeum-wrapper .price-structure-table .row-highlight-benefit {
+                    background: #f0f7ef;
+                }
+
+                .maeum-wrapper .price-structure-table .row-highlight-benefit .sub-term-cell {
+                    background: #e9f3e7;
+                    color: #17483e;
+                    font-weight: 700;
+                }
+
+                .maeum-wrapper .price-structure-table .row-maturity {
+                    background: #f9fdf8;
+                }
+
+                .maeum-wrapper .price-structure-table .span-info-cell {
+                    background: #fbfcfa;
+                    color: #2b453e;
+                    font-size: 12px;
+                }
+
+                .maeum-wrapper .price-structure-table .span-info-cell small {
+                    color: #69786f;
+                    font-size: 11px;
+                }
+
+                .maeum-wrapper .price-structure-table .badge-cell {
+                    padding: 6px;
+                }
+
+                .maeum-wrapper .badge-gray {
+                    display: inline-block;
+                    padding: 3px 8px;
+                    background: #e8ece7;
+                    color: #55665f;
+                    border-radius: 4px;
+                    font-size: 11px;
+                    font-weight: 600;
+                }
+
+                .maeum-wrapper .badge-teal {
+                    display: inline-block;
+                    padding: 4px 10px;
+                    background: #316d60;
+                    color: #ffffff;
+                    border-radius: 4px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    box-shadow: 0 2px 6px rgba(49, 109, 96, 0.25);
+                }
+
+                .maeum-wrapper .badge-navy {
+                    display: inline-block;
+                    padding: 3px 8px;
+                    background: #173b3b;
+                    color: #ffffff;
+                    border-radius: 4px;
+                    font-size: 11px;
+                    font-weight: 700;
+                }
+
+                .maeum-wrapper .price-structure-table .highlight-note {
+                    background: #f7faf5;
+                    font-size: 11.5px;
+                    font-weight: 600;
+                    color: #275249;
+                    line-height: 1.45;
+                }
+
+                /* 요약 가이드 (4개 카드) */
+                .maeum-wrapper .pricing-quick-guide {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 12px;
+                    margin-top: 20px;
+                    padding-top: 18px;
+                    border-top: 1px dashed #d5ded1;
+                }
+
+                .maeum-wrapper .guide-item {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 10px;
+                    background: #f7faf5;
+                    border: 1px solid #e1e9dc;
+                    border-radius: 8px;
+                    padding: 10px 14px;
+                    font-size: 11.5px;
+                    line-height: 1.5;
+                    color: #3b4e47;
+                }
+
+                .maeum-wrapper .guide-item .dot {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    margin-top: 5px;
+                    flex-shrink: 0;
+                }
+
+                .maeum-wrapper .guide-item .dot-gray { background: #88968f; }
+                .maeum-wrapper .guide-item .dot-teal { background: #316d60; box-shadow: 0 0 0 2px #cbe3dc; }
+                .maeum-wrapper .guide-item .dot-blue { background: #3c6e8c; }
+                .maeum-wrapper .guide-item .dot-gold { background: #b08d4b; }
+
                 /* Membership */
                 .maeum-wrapper .membership-section {
                     background: #fffdf7;
@@ -3436,6 +3691,29 @@
     .maeum-wrapper .reviewgrid { grid-template-columns: 1fr !important; gap: 6px !important; }
     .maeum-wrapper .reviewcard { padding: 12px 10px !important; }
     .maeum-wrapper .faq { padding: 10px !important; font-size: 11px !important; }
+
+    /* 요금 구조 테이블 모바일 */
+    .maeum-wrapper .plan-pricing-table-wrap {
+        padding: 16px 12px !important;
+        margin-top: 22px !important;
+        border-radius: 10px !important;
+    }
+    .maeum-wrapper .pricing-table-header h3 {
+        font-size: 16px !important;
+    }
+    .maeum-wrapper .pricing-table-header p {
+        font-size: 11px !important;
+    }
+    .maeum-wrapper .pricing-quick-guide {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        margin-top: 14px !important;
+        padding-top: 14px !important;
+    }
+    .maeum-wrapper .guide-item {
+        padding: 8px 10px !important;
+        font-size: 11px !important;
+    }
 
     /* 모바일 하단 플로팅 바 */
     .maeum-wrapper .mobilebar {

@@ -844,6 +844,7 @@ export default function MaeumContent({
                                 <button className="button light planpick" onClick={() => handlePickPlan("3")}>
                                     이 구성 선택하기 →
                                 </button>
+                                <div className="plan-period-summary">2년 면책 · 5년 잔금면제 · 만기 100% 환급</div>
                             </article>
 
                             <article className="plan featured">
@@ -869,6 +870,7 @@ export default function MaeumContent({
                                 <button className="button planpick" onClick={() => handlePickPlan("4")}>
                                     이 구성 선택하기 →
                                 </button>
+                                <div className="plan-period-summary">2년 면책 · 5년 잔금면제 · 만기 100% 환급</div>
                             </article>
 
                             <article className="plan">
@@ -891,7 +893,150 @@ export default function MaeumContent({
                                 <button className="button light planpick" onClick={() => handlePickPlan("5")}>
                                     이 구성 선택하기 →
                                 </button>
+                                <div className="plan-period-summary">2년 면책 · 5년 잔금면제 · 만기 100% 환급</div>
                             </article>
+                        </div>
+
+                        {/* 05-1. 상품 구성 금액 및 납입 구조 표 (제공 자료 연동) */}
+                        <div className="plan-pricing-table-wrap">
+                            <div className="pricing-table-header">
+                                <div className="table-badge">회차별 납입 구조 · 해약환급금 기준</div>
+                                <h3>상품 구성 금액 및 회차별 납입 안내</h3>
+                                <p>24개월 이후 상조서비스 이용 시 상조 납입 잔금을 보장하는 마음든든 상품의 구간별 금액과 만기 환급 기준입니다.</p>
+                            </div>
+
+                            <div className="spec-scroll" role="region" aria-label="상품 구성 금액 및 회차별 납입 비교표" tabIndex={0}>
+                                <table className="price-structure-table">
+                                    <thead>
+                                        <tr className="table-super-header">
+                                            <th colSpan={6}>상품 구성 금액</th>
+                                        </tr>
+                                        <tr className="table-col-header">
+                                            <th scope="col" style={{ width: '13%' }}>구분</th>
+                                            <th scope="col" style={{ width: '23%' }}>상세 구간</th>
+                                            <th scope="col" style={{ width: '16%' }}>마음든든 3</th>
+                                            <th scope="col" className="col-featured" style={{ width: '16%' }}>마음든든 4</th>
+                                            <th scope="col" style={{ width: '16%' }}>마음든든 5</th>
+                                            <th scope="col" style={{ width: '16%' }}>비고</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {/* 총 상품 금액 */}
+                                        <tr className="row-total-price">
+                                            <th scope="row" colSpan={2} className="row-title">총 상품 금액</th>
+                                            <td className="amount-cell"><strong>3,072,000원</strong></td>
+                                            <td className="amount-cell col-featured"><strong>4,128,000원</strong></td>
+                                            <td className="amount-cell"><strong>5,184,000원</strong></td>
+                                            <td className="note-cell text-muted">-</td>
+                                        </tr>
+
+                                        {/* 월 납입금액 그룹 */}
+                                        <tr>
+                                            <th scope="row" rowSpan={5} className="group-header-cell">월 납입금액</th>
+                                            <th scope="row" className="sub-term-cell">
+                                                면책기간 <small>(1 - 24회)</small>
+                                            </th>
+                                            <td className="amount-cell">32,000원</td>
+                                            <td className="amount-cell col-featured">43,000원</td>
+                                            <td className="amount-cell">54,000원</td>
+                                            <td className="note-cell badge-cell">
+                                                <span className="badge-gray">잔금 고객 부담</span>
+                                            </td>
+                                        </tr>
+                                        <tr className="row-highlight-benefit">
+                                            <th scope="row" className="sub-term-cell">
+                                                혜택기간 <small>(25 - 84회)</small>
+                                            </th>
+                                            <td className="amount-cell">32,000원</td>
+                                            <td className="amount-cell col-featured">43,000원</td>
+                                            <td className="amount-cell">54,000원</td>
+                                            <td className="note-cell badge-cell">
+                                                <span className="badge-teal">★ 잔금 면제 구간</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" className="sub-term-cell">
+                                                실상조납입기간 <small>(85 - 96회)</small>
+                                            </th>
+                                            <td className="amount-cell">32,000원</td>
+                                            <td className="amount-cell col-featured">43,000원</td>
+                                            <td className="amount-cell">54,000원</td>
+                                            <td rowSpan={2} className="note-cell highlight-note">
+                                                레디캐시, 전환 서비스,<br />양도·양수 가능
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" className="sub-term-cell">
+                                                유지기간 <small>(97 - 180회)</small>
+                                            </th>
+                                            <td colSpan={3} className="span-info-cell">
+                                                <strong>비용 납입 없는 유지기간</strong><br />
+                                                <small>(제한사항없이 누구에게나 양도·양수 가능)</small>
+                                            </td>
+                                        </tr>
+                                        <tr className="row-maturity">
+                                            <th scope="row" className="sub-term-cell">
+                                                181회 -
+                                            </th>
+                                            <td colSpan={3} className="span-info-cell maturity-cell">
+                                                <strong style={{ color: 'var(--teal)', fontSize: '13px' }}>100% 환급</strong>
+                                            </td>
+                                            <td className="note-cell badge-cell">
+                                                <span className="badge-navy">만기</span>
+                                            </td>
+                                        </tr>
+
+                                        {/* 해약환급금액 그룹 */}
+                                        <tr>
+                                            <th scope="row" rowSpan={3} className="group-header-cell refund-group">해약환급금액</th>
+                                            <th scope="row" className="sub-term-cell">
+                                                납입기간 중도 해약 <small>(1 - 96회차)</small>
+                                            </th>
+                                            <td colSpan={3} className="span-info-cell">
+                                                해약산식 의거 <strong>0~85%</strong> 환급
+                                            </td>
+                                            <td className="note-cell text-muted">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" className="sub-term-cell">
+                                                유지기간 중도 해약 <small>(97 - 180회차)</small>
+                                            </th>
+                                            <td colSpan={3} className="span-info-cell">
+                                                <strong>85% 고정 환급</strong>
+                                            </td>
+                                            <td className="note-cell text-muted">-</td>
+                                        </tr>
+                                        <tr className="row-maturity">
+                                            <th scope="row" className="sub-term-cell">
+                                                만기 해약 <small>(181회차 - )</small>
+                                            </th>
+                                            <td colSpan={3} className="span-info-cell maturity-cell">
+                                                <strong style={{ color: 'var(--teal)', fontSize: '13px' }}>100% 환급</strong>
+                                            </td>
+                                            <td className="note-cell text-muted">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="pricing-quick-guide">
+                                <div className="guide-item">
+                                    <span className="dot dot-gray"></span>
+                                    <div><strong>1~24회 (면책)</strong>: 월 납입 진행, 이 기간 장례 발생 시 잔금은 고객 부담입니다.</div>
+                                </div>
+                                <div className="guide-item">
+                                    <span className="dot dot-teal"></span>
+                                    <div><strong>25~84회 (보장)</strong>: 사전 지정인 상조 이용 시 남은 약정 잔금이 전액 면제(보장)됩니다.</div>
+                                </div>
+                                <div className="guide-item">
+                                    <span className="dot dot-blue"></span>
+                                    <div><strong>97~180회 (유지)</strong>: 추가 납입금 0원, 전환서비스·양도양수 자유 이용 및 85% 환급 보장.</div>
+                                </div>
+                                <div className="guide-item">
+                                    <span className="dot dot-gold"></span>
+                                    <div><strong>181회~ (만기)</strong>: 서비스 미이용 시 납입하신 원금 100% 전액 환급.</div>
+                                </div>
+                            </div>
                         </div>
 
                         <p className="smallnote">주요 구성 비교입니다. 관·수의·장례지도사 기본 사양은 공통이며, 상세 품목과 지원 시간·추가 비용은 계약명세에 따릅니다. 일회용 식기에는 음식이 포함되지 않습니다.</p>
