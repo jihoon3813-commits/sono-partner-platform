@@ -201,7 +201,7 @@ export default function MaeumContent({
                         </div>
 
                         <div className="heronote">
-                            잔금 보장은 25~84회차에 사전 지정한 1인(80세 이하)의 상조서비스 이용 시 조건에 따라 적용됩니다. 첫 24회차 및 85회차 이후는 보장 제외입니다.<br />
+                            잔금 보장은 25~84회차에 사전 지정한 1인(80세 이하)의 상조서비스 이용 시 조건에 따라 적용됩니다. 1~24회차 및 85~96회차는 보장 제외입니다.<br />
                             장례식장 이용료·음식료 등 상품 외 비용은 별도입니다. 마음든든 3 기준 월 32,000원 × 96회.
                         </div>
                     </div>
@@ -747,7 +747,7 @@ export default function MaeumContent({
                                 <path d="M27 19c-12-12 9-22 10-8 13-5 18 15 4 17 4 14-15 19-17 5-14 3-17-16-3-17M32 38v19m0-8c-12 1-16-11-16-11 12-1 16 11 16 11Zm0 3c12 1 17-10 17-10-11-2-17 10-17 10Z" />
                             </svg>
                             <strong>마음을 전하는 3단 화환</strong>
-                            <span>세 상품 모두 스테이션 명의로 제공하며, 상주 요청 시 명의 변경이 가능합니다.</span>
+                            <span>세 상품 모두 소노 아임레디 명의로 제공하며, 상주 요청 시 명의 변경이 가능합니다.</span>
                         </div>
 
                         {/* Detailed Spec Comparison */}
@@ -800,7 +800,7 @@ export default function MaeumContent({
                                         <tr className="spec-group"><th colSpan={4}>편의용품 · 특별 서비스</th></tr>
                                         <tr><th scope="row">일회용 식기세트</th><td>미포함</td><td>150인분</td><td>300인분</td></tr>
                                         <tr><th scope="row">편의용품</th><td>1세트</td><td>1세트</td><td>1세트</td></tr>
-                                        <tr><th scope="row">3단 화환</th><td>스테이션 명의 제공 · 상주 요청 시 명의 변경 가능</td><td>스테이션 명의 제공 · 상주 요청 시 명의 변경 가능</td><td>스테이션 명의 제공 · 상주 요청 시 명의 변경 가능</td></tr>
+                                        <tr><th scope="row">3단 화환</th><td>소노 아임레디 명의 제공 · 상주 요청 시 명의 변경 가능</td><td>소노 아임레디 명의 제공 · 상주 요청 시 명의 변경 가능</td><td>소노 아임레디 명의 제공 · 상주 요청 시 명의 변경 가능</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -938,8 +938,8 @@ export default function MaeumContent({
                                 <h3>소노호텔앤리조트</h3>
                                 <p className="stay-sub">비수기 주중, 회원 적용 요금으로 쉬어가는 시간.</p>
                                 <div className="stay-prices">
-                                    <div><span>일요일 ~ 목요일</span><strong>회원가 <em>+ 1만 원</em></strong></div>
-                                    <div><span>금요일</span><strong>회원가 <em>+ 2만 원</em></strong></div>
+                                    <div><span>일요일 ~ 목요일</span><strong>무기명 회원가 <em>+ 1만 원</em></strong></div>
+                                    <div><span>금요일</span><strong>무기명 회원가 <em>+ 2만 원</em></strong></div>
                                 </div>
                                 <p className="stay-price-note">무기명 회원가 기준 추가금입니다. 1만 원·2만 원이 전체 숙박요금이 아니며, 무료 숙박 혜택이 아닙니다.</p>
                                 <div className="stay-mini">
@@ -991,14 +991,18 @@ export default function MaeumContent({
                             </article>
                         </div>
 
+                        {/* 신규 멤버십 오픈 전 비활성화 */}
+                        {/*
                         <div className="member-next">
                             <span>건강부터 교통까지, 멤버십의 영역이 더 넓어집니다.</span>
                             <a href="#new-membership">신규 5개 분야 살펴보기 ↓</a>
                         </div>
+                        */}
                     </div>
                 </section>
 
-                {/* 07. New Membership */}
+                {/* 07. New Membership (오픈 전 비활성화 - 추후 오픈 시 주석 해제) */}
+                {/*
                 <section id="new-membership" className="new-membership">
                     <div className="wrap">
                         <div className="new-member-heading">
@@ -1124,12 +1128,13 @@ export default function MaeumContent({
                         </div>
                     </div>
                 </section>
+                */}
 
-                {/* 08. FAQ */}
+                {/* 07. FAQ */}
                 <section id="faq">
                     <div className="wrap">
                         <div className="center">
-                            <div className="eyebrow chapter"><span className="chapter-no">08</span>가입 전 확인사항</div>
+                            <div className="eyebrow chapter"><span className="chapter-no">07</span>가입 전 확인사항</div>
                             <h2>가입 전, 꼭 알아두세요.</h2>
                         </div>
                         <div className="faq">
@@ -1139,7 +1144,7 @@ export default function MaeumContent({
                             </details>
                             <details>
                                 <summary>가입하면 바로 잔금 보장을 받을 수 있나요?</summary>
-                                <p>첫 24회차는 면책기간입니다. 잔금 보장은 25~84회차에 지정인의 상조서비스 이용 시 조건에 따라 적용되며, 85회차 이후에는 적용되지 않습니다.</p>
+                                <p>첫 24회차는 면책기간입니다. 잔금 보장은 25~84회차에 지정인의 상조서비스 이용 시 조건에 따라 적용되며, 1~24회차 및 85~96회차에는 적용되지 않습니다.</p>
                             </details>
                             <details>
                                 <summary>부모님 두 분 모두 보장되나요?</summary>
@@ -1174,7 +1179,7 @@ export default function MaeumContent({
 
                     <div className="wrap consultgrid">
                         <div>
-                            <div className="eyebrow chapter"><span className="chapter-no">09</span>나에게 맞는 준비</div>
+                            <div className="eyebrow chapter"><span className="chapter-no">08</span>나에게 맞는 준비</div>
                             <h2>소중한 사람을 위한 준비,<br />내 조건부터 확인하세요.</h2>
                             <p className="sectiondesc">
                                 누구를 위한 준비인지, 어떤 구성이 필요한지.<br />
