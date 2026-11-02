@@ -465,6 +465,8 @@ export default defineSchema({
         uploadedAt: v.string(), // 업로드 일시 (KST string)
         uploadedBy: v.optional(v.string()), // 업로드한 사용자명/파트너명
         memo: v.optional(v.string()), // 녹취 메모 (예: 계약안내 동의, 1차 상담 등)
+        transcript: v.optional(v.string()), // STT 변환된 녹취 텍스트 전문
+        transcribedAt: v.optional(v.string()), // 텍스트 변환/수정 일시 (KST string)
     })
         .index("by_applicationNo", ["applicationNo"])
         .index("by_uploadedAt", ["uploadedAt"]),

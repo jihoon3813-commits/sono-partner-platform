@@ -1318,6 +1318,7 @@ export default function CustomerManagement({
                     parentPartnerName={getParentPartnerInfo(recordingTargetApp.partnerId, recordingTargetApp.partnerName)?.name}
                     onClose={() => setRecordingTargetApp(null)}
                     currentUserName={currentUser?.managerName || currentUser?.companyName || (isAdmin ? "총괄관리자" : "관리자")}
+                    isAdmin={isAdmin}
                 />
             )}
 

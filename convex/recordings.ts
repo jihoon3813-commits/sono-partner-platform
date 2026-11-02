@@ -102,6 +102,33 @@ export const deleteRecording = mutation({
 });
 
 /**
+ * 녹취 음성파일의 STT 변환 텍스트(또는 수정된 녹취록) 저장
+ */
+export const updateRecordingTranscript = mutation({
+    args: {
+        recordingId: v.id("recordings"),
+        transcript: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const recording = await ctx.db.get(args.recordingId);
+        if (!recording) {
+            throw new Error("해당 녹취 파일 정보를 찾을 수 없습니다.");
+        }
+
+        const updatedAt = nowKST();
+        await ctx.db.patch(args.recordingId, {
+            transcript: args.transcript,
+            transcribedAt: updatedAt,
+        });
+
+        return {
+            success: true,
+            transcribedAt: updatedAt,
+        };
+    },
+});
+
+/**
  * 고객 목록에서 각 applicationNo별 녹취 파일 개수를 조회
  */
 export const getRecordingCounts = query({
