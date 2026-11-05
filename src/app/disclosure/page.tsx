@@ -11,7 +11,7 @@ export default function DisclosurePage() {
 
     const images: Record<TabType, { url: string; title: string }> = {
         info: {
-            url: "https://res.cloudinary.com/dfkntvpmv/image/upload/v1782719911/%EB%A6%AC%EB%89%B4%EC%96%BC_%EC%8A%A4%EB%A7%88%ED%8A%B8%EC%BC%80%EC%96%B4_%EC%A4%91%EC%9A%94%EC%A0%95%EB%B3%B4_%EA%B3%A0%EC%8B%9C%EC%82%AC%ED%95%AD_%EB%B0%8F_%ED%99%98%EA%B8%89%EA%B8%88_%EC%88%98%EC%A0%95%EB%B3%B8__20260623_v7tjz5.jpg",
+            url: "https://res.cloudinary.com/lyjyvy54/image/upload/v1793866008/smartcare-notice_ntk4fq.png",
             title: "중요정보 고시사항"
         },
         care4: {
