@@ -3,12 +3,16 @@ import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { nowKST, todayKSTStr } from "./utils";
 
+// 중복 체크 및 고객 정보 정규화 헬퍼 함수
+export const normalizeCustomerName = (name?: string) => (name || "").replace(/[\s\u00A0]+/g, "").trim();
+export const normalizeCustomerPhone = (phone?: string) => (phone || "").replace(/[^0-9]/g, "");
+
 // 중복 체크 로직을 공통으로 처리하는 헬퍼 함수
 export const attachDuplicateFlags = (apps: any[], allApps: any[]) => {
     const counts = new Map<string, number>();
     allApps.forEach(a => {
-        const name = (a.customerName || "").trim();
-        const phone = (a.customerPhone || "").replace(/[^0-9]/g, "");
+        const name = normalizeCustomerName(a.customerName);
+        const phone = normalizeCustomerPhone(a.customerPhone);
         if (name && phone) {
             const key = `${name}|${phone}`;
             counts.set(key, (counts.get(key) || 0) + 1);
@@ -16,8 +20,8 @@ export const attachDuplicateFlags = (apps: any[], allApps: any[]) => {
     });
 
     return apps.map(a => {
-        const name = (a.customerName || "").trim();
-        const phone = (a.customerPhone || "").replace(/[^0-9]/g, "");
+        const name = normalizeCustomerName(a.customerName);
+        const phone = normalizeCustomerPhone(a.customerPhone);
         const key = `${name}|${phone}`;
         return {
             ...a,
@@ -110,10 +114,10 @@ export const createApplication = mutation({
 
         const id = await ctx.db.insert("applications", {
             ...rest,
-            customerName: rest.customerName || "",
-            customerBirth: rest.customerBirth || "",
+            customerName: (rest.customerName || "").trim(),
+            customerBirth: (rest.customerBirth || "").trim(),
             customerGender: rest.customerGender || "-",
-            customerPhone: rest.customerPhone || "",
+            customerPhone: (rest.customerPhone || "").trim(),
             customerAddress: rest.customerAddress || "",
             customerZipcode: rest.customerZipcode || "",
             applicationNo,
@@ -261,7 +265,11 @@ export const updateApplicationDetails = mutation({
         Object.entries(actualUpdates).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
                 if (key === 'createdAt') return; // 최초 접수/등록일시는 변조 방지
-                patchData[key] = value;
+                if (key === 'customerName' || key === 'customerPhone' || key === 'customerBirth') {
+                    patchData[key] = typeof value === 'string' ? value.trim() : value;
+                } else {
+                    patchData[key] = value;
+                }
                 if (key === 'status' && String(value) !== previousStatus) {
                     statusChanged = true;
                     patchData.statusUpdatedAt = nowKST();
@@ -328,10 +336,10 @@ export const createApplications = mutation({
 
             await ctx.db.insert("applications", {
                 ...rest,
-                customerName: rest.customerName || "",
-                customerBirth: rest.customerBirth || "",
+                customerName: (rest.customerName || "").trim(),
+                customerBirth: (rest.customerBirth || "").trim(),
                 customerGender: rest.customerGender || "-",
-                customerPhone: rest.customerPhone || "",
+                customerPhone: (rest.customerPhone || "").trim(),
                 customerAddress: rest.customerAddress || "",
                 customerZipcode: rest.customerZipcode || "",
                 applicationNo,
@@ -753,6 +761,7 @@ export const fixLegacyData = mutation({
 
 /**
  * 고객 중복 가입 여부를 확인하는 쿼리
+ * attachDuplicateFlags와 100% 동일한 정규화 기준으로 비교하여 반환
  */
 export const checkDuplicateCustomer = query({
     args: {
@@ -764,40 +773,45 @@ export const checkDuplicateCustomer = query({
         const { customerName, customerPhone, excludeApplicationNo } = args;
         if (!customerName || !customerPhone) return [];
 
-        const normalizedPhone = customerPhone.replace(/[^0-9]/g, "");
+        const targetName = normalizeCustomerName(customerName);
+        const targetPhone = normalizeCustomerPhone(customerPhone);
+        if (!targetName || !targetPhone) return [];
 
-        // 인덱스를 활용하여 효율적으로 조회 (customerName, customerPhone)
-        const apps = await ctx.db
-            .query("applications")
-            .withIndex("by_customer_sync", (q) =>
-                q.eq("customerName", customerName)
-                 .eq("customerPhone", customerPhone)
-            )
-            .collect();
+        const allApps = await ctx.db.query("applications").collect();
 
-        // 번호 형식이 다를 수 있으므로(하이픈 유무 등) normalized 번호로도 추가 조회
-        let allApps = apps;
-        if (normalizedPhone !== customerPhone) {
-            const appsAlt = await ctx.db
-                .query("applications")
-                .withIndex("by_customer_sync", (q) =>
-                    q.eq("customerName", customerName)
-                     .eq("customerPhone", normalizedPhone)
-                )
-                .collect();
-            
-            // _id를 기준으로 중복 제거하며 병합
-            const ids = new Set(apps.map(a => a._id));
-            for (const app of appsAlt) {
-                if (!ids.has(app._id)) {
-                    allApps.push(app);
-                }
+        // 현재 확인 중인 신청서(신규 등록 시에는 없음)는 제외하고 동일 고객 건 반환
+        return allApps.filter(app => {
+            if (app.applicationNo === excludeApplicationNo) return false;
+            const appName = normalizeCustomerName(app.customerName);
+            const appPhone = normalizeCustomerPhone(app.customerPhone);
+            return appName === targetName && appPhone === targetPhone;
+        });
+    },
+});
+
+/**
+ * 기존 DB 고객명/연락처에 포함된 앞뒤 공백 및 특수공백(NBSP 등) 일괄 정리
+ */
+export const cleanupCustomerWhitespace = mutation({
+    handler: async (ctx) => {
+        const applications = await ctx.db.query("applications").collect();
+        let updatedCount = 0;
+        for (const app of applications) {
+            const rawName = app.customerName || "";
+            const rawPhone = app.customerPhone || "";
+            const trimmedName = rawName.replace(/^[\s\u00A0]+|[\s\u00A0]+$/g, "");
+            const trimmedPhone = rawPhone.replace(/^[\s\u00A0]+|[\s\u00A0]+$/g, "");
+
+            if (rawName !== trimmedName || rawPhone !== trimmedPhone) {
+                await ctx.db.patch(app._id, {
+                    customerName: trimmedName,
+                    customerPhone: trimmedPhone,
+                });
+                updatedCount++;
             }
         }
-
-        // 현재 확인 중인 신청서(신규 등록 시에는 없음)는 제외하고 반환
-        return allApps.filter(app => app.applicationNo !== excludeApplicationNo);
-    },
+        return { updatedCount };
+    }
 });
 
 // Migration mutation to backfill accessPath for existing records

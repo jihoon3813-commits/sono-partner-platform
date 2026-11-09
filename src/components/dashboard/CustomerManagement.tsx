@@ -1409,8 +1409,8 @@ export default function CustomerManagement({
 // 중복 확인 모달 컴포넌트
 function DuplicateCheckModal({ app, onClose, onConfirm }: { app: Application, onClose: () => void, onConfirm: (appNo: string, type: 'confirmed' | 'additional') => void }) {
     const duplicates = useQuery(api.applications.checkDuplicateCustomer, {
-        customerName: app.customerName || "",
-        customerPhone: app.customerPhone || "",
+        customerName: (app.customerName || "").trim(),
+        customerPhone: (app.customerPhone || "").trim(),
         excludeApplicationNo: app.applicationNo
     });
 
@@ -1426,7 +1426,7 @@ function DuplicateCheckModal({ app, onClose, onConfirm }: { app: Application, on
                 <div className="p-6 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
                     <div>
                         <h3 className="text-lg font-black text-sono-dark tracking-tight">중복 가입 확인</h3>
-                        <p className="text-xs text-gray-400 font-bold mt-0.5">{app.customerName}님 / {app.customerPhone}</p>
+                        <p className="text-xs text-gray-400 font-bold mt-0.5">{(app.customerName || "").trim()}님 / {app.customerPhone}</p>
                     </div>
                     <button onClick={onClose} className="p-2 text-gray-400 hover:text-sono-dark transition-colors bg-white rounded-xl shadow-sm border border-gray-100">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
