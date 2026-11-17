@@ -933,7 +933,7 @@
   align-items: center;
   gap: 5px;
   padding: 4px 8px;
-  border-radius: 6px;
+  border-radius: 5px;
   font-size: 10.5px;
   font-weight: 600;
   white-space: nowrap;
@@ -946,6 +946,490 @@
 .sono-admin-theme .adm-pill.gray { background: #f0f2ed; color: #7f8777; }
 .sono-admin-theme .adm-pill.red { background: #faeae5; color: #ad6654; }
 .sono-admin-theme .adm-pill.teal { background: #e6f1ed; color: #467363; }
+
+/* =========================================================
+   2-B. Tabs / Filter Bars / Tables / Forms / Notes (sono-maeum-admin)
+   ========================================================= */
+.sono-admin-theme .adm-tabs {
+  display: flex;
+  gap: 22px;
+  border-bottom: 1px solid var(--border);
+  padding: 0 22px;
+  overflow-x: auto;
+  white-space: nowrap;
+  background: #fff;
+  scrollbar-width: thin;
+}
+
+.sono-admin-theme .adm-tabs::-webkit-scrollbar {
+  height: 3px;
+}
+
+.sono-admin-theme .adm-tabs::-webkit-scrollbar-thumb {
+  background: #d5ddd0;
+  border-radius: 3px;
+}
+
+.sono-admin-theme .adm-tab {
+  position: relative;
+  color: #849080;
+  font-size: 12.5px;
+  font-weight: 550;
+  padding: 15px 0;
+  background: transparent;
+  border: 0;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+
+.sono-admin-theme .adm-tab:hover {
+  color: var(--ink);
+}
+
+.sono-admin-theme .adm-tab.active {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.sono-admin-theme .adm-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--green);
+  height: 2px;
+}
+
+.sono-admin-theme .adm-tab-count {
+  font-size: 10px;
+  background: #f1f4ec;
+  color: #7d8c74;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.sono-admin-theme .adm-tab.active .adm-tab-count {
+  background: #e4eee0;
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* Filter Bar & Search & Selects */
+.sono-admin-theme .adm-filter-bar {
+  padding: 16px 22px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  background: #fff;
+  border-bottom: 1px solid #edf0e7;
+}
+
+.sono-admin-theme .adm-search-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #dfe5d9;
+  border-radius: 7px;
+  padding: 0 12px;
+  background: #fff;
+  max-width: 100%;
+  height: 36px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.sono-admin-theme .adm-search-field:focus-within {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(41, 94, 82, 0.12);
+}
+
+.sono-admin-theme .adm-search-field .adm-icon {
+  width: 15px;
+  height: 15px;
+  color: #8e9988;
+}
+
+.sono-admin-theme .adm-search-field input {
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  min-width: 0;
+  width: 240px;
+  font-size: 12px;
+  color: var(--ink);
+  background: transparent !important;
+  padding: 0 !important;
+  height: 100%;
+}
+
+.sono-admin-theme .adm-search-field input::placeholder {
+  color: #9ba594;
+}
+
+.sono-admin-theme .adm-select,
+.sono-admin-theme .adm-input,
+.sono-admin-theme .adm-textarea {
+  border: 1px solid #dfe5d9;
+  border-radius: 7px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 7px 11px;
+  min-height: 36px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.sono-admin-theme .adm-select:focus,
+.sono-admin-theme .adm-input:focus,
+.sono-admin-theme .adm-textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(41, 94, 82, 0.12);
+}
+
+.sono-admin-theme .adm-select:disabled,
+.sono-admin-theme .adm-input:disabled,
+.sono-admin-theme .adm-textarea:disabled {
+  background: #f4f6f1;
+  color: #949e90;
+  cursor: not-allowed;
+}
+
+.sono-admin-theme .adm-textarea {
+  resize: vertical;
+  min-height: 76px;
+  line-height: 1.55;
+}
+
+.sono-admin-theme .adm-filter-end {
+  margin-left: auto;
+  color: #849080;
+  font-size: 11.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Data Tables */
+.sono-admin-theme .adm-table-scroll {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.sono-admin-theme .adm-table {
+  border-collapse: collapse;
+  text-align: left;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.sono-admin-theme .adm-table th {
+  font-weight: 600;
+  font-size: 11px;
+  color: #7d8879;
+  background: #f8f9f5;
+  padding: 12px 14px;
+  border-top: 1px solid #edf0e7;
+  border-bottom: 1px solid #edf0e7;
+  letter-spacing: -0.01em;
+}
+
+.sono-admin-theme .adm-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid #eef1e8;
+  font-size: 12px;
+  color: #4d5c50;
+  vertical-align: middle;
+}
+
+.sono-admin-theme .adm-table th:first-child,
+.sono-admin-theme .adm-table td:first-child {
+  padding-left: 20px;
+}
+
+.sono-admin-theme .adm-table th:last-child,
+.sono-admin-theme .adm-table td:last-child {
+  padding-right: 20px;
+}
+
+.sono-admin-theme .adm-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.sono-admin-theme .adm-table tbody tr.adm-clickable-row {
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+
+.sono-admin-theme .adm-table tbody tr.adm-clickable-row:hover td,
+.sono-admin-theme .adm-table tbody tr:hover td {
+  background-color: #fbfcf8;
+}
+
+.sono-admin-theme .adm-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  text-align: left;
+}
+
+.sono-admin-theme .adm-person-circle {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #4f6853;
+  background: #eaf0e4;
+  flex-shrink: 0;
+}
+
+.sono-admin-theme .adm-person-circle.alt {
+  background: #f2ede3;
+  color: #8a7957;
+}
+
+.sono-admin-theme .adm-person strong {
+  display: block;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.sono-admin-theme .adm-person small {
+  display: block;
+  font-size: 10.5px;
+  color: #8e9988;
+  margin-top: 2px;
+}
+
+.sono-admin-theme .adm-table-foot {
+  border-top: 1px solid #edf0e7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 22px;
+  color: #8c9686;
+  font-size: 11.5px;
+  background: #fafbf8;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sono-admin-theme .adm-pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sono-admin-theme .adm-pagination button {
+  font-size: 11.5px;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 7px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #7c8776;
+  font-weight: 600;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.sono-admin-theme .adm-pagination button:hover:not(:disabled) {
+  background: #f1f4ec;
+  color: var(--ink);
+}
+
+.sono-admin-theme .adm-pagination button.active {
+  background: var(--green);
+  color: #fff;
+  font-weight: 700;
+}
+
+.sono-admin-theme .adm-pagination button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* Section Note & Callout Bars */
+.sono-admin-theme .adm-section-note {
+  padding: 12px 16px;
+  border: 1px solid #e2e7da;
+  background: #f3f5ec;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #5d6c58;
+  line-height: 1.6;
+}
+
+.sono-admin-theme .adm-section-note .adm-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--green);
+  flex-shrink: 0;
+}
+
+/* Bulk Action Bar */
+.sono-admin-theme .adm-bulk-bar {
+  background: var(--green-dark);
+  color: #edf2e9;
+  border-radius: 11px;
+  padding: 10px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(25, 63, 57, 0.14);
+}
+
+/* Drawer & Form Sections */
+.sono-admin-theme .adm-section-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--green);
+  margin: 22px 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #edf0e7;
+}
+
+.sono-admin-theme .adm-section-label:first-child {
+  margin-top: 0;
+}
+
+.sono-admin-theme .adm-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 16px;
+}
+
+.sono-admin-theme .adm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #5c6b5b;
+  min-width: 0;
+}
+
+.sono-admin-theme .adm-field.full {
+  grid-column: 1 / -1;
+}
+
+.sono-admin-theme .adm-field small {
+  font-size: 10.5px;
+  font-weight: 450;
+  color: #8e9888;
+  line-height: 1.5;
+}
+
+.sono-admin-theme .adm-details-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 20px;
+  background: #f8f9f5;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 15px 18px;
+  margin: 0;
+}
+
+.sono-admin-theme .adm-details-list dt {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #8a9685;
+  margin-bottom: 4px;
+}
+
+.sono-admin-theme .adm-details-list dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.sono-admin-theme .adm-note-card {
+  padding: 15px 17px;
+  background: #f8f9f5;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 12px;
+  color: #586655;
+  line-height: 1.65;
+}
+
+/* Horizontal Progress Bar Track */
+.sono-admin-theme .adm-bar-track {
+  height: 7px;
+  border-radius: 5px;
+  background: #eef1e8;
+  overflow: hidden;
+}
+
+.sono-admin-theme .adm-bar-track > span {
+  height: 100%;
+  display: block;
+  border-radius: 5px;
+  background: var(--green);
+  transition: width 0.35s ease;
+}
+
+/* Toggle Switch */
+.sono-admin-theme .adm-switch {
+  position: relative;
+  display: inline-flex;
+  height: 20px;
+  width: 36px;
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background-color: #d8dfd3;
+  transition: background-color 0.2s ease;
+  padding: 0;
+}
+
+.sono-admin-theme .adm-switch.checked {
+  background-color: var(--green);
+}
+
+.sono-admin-theme .adm-switch > span {
+  pointer-events: none;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  transform: translateX(0);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.sono-admin-theme .adm-switch.checked > span {
+  transform: translateX(16px);
+}
 
 /* Settings Layout */
 .sono-admin-theme .adm-settings-layout {
@@ -1421,6 +1905,24 @@
     padding-left: 20px;
     padding-right: 20px;
   }
+  .sono-admin-theme .adm-filter-bar {
+    padding: 14px 16px;
+    gap: 8px;
+  }
+  .sono-admin-theme .adm-search-field {
+    flex: 1;
+    min-width: 100%;
+  }
+  .sono-admin-theme .adm-search-field input {
+    width: 100%;
+  }
+  .sono-admin-theme .adm-tabs {
+    gap: 16px;
+    padding: 0 16px;
+  }
+  .sono-admin-theme .adm-table-foot {
+    padding: 12px 16px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1432,5 +1934,10 @@
   }
   .sono-admin-theme .adm-metric-value {
     font-size: 24px;
+  }
+  .sono-admin-theme .adm-field-grid,
+  .sono-admin-theme .adm-details-list {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }

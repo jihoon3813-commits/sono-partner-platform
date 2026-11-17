@@ -1,15 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { Application, Partner, ApplicationStatus } from "@/lib/types";
+import { Application, Partner } from "@/lib/types";
 import CustomerDetailModal from "./CustomerDetailModal";
 import CustomerRegistrationModal from "./CustomerRegistrationModal";
 import BulkUploadModal from "./BulkUploadModal";
 import LifeJoyExportModal from "./LifeJoyExportModal";
 import SonoRegisterModal from "./SonoRegisterModal";
 import RecordingModal from "./RecordingModal";
+import { AdminIcon } from "./AdminIcons";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
-import { getKSTDateString, getKSTMonthsAgoDateString, getKSTLastMonthRange, formatDateTime } from "@/lib/dateUtils";
+import {
+    getKSTDateString,
+    getKSTMonthsAgoDateString,
+    getKSTLastMonthRange,
+    formatDateTime,
+} from "@/lib/dateUtils";
 import { formatBytes } from "@/lib/downloadUtils";
 import { formatPhoneNumber } from "@/lib/phoneUtils";
 
@@ -21,7 +27,6 @@ interface CustomerManagementProps {
     isAdmin?: boolean;
     initialStatusFilter?: string;
     currentUser?: Partner | null;
-    // Added props for state lifting
     dateFilter?: string;
     setDateFilter?: (val: string) => void;
     customStartDate?: string;
@@ -30,20 +35,20 @@ interface CustomerManagementProps {
     setCustomEndDate?: (val: string) => void;
 }
 
-export default function CustomerManagement({ 
-    applications, 
-    onRefresh, 
-    partners = [], 
-    isWidget = false, 
-    isAdmin = false, 
-    initialStatusFilter = "all", 
+export default function CustomerManagement({
+    applications,
+    onRefresh,
+    partners = [],
+    isWidget = false,
+    isAdmin = false,
+    initialStatusFilter = "all",
     currentUser = null,
     dateFilter: liftedDateFilter,
     setDateFilter: liftedSetDateFilter,
     customStartDate: liftedCustomStartDate,
     setCustomStartDate: liftedSetCustomStartDate,
     customEndDate: liftedCustomEndDate,
-    setCustomEndDate: liftedSetCustomEndDate
+    setCustomEndDate: liftedSetCustomEndDate,
 }: CustomerManagementProps) {
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
 
@@ -51,17 +56,23 @@ export default function CustomerManagement({
         return getStatusBadgeProps(status, dbStatuses);
     };
 
-
-    // 상품 유형 한글 표시
     const getProductTypeLabel = (productType: string) => {
         const type = productType?.toLowerCase() || "";
         if (type === "happy450" || type.includes("해피") || type.includes("happy")) {
             return "더 해피 450 ONE";
         }
-        if (type.includes("스마트케어4") || type.includes("smartcare4") || type.includes("smart4")) {
+        if (
+            type.includes("스마트케어4") ||
+            type.includes("smartcare4") ||
+            type.includes("smart4")
+        ) {
             return "스마트케어4";
         }
-        if (type.includes("스마트케어5") || type.includes("smartcare5") || type.includes("smart5")) {
+        if (
+            type.includes("스마트케어5") ||
+            type.includes("smartcare5") ||
+            type.includes("smart5")
+        ) {
             return "스마트케어5";
         }
         if (type === "smartcare" || type.includes("스마트") || type.includes("smart")) {
@@ -87,14 +98,14 @@ export default function CustomerManagement({
     const confirmAdditional = useMutation(api.applications.confirmAdditional);
 
     const deleteApplications = useMutation(api.applications.deleteApplications);
-    const fixGenderData = useMutation(api.applications.fixGenderData);
-    const updateMultipleApplicationStatuses = useMutation(api.applications.updateMultipleApplicationStatuses);
+    const updateMultipleApplicationStatuses = useMutation(
+        api.applications.updateMultipleApplicationStatuses
+    );
 
     const [bulkStatus, setBulkStatus] = useState("");
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
     // 소노아임레디(THEHAPPYONE) 등록 상태 관리
-    const [isRegisteringSonoMap, setIsRegisteringSonoMap] = useState<{ [appNo: string]: boolean }>({});
     const [isBulkRegisteringSono, setIsBulkRegisteringSono] = useState(false);
     const [sonoTargetApp, setSonoTargetApp] = useState<Application | null>(null);
     const [isSonoModalOpen, setIsSonoModalOpen] = useState(false);
@@ -107,7 +118,6 @@ export default function CustomerManagement({
     const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter);
     const [productFilter, setProductFilter] = useState<string>("all");
     const [partnersFilter, setPartnersFilter] = useState<string>("all");
-    // Filters (Internal state fallback if not provided as props)
     const [_internalDateFilter, _setInternalDateFilter] = useState<string>("all");
     const [_internalCustomStartDate, _setInternalCustomStartDate] = useState("");
     const [_internalCustomEndDate, _setInternalCustomEndDate] = useState("");
@@ -119,10 +129,10 @@ export default function CustomerManagement({
     const customEndDate = liftedCustomEndDate || _internalCustomEndDate;
     const setCustomEndDate = liftedSetCustomEndDate || _setInternalCustomEndDate;
 
-    // Sorting
-    const [sortBy, setSortBy] = useState<"updatedAt" | "createdAtAsc" | "createdAtDesc">("updatedAt");
-
-    // Pagination
+    // Sorting & Pagination
+    const [sortBy, setSortBy] = useState<"updatedAt" | "createdAtAsc" | "createdAtDesc">(
+        "updatedAt"
+    );
     const [itemsPerPage, setItemsPerPage] = useState(20);
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -132,70 +142,98 @@ export default function CustomerManagement({
         }
     }, [initialStatusFilter]);
 
-    // Reset page when filter changes
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchTerm, statusFilter, productFilter, partnersFilter, dateFilter, customStartDate, customEndDate, itemsPerPage, sortBy]);
+    }, [
+        searchTerm,
+        statusFilter,
+        productFilter,
+        partnersFilter,
+        dateFilter,
+        customStartDate,
+        customEndDate,
+        itemsPerPage,
+        sortBy,
+    ]);
 
-    // Fetch dynamic statuses
-
-    
-    // Default fallback statuses
-    const defaultStatuses = ['접수대기', '접수완료', '부재', '보류', '불가', '거부', '접수취소', '녹취완료(출금확인중)', '정상가입', '배송완료', '청약철회', '해약', '정산완료'];
-    
-    // Combine dynamic and default statuses (ensure unique)
-    const rawAvailableStatuses = dbStatuses 
-        ? dbStatuses.map(s => s.label) 
-        : defaultStatuses;
-    
-    const availableStatuses = currentUser?.role === 'tm'
-        ? rawAvailableStatuses.filter(s => s !== "정산예정" && s !== "정산완료")
-        : rawAvailableStatuses;
-
-    const statusOptions = ['전체', ...availableStatuses];
-
-    // 상품 종류 추출 (전체 고객 데이터 기반)
-    const productOptions = ['전체', ...Array.from(new Set(applications.map(app => getProductTypeLabel(app.productType)).filter(Boolean)))];
-
-    const dateOptions = [
-        { label: '전체', value: 'all' },
-        { label: '당일', value: 'today' },
-        { label: '전일', value: 'yesterday' },
-        { label: '당월', value: 'month' },
-        { label: '전월', value: 'lastMonth' },
-        { label: '3개월', value: '3months' },
-        { label: '6개월', value: '6months' },
-        { label: '1년', value: '1year' },
-        { label: '기간선택', value: 'custom' },
+    const defaultStatuses = [
+        "접수대기",
+        "접수완료",
+        "부재",
+        "보류",
+        "불가",
+        "거부",
+        "접수취소",
+        "녹취완료(출금확인중)",
+        "정상가입",
+        "배송완료",
+        "청약철회",
+        "해약",
+        "정산완료",
     ];
 
-    // KST 기준 오늘 및 이번 달 계산
+    const rawAvailableStatuses = dbStatuses
+        ? dbStatuses.map((s) => s.label)
+        : defaultStatuses;
+
+    const availableStatuses =
+        currentUser?.role === "tm"
+            ? rawAvailableStatuses.filter((s) => s !== "정산예정" && s !== "정산완료")
+            : rawAvailableStatuses;
+
+    const statusOptions = ["전체", ...availableStatuses];
+
+    const productOptions = [
+        "전체",
+        ...Array.from(
+            new Set(
+                applications
+                    .map((app) => getProductTypeLabel(app.productType))
+                    .filter(Boolean)
+            )
+        ),
+    ];
+
+    const dateOptions = [
+        { label: "전체", value: "all" },
+        { label: "당일", value: "today" },
+        { label: "전일", value: "yesterday" },
+        { label: "당월", value: "month" },
+        { label: "전월", value: "lastMonth" },
+        { label: "3개월", value: "3months" },
+        { label: "6개월", value: "6months" },
+        { label: "1년", value: "1year" },
+        { label: "기간선택", value: "custom" },
+    ];
+
     const today = getKSTDateString();
     const thisMonth = today.slice(0, 7);
 
     const getStartDateStr = (filter: string) => {
-        if (filter === '3months') return getKSTMonthsAgoDateString(3);
-        if (filter === '6months') return getKSTMonthsAgoDateString(6);
-        if (filter === '1year') return getKSTMonthsAgoDateString(12);
+        if (filter === "3months") return getKSTMonthsAgoDateString(3);
+        if (filter === "6months") return getKSTMonthsAgoDateString(6);
+        if (filter === "1year") return getKSTMonthsAgoDateString(12);
         return "";
     };
 
     const getPartnerLoginId = (partnerId: string, partnerName?: string) => {
         if (!partners || partners.length === 0) return partnerId;
-
-        let p = partners.find(p => p.partnerId === partnerId || p.loginId === partnerId);
+        let p = partners.find(
+            (p) => p.partnerId === partnerId || p.loginId === partnerId
+        );
         if (!p && partnerName) {
-            p = partners.find(p => p.companyName === partnerName);
+            p = partners.find((p) => p.companyName === partnerName);
         }
         return p?.loginId || partnerId;
     };
 
     const getParentPartnerInfo = (partnerId: string, partnerName?: string) => {
         if (!partners || partners.length === 0) return null;
-
-        let p = partners.find(item => item.partnerId === partnerId || item.loginId === partnerId);
+        let p = partners.find(
+            (item) => item.partnerId === partnerId || item.loginId === partnerId
+        );
         if (!p && partnerName) {
-            p = partners.find(item => item.companyName === partnerName);
+            p = partners.find((item) => item.companyName === partnerName);
         }
         if (!p) return null;
 
@@ -203,44 +241,56 @@ export default function CustomerManagement({
         const parentName = p.parentPartnerName?.trim();
 
         if (!parentId && !parentName) return null;
-        if (parentId === 'admin' || parentId === '') return null;
+        if (parentId === "admin" || parentId === "") return null;
 
-        const parent = partners.find(item =>
-            (parentId && (
-                item.partnerId === parentId ||
-                item.loginId?.toLowerCase() === parentId.toLowerCase() ||
-                item.customUrl?.toLowerCase() === parentId.toLowerCase()
-            )) ||
-            (parentName && item.companyName?.trim() === parentName)
+        const parent = partners.find(
+            (item) =>
+                (parentId &&
+                    (item.partnerId === parentId ||
+                        item.loginId?.toLowerCase() === parentId.toLowerCase() ||
+                        item.customUrl?.toLowerCase() === parentId.toLowerCase())) ||
+                (parentName && item.companyName?.trim() === parentName)
         );
 
         const resolvedName = parent?.companyName || parentName || parentId;
-        const resolvedLoginId = parent?.loginId || (parentId && parentId !== parentName && parentId !== resolvedName ? parentId : "");
+        const resolvedLoginId =
+            parent?.loginId ||
+            (parentId && parentId !== parentName && parentId !== resolvedName
+                ? parentId
+                : "");
 
         return {
             name: resolvedName,
-            loginId: resolvedLoginId
+            loginId: resolvedLoginId,
         };
     };
 
-    // 1. Initial filtered applications based on search, date, and basic criteria
-    const initialFiltered = (applications || []).filter(app => {
+    const getDisplayStatus = (status: string) => {
+        if (
+            currentUser?.role === "tm" &&
+            (status === "정산예정" || status === "정산완료")
+        ) {
+            return "정상가입";
+        }
+        return status || "접수대기";
+    };
+
+    // 1. Initial filtered applications (search, date, partner)
+    const initialFiltered = (applications || []).filter((app) => {
         if (!app) return false;
 
-        // Search Match (Defensive)
         const name = (app.customerName || "").toLowerCase();
         const cleanName = name.replace(/\s+/g, "");
-        const phone = (app.customerPhone || "");
+        const phone = app.customerPhone || "";
         const cleanPhone = phone.replace(/\s+/g, "");
         const pName = (app.partnerName || "").toLowerCase();
         const pId = (app.partnerId || "").toLowerCase();
         const sTerm = (searchTerm || "").toLowerCase().trim();
         const cleanSTerm = sTerm.replace(/\s+/g, "");
-        
-        // Wildcard search support (e.g., 김*훈)
+
         let nameMatch = cleanName.includes(cleanSTerm);
-        if (cleanSTerm.includes('*') && cleanSTerm.length >= 2) {
-            const parts = cleanSTerm.split('*');
+        if (cleanSTerm.includes("*") && cleanSTerm.length >= 2) {
+            const parts = cleanSTerm.split("*");
             if (parts.length === 2) {
                 const start = parts[0];
                 const end = parts[1];
@@ -252,24 +302,23 @@ export default function CustomerManagement({
         const parentName = (parentInfo?.name || "").toLowerCase();
         const parentLogin = (parentInfo?.loginId || "").toLowerCase();
 
-        const searchMatch = nameMatch || cleanPhone.includes(cleanSTerm) || pName.includes(sTerm) || pId.includes(sTerm) || (parentInfo && (parentName.includes(sTerm) || parentLogin.includes(sTerm)));
+        const searchMatch =
+            nameMatch ||
+            cleanPhone.includes(cleanSTerm) ||
+            pName.includes(sTerm) ||
+            pId.includes(sTerm) ||
+            (parentInfo && (parentName.includes(sTerm) || parentLogin.includes(sTerm)));
         if (!searchMatch) return false;
 
-        // Date Filter
         if (dateFilter && dateFilter !== "all") {
-            // 기준 날짜: 가입일(registrationDate)이 있으면 우선 사용, 없으면 신청일(createdAt) 사용
             let refDateStr = app.registrationDate || app.createdAt || "";
-            
-            // Excel 시리얼 번호 등 비표준 형식 처리
-            if (app.registrationDate && !app.registrationDate.includes('-')) {
+            if (app.registrationDate && !app.registrationDate.includes("-")) {
                 const serial = parseFloat(String(app.registrationDate));
                 if (!isNaN(serial) && serial > 30000 && serial < 60000) {
                     const d = new Date((serial - 25569) * 86400 * 1000);
                     refDateStr = getKSTDateString(d);
                 }
             }
-
-            // KST 날짜 변환 (YYYY-MM-DD)
             const kstDatePart = getKSTDateString(refDateStr);
 
             if (dateFilter === "today") {
@@ -281,8 +330,12 @@ export default function CustomerManagement({
                 if (kstDatePart.slice(0, 7) !== thisMonth) return false;
             } else if (dateFilter === "lastMonth") {
                 const lastMonthRange = getKSTLastMonthRange();
-                if (kstDatePart < lastMonthRange.start || kstDatePart > lastMonthRange.end) return false;
-            } else if (dateFilter === 'custom') {
+                if (
+                    kstDatePart < lastMonthRange.start ||
+                    kstDatePart > lastMonthRange.end
+                )
+                    return false;
+            } else if (dateFilter === "custom") {
                 if (customStartDate && kstDatePart < customStartDate) return false;
                 if (customEndDate && kstDatePart > customEndDate) return false;
             } else {
@@ -291,71 +344,51 @@ export default function CustomerManagement({
             }
         }
 
-        // Admin's Partner Filter (Robust comparison)
         if (isAdmin && partnersFilter !== "all") {
-            const selectedPartner = partners.find(p => p.partnerId === partnersFilter);
+            const selectedPartner = partners.find((p) => p.partnerId === partnersFilter);
             if (selectedPartner) {
                 const appPartnerId = String(app.partnerId || "").trim();
                 const appPartnerName = String(app.partnerName || "").trim();
-                
+
                 const matchesId = appPartnerId === selectedPartner.partnerId;
                 const matchesLoginId = appPartnerId === selectedPartner.loginId;
                 const matchesName = appPartnerName === selectedPartner.companyName;
-                
+
                 if (!matchesId && !matchesLoginId && !matchesName) return false;
             } else {
-                // Fallback for ID only if partner not found in list (shouldn't happen)
-                if (String(app.partnerId || "").trim() !== String(partnersFilter).trim()) return false;
+                if (String(app.partnerId || "").trim() !== String(partnersFilter).trim())
+                    return false;
             }
         }
 
         return true;
     });
 
+    // Status tab counts (based on current search/date/partner/product filter)
+    const statusTabCounts = useMemo(() => {
+        const counts: Record<string, number> = { all: 0 };
+        initialFiltered.forEach((app) => {
+            const appProductLabel = getProductTypeLabel(app.productType);
+            if (productFilter !== "all" && appProductLabel !== productFilter) return;
+            counts.all = (counts.all || 0) + 1;
+            const st = getDisplayStatus(app.status || "접수대기");
+            counts[st] = (counts[st] || 0) + 1;
+        });
+        return counts;
+    }, [initialFiltered, productFilter, currentUser?.role]);
+
     // 2. Status & Product Filter
-    const filteredApplications = initialFiltered.filter(app => {
-        // Status Filter
-        const appStatus = app.status || "접수대기";
-        const displayStatus = (currentUser?.role === 'tm' && (appStatus === '정산예정' || appStatus === '정산완료'))
-            ? '정상가입'
-            : appStatus;
+    const filteredApplications = initialFiltered.filter((app) => {
+        const displayStatus = getDisplayStatus(app.status || "접수대기");
         const statusMatch = statusFilter === "all" || displayStatus === statusFilter;
         if (!statusMatch) return false;
 
-        // Product Filter
         const appProductLabel = getProductTypeLabel(app.productType);
-        const productMatch = productFilter === "all" || appProductLabel === productFilter;
+        const productMatch =
+            productFilter === "all" || appProductLabel === productFilter;
 
         return productMatch;
     });
-
-    const getDisplayStatus = (status: string) => {
-        if (currentUser?.role === 'tm' && (status === '정산예정' || status === '정산완료')) {
-            return '정상가입';
-        }
-        return status || "접수대기";
-    };
-
-    const formatDate = (val: string | undefined | number) => {
-        if (!val) return "-";
-
-        // Excel serial handling
-        const serial = typeof val === 'number' ? val : parseFloat(String(val));
-        if (!isNaN(serial) && serial > 30000 && serial < 60000) {
-            const date = new Date((serial - 25569) * 86400 * 1000);
-            return date.toLocaleDateString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit' })
-                .replace(/\. /g, '-').replace('.', '');
-        }
-
-        try {
-            const d = new Date(String(val));
-            if (isNaN(d.getTime())) return String(val);
-            return d.toLocaleDateString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit' })
-                .replace(/\. /g, '-').replace('.', '');
-        } catch {
-            return String(val);
-        }
-    };
 
     // 3. Sorting logic
     const sortedApplications = [...filteredApplications].sort((a, b) => {
@@ -375,55 +408,24 @@ export default function CustomerManagement({
         return 0;
     });
 
-    // Calculate pagination
-    const totalPages = Math.ceil(sortedApplications.length / itemsPerPage);
+    // Pagination
+    const totalPages = Math.max(1, Math.ceil(sortedApplications.length / itemsPerPage));
     const paginatedApplications = sortedApplications.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
 
-    const displayApplications = isWidget ? sortedApplications.slice(0, 10) : paginatedApplications;
+    const displayApplications = isWidget
+        ? sortedApplications.slice(0, 10)
+        : paginatedApplications;
 
-    // 소노아임레디(THEHAPPYONE) 단건 즉시 등록/재전송
-    const handleRegisterSingleSono = async (app: Application, e: React.MouseEvent) => {
-        e.stopPropagation();
-        const isReRegister = app.sonoRegisterStatus === 'SUCCESS' || app.sonoRegisterStatus === 'DUPLICATE';
-        const confirmMsg = isReRegister
-            ? `'${app.customerName}' 고객은 당일 소노 접수 이력이 있습니다. 당일 재접수(중복 방지 해제)를 진행하시겠습니까?`
-            : `소노아임레디(THEHAPPYONE)로 '${app.customerName}' 고객을 접수하시겠습니까?`;
-
-        if (!confirm(confirmMsg)) {
-            return;
-        }
-
-        setIsRegisteringSonoMap(prev => ({ ...prev, [app.applicationNo]: true }));
-        try {
-            const res = await fetch("/api/sono/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    applicationNo: app.applicationNo,
-                    allowDuplicate: isReRegister
-                })
-            });
-            const data = await res.json();
-            if (data.success) {
-                alert(`✅ [소노아임레디 접수 결과]\n${data.message}\n(인증코드: ${data.authCodeUsed || 'BIZI0011'}${data.agentNm ? ` / 소속: ${data.agentNm}` : ''})`);
-            } else {
-                alert(`❌ [소노아임레디 접수 실패]\n${data.message}`);
-            }
-            onRefresh();
-        } catch (err: any) {
-            alert(`⚠️ 통신 중 오류가 발생했습니다: ${err.message || String(err)}`);
-        } finally {
-            setIsRegisteringSonoMap(prev => ({ ...prev, [app.applicationNo]: false }));
-        }
-    };
-
-    // 소노아임레디(THEHAPPYONE) 선택 일괄 접수
     const handleBulkRegisterSono = async () => {
         if (selectedAppIds.length === 0) return;
-        if (!confirm(`선택한 ${selectedAppIds.length}명의 고객을 소노아임레디로 일괄 접수하시겠습니까?`)) {
+        if (
+            !confirm(
+                `선택한 ${selectedAppIds.length}명의 고객을 소노아임레디로 일괄 접수하시겠습니까?`
+            )
+        ) {
             return;
         }
 
@@ -438,18 +440,20 @@ export default function CustomerManagement({
                     const res = await fetch("/api/sono/register", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ applicationNo: appNo })
+                        body: JSON.stringify({ applicationNo: appNo }),
                     });
                     const data = await res.json();
-                    if (data.status === 'SUCCESS') successCount++;
-                    else if (data.status === 'DUPLICATE') duplicateCount++;
+                    if (data.status === "SUCCESS") successCount++;
+                    else if (data.status === "DUPLICATE") duplicateCount++;
                     else failCount++;
                 } catch {
                     failCount++;
                 }
             }
 
-            alert(`[소노아임레디 일괄 접수 완료]\n- 신규 성공: ${successCount}건\n- 당일 기접수: ${duplicateCount}건\n- 실패: ${failCount}건`);
+            alert(
+                `[소노아임레디 일괄 접수 완료]\n- 신규 성공: ${successCount}건\n- 당일 기접수: ${duplicateCount}건\n- 실패: ${failCount}건`
+            );
             setSelectedAppIds([]);
             onRefresh();
         } catch (err: any) {
@@ -459,46 +463,704 @@ export default function CustomerManagement({
         }
     };
 
-    return (
-        <div className={isWidget ? "" : "space-y-5"}>
-            {isWidget ? null : (
-                <>
-                <section className="adm-page-heading">
-                    <div>
-                        <div className="adm-eyebrow">SONO I&apos;M READY · CUSTOMERS</div>
-                        <h1>고객 관리</h1>
-                        <p>
-                            상담 접수부터 녹취·본사 접수·정상 가입까지 전체 고객 현황을 관리하세요. (검색 결과{" "}
-                            <strong className="text-[#295e52]">{filteredApplications.length}</strong>건)
-                        </p>
-                    </div>
-                </section>
-                <div className="adm-panel p-5 sm:p-6 space-y-5">
-                    {/* Header Row: Action Buttons */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#edf0e7] pb-4">
-                        <div className="text-xs font-semibold text-[#6b7768]">
-                            선택 고객 <strong className="text-[#295e52]">{selectedAppIds.length}</strong>건 · 총 <strong className="text-[#263d36]">{filteredApplications.length}</strong>건
-                        </div>
-                        
-                        <div className="flex flex-wrap items-center justify-start xl:justify-end gap-2 w-full xl:w-auto">
-                            <button
-                                onClick={() => setIsRegistrationModalOpen(true)}
-                                className="flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-sono-dark text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-black transition-all shadow-md active:scale-95 text-center whitespace-nowrap shrink-0"
+    const handleExcelDownload = async () => {
+        if (selectedAppIds.length === 0) {
+            alert(
+                "다운로드할 고객을 선택해 주세요.\n(목록 좌측의 체크박스를 선택하거나 최상단 체크박스로 전체 선택할 수 있습니다.)"
+            );
+            return;
+        }
+
+        if (isDownloading) return;
+
+        setIsDownloading(true);
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            const targetApps = sortedApplications.filter((app) =>
+                selectedAppIds.includes(app.applicationNo)
+            );
+            const targetNos = new Set(targetApps.map((a) => a.applicationNo));
+            applications.forEach((app) => {
+                if (
+                    selectedAppIds.includes(app.applicationNo) &&
+                    !targetNos.has(app.applicationNo)
+                ) {
+                    targetApps.push(app);
+                }
+            });
+
+            if (targetApps.length === 0) {
+                alert("선택된 고객 데이터가 없습니다.");
+                return;
+            }
+
+            const exportRows = targetApps.map((app, index) => {
+                const parentInfo = getParentPartnerInfo(app.partnerId, app.partnerName);
+                const parentDisplay = parentInfo
+                    ? `${parentInfo.name}${
+                          parentInfo.loginId ? ` (${parentInfo.loginId})` : ""
+                      }`
+                    : "-";
+                const accessPathLabel = app.accessPath === "H" ? "홈페이지" : "직접등록";
+                const rawPlan = app.planType || "-";
+                const planDisplay =
+                    rawPlan !== "-" && !rawPlan.includes("구좌")
+                        ? `${rawPlan}구좌`
+                        : rawPlan;
+
+                return {
+                    no: targetApps.length - index,
+                    accessPath: accessPathLabel,
+                    applicationNo: app.applicationNo || "-",
+                    createdAt: formatDateTime(app.createdAt, (app as any)._creationTime),
+                    parentPartner: parentDisplay,
+                    partnerName: app.partnerName || "-",
+                    partnerId: app.partnerId || "-",
+                    partnerLoginId:
+                        getPartnerLoginId(app.partnerId, app.partnerName) || "-",
+                    customerName: app.customerName || "-",
+                    customerPhone: formatPhoneNumber(app.customerPhone) || "-",
+                    productName: getProductTypeLabel(app.productType),
+                    combinedProduct: app.products || "-",
+                    planType: planDisplay,
+                    address: app.customerAddress || "-",
+                    zipcode: app.customerZipcode || "-",
+                    birth: app.customerBirth || "-",
+                    gender: app.customerGender || "-",
+                    email: app.customerEmail || "-",
+                    memberId: app.partnerMemberId || "-",
+                    preferredTime: app.preferredContactTime || "-",
+                    inquiry: app.inquiry?.trim() || "-",
+                    status: getDisplayStatus(app.status),
+                    firstPaymentDate: app.firstPaymentDate || "-",
+                    registrationDate: app.registrationDate || "-",
+                    paymentMethod: app.paymentMethod || "-",
+                    cancellationProcessing: app.cancellationProcessing || "-",
+                    withdrawalProcessing: app.withdrawalProcessing || "-",
+                    remarks: app.remarks?.trim() || "-",
+                };
+            });
+
+            const response = await fetch("/api/excel/export-customers", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    rows: exportRows,
+                    exportDate: new Date().toLocaleString("ko-KR", {
+                        timeZone: "Asia/Seoul",
+                    }),
+                }),
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(
+                    errData.error || "엑셀 파일 생성 중 오류가 발생했습니다."
+                );
+            }
+
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+
+            const yyyymmdd = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+            link.setAttribute(
+                "download",
+                `고객상담내역_${yyyymmdd}_${targetApps.length}건.xlsx`
+            );
+            link.style.visibility = "hidden";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (error: any) {
+            console.error("Excel download error:", error);
+            alert(`다운로드 중 오류가 발생했습니다: ${error.message || error}`);
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
+    const hasActiveFilter =
+        searchTerm !== "" ||
+        statusFilter !== "all" ||
+        productFilter !== "all" ||
+        partnersFilter !== "all" ||
+        dateFilter !== "all";
+
+    const resetAllFilters = () => {
+        setSearchTerm("");
+        setStatusFilter("all");
+        setProductFilter("all");
+        setPartnersFilter("all");
+        setDateFilter("all");
+        setCustomStartDate("");
+        setCustomEndDate("");
+    };
+
+    const renderTable = () => (
+        <div className="adm-table-scroll">
+            <table className="adm-table">
+                <thead>
+                    <tr>
+                        <th className="w-[42px] text-center">
+                            <input
+                                type="checkbox"
+                                checked={
+                                    displayApplications.length > 0 &&
+                                    displayApplications.every((app) =>
+                                        selectedAppIds.includes(app.applicationNo)
+                                    )
+                                }
+                                onChange={(e) => {
+                                    if (e.target.checked) {
+                                        const currentNos = displayApplications.map(
+                                            (app) => app.applicationNo
+                                        );
+                                        setSelectedAppIds((prev) =>
+                                            Array.from(new Set([...prev, ...currentNos]))
+                                        );
+                                    } else {
+                                        const currentNos = new Set(
+                                            displayApplications.map(
+                                                (app) => app.applicationNo
+                                            )
+                                        );
+                                        setSelectedAppIds((prev) =>
+                                            prev.filter((id) => !currentNos.has(id))
+                                        );
+                                    }
+                                }}
+                                className="w-3.5 h-3.5 cursor-pointer"
+                                aria-label="전체 선택"
+                            />
+                        </th>
+                        <th className="text-center w-[54px]">경로</th>
+                        <th className="text-center w-[56px]">No.</th>
+                        <th className="w-[125px]">접수 일시</th>
+                        <th>상위 파트너</th>
+                        <th>담당 파트너</th>
+                        <th>고객 정보</th>
+                        <th>가입 상품</th>
+                        <th className="text-center">구좌</th>
+                        <th>결합제품</th>
+                        <th className="text-center">
+                            <span className="inline-flex items-center gap-1">
+                                진행 상태
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowStatusHelp(true);
+                                    }}
+                                    className="text-[#94a08f] hover:text-[#295e52] transition-colors inline-grid place-items-center"
+                                    title="상태 용어 설명"
+                                >
+                                    <AdminIcon name="info" className="!w-3.5 !h-3.5" />
+                                </button>
+                            </span>
+                        </th>
+                        <th className="text-center">녹취</th>
+                        {isAdmin && <th className="text-center">소노 접수</th>}
+                    </tr>
+                </thead>
+                <tbody>
+                    {displayApplications.length > 0 ? (
+                        displayApplications.map((app, index) => {
+                            const isUpdated = (() => {
+                                if (!app.statusUpdatedAt) return false;
+                                try {
+                                    const updatedAt = new Date(
+                                        app.statusUpdatedAt
+                                    ).getTime();
+                                    const now = new Date().getTime();
+                                    return now - updatedAt < 24 * 60 * 60 * 1000;
+                                } catch {
+                                    return false;
+                                }
+                            })();
+
+                            const parentInfo = getParentPartnerInfo(
+                                app.partnerId,
+                                app.partnerName
+                            );
+                            const badge = getStatusBadge(getDisplayStatus(app.status));
+                            const stat = recordingStats[app.applicationNo];
+                            const recCount = stat ? stat.count : 0;
+                            const recSizeText =
+                                stat && stat.totalSize > 0
+                                    ? formatBytes(stat.totalSize)
+                                    : "";
+
+                            return (
+                                <tr
+                                    key={app.applicationNo}
+                                    onClick={() => setSelectedApp(app)}
+                                    className="adm-clickable-row"
+                                >
+                                    <td
+                                        className="text-center relative"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        {isUpdated && (
+                                            <span
+                                                className="
+                                                absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#c96453] rounded-full"
+                                                title="최근 24시간 이내 상태 변경됨"
+                                            />
+                                        )}
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedAppIds.includes(
+                                                app.applicationNo
+                                            )}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedAppIds((prev) => [
+                                                        ...prev,
+                                                        app.applicationNo,
+                                                    ]);
+                                                } else {
+                                                    setSelectedAppIds((prev) =>
+                                                        prev.filter(
+                                                            (id) =>
+                                                                id !== app.applicationNo
+                                                        )
+                                                    );
+                                                }
+                                            }}
+                                            className="w-3.5 h-3.5 cursor-pointer"
+                                        />
+                                    </td>
+                                    <td className="text-center">
+                                        <span
+                                            className={`adm-pill ${
+                                                app.accessPath === "H" ? "blue" : "gray"
+                                            }`}
+                                            title={
+                                                app.accessPath === "H"
+                                                    ? "홈페이지 유입"
+                                                    : "직접 등록"
+                                            }
+                                        >
+                                            {app.accessPath || "D"}
+                                        </span>
+                                    </td>
+                                    <td className="text-center text-xs text-[#8e9988] font-mono tabular-nums">
+                                        {sortedApplications.length -
+                                            ((currentPage - 1) * itemsPerPage + index)}
+                                    </td>
+                                    <td className="text-xs text-[#6b7768] tabular-nums">
+                                        {formatDateTime(
+                                            app.createdAt,
+                                            (app as any)._creationTime
+                                        )}
+                                    </td>
+                                    <td>
+                                        {parentInfo ? (
+                                            <div>
+                                                <div className="text-xs font-bold text-[#263d36]">
+                                                    {parentInfo.name}
+                                                </div>
+                                                {parentInfo.loginId && (
+                                                    <div className="text-[10px] text-[#8e9988] font-mono">
+                                                        {parentInfo.loginId}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <span className="text-xs text-[#a3ad99]">-</span>
+                                        )}
+                                    </td>
+                                    <td>
+                                        <div className="text-xs font-bold text-[#263d36]">
+                                            {app.partnerName}
+                                        </div>
+                                        {partners.length > 0 && (
+                                            <div className="text-[10px] text-[#8e9988] font-mono">
+                                                {getPartnerLoginId(
+                                                    app.partnerId,
+                                                    app.partnerName
+                                                )}
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td>
+                                        <div className="flex items-center gap-2">
+                                            <div className="adm-person">
+                                                <span
+                                                    className={`adm-person-circle ${
+                                                        index % 2 === 1 ? "alt" : ""
+                                                    }`}
+                                                >
+                                                    {(app.customerName || "고").charAt(0)}
+                                                </span>
+                                                <span>
+                                                    <strong>{app.customerName}</strong>
+                                                    <small className="tabular-nums">
+                                                        {app.customerPhone}
+                                                    </small>
+                                                </span>
+                                            </div>
+                                            {app.hasDuplicate && (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setCheckingApp(app);
+                                                    }}
+                                                    className={`adm-pill cursor-pointer border ${
+                                                        app.duplicateConfirmed
+                                                            ? app.isAdditionalRegistration
+                                                                ? "blue border-[#cde0ee]"
+                                                                : "green border-[#cfe0c7]"
+                                                            : "red border-[#ead5cf] animate-pulse"
+                                                    }`}
+                                                >
+                                                    {app.duplicateConfirmed
+                                                        ? app.isAdditionalRegistration
+                                                            ? "추가접수"
+                                                            : "중복확인"
+                                                        : "중복접수"}
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="font-bold text-[#295e52] text-xs">
+                                        {getProductTypeLabel(app.productType)}
+                                    </td>
+                                    <td className="text-center text-xs font-semibold text-[#45554e]">
+                                        {app.planType
+                                            ? app.planType.includes("구좌")
+                                                ? app.planType
+                                                : `${app.planType}구좌`
+                                            : "-"}
+                                    </td>
+                                    <td
+                                        className="text-xs text-[#6b7768] max-w-[180px] truncate"
+                                        title={app.products}
+                                    >
+                                        {(app.productType || "")
+                                            .toLowerCase()
+                                            .includes("smart") ||
+                                        (app.productType || "").includes("스마트")
+                                            ? app.products || "-"
+                                            : "-"}
+                                    </td>
+                                    <td className="text-center">
+                                        <span
+                                            className={`px-2.5 py-1 rounded-[5px] text-[10.5px] font-bold inline-block ${badge.className}`}
+                                            style={badge.style}
+                                        >
+                                            {getDisplayStatus(app.status)}
+                                        </span>
+                                    </td>
+                                    <td
+                                        className="text-center"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setRecordingTargetApp(app);
+                                            }}
+                                            className={`adm-btn small !py-1 !px-2 !min-h-[27px] ${
+                                                recCount > 0 ? "sage" : ""
+                                            }`}
+                                            title={
+                                                recCount > 0
+                                                    ? `녹취 파일 ${recCount}건 (${recSizeText}) - 클릭하여 듣기/관리`
+                                                    : "녹취 음성파일 업로드"
+                                            }
+                                        >
+                                            <AdminIcon
+                                                name="mic"
+                                                className="!w-3.5 !h-3.5"
+                                            />
+                                            <span>
+                                                {recCount > 0 ? `${recCount}건` : "등록"}
+                                            </span>
+                                            {recCount > 0 && recSizeText && (
+                                                <span className="text-[9.5px] opacity-80 font-mono">
+                                                    ({recSizeText})
+                                                </span>
+                                            )}
+                                        </button>
+                                    </td>
+                                    {isAdmin && (
+                                        <td
+                                            className="text-center"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <div className="inline-flex items-center justify-center gap-1.5">
+                                                {app.sonoRegisterStatus === "SUCCESS" && (
+                                                    <span
+                                                        className="adm-pill green"
+                                                        title={
+                                                            app.sonoRegisterMessage ||
+                                                            "접수 완료"
+                                                        }
+                                                    >
+                                                        완료
+                                                    </span>
+                                                )}
+                                                {app.sonoRegisterStatus ===
+                                                    "DUPLICATE" && (
+                                                    <span
+                                                        className="adm-pill orange"
+                                                        title={
+                                                            app.sonoRegisterMessage ||
+                                                            "당일 기접수"
+                                                        }
+                                                    >
+                                                        기접수
+                                                    </span>
+                                                )}
+                                                {app.sonoRegisterStatus === "FAILED" && (
+                                                    <span
+                                                        className="adm-pill red"
+                                                        title={
+                                                            app.sonoRegisterMessage ||
+                                                            "전송 실패"
+                                                        }
+                                                    >
+                                                        실패
+                                                    </span>
+                                                )}
+                                                {!app.sonoRegisterStatus && (
+                                                    <span className="adm-pill gray">
+                                                        미접수
+                                                    </span>
+                                                )}
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSonoTargetApp(app);
+                                                        setIsSonoModalOpen(true);
+                                                    }}
+                                                    className="adm-btn small !py-1 !px-2 !min-h-[26px]"
+                                                    title="소노아임레디(THEHAPPYONE) 접수 확인 및 등록"
+                                                >
+                                                    {app.sonoRegisterStatus
+                                                        ? "재전송"
+                                                        : "접수"}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    )}
+                                </tr>
+                            );
+                        })
+                    ) : (
+                        <tr>
+                            <td
+                                colSpan={isAdmin ? 13 : 12}
+                                className="py-16 text-center text-xs text-[#86918a]"
                             >
-                                <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                                </svg>
+                                검색 조건에 해당하는 고객 내역이 없습니다.
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+        </div>
+    );
+
+    return (
+        <div className={isWidget ? "" : "space-y-4"}>
+            {!isWidget && (
+                <>
+                    {/* 상단 페이지 헤딩 & 주요 액션 버튼 */}
+                    <section className="adm-page-heading">
+                        <div>
+                            <div className="adm-eyebrow">SONO I&apos;M READY · CUSTOMERS</div>
+                            <h1>고객 관리</h1>
+                            <p>
+                                상담 접수부터 녹취·본사 접수·정상 가입까지 전체 고객 여정을 한눈에 관리하세요. (검색 결과{" "}
+                                <strong className="text-[#295e52]">
+                                    {filteredApplications.length.toLocaleString()}
+                                </strong>
+                                명)
+                            </p>
+                        </div>
+
+                        <div className="adm-heading-buttons">
+                            <button
+                                type="button"
+                                onClick={handleExcelDownload}
+                                disabled={isDownloading}
+                                className={`adm-btn ${
+                                    selectedAppIds.length > 0 ? "sage" : ""
+                                }`}
+                                title={
+                                    selectedAppIds.length > 0
+                                        ? `선택한 ${selectedAppIds.length}명의 고객 내역을 엑셀로 다운로드합니다.`
+                                        : "체크박스로 선택한 고객을 엑셀로 다운로드합니다."
+                                }
+                            >
+                                <AdminIcon name="download" />
+                                <span>
+                                    {isDownloading
+                                        ? "준비 중..."
+                                        : selectedAppIds.length > 0
+                                        ? `선택 엑셀 다운로드 (${selectedAppIds.length})`
+                                        : "엑셀 다운로드"}
+                                </span>
+                            </button>
+
+                            {isAdmin && (
+                                <button
+                                    type="button"
+                                    onClick={() => setIsBulkUploadModalOpen(true)}
+                                    className="adm-btn"
+                                >
+                                    <AdminIcon name="upload" />
+                                    <span>본사 엑셀 업로드</span>
+                                </button>
+                            )}
+
+                            {isAdmin && (
+                                <button
+                                    type="button"
+                                    onClick={() => setIsLifeJoyExportModalOpen(true)}
+                                    className="adm-btn sage"
+                                    title="hoon 폴더의 가입요청 엑셀 파일에 신규 고객을 자동 추가하고 다운로드합니다."
+                                >
+                                    <AdminIcon name="file" />
+                                    <span>가입요청 엑셀 업데이트</span>
+                                </button>
+                            )}
+
+                            <button
+                                type="button"
+                                onClick={() => setIsRegistrationModalOpen(true)}
+                                className="adm-btn primary"
+                            >
+                                <AdminIcon name="plus" />
                                 <span>고객 직접 등록</span>
                             </button>
-                            
-                            {isAdmin && selectedAppIds.length > 0 && (
-                                <>
+                        </div>
+                    </section>
+
+                    {/* 다중 선택 시 노출되는 컨텍스트 액션 바 */}
+                    {selectedAppIds.length > 0 && (
+                        <div className="adm-bulk-bar">
+                            <div className="flex items-center gap-3">
+                                <span className="adm-pill green !bg-[#295e52] !text-white">
+                                    {selectedAppIds.length}명 선택됨
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedAppIds([])}
+                                    className="text-xs text-[#b8ccc2] hover:text-white underline cursor-pointer bg-transparent border-0"
+                                >
+                                    선택 해제
+                                </button>
+                            </div>
+
+                            {isAdmin && (
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <div className="flex items-center gap-1.5 bg-white/10 p-1 rounded-[8px] border border-white/15">
+                                        <select
+                                            value={bulkStatus}
+                                            onChange={(e) => setBulkStatus(e.target.value)}
+                                            className="bg-white text-[#263d36] text-xs font-semibold rounded-[6px] px-2.5 py-1 border-0 outline-none"
+                                        >
+                                            <option value="" disabled>
+                                                변경할 상태 선택
+                                            </option>
+                                            {availableStatuses.map((status) => (
+                                                <option key={status} value={status}>
+                                                    {status}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                if (!bulkStatus) {
+                                                    alert("변경할 상태를 선택해 주세요.");
+                                                    return;
+                                                }
+                                                if (
+                                                    confirm(
+                                                        `선택한 ${selectedAppIds.length}건의 상태를 '${bulkStatus}'(으)로 일괄 변경하시겠습니까?`
+                                                    )
+                                                ) {
+                                                    setIsUpdatingStatus(true);
+                                                    try {
+                                                        const count =
+                                                            await updateMultipleApplicationStatuses(
+                                                                {
+                                                                    applicationNos:
+                                                                        selectedAppIds,
+                                                                    newStatus: bulkStatus,
+                                                                    changedBy: "admin",
+                                                                    memo: "본사 어드민 상태 일괄 변경",
+                                                                }
+                                                            );
+                                                        setSelectedAppIds([]);
+                                                        setBulkStatus("");
+                                                        onRefresh();
+                                                        alert(
+                                                            `${count}건의 고객 상태가 변경되었습니다.`
+                                                        );
+                                                    } catch (err) {
+                                                        console.error(
+                                                            "Bulk status update failed",
+                                                            err
+                                                        );
+                                                        alert(
+                                                            "상태 변경 중 오류가 발생했습니다."
+                                                        );
+                                                    } finally {
+                                                        setIsUpdatingStatus(false);
+                                                    }
+                                                }
+                                            }}
+                                            disabled={isUpdatingStatus || !bulkStatus}
+                                            className="adm-btn small primary !min-h-[28px]"
+                                        >
+                                            <AdminIcon name="check" />
+                                            <span>
+                                                {isUpdatingStatus
+                                                    ? "변경 중..."
+                                                    : "상태 일괄 변경"}
+                                            </span>
+                                        </button>
+                                    </div>
+
                                     <button
+                                        type="button"
+                                        onClick={handleBulkRegisterSono}
+                                        disabled={isBulkRegisteringSono}
+                                        className="adm-btn small !bg-[#e4ecdd] !border-[#e4ecdd] !text-[#193f39]"
+                                    >
+                                        <AdminIcon name="external" />
+                                        <span>
+                                            {isBulkRegisteringSono
+                                                ? "접수 중..."
+                                                : `소노 일괄 접수 (${selectedAppIds.length})`}
+                                        </span>
+                                    </button>
+
+                                    <button
+                                        type="button"
                                         onClick={async () => {
-                                            if (confirm(`선택한 ${selectedAppIds.length}건을 삭제하시겠습니까?`)) {
+                                            if (
+                                                confirm(
+                                                    `선택한 ${selectedAppIds.length}건을 삭제하시겠습니까?`
+                                                )
+                                            ) {
                                                 setIsDeleting(true);
                                                 try {
-                                                    await deleteApplications({ applicationNos: selectedAppIds });
+                                                    await deleteApplications({
+                                                        applicationNos: selectedAppIds,
+                                                    });
                                                     setSelectedAppIds([]);
                                                     onRefresh();
                                                     alert("삭제되었습니다.");
@@ -511,761 +1173,283 @@ export default function CustomerManagement({
                                             }
                                         }}
                                         disabled={isDeleting}
-                                        className="flex items-center gap-2 px-3.5 sm:px-4 py-2.5 bg-red-50 text-red-600 border border-red-100 rounded-xl text-xs sm:text-sm font-bold hover:bg-red-100 transition-all shadow-sm active:scale-95 shrink-0 whitespace-nowrap"
+                                        className="adm-btn small danger"
                                     >
-                                        <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
+                                        <AdminIcon name="trash" />
                                         <span>선택 삭제 ({selectedAppIds.length})</span>
                                     </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
-                                    <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 p-1 rounded-xl shadow-sm shrink-0 whitespace-nowrap">
-                                        <select
-                                            value={bulkStatus}
-                                            onChange={(e) => setBulkStatus(e.target.value)}
-                                            className="bg-white border border-gray-200 text-sono-dark text-xs rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-indigo-500 outline-none font-bold shadow-sm"
-                                        >
-                                            <option value="" disabled>변경할 상태 선택</option>
-                                            {availableStatuses.map(status => (
-                                                <option key={status} value={status}>{status}</option>
-                                            ))}
-                                        </select>
-                                        <button
-                                            onClick={async () => {
-                                                if (!bulkStatus) {
-                                                    alert("변경할 상태를 선택해 주세요.");
-                                                    return;
-                                                }
-                                                if (confirm(`선택한 ${selectedAppIds.length}건의 상태를 '${bulkStatus}'(으)로 일괄 변경하시겠습니까?`)) {
-                                                    setIsUpdatingStatus(true);
-                                                    try {
-                                                        const count = await updateMultipleApplicationStatuses({
-                                                            applicationNos: selectedAppIds,
-                                                            newStatus: bulkStatus,
-                                                            changedBy: "admin",
-                                                            memo: "본사 어드민 상태 일괄 변경"
-                                                        });
-                                                        setSelectedAppIds([]);
-                                                        setBulkStatus("");
-                                                        onRefresh();
-                                                        alert(`${count}건의 고객 상태가 변경되었습니다.`);
-                                                    } catch (err) {
-                                                        console.error("Bulk status update failed", err);
-                                                        alert("상태 변경 중 오류가 발생했습니다.");
-                                                    } finally {
-                                                        setIsUpdatingStatus(false);
-                                                    }
-                                                }
-                                            }}
-                                            disabled={isUpdatingStatus || !bulkStatus}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                                        >
-                                            {isUpdatingStatus ? (
-                                                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
-                                            ) : (
-                                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                                                </svg>
-                                            )}
-                                            <span>상태 일괄 변경</span>
-                                        </button>
-                                    </div>
-
+                    {/* 통합 고객 관리 패널 (상단 상태 탭 + 필터 바 + 테이블 + 페이지네이션) */}
+                    <section className="adm-panel">
+                        {/* 1. 상단 언더라인 상태 탭 */}
+                        <div className="adm-tabs" aria-label="고객 상태 필터">
+                            {statusOptions.map((opt) => {
+                                const val = opt === "전체" ? "all" : opt;
+                                const isActive = statusFilter === val;
+                                const count =
+                                    opt === "전체"
+                                        ? statusTabCounts.all || 0
+                                        : statusTabCounts[opt] || 0;
+                                return (
                                     <button
-                                        onClick={handleBulkRegisterSono}
-                                        disabled={isBulkRegisteringSono}
-                                        className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap cursor-pointer"
-                                        title="선택한 고객을 소노아임레디로 일괄 전송 등록합니다."
+                                        key={opt}
+                                        type="button"
+                                        onClick={() => setStatusFilter(val)}
+                                        className={`adm-tab ${isActive ? "active" : ""}`}
                                     >
-                                        {isBulkRegisteringSono ? (
-                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
-                                        ) : (
-                                            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                            </svg>
-                                        )}
-                                        <span>소노 일괄 접수 ({selectedAppIds.length})</span>
+                                        <span>{opt}</span>
+                                        <span className="adm-tab-count">{count}</span>
                                     </button>
-                                </>
-                            )}
-
-                            {isAdmin && (
-                                <button
-                                    onClick={() => setIsLifeJoyExportModalOpen(true)}
-                                    className="flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl text-xs sm:text-sm font-bold hover:from-emerald-700 hover:to-teal-700 transition-all shadow-md active:scale-95 shrink-0 whitespace-nowrap"
-                                    title="hoon 폴더의 가입요청 엑셀 파일에 신규 고객을 자동 추가하고 다운로드합니다."
-                                >
-                                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    <span>가입요청 엑셀 업데이트</span>
-                                </button>
-                            )}
-
-                            {isAdmin && (
-                                <button
-                                    onClick={() => setIsBulkUploadModalOpen(true)}
-                                    className="flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-xs sm:text-sm font-bold hover:bg-emerald-100 transition-all shadow-sm active:scale-95 shrink-0 whitespace-nowrap"
-                                >
-                                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                    </svg>
-                                    <span>본사 엑셀 업로드</span>
-                                </button>
-                            )}
-
-                            <button
-                                onClick={async () => {
-                                    if (selectedAppIds.length === 0) {
-                                        alert("다운로드할 고객을 선택해 주세요.\n(목록 좌측의 체크박스를 선택하거나 최상단 체크박스로 전체 선택할 수 있습니다.)");
-                                        return;
-                                    }
-
-                                    if (isDownloading) return;
-
-                                    setIsDownloading(true);
-                                    try {
-                                        await new Promise(resolve => setTimeout(resolve, 50));
-
-                                        // 선택된 고객 추출 (현재 정렬 순서 우선 적용)
-                                        const targetApps = sortedApplications.filter(app => selectedAppIds.includes(app.applicationNo));
-                                        const targetNos = new Set(targetApps.map(a => a.applicationNo));
-                                        applications.forEach(app => {
-                                            if (selectedAppIds.includes(app.applicationNo) && !targetNos.has(app.applicationNo)) {
-                                                targetApps.push(app);
-                                            }
-                                        });
-
-                                        if (targetApps.length === 0) {
-                                            alert("선택된 고객 데이터가 없습니다.");
-                                            return;
-                                        }
-
-                                        const exportRows = targetApps.map((app, index) => {
-                                            const parentInfo = getParentPartnerInfo(app.partnerId, app.partnerName);
-                                            const parentDisplay = parentInfo ? `${parentInfo.name}${parentInfo.loginId ? ` (${parentInfo.loginId})` : ''}` : "-";
-                                            const accessPathLabel = app.accessPath === "H" ? "홈페이지" : "직접등록";
-                                            const rawPlan = app.planType || "-";
-                                            const planDisplay = rawPlan !== "-" && !rawPlan.includes("구좌") ? `${rawPlan}구좌` : rawPlan;
-
-                                            return {
-                                                no: targetApps.length - index,
-                                                accessPath: accessPathLabel,
-                                                applicationNo: app.applicationNo || "-",
-                                                createdAt: formatDateTime(app.createdAt, (app as any)._creationTime),
-                                                parentPartner: parentDisplay,
-                                                partnerName: app.partnerName || "-",
-                                                partnerId: app.partnerId || "-",
-                                                partnerLoginId: getPartnerLoginId(app.partnerId, app.partnerName) || "-",
-                                                customerName: app.customerName || "-",
-                                                customerPhone: formatPhoneNumber(app.customerPhone) || "-",
-                                                productName: getProductTypeLabel(app.productType),
-                                                combinedProduct: app.products || "-",
-                                                planType: planDisplay,
-                                                address: app.customerAddress || "-",
-                                                zipcode: app.customerZipcode || "-",
-                                                birth: app.customerBirth || "-",
-                                                gender: app.customerGender || "-",
-                                                email: app.customerEmail || "-",
-                                                memberId: app.partnerMemberId || "-",
-                                                preferredTime: app.preferredContactTime || "-",
-                                                inquiry: app.inquiry?.trim() || "-",
-                                                status: getDisplayStatus(app.status),
-                                                firstPaymentDate: app.firstPaymentDate || "-",
-                                                registrationDate: app.registrationDate || "-",
-                                                paymentMethod: app.paymentMethod || "-",
-                                                cancellationProcessing: app.cancellationProcessing || "-",
-                                                withdrawalProcessing: app.withdrawalProcessing || "-",
-                                                remarks: app.remarks?.trim() || "-"
-                                            };
-                                        });
-
-                                        const response = await fetch("/api/excel/export-customers", {
-                                            method: "POST",
-                                            headers: { "Content-Type": "application/json" },
-                                            body: JSON.stringify({
-                                                rows: exportRows,
-                                                exportDate: new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })
-                                            })
-                                        });
-
-                                        if (!response.ok) {
-                                            const errData = await response.json().catch(() => ({}));
-                                            throw new Error(errData.error || "엑셀 파일 생성 중 오류가 발생했습니다.");
-                                        }
-
-                                        const blob = await response.blob();
-                                        const url = URL.createObjectURL(blob);
-                                        const link = document.createElement("a");
-                                        link.setAttribute("href", url);
-
-                                        const yyyymmdd = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-                                        link.setAttribute("download", `고객상담내역_${yyyymmdd}_${targetApps.length}건.xlsx`);
-                                        link.style.visibility = "hidden";
-                                        document.body.appendChild(link);
-                                        link.click();
-                                        document.body.removeChild(link);
-                                        URL.revokeObjectURL(url);
-                                    } catch (error: any) {
-                                        console.error("Excel download error:", error);
-                                        alert(`다운로드 중 오류가 발생했습니다: ${error.message || error}`);
-                                    } finally {
-                                        setIsDownloading(false);
-                                    }
-                                }}
-                                disabled={isDownloading}
-                                className={`flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 ${
-                                    selectedAppIds.length > 0
-                                        ? 'bg-sono-primary text-white border border-sono-primary hover:bg-sono-secondary shadow-sm shadow-blue-500/20'
-                                        : 'bg-sono-primary/10 text-sono-primary border border-sono-primary/20 hover:bg-sono-primary/20'
-                                } rounded-xl text-xs sm:text-sm font-bold transition-all active:scale-95 text-center whitespace-nowrap shrink-0 ${isDownloading ? 'opacity-70 cursor-wait' : ''}`}
-                                title={selectedAppIds.length > 0 ? `선택한 ${selectedAppIds.length}명의 고객 내역을 엑셀로 다운로드합니다.` : "체크박스로 선택한 고객만 엑셀로 다운로드합니다."}
-                            >
-                                {isDownloading ? (
-                                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" />
-                                ) : (
-                                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                )}
-                                <span>
-                                    {isDownloading 
-                                        ? '준비 중...' 
-                                        : selectedAppIds.length > 0 
-                                            ? `선택 엑셀 다운로드 (${selectedAppIds.length})` 
-                                            : '엑셀 다운로드'}
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Filter Bar: Search & Selects */}
-                    <div className="flex flex-col md:flex-row items-center gap-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
-                        <div className="relative flex-1 w-full">
-                            <input
-                                id="adminCustomerSearch"
-                                type="text"
-                                placeholder="고객명, 연락처, 파트너사명, 상위파트너 검색"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none w-full shadow-sm"
-                            />
-                            <svg className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
+                                );
+                            })}
                         </div>
 
-                        <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full md:w-auto">
-                            {isAdmin && partners.length > 0 && (
-                                <select
-                                    value={partnersFilter}
-                                    onChange={(e) => setPartnersFilter(e.target.value)}
-                                    className="col-span-2 sm:flex-none bg-white border border-gray-200 text-sono-dark text-sm rounded-2xl px-4 py-3 focus:ring-2 focus:ring-sono-primary outline-none font-bold shadow-sm sm:min-w-[150px]"
-                                >
-                                    <option value="all">모든 파트너사</option>
-                                    {partners.map(p => (
-                                        <option key={p.partnerId} value={p.partnerId}>{p.companyName}</option>
-                                    ))}
-                                </select>
-                            )}
-                            <select
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value as any)}
-                                className="bg-white border border-gray-200 text-sono-dark text-sm rounded-2xl px-3 py-3 focus:ring-2 focus:ring-sono-primary outline-none font-bold shadow-sm"
-                            >
-                                <option value="updatedAt">최근수정기준</option>
-                                <option value="createdAtDesc">등록일시(내림차순)</option>
-                                <option value="createdAtAsc">등록일시(오름차순)</option>
-                            </select>
-                            <select
-                                value={itemsPerPage}
-                                onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                                className="bg-white border border-gray-200 text-sono-dark text-sm rounded-2xl px-3 py-3 focus:ring-2 focus:ring-sono-primary outline-none font-bold shadow-sm"
-                            >
-                                <option value={20}>20개 보기</option>
-                                <option value={50}>50개 보기</option>
-                                <option value={100}>100개 보기</option>
-                            </select>
-                        </div>
-                    </div>
+                        {/* 2. 컴팩트 필터 바 */}
+                        <div className="adm-filter-bar">
+                            <label className="adm-search-field">
+                                <AdminIcon name="search" />
+                                <input
+                                    id="adminCustomerSearch"
+                                    type="text"
+                                    placeholder="고객명, 연락처, 파트너사, 상위파트너 검색"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </label>
 
-                    <div className="space-y-4">
-                        {/* Desktop Filters */}
-                        <div className="hidden md:block space-y-4">
-                            <div className="flex flex-wrap gap-2 items-center border-b border-gray-100 pb-4">
-                                <span className="text-xs font-bold text-gray-400 mr-2">기간</span>
+                            {/* 기간 세그먼트 */}
+                            <div className="adm-segmented overflow-x-auto max-w-full">
                                 {dateOptions.map((opt) => (
                                     <button
                                         key={opt.value}
+                                        type="button"
                                         onClick={() => setDateFilter(opt.value)}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${dateFilter === opt.value
-                                            ? "bg-sono-dark text-white"
-                                            : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                                            }`}
+                                        className={
+                                            dateFilter === opt.value ? "active" : ""
+                                        }
                                     >
                                         {opt.label}
                                     </button>
                                 ))}
-                                
-                                {dateFilter === 'custom' && (
-                                    <div className="flex items-center gap-2 ml-2 animate-slide-right">
-                                        <input
-                                            type="date"
-                                            value={customStartDate}
-                                            onChange={(e) => setCustomStartDate(e.target.value)}
-                                            onClick={(e) => { try { e.currentTarget.showPicker?.(); } catch (err) {} }}
-                                            className="border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-sono-primary bg-white font-bold cursor-pointer"
-                                        />
-                                        <span className="text-gray-400 text-xs">~</span>
-                                        <input
-                                            type="date"
-                                            value={customEndDate}
-                                            onChange={(e) => setCustomEndDate(e.target.value)}
-                                            onClick={(e) => { try { e.currentTarget.showPicker?.(); } catch (err) {} }}
-                                            className="border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-sono-primary bg-white font-bold cursor-pointer"
-                                        />
-                                    </div>
-                                )}
                             </div>
 
-                            <div className="flex flex-wrap gap-2 items-center border-b border-gray-100 pb-4">
-                                <span className="text-xs font-bold text-gray-400 mr-2">상품</span>
+                            {dateFilter === "custom" && (
+                                <div className="flex items-center gap-1.5">
+                                    <input
+                                        type="date"
+                                        value={customStartDate}
+                                        onChange={(e) =>
+                                            setCustomStartDate(e.target.value)
+                                        }
+                                        onClick={(e) => {
+                                            try {
+                                                e.currentTarget.showPicker?.();
+                                            } catch {}
+                                        }}
+                                        className="adm-input !min-h-[34px] !py-1 !px-2.5 text-xs cursor-pointer"
+                                    />
+                                    <span className="text-[#86918a] text-xs">~</span>
+                                    <input
+                                        type="date"
+                                        value={customEndDate}
+                                        onChange={(e) => setCustomEndDate(e.target.value)}
+                                        onClick={(e) => {
+                                            try {
+                                                e.currentTarget.showPicker?.();
+                                            } catch {}
+                                        }}
+                                        className="adm-input !min-h-[34px] !py-1 !px-2.5 text-xs cursor-pointer"
+                                    />
+                                </div>
+                            )}
+
+                            {/* 상품 선택 */}
+                            <select
+                                value={productFilter === "all" ? "전체" : productFilter}
+                                onChange={(e) =>
+                                    setProductFilter(
+                                        e.target.value === "전체" ? "all" : e.target.value
+                                    )
+                                }
+                                className="adm-select"
+                                aria-label="상품 필터"
+                            >
                                 {productOptions.map((opt) => (
-                                    <button
-                                        key={opt}
-                                        onClick={() => setProductFilter(opt === '전체' ? 'all' : opt)}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${((productFilter === 'all' && opt === '전체') || productFilter === opt)
-                                            ? "bg-indigo-600 text-white"
-                                            : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                                            }`}
-                                    >
-                                        {opt}
-                                    </button>
+                                    <option key={opt} value={opt}>
+                                        {opt === "전체" ? "전체 상품" : opt}
+                                    </option>
                                 ))}
-                            </div>
+                            </select>
 
-                            <div className="flex flex-wrap gap-2 items-center overflow-x-auto pb-2">
-                                <span className="text-xs font-bold text-gray-400 mr-2 flex-shrink-0">상태</span>
-                                {statusOptions.map((opt) => (
-                                    <button
-                                        key={opt}
-                                        onClick={() => setStatusFilter(opt === '전체' ? 'all' : opt)}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 ${(statusFilter === 'all' && opt === '전체') || statusFilter === opt
-                                            ? "bg-sono-primary/10 text-sono-primary border border-sono-primary/20"
-                                            : "bg-white border border-gray-200 text-gray-500 hover:border-gray-300"
-                                            }`}
-                                    >
-                                        {opt}
-                                    </button>
-                                ))}
+                            {/* 파트너 선택 (어드민) */}
+                            {isAdmin && partners.length > 0 && (
+                                <select
+                                    value={partnersFilter}
+                                    onChange={(e) => setPartnersFilter(e.target.value)}
+                                    className="adm-select"
+                                    aria-label="파트너사 필터"
+                                >
+                                    <option value="all">전체 파트너사</option>
+                                    {partners.map((p) => (
+                                        <option key={p.partnerId} value={p.partnerId}>
+                                            {p.companyName}
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
+
+                            {/* 정렬 기준 */}
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value as any)}
+                                className="adm-select"
+                                aria-label="정렬 기준"
+                            >
+                                <option value="updatedAt">최근수정순</option>
+                                <option value="createdAtDesc">등록일 최신순</option>
+                                <option value="createdAtAsc">등록일 오래된순</option>
+                            </select>
+
+                            {/* 표시 개수 */}
+                            <select
+                                value={itemsPerPage}
+                                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                                className="adm-select"
+                                aria-label="페이지당 표시 개수"
+                            >
+                                <option value={20}>20개씩</option>
+                                <option value={50}>50개씩</option>
+                                <option value={100}>100개씩</option>
+                            </select>
+
+                            {hasActiveFilter && (
+                                <button
+                                    type="button"
+                                    onClick={resetAllFilters}
+                                    className="adm-btn small"
+                                >
+                                    <AdminIcon name="refresh" />
+                                    <span>초기화</span>
+                                </button>
+                            )}
+
+                            <div className="adm-filter-end">
+                                <span className="adm-pill green !py-1 !px-2.5">
+                                    <AdminIcon name="phone" className="!w-3 !h-3" />
+                                    <span>가입센터 발신번호 1833-8434</span>
+                                </span>
                             </div>
                         </div>
 
-                        {/* Mobile Filters */}
-                        <div className="md:hidden grid grid-cols-3 gap-2 pb-4 border-b border-gray-100">
-                            <div>
-                                <label className="text-[10px] font-bold text-gray-400 mb-1 block">기간</label>
-                                <select
-                                    value={dateFilter}
-                                    onChange={(e) => setDateFilter(e.target.value)}
-                                    className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-[11px] rounded-xl px-2 py-2 outline-none font-bold"
-                                >
-                                    {dateOptions.map((opt) => (
-                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="text-[10px] font-bold text-gray-400 mb-1 block">상품</label>
-                                <select
-                                    value={productFilter === 'all' ? '전체' : productFilter}
-                                    onChange={(e) => setProductFilter(e.target.value === '전체' ? 'all' : e.target.value)}
-                                    className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-[11px] rounded-xl px-2 py-2 outline-none font-bold"
-                                >
-                                    {productOptions.map((opt) => (
-                                        <option key={opt} value={opt}>{opt}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="text-[10px] font-bold text-gray-400 mb-1 block">상태</label>
-                                <select
-                                    value={statusFilter === 'all' ? '전체' : statusFilter}
-                                    onChange={(e) => setStatusFilter(e.target.value === '전체' ? 'all' : e.target.value)}
-                                    className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-[11px] rounded-xl px-2 py-2 outline-none font-bold"
-                                >
-                                    {statusOptions.map((opt) => (
-                                        <option key={opt} value={opt}>{opt}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
+                        {/* 3. 고객 목록 테이블 */}
+                        {renderTable()}
 
-                        {/* Custom Date Input (Mobile Only - kept separate for layout) */}
-                        {dateFilter === 'custom' && (
-                            <div className="flex md:hidden items-center gap-2 pt-2">
-                                <input
-                                    type="date"
-                                    value={customStartDate}
-                                    onChange={(e) => setCustomStartDate(e.target.value)}
-                                    onClick={(e) => { try { e.currentTarget.showPicker?.(); } catch (err) {} }}
-                                    className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-sono-primary cursor-pointer"
-                                />
-                                <span className="text-gray-400">~</span>
-                                <input
-                                    type="date"
-                                    value={customEndDate}
-                                    onChange={(e) => setCustomEndDate(e.target.value)}
-                                    onClick={(e) => { try { e.currentTarget.showPicker?.(); } catch (err) {} }}
-                                    className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-sono-primary cursor-pointer"
-                                />
-                            </div>
-                        )}
-                    </div>
-                </div>
+                        {/* 4. 하단 통합 요약 및 페이지네이션 */}
+                        <div className="adm-table-foot">
+                            <span>
+                                검색 결과{" "}
+                                <strong className="text-[#295e52]">
+                                    {sortedApplications.length.toLocaleString()}
+                                </strong>
+                                명 중{" "}
+                                {sortedApplications.length > 0
+                                    ? `${(currentPage - 1) * itemsPerPage + 1}–${Math.min(
+                                          currentPage * itemsPerPage,
+                                          sortedApplications.length
+                                      )}`
+                                    : "0"}{" "}
+                                표시 · 선택{" "}
+                                <strong className="text-[#263d36]">
+                                    {selectedAppIds.length}
+                                </strong>
+                                명
+                            </span>
+
+                            {totalPages > 1 && (
+                                <div className="adm-pagination">
+                                    <button
+                                        type="button"
+                                        onClick={() => setCurrentPage(1)}
+                                        disabled={currentPage === 1}
+                                        aria-label="첫 페이지"
+                                    >
+                                        «
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setCurrentPage((prev) =>
+                                                Math.max(1, prev - 1)
+                                            )
+                                        }
+                                        disabled={currentPage === 1}
+                                        aria-label="이전 페이지"
+                                    >
+                                        ‹
+                                    </button>
+                                    {Array.from(
+                                        { length: Math.min(5, totalPages) },
+                                        (_, i) => {
+                                            let pageNum;
+                                            if (totalPages <= 5) {
+                                                pageNum = i + 1;
+                                            } else if (currentPage <= 3) {
+                                                pageNum = i + 1;
+                                            } else if (currentPage >= totalPages - 2) {
+                                                pageNum = totalPages - 4 + i;
+                                            } else {
+                                                pageNum = currentPage - 2 + i;
+                                            }
+                                            return (
+                                                <button
+                                                    key={pageNum}
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setCurrentPage(pageNum)
+                                                    }
+                                                    className={
+                                                        currentPage === pageNum
+                                                            ? "active"
+                                                            : ""
+                                                    }
+                                                >
+                                                    {pageNum}
+                                                </button>
+                                            );
+                                        }
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setCurrentPage((prev) =>
+                                                Math.min(totalPages, prev + 1)
+                                            )
+                                        }
+                                        disabled={currentPage === totalPages}
+                                        aria-label="다음 페이지"
+                                    >
+                                        ›
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setCurrentPage(totalPages)}
+                                        disabled={currentPage === totalPages}
+                                        aria-label="마지막 페이지"
+                                    >
+                                        »
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </section>
                 </>
             )}
 
-            {!isWidget && (
-                <div className="flex flex-wrap items-center gap-3 px-5 py-3.5 bg-[#f2f4ec] border border-[#dfe5d6] rounded-[12px]">
-                    <div className="w-8 h-8 rounded-[9px] bg-[#e4ecdd] flex items-center justify-center text-[#295e52] shrink-0">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                        </svg>
-                    </div>
-                    <span className="text-sm font-bold text-[#263d36]">
-                        가입센터 발신번호 안내 : <span className="text-base text-[#295e52] tracking-tight ml-1">1833-8434</span>
-                    </span>
-                    <span className="text-xs text-[#798676] font-medium">고객님께 안내 시 활용해 주세요.</span>
-                </div>
-            )}
-
-            <div className={`bg-white rounded-2xl shadow-sm overflow-hidden ${isWidget ? 'shadow-none' : ''}`}>
-
-                <div className="overflow-x-auto">
-                    <table className="min-w-full text-left whitespace-nowrap">
-                        <thead>
-                            <tr className="bg-[#f9fafb] border-b border-gray-100">
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[40px]">
-                                    <input
-                                        type="checkbox"
-                                        checked={displayApplications.length > 0 && displayApplications.every(app => selectedAppIds.includes(app.applicationNo))}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                const currentNos = displayApplications.map(app => app.applicationNo);
-                                                setSelectedAppIds(prev => Array.from(new Set([...prev, ...currentNos])));
-                                            } else {
-                                                const currentNos = new Set(displayApplications.map(app => app.applicationNo));
-                                                setSelectedAppIds(prev => prev.filter(id => !currentNos.has(id)));
-                                            }
-                                        }}
-                                        className="rounded border-gray-300 text-sono-primary focus:ring-sono-primary cursor-pointer"
-                                    />
-                                </th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[50px]">경로</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">No.</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center w-[120px]">일시</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">상위파트너</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">파트너사</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center min-w-[60px]">고객명</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">연락처</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">상품명</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">구좌</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">결합제품</th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center">
-                                    <div className="flex items-center justify-center gap-1">
-                                        상태
-                                        <button 
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setShowStatusHelp(true);
-                                            }}
-                                            className="text-gray-400 hover:text-sono-primary transition-colors flex items-center"
-                                            title="상태 용어 설명"
-                                        >
-                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </th>
-                                <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center whitespace-nowrap min-w-[70px]">녹취</th>
-                                {isAdmin && (
-                                    <th className="px-2 py-4 text-xs font-bold text-[#8b95a1] uppercase tracking-wider text-center whitespace-nowrap min-w-[95px]">소노접수</th>
-                                )}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {displayApplications.length > 0 ? (
-                                displayApplications.map((app, index) => {
-                                    // 24시간 이내 업데이트 여부 확인 (상태값 변경 기준)
-                                    const isUpdated = (() => {
-                                        if (!app.statusUpdatedAt) return false;
-                                        try {
-                                            const updatedAt = new Date(app.statusUpdatedAt).getTime();
-                                            const now = new Date().getTime();
-                                            return (now - updatedAt) < 24 * 60 * 60 * 1000;
-                                        } catch {
-                                            return false;
-                                        }
-                                    })();
-                                    return (
-                                        <tr
-                                            key={app.applicationNo}
-                                            onClick={() => setSelectedApp(app)}
-                                            className="hover:bg-gray-50 transition-colors cursor-pointer"
-                                        >
-                                            <td className="px-2 py-4 text-center relative" onClick={(e) => e.stopPropagation()}>
-                                                {isUpdated && (
-                                                    <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-red-500 rounded-full shadow-[0_0_4px_rgba(239,68,68,0.5)]" title="업데이트됨" />
-                                                )}
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedAppIds.includes(app.applicationNo)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setSelectedAppIds(prev => [...prev, app.applicationNo]);
-                                                        } else {
-                                                            setSelectedAppIds(prev => prev.filter(id => id !== app.applicationNo));
-                                                        }
-                                                    }}
-                                                    className="rounded border-gray-300 text-sono-primary focus:ring-sono-primary cursor-pointer"
-                                                />
-                                            </td>
-                                            <td className="px-2 py-4 text-center">
-                                                <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-black ${
-                                                    app.accessPath === 'H' 
-                                                    ? "bg-blue-100 text-blue-600 border border-blue-200" 
-                                                    : "bg-gray-100 text-gray-600 border border-gray-200"
-                                                }`} title={app.accessPath === 'H' ? "홈페이지" : "직접등록"}>
-                                                    {app.accessPath || 'D'}
-                                                </span>
-                                            </td>
-                                            <td className="px-2 py-4 text-center text-xs text-gray-400 font-bold relative">
-                                                {sortedApplications.length - ((currentPage - 1) * itemsPerPage + index)}
-                                            </td>
-                                            <td className="px-2 py-4 text-xs text-gray-500 text-center whitespace-nowrap">
-                                                {formatDateTime(app.createdAt, (app as any)._creationTime)}
-                                            </td>
-                                            <td className="px-2 py-4 text-center whitespace-nowrap">
-                                                {(() => {
-                                                    const parentInfo = getParentPartnerInfo(app.partnerId, app.partnerName);
-                                                    if (!parentInfo) {
-                                                        return <span className="text-xs text-gray-400 font-bold">-</span>;
-                                                    }
-                                                    return (
-                                                        <>
-                                                            <div className="text-sm font-bold text-sono-dark">{parentInfo.name}</div>
-                                                            {parentInfo.loginId && <div className="text-[10px] text-gray-400 font-bold">{parentInfo.loginId}</div>}
-                                                        </>
-                                                    );
-                                                })()}
-                                            </td>
-                                            <td className="px-2 py-4 text-center whitespace-nowrap">
-                                                <div className="text-sm font-bold text-sono-dark">{app.partnerName}</div>
-                                                {partners.length > 0 && <div className="text-[10px] text-gray-400 font-bold">{getPartnerLoginId(app.partnerId, app.partnerName)}</div>}
-                                            </td>
-                                            <td className="px-2 py-4 text-center whitespace-nowrap min-w-[80px]">
-                                                <div className="flex flex-col items-center gap-1.5">
-                                                    <div className="text-sm font-bold text-sono-dark">{app.customerName}</div>
-                                                    {app.hasDuplicate && (
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setCheckingApp(app);
-                                                            }}
-                                                            className={`text-[10px] px-2 py-0.5 rounded-md transition-all font-black shadow-sm border ${
-                                                                app.duplicateConfirmed 
-                                                                ? (app.isAdditionalRegistration 
-                                                                    ? "bg-blue-50 text-blue-600 border-blue-100" 
-                                                                    : "bg-emerald-50 text-emerald-600 border-emerald-100")
-                                                                : "bg-red-50 text-red-600 border-red-100 animate-pulse"
-                                                            }`}
-                                                        >
-                                                            {app.duplicateConfirmed 
-                                                                ? (app.isAdditionalRegistration ? "추가 접수" : "중복 확인 완료")
-                                                                : "중복 접수"}
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td className="px-2 py-4 text-xs text-center text-gray-500 whitespace-nowrap">
-                                                {app.customerPhone}
-                                            </td>
-                                            <td className="px-2 py-4 text-xs font-bold text-center text-sono-primary whitespace-nowrap">
-                                                {getProductTypeLabel(app.productType)}
-                                            </td>
-                                            <td className="px-2 py-4 text-xs text-center text-gray-600 font-bold whitespace-nowrap">
-                                                {app.planType ? (app.planType.includes("구좌") ? app.planType : `${app.planType}구좌`) : "-"}
-                                            </td>
-                                            <td className="px-2 py-4 text-xs text-center text-gray-500 max-w-[200px] truncate" title={app.products}>
-                                                {((app.productType || "").toLowerCase().includes("smart") || (app.productType || "").includes("스마트")) ? (app.products || "-") : "-"}
-                                            </td>
-                                            <td className="px-2 py-4 text-center whitespace-nowrap">
-                                                {(() => {
-                                                    const badge = getStatusBadge(getDisplayStatus(app.status));
-                                                    return (
-                                                        <span 
-                                                            className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${badge.className}`}
-                                                            style={badge.style}
-                                                        >
-                                                            {getDisplayStatus(app.status)}
-                                                        </span>
-                                                    );
-                                                })()}
-                                            </td>
-                                            <td className="px-2 py-4 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                                                {(() => {
-                                                    const stat = recordingStats[app.applicationNo];
-                                                    const count = stat ? stat.count : 0;
-                                                    const sizeText = stat && stat.totalSize > 0 ? formatBytes(stat.totalSize) : "";
-                                                    return (
-                                                        <button
-                                                            type="button"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setRecordingTargetApp(app);
-                                                            }}
-                                                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all active:scale-95 border ${
-                                                                count > 0
-                                                                    ? "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200 shadow-sm"
-                                                                    : "bg-gray-50 hover:bg-gray-100 text-gray-500 border-gray-200"
-                                                            }`}
-                                                            title={count > 0 ? `녹취 파일 ${count}건 (${sizeText}) - 클릭하여 듣기/관리` : "녹취 음성파일 업로드"}
-                                                        >
-                                                            <span>🎙️</span>
-                                                            <span>{count > 0 ? `${count}건` : "등록"}</span>
-                                                            {count > 0 && sizeText && (
-                                                                <span className="text-[9px] px-1 py-0.2 bg-white/90 rounded border border-emerald-200/80 text-emerald-700 font-extrabold">
-                                                                    {sizeText}
-                                                                </span>
-                                                            )}
-                                                        </button>
-                                                    );
-                                                })()}
-                                            </td>
-                                            {isAdmin && (
-                                                <td className="px-2 py-4 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                                                    <div className="flex items-center justify-center gap-1.5">
-                                                        {app.sonoRegisterStatus === 'SUCCESS' && (
-                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200" title={app.sonoRegisterMessage || '접수 완료'}>
-                                                                🟢완료
-                                                            </span>
-                                                        )}
-                                                        {app.sonoRegisterStatus === 'DUPLICATE' && (
-                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200" title={app.sonoRegisterMessage || '오늘 이미 소노 전산에 접수 완료된 건입니다'}>
-                                                                🟡당일기접수
-                                                            </span>
-                                                        )}
-                                                        {app.sonoRegisterStatus === 'FAILED' && (
-                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200" title={app.sonoRegisterMessage || '전송 실패'}>
-                                                                🔴실패
-                                                            </span>
-                                                        )}
-                                                        {!app.sonoRegisterStatus && (
-                                                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black bg-gray-50 text-gray-400 border border-gray-200">
-                                                                ⚪미접수
-                                                            </span>
-                                                        )}
-                                                        <button
-                                                            type="button"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setSonoTargetApp(app);
-                                                                setIsSonoModalOpen(true);
-                                                            }}
-                                                            className="px-2 py-0.5 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 rounded text-[10px] font-bold transition-all active:scale-95 cursor-pointer shrink-0"
-                                                            title="소노아임레디(THEHAPPYONE) 접수 확인 및 등록"
-                                                        >
-                                                            {app.sonoRegisterStatus ? "재전송" : "접수"}
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            )}
-                                        </tr>
-                                    );
-                                })
-                            ) : (
-                                <tr>
-                                    <td colSpan={isAdmin ? 14 : 13} className="px-6 py-20 text-center text-gray-400 font-medium">
-                                        신청 내역이 없습니다.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {!isWidget && totalPages > 1 && (
-                <div className="flex justify-center items-center gap-2 py-4">
-                    <button
-                        onClick={() => setCurrentPage(1)}
-                        disabled={currentPage === 1}
-                        className="p-2 text-gray-400 hover:text-sono-primary disabled:opacity-30 disabled:hover:text-gray-400"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-                        </svg>
-                    </button>
-                    <button
-                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                        disabled={currentPage === 1}
-                        className="p-2 text-gray-400 hover:text-sono-primary disabled:opacity-30 disabled:hover:text-gray-400"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
-
-                    <div className="flex gap-1 mx-2">
-                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                            let pageNum;
-                            if (totalPages <= 5) {
-                                pageNum = i + 1;
-                            } else if (currentPage <= 3) {
-                                pageNum = i + 1;
-                            } else if (currentPage >= totalPages - 2) {
-                                pageNum = totalPages - 4 + i;
-                            } else {
-                                pageNum = currentPage - 2 + i;
-                            }
-
-                            return (
-                                <button
-                                    key={pageNum}
-                                    onClick={() => setCurrentPage(pageNum)}
-                                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${currentPage === pageNum
-                                        ? "bg-sono-primary text-white shadow-md shadow-sono-primary/20"
-                                        : "text-gray-500 hover:bg-gray-100"
-                                        }`}
-                                >
-                                    {pageNum}
-                                </button>
-                            );
-                        })}
-                    </div>
-
-                    <button
-                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                        disabled={currentPage === totalPages}
-                        className="p-2 text-gray-400 hover:text-sono-primary disabled:opacity-30 disabled:hover:text-gray-400"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                    <button
-                        onClick={() => setCurrentPage(totalPages)}
-                        disabled={currentPage === totalPages}
-                        className="p-2 text-gray-400 hover:text-sono-primary disabled:opacity-30 disabled:hover:text-gray-400"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
-            )}
+            {isWidget && renderTable()}
 
             {selectedApp && (
                 <CustomerDetailModal
@@ -1273,8 +1457,11 @@ export default function CustomerManagement({
                     onClose={() => setSelectedApp(null)}
                     onUpdate={onRefresh}
                     isAdmin={isAdmin}
-                    partnerLoginId={getPartnerLoginId(selectedApp.partnerId, selectedApp.partnerName)}
-                    currentUserRole={currentUser?.role || 'master'}
+                    partnerLoginId={getPartnerLoginId(
+                        selectedApp.partnerId,
+                        selectedApp.partnerName
+                    )}
+                    currentUserRole={currentUser?.role || "master"}
                 />
             )}
 
@@ -1321,69 +1508,80 @@ export default function CustomerManagement({
                 />
             )}
 
-            {/* 상담 녹취 음성파일 관리 모달 */}
             {recordingTargetApp && (
                 <RecordingModal
                     application={recordingTargetApp}
-                    parentPartnerName={getParentPartnerInfo(recordingTargetApp.partnerId, recordingTargetApp.partnerName)?.name}
+                    parentPartnerName={
+                        getParentPartnerInfo(
+                            recordingTargetApp.partnerId,
+                            recordingTargetApp.partnerName
+                        )?.name
+                    }
                     onClose={() => setRecordingTargetApp(null)}
-                    currentUserName={currentUser?.managerName || currentUser?.companyName || (isAdmin ? "총괄관리자" : "관리자")}
+                    currentUserName={
+                        currentUser?.managerName ||
+                        currentUser?.companyName ||
+                        (isAdmin ? "총괄관리자" : "관리자")
+                    }
                     isAdmin={isAdmin}
                 />
             )}
 
             {/* 상태 용어 설명 모달 */}
             {showStatusHelp && (
-                <div 
-                    className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-[60] flex items-center justify-center p-4"
+                <div
+                    className="fixed inset-0 bg-[#19312b]/35 backdrop-blur-[2px] z-[60] flex items-center justify-center p-4"
                     onClick={() => setShowStatusHelp(false)}
                 >
-                    <div 
-                        className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden border border-gray-100 animate-in fade-in zoom-in duration-200"
-                        onClick={e => e.stopPropagation()}
+                    <div
+                        className="adm-panel w-full max-w-sm shadow-xl"
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-                            <h3 className="font-bold text-sono-dark text-sm">상태 용어 설명</h3>
-                            <button onClick={() => setShowStatusHelp(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                        <div className="px-5 py-4 border-b border-[#edf0e7] flex justify-between items-center bg-[#f8f9f5]">
+                            <h3 className="font-bold text-[#263d36] text-sm">
+                                진행 상태 용어 안내
+                            </h3>
+                            <button
+                                type="button"
+                                onClick={() => setShowStatusHelp(false)}
+                                className="adm-icon-btn"
+                            >
+                                <AdminIcon name="close" />
                             </button>
                         </div>
-                        <div className="p-5 space-y-4">
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
-                                    <span className="text-xs font-bold text-slate-600">접수대기</span>
-                                </div>
-                                <p className="text-[11px] text-gray-500 pl-3.5 leading-relaxed">영업자가 등록한 상태</p>
+                        <div className="p-5 space-y-3.5 text-xs">
+                            <div>
+                                <span className="adm-pill gray mb-1">접수대기</span>
+                                <p className="text-[#5d6c5d] leading-relaxed">
+                                    영업자 또는 랜딩을 통해 신규 상담이 등록된 상태입니다.
+                                </p>
                             </div>
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                                    <span className="text-xs font-bold text-blue-600">접수완료</span>
-                                </div>
-                                <p className="text-[11px] text-gray-500 pl-3.5 leading-relaxed">소노 콜센터에 해피콜 요청한 상태</p>
+                            <div>
+                                <span className="adm-pill blue mb-1">접수완료</span>
+                                <p className="text-[#5d6c5d] leading-relaxed">
+                                    소노 콜센터에 해피콜 및 상담을 요청한 상태입니다.
+                                </p>
                             </div>
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-500"></div>
-                                    <span className="text-xs font-bold text-cyan-600">녹취완료(출금확인중)</span>
-                                </div>
-                                <p className="text-[11px] text-gray-500 pl-3.5 leading-relaxed">계약 녹취(해피콜)는 완료됐으나 1회차 출금확인이 안된 상태(신용카드는 실시간 확인 가능, CMS는 2~3일 소요)</p>
+                            <div>
+                                <span className="adm-pill teal mb-1">
+                                    녹취완료(출금확인중)
+                                </span>
+                                <p className="text-[#5d6c5d] leading-relaxed">
+                                    계약 녹취(해피콜)는 완료되었으나 1회차 출금 확인 대기 상태입니다. (신용카드 실시간, CMS 2~3일 소요)
+                                </p>
                             </div>
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                                    <span className="text-xs font-bold text-emerald-600">정상가입</span>
-                                </div>
-                                <p className="text-[11px] text-gray-500 pl-3.5 leading-relaxed">1회출금 후 정상 계약 유지 상태</p>
+                            <div>
+                                <span className="adm-pill green mb-1">정상가입</span>
+                                <p className="text-[#5d6c5d] leading-relaxed">
+                                    1회차 출금 완료 후 정상 계약이 유지 중인 상태입니다.
+                                </p>
                             </div>
                         </div>
-                        <div className="p-3 bg-gray-50 flex justify-end">
-                            <button 
+                        <div className="px-5 py-3 bg-[#fafbf8] border-t border-[#edf0e7] flex justify-end">
+                            <button
+                                type="button"
                                 onClick={() => setShowStatusHelp(false)}
-                                className="text-[11px] font-bold text-gray-400 hover:text-sono-dark px-3 py-1 transition-colors"
+                                className="adm-btn small"
                             >
                                 닫기
                             </button>
@@ -1391,14 +1589,15 @@ export default function CustomerManagement({
                     </div>
                 </div>
             )}
+
             {/* 중복 확인 모달 */}
             {checkingApp && (
-                <DuplicateCheckModal 
-                    app={checkingApp} 
-                    onClose={() => setCheckingApp(null)} 
+                <DuplicateCheckModal
+                    app={checkingApp}
+                    onClose={() => setCheckingApp(null)}
                     onConfirm={async (appNo, type) => {
                         try {
-                            if (type === 'additional') {
+                            if (type === "additional") {
                                 await confirmAdditional({ applicationNo: appNo });
                             } else {
                                 await confirmDuplicate({ applicationNo: appNo });
@@ -1416,85 +1615,103 @@ export default function CustomerManagement({
     );
 }
 
-// 중복 확인 모달 컴포넌트
-function DuplicateCheckModal({ app, onClose, onConfirm }: { app: Application, onClose: () => void, onConfirm: (appNo: string, type: 'confirmed' | 'additional') => void }) {
+function DuplicateCheckModal({
+    app,
+    onClose,
+    onConfirm,
+}: {
+    app: Application;
+    onClose: () => void;
+    onConfirm: (appNo: string, type: "confirmed" | "additional") => void;
+}) {
     const duplicates = useQuery(api.applications.checkDuplicateCustomer, {
         customerName: (app.customerName || "").trim(),
         customerPhone: (app.customerPhone || "").trim(),
-        excludeApplicationNo: app.applicationNo
+        excludeApplicationNo: app.applicationNo,
     });
 
     return (
-        <div 
-            className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200"
+        <div
+            className="fixed inset-0 bg-[#19312b]/40 backdrop-blur-[2px] z-[100] flex items-center justify-center p-4"
             onClick={onClose}
         >
-            <div 
-                className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100 animate-in zoom-in duration-300"
-                onClick={e => e.stopPropagation()}
+            <div
+                className="adm-panel w-full max-w-md shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
             >
-                <div className="p-6 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
+                <div className="px-5 py-4 border-b border-[#edf0e7] bg-[#f8f9f5] flex justify-between items-center">
                     <div>
-                        <h3 className="text-lg font-black text-sono-dark tracking-tight">중복 가입 확인</h3>
-                        <p className="text-xs text-gray-400 font-bold mt-0.5">{(app.customerName || "").trim()}님 / {app.customerPhone}</p>
+                        <h3 className="text-base font-bold text-[#263d36]">
+                            중복 가입 내역 확인
+                        </h3>
+                        <p className="text-xs text-[#86918a] mt-0.5">
+                            {(app.customerName || "").trim()}님 · {app.customerPhone}
+                        </p>
                     </div>
-                    <button onClick={onClose} className="p-2 text-gray-400 hover:text-sono-dark transition-colors bg-white rounded-xl shadow-sm border border-gray-100">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                    <button type="button" onClick={onClose} className="adm-icon-btn">
+                        <AdminIcon name="close" />
                     </button>
                 </div>
 
-                <div className="p-6">
+                <div className="p-5">
                     {duplicates === undefined ? (
-                        <div className="flex flex-col items-center py-10 gap-3">
-                            <div className="w-8 h-8 border-4 border-sono-primary/20 border-t-sono-primary rounded-full animate-spin"></div>
-                            <p className="text-sm text-gray-500 font-bold italic">데이터 조회 중...</p>
+                        <div className="py-10 text-center text-xs text-[#86918a]">
+                            중복 데이터를 조회하는 중...
                         </div>
                     ) : duplicates.length === 0 ? (
-                        <div className="flex flex-col items-center py-10 gap-4">
-                            <div className="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center shadow-inner">
-                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                </svg>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-lg font-black text-emerald-600 tracking-tight">중복 없음</p>
-                                <p className="text-sm text-gray-400 font-bold mt-1">해당 고객으로 등록된 다른 내역이 없습니다.</p>
-                            </div>
+                        <div className="py-8 text-center space-y-2">
+                            <span className="adm-pill green">중복 없음</span>
+                            <p className="text-xs text-[#6b7768]">
+                                해당 고객 정보로 등록된 다른 접수 내역이 없습니다.
+                            </p>
                         </div>
                     ) : (
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3 p-4 bg-red-50 rounded-2xl border border-red-100">
-                                <div className="w-10 h-10 bg-red-100 text-red-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-black text-red-600 tracking-tight">중복 내역 발견</p>
-                                    <p className="text-xs text-red-400 font-bold mt-0.5">이미 등록된 {duplicates.length}건의 내역이 있습니다.</p>
-                                </div>
+                        <div className="space-y-3">
+                            <div className="adm-section-note !my-0">
+                                <AdminIcon name="info" />
+                                <span>
+                                    동일한 고객명·연락처로 등록된 내역이{" "}
+                                    <strong className="text-[#295e52]">
+                                        {duplicates.length}건
+                                    </strong>{" "}
+                                    발견되었습니다.
+                                </span>
                             </div>
 
-                            <div className="max-h-[300px] overflow-y-auto pr-1 space-y-3 custom-scrollbar">
+                            <div className="max-h-[260px] overflow-y-auto space-y-2.5 pr-1">
                                 {duplicates.map((dup: any) => (
-                                    <div key={dup.applicationNo} className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-sono-primary/30 transition-all group">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <span className="text-sm font-black text-sono-dark group-hover:text-sono-primary transition-colors">{dup.partnerName}</span>
-                                            <span className="px-2 py-0.5 bg-gray-100 text-[10px] font-black text-gray-500 rounded-md">
+                                    <div
+                                        key={dup.applicationNo}
+                                        className="adm-note-card space-y-1.5"
+                                    >
+                                        <div className="flex justify-between items-center">
+                                            <strong className="text-xs text-[#263d36]">
+                                                {dup.partnerName}
+                                            </strong>
+                                            <span className="adm-pill gray">
                                                 {dup.status}
                                             </span>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-y-1 mt-3">
-                                            <div className="text-[11px] text-gray-400 font-bold">신청번호</div>
-                                            <div className="text-[11px] text-sono-dark font-bold text-right">{dup.applicationNo}</div>
-                                            <div className="text-[11px] text-gray-400 font-bold">등록일시</div>
-                                            <div className="text-[11px] text-sono-dark font-bold text-right">{formatDateTime(dup.createdAt, dup._creationTime)}</div>
+                                        <div className="grid grid-cols-2 gap-y-1 text-[11px] pt-1 border-t border-[#e6eae3]">
+                                            <span className="text-[#86918a]">신청번호</span>
+                                            <span className="text-right font-mono text-[#263d36]">
+                                                {dup.applicationNo}
+                                            </span>
+                                            <span className="text-[#86918a]">등록일시</span>
+                                            <span className="text-right text-[#263d36]">
+                                                {formatDateTime(
+                                                    dup.createdAt,
+                                                    dup._creationTime
+                                                )}
+                                            </span>
                                             {dup.productType && (
                                                 <>
-                                                    <div className="text-[11px] text-gray-400 font-bold">상품명</div>
-                                                    <div className="text-[11px] text-sono-dark font-bold text-right truncate">{dup.productType}</div>
+                                                    <span className="text-[#86918a]">
+                                                        상품명
+                                                    </span>
+                                                    <span className="text-right font-semibold text-[#295e52] truncate">
+                                                        {dup.productType}
+                                                    </span>
                                                 </>
                                             )}
                                         </div>
@@ -1503,28 +1720,32 @@ function DuplicateCheckModal({ app, onClose, onConfirm }: { app: Application, on
                             </div>
                         </div>
                     )}
-                    
-                    <div className="flex gap-3 mt-8">
+
+                    <div className="flex gap-2 mt-5 pt-4 border-t border-[#edf0e7] justify-end">
                         {!app.duplicateConfirmed && (
                             <>
-                                <button 
-                                    onClick={() => onConfirm(app.applicationNo, 'confirmed')} 
-                                    className="flex-1 py-4 bg-emerald-500 text-white rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all shadow-lg active:scale-95"
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        onConfirm(app.applicationNo, "confirmed")
+                                    }
+                                    className="adm-btn primary"
                                 >
-                                    중복 확인
+                                    <AdminIcon name="check" />
+                                    <span>중복 확인 완료</span>
                                 </button>
-                                <button 
-                                    onClick={() => onConfirm(app.applicationNo, 'additional')} 
-                                    className="flex-1 py-4 bg-blue-500 text-white rounded-2xl font-black text-sm hover:bg-blue-600 transition-all shadow-lg active:scale-95"
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        onConfirm(app.applicationNo, "additional")
+                                    }
+                                    className="adm-btn sage"
                                 >
-                                    추가 접수
+                                    <span>추가 접수 인정</span>
                                 </button>
                             </>
                         )}
-                        <button 
-                            onClick={onClose} 
-                            className={`py-4 bg-sono-dark text-white rounded-2xl font-black text-sm hover:bg-black transition-all shadow-lg active:scale-95 ${app.duplicateConfirmed ? 'w-full' : 'flex-1 bg-gray-100 text-gray-500 hover:bg-gray-200 shadow-none'}`}
-                        >
+                        <button type="button" onClick={onClose} className="adm-btn">
                             닫기
                         </button>
                     </div>

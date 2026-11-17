@@ -185,18 +185,27 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
                 </>
             }
         >
-            <form id="tm-form-drawer" onSubmit={handleSubmit} className="space-y-5">
-                <div className="bg-[#f4f7ef] rounded-[11px] p-4 border border-[#dce6d5] text-xs text-[#3b5242] space-y-1">
-                    <p className="font-bold text-[#295e52] text-sm mb-1.5">상위 파트너 정보 상속</p>
-                    <p>• <b>회사명</b>: {parentPartner.companyName}</p>
-                    <p>• <b>대표자명</b>: {parentPartner.ceoName}</p>
-                    <p>• <b>사업자번호</b>: {parentPartner.businessNumber}</p>
-                    <p className="text-[10px] text-[#7c8c7b] pt-1">* 회사 정보 및 마케팅 설정은 상위 파트너와 동일하게 유지됩니다.</p>
+            <form id="tm-form-drawer" onSubmit={handleSubmit} className="space-y-4">
+                <div className="adm-section-label !mt-0">상위 파트너 정보 (자동 상속)</div>
+                <div className="adm-details-list">
+                    <div className="adm-detail-item">
+                        <span>회사명</span>
+                        <strong>{parentPartner.companyName}</strong>
+                    </div>
+                    <div className="adm-detail-item">
+                        <span>대표자명</span>
+                        <strong>{parentPartner.ceoName || "-"}</strong>
+                    </div>
+                    <div className="adm-detail-item">
+                        <span>사업자번호</span>
+                        <strong className="font-mono">{parentPartner.businessNumber || "-"}</strong>
+                    </div>
                 </div>
 
-                <div className="space-y-4">
-                    <div>
-                        <label className="text-xs font-bold text-[#5d6e5c] mb-1.5 block">
+                <div className="adm-section-label">상담원 계정 및 기본 정보</div>
+                <div className="adm-field-grid">
+                    <div className="adm-field">
+                        <label>
                             로그인 ID {!isEdit && <span className="text-[#295e52]">*</span>}
                         </label>
                         <input
@@ -205,14 +214,14 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
                             value={formData.loginId}
                             onChange={handleChange}
                             disabled={isEdit}
-                            className="w-full bg-[#f9faf7] border border-[#dfe5d9] text-[#263d36] text-sm rounded-[9px] px-3.5 py-2.5 focus:border-[#295e52] focus:bg-white outline-none disabled:bg-gray-100 disabled:text-gray-400 font-semibold"
+                            className="adm-input font-mono disabled:opacity-60"
                             required
                             placeholder="영문, 숫자만 사용 가능"
                         />
                     </div>
 
-                    <div>
-                        <label className="text-xs font-bold text-[#5d6e5c] mb-1.5 block">
+                    <div className="adm-field">
+                        <label>
                             비밀번호 {!isEdit && <span className="text-[#295e52]">*</span>}
                         </label>
                         <input
@@ -220,29 +229,29 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
                             name="loginPassword"
                             value={formData.loginPassword}
                             onChange={handleChange}
-                            className="w-full bg-[#f9faf7] border border-[#dfe5d9] text-[#263d36] text-sm rounded-[9px] px-3.5 py-2.5 focus:border-[#295e52] focus:bg-white outline-none font-semibold"
+                            className="adm-input"
                             required={!isEdit}
-                            placeholder={isEdit ? "변경시에만 입력하세요" : "비밀번호를 입력하세요"}
+                            placeholder={isEdit ? "변경시에만 입력하세요" : "비밀번호 입력"}
                         />
                     </div>
 
-                    <div>
-                        <label className="text-xs font-bold text-[#5d6e5c] mb-1.5 block">
-                            상담원명 (이름) <span className="text-[#295e52]">*</span>
+                    <div className="adm-field">
+                        <label>
+                            상담원명 (실명) <span className="text-[#295e52]">*</span>
                         </label>
                         <input
                             type="text"
                             name="managerName"
                             value={formData.managerName}
                             onChange={handleChange}
-                            className="w-full bg-[#f9faf7] border border-[#dfe5d9] text-[#263d36] text-sm rounded-[9px] px-3.5 py-2.5 focus:border-[#295e52] focus:bg-white outline-none font-semibold"
+                            className="adm-input"
                             required
                             placeholder="상담원 실명을 입력하세요"
                         />
                     </div>
 
-                    <div>
-                        <label className="text-xs font-bold text-[#5d6e5c] mb-1.5 block">
+                    <div className="adm-field">
+                        <label>
                             연락처 (휴대폰) <span className="text-[#295e52]">*</span>
                         </label>
                         <input
@@ -250,14 +259,14 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
                             name="managerPhone"
                             value={formData.managerPhone}
                             onChange={handleChange}
-                            className="w-full bg-[#f9faf7] border border-[#dfe5d9] text-[#263d36] text-sm rounded-[9px] px-3.5 py-2.5 focus:border-[#295e52] focus:bg-white outline-none font-semibold"
+                            className="adm-input font-mono"
                             required
                             placeholder="010-0000-0000"
                         />
                     </div>
 
-                    <div>
-                        <label className="text-xs font-bold text-[#5d6e5c] mb-1.5 block">
+                    <div className="adm-field">
+                        <label>
                             이메일 <span className="text-[#295e52]">*</span>
                         </label>
                         <input
@@ -265,19 +274,19 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
                             name="managerEmail"
                             value={formData.managerEmail}
                             onChange={handleChange}
-                            className="w-full bg-[#f9faf7] border border-[#dfe5d9] text-[#263d36] text-sm rounded-[9px] px-3.5 py-2.5 focus:border-[#295e52] focus:bg-white outline-none font-semibold"
+                            className="adm-input"
                             required
                             placeholder="email@company.com"
                         />
                     </div>
 
-                    <div>
-                        <label className="text-xs font-bold text-[#5d6e5c] mb-1.5 block">계정 상태</label>
+                    <div className="adm-field">
+                        <label>계정 상태</label>
                         <select
                             name="status"
                             value={formData.status}
                             onChange={handleChange}
-                            className="w-full bg-[#f9faf7] border border-[#dfe5d9] text-[#263d36] text-sm rounded-[9px] px-3.5 py-2.5 focus:border-[#295e52] focus:bg-white outline-none font-semibold"
+                            className="adm-select"
                         >
                             <option value="active">정상 사용</option>
                             <option value="inactive">사용 중지</option>

@@ -433,16 +433,15 @@ export default function LifeJoyExportModal({
                         <p className="text-xs text-[#86918a] mt-1">기존 입력된 고객과 새로운 고객을 대조하고 있습니다.</p>
                     </div>
                 ) : (
-                    <div className="space-y-6">
+                    <div className="space-y-5">
                         {/* 1. 파일 및 기본 정보 설정 박스 */}
-                        <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200/80 space-y-4">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs pb-3 border-b border-gray-200">
+                        <div className="adm-note-card space-y-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs pb-3 border-b border-[#e6eae3]">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="font-bold text-gray-500">기존 기준 엑셀 파일:</span>
-                                    <span className="font-mono bg-white px-2.5 py-1 rounded-lg border border-gray-200 text-gray-800 font-bold">
+                                    <span className="font-bold text-[#6f7c6c]">기존 기준 엑셀 파일:</span>
+                                    <span className="font-mono bg-white px-2.5 py-1 rounded-[6px] border border-[#dfe5d9] text-[#263d36] font-bold">
                                         {latestFileName || "hoon/라이프앤조이_더해피one_가입요청_260911_1.xlsx"}
                                     </span>
-                                    {/* 파일 교체 및 초기화 버튼들 */}
                                     <input
                                         type="file"
                                         accept=".xlsx"
@@ -454,59 +453,55 @@ export default function LifeJoyExportModal({
                                         type="button"
                                         disabled={isUploading}
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 hover:border-gray-400 transition-colors shadow-xs cursor-pointer"
+                                        className="adm-btn small"
                                         title="다운로드 후 직접 수정한 엑셀 파일을 업로드하여 기준 파일로 설정합니다."
                                     >
-                                        📁 {isUploading ? "업로드 중..." : "수정 엑셀 업로드(교체)"}
+                                        <AdminIcon name="upload" />
+                                        <span>{isUploading ? "업로드 중..." : "수정 엑셀 업로드(교체)"}</span>
                                     </button>
                                     <button
                                         type="button"
                                         onClick={handleResetCache}
-                                        className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 text-gray-400 hover:text-red-600 rounded-lg transition-colors cursor-pointer"
+                                        className="adm-btn small danger"
                                         title="임시 캐시를 비우고 원본 파일로 초기화합니다."
                                     >
-                                        🔄 초기화
+                                        초기화
                                     </button>
                                 </div>
-                                <div className="text-emerald-600 font-bold flex items-center gap-1.5 whitespace-nowrap">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                <span className="adm-pill green">
                                     접수대기 신규 고객: {newCustomerCount}명 감지됨
-                                </div>
+                                </span>
                             </div>
 
                             {/* 저장 위치 및 파일 수정 안내 */}
-                            <div className="text-[11px] bg-emerald-50/80 border border-emerald-200 text-emerald-800 rounded-xl p-3 flex items-start gap-2.5">
-                                <span className="text-base leading-none">💡</span>
-                                <div className="leading-relaxed">
-                                    <span className="font-bold text-emerald-950">저장 위치 및 수정 안내: </span>
+                            <div className="adm-section-note !mb-0">
+                                <AdminIcon name="info" />
+                                <div>
+                                    <strong>저장 위치 및 수정 안내: </strong>
                                     <span>
                                         다운로드된 파일은 내 PC의 <strong>[다운로드(Downloads)]</strong> 폴더에 저장됩니다. 다운로드 후 엑셀에서 데이터를 직접 수정(행 삭제/수정 등)하셨다면 위의 <strong>[수정 엑셀 업로드(교체)]</strong> 버튼으로 올려주시면 다음 번에도 그 수정한 파일을 기준으로 이어서 작성됩니다.
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-600 mb-1.5">
-                                        새로 생성/저장될 엑셀 파일명
-                                    </label>
+                            <div className="adm-field-grid">
+                                <div className="adm-field">
+                                    <label>새로 생성/저장될 엑셀 파일명</label>
                                     <input
                                         type="text"
                                         value={outputFileName}
                                         onChange={(e) => setOutputFileName(e.target.value)}
-                                        className="w-full text-xs font-bold px-3.5 py-2.5 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                                        className="adm-input !bg-white"
                                         placeholder="라이프앤조이_더해피one_가입요청_YYMMDD_1.xlsx"
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-600 mb-1.5">
-                                        판매자명 (E열 기본 입력값)
-                                    </label>
+                                <div className="adm-field">
+                                    <label>판매자명 (E열 기본 입력값)</label>
                                     <input
                                         type="text"
                                         value={sellerName}
                                         onChange={(e) => setSellerName(e.target.value)}
-                                        className="w-full text-xs font-bold px-3.5 py-2.5 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                                        className="adm-input !bg-white"
                                         placeholder="김지훈"
                                     />
                                 </div>
@@ -514,67 +509,66 @@ export default function LifeJoyExportModal({
                         </div>
 
                         {/* 2. 추가할 고객 선택 테이블 */}
-                        <div>
-                            <div className="flex items-center justify-between mb-2.5">
-                                <div className="flex items-center gap-3">
-                                    <h3 className="text-sm font-black text-gray-800">
-                                        추가할 고객 선택 ({selectedAppNos.length}명 선택됨)
-                                    </h3>
-                                    {/* 상태 필터 토글 */}
-                                    <div className="inline-flex p-0.5 bg-gray-100 rounded-lg text-xs font-bold border border-gray-200">
+                        <div className="adm-panel overflow-hidden">
+                            <div className="adm-filter-bar justify-between">
+                                <div className="flex items-center gap-3 flex-wrap">
+                                    <span className="text-xs font-bold text-[#263d36]">
+                                        추가할 고객 선택 (<strong className="text-[#295e52]">{selectedAppNos.length}</strong>명 선택됨)
+                                    </span>
+                                    <div className="adm-segmented">
                                         <button
                                             type="button"
                                             onClick={() => setStatusFilter("pending")}
-                                            className={`px-2.5 py-1 rounded-md transition-all ${statusFilter === "pending" ? "bg-white text-emerald-700 shadow-sm font-black" : "text-gray-500 hover:text-gray-800"}`}
+                                            className={statusFilter === "pending" ? "active" : ""}
                                         >
                                             접수대기만 ({applications.filter(a => a.status === "접수대기").length}건)
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setStatusFilter("all")}
-                                            className={`px-2.5 py-1 rounded-md transition-all ${statusFilter === "all" ? "bg-white text-gray-800 shadow-sm font-black" : "text-gray-500 hover:text-gray-800"}`}
+                                            className={statusFilter === "all" ? "active" : ""}
                                         >
                                             전체 보기 ({applications.length}건)
                                         </button>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1.5">
                                     <button
                                         type="button"
                                         onClick={handleSelectOnlyNew}
-                                        className="text-[11px] font-bold px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors"
+                                        className="adm-btn small sage"
                                     >
                                         신규 건만 선택
                                     </button>
                                     <button
                                         type="button"
                                         onClick={handleToggleAll}
-                                        className="text-[11px] font-bold px-2.5 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                                        className="adm-btn small"
                                     >
                                         전체 선택/해제
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="border border-gray-200 rounded-2xl overflow-hidden max-h-72 overflow-y-auto">
-                                <table className="w-full text-left text-xs border-collapse">
-                                    <thead className="bg-gray-100 sticky top-0 z-10 border-b border-gray-200 text-gray-600 font-bold">
+                            <div className="adm-table-scroll max-h-72 overflow-y-auto">
+                                <table className="adm-table">
+                                    <thead className="sticky top-0 z-10">
                                         <tr>
-                                            <th className="p-3 w-10 text-center">선택</th>
-                                            <th className="p-3 w-20 text-center">구분</th>
-                                            <th className="p-3 w-20 text-center">상태</th>
-                                            <th className="p-3">고객명</th>
-                                            <th className="p-3">연락처</th>
-                                            <th className="p-3">상품명 / 구좌</th>
-                                            <th className="p-3">신청일</th>
-                                            <th className="p-3">판매채널</th>
-                                            <th className="p-3">희망시간</th>
+                                            <th className="w-10 text-center">선택</th>
+                                            <th className="w-20 text-center">구분</th>
+                                            <th className="w-20 text-center">상태</th>
+                                            <th>고객명</th>
+                                            <th>연락처</th>
+                                            <th>상품명 / 구좌</th>
+                                            <th>신청일</th>
+                                            <th>판매채널</th>
+                                            <th>희망시간</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-100">
+                                    <tbody>
                                         {filteredApplications.length === 0 ? (
                                             <tr>
-                                                <td colSpan={9} className="p-8 text-center text-gray-400">
+                                                <td colSpan={9} className="py-10 text-center text-xs text-[#86918a]">
                                                     선택한 조건의 고객 데이터가 없습니다.
                                                 </td>
                                             </tr>
@@ -587,68 +581,58 @@ export default function LifeJoyExportModal({
                                                 return (
                                                     <tr
                                                         key={app.applicationNo}
-                                                        className={`hover:bg-gray-50/80 transition-colors ${already ? "bg-gray-50/50" : ""}`}
+                                                        className={already ? "opacity-75" : ""}
                                                     >
-                                                        <td className="p-3 text-center">
+                                                        <td className="text-center">
                                                             <input
                                                                 type="checkbox"
                                                                 checked={isSelected}
                                                                 onChange={() => handleToggleSelect(app.applicationNo)}
-                                                                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                                                                className="w-4 h-4 rounded cursor-pointer accent-[#295e52]"
                                                             />
                                                         </td>
-                                                        <td className="p-3 text-center">
+                                                        <td className="text-center">
                                                             {already ? (
-                                                                <span className="text-[10px] font-bold px-1.5 py-0.5 bg-gray-200 text-gray-600 rounded">
-                                                                    엑셀반영됨
-                                                                </span>
+                                                                <span className="adm-pill gray">엑셀반영됨</span>
                                                             ) : (
-                                                                <span className="text-[10px] font-black px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded animate-pulse">
-                                                                    신규미반영
-                                                                </span>
+                                                                <span className="adm-pill green">신규미반영</span>
                                                             )}
                                                         </td>
-                                                        <td className="p-3 text-center">
+                                                        <td className="text-center">
                                                             <span
-                                                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                                                                    app.status === "접수대기"
-                                                                        ? "bg-blue-100 text-blue-800"
-                                                                        : "bg-gray-100 text-gray-600"
+                                                                className={`adm-pill ${
+                                                                    app.status === "접수대기" ? "orange" : "gray"
                                                                 }`}
                                                             >
                                                                 {app.status || "미지정"}
                                                             </span>
                                                         </td>
-                                                        <td className="p-3 font-bold text-gray-800">
+                                                        <td className="font-bold text-[#263d36]">
                                                             {app.customerName}
                                                         </td>
-                                                        <td className="p-3 font-mono text-gray-600">
+                                                        <td className="font-mono text-xs text-[#6b7768]">
                                                             {app.customerPhone}
                                                         </td>
-                                                         <td className="p-3">
+                                                        <td>
                                                             <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                                                                <span className="font-semibold text-gray-800">
+                                                                <span className="font-semibold text-xs text-[#263d36]">
                                                                     {app.productType || "더 해피 450 ONE"}
                                                                 </span>
                                                                 {getSheetType(app) === "combined" ? (
-                                                                    <span className="text-[10px] font-bold px-1.5 py-0.2 bg-purple-50 text-purple-700 rounded border border-purple-200">
-                                                                        결합(스마트케어)
-                                                                    </span>
+                                                                    <span className="adm-pill teal">결합(스마트케어)</span>
                                                                 ) : (
-                                                                    <span className="text-[10px] font-bold px-1.5 py-0.2 bg-blue-50 text-blue-700 rounded border border-blue-200">
-                                                                        더해피450
-                                                                    </span>
+                                                                    <span className="adm-pill green">더해피450</span>
                                                                 )}
                                                             </div>
-                                                            <div className="text-[11px] text-gray-500">
+                                                            <div className="text-[11px] text-[#86918a]">
                                                                 {app.planType || "1구좌"}
                                                                 {app.products ? ` (${app.products})` : ""}
                                                             </div>
                                                         </td>
-                                                        <td className="p-3 text-gray-500 font-mono text-[11px]">
+                                                        <td className="text-[#86918a] font-mono text-[11px]">
                                                             {app.createdAt ? app.createdAt.slice(0, 10) : "-"}
                                                         </td>
-                                                        <td className="p-3">
+                                                        <td>
                                                             <input
                                                                 type="text"
                                                                 value={currentChannel}
@@ -658,10 +642,10 @@ export default function LifeJoyExportModal({
                                                                         [app.applicationNo]: e.target.value,
                                                                     })
                                                                 }
-                                                                className="px-2 py-1 text-xs border border-gray-200 rounded-lg w-36 font-medium focus:ring-1 focus:ring-emerald-500"
+                                                                className="adm-input !h-8 !py-1 !w-36"
                                                             />
                                                         </td>
-                                                        <td className="p-3 text-gray-500 text-[11px]">
+                                                        <td className="text-[#86918a] text-[11px]">
                                                             {app.preferredContactTime || "무관"}
                                                         </td>
                                                     </tr>
@@ -674,24 +658,16 @@ export default function LifeJoyExportModal({
                         </div>
 
                         {/* 안내 문구 */}
-                        <div className="p-4 bg-emerald-50/70 border border-emerald-100 rounded-2xl text-xs text-emerald-900 flex items-start gap-3">
-                            <svg className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <div className="space-y-1">
-                                <p className="font-bold">가입요청 엑셀 업데이트 & 시트 안내</p>
-                                <p className="text-emerald-800/80 leading-relaxed">
-                                    • <strong>26년 09월 기준 적용</strong>: 24년/25년 및 26년 8월 이전 과거 데이터는 모두 반영완료 처리되어, <strong>26년 9월 이후 신규 미등록 고객(최신 2건) 및 향후 등록 고객만</strong> 자동 감지됩니다.
+                        <div className="adm-section-note !items-start">
+                            <AdminIcon name="info" className="mt-0.5" />
+                            <div className="space-y-1 text-xs">
+                                <p className="font-bold text-[#263d36]">가입요청 엑셀 업데이트 &amp; 시트 안내</p>
+                                <p className="text-[#5a6659] leading-relaxed">
+                                    • <strong>26년 09월 기준 적용</strong>: 24년/25년 및 26년 8월 이전 과거 데이터는 모두 반영완료 처리되어, <strong>26년 9월 이후 신규 미등록 고객 및 향후 등록 고객만</strong> 자동 감지됩니다.
                                     <br />
-                                    • <strong>B열 상태(요청중) 열 제외</strong>: 상태값 없이 고객 정보가 양식에 맞추어 정확하게 기재되며, B열을 삭제하더라도 각 항목 열이 자동 매핑됩니다.
-                                    <br />
-                                    • <strong>상품별 자동 시트 분기</strong>: <strong>더해피 450</strong> 상품은 <strong>'MM월 리스트_450'</strong> 시트, <strong>스마트케어</strong> 상품은 <strong>'MM월 리스트_결합'</strong> 시트로 분기되어 자동 입력됩니다.
-                                    <br />
-                                    • <strong>월 자동 전환</strong>: 10월 등 월이 바뀌면 엑셀 파일 내에 해당 월 시트(예: <strong>'10월 리스트_450'</strong>, <strong>'10월 리스트_결합'</strong>)가 자동으로 생성되어 1번부터 차례대로 반영됩니다.
+                                    • <strong>상품별 자동 시트 분기</strong>: <strong>더해피 450</strong> 상품은 <strong>&apos;MM월 리스트_450&apos;</strong> 시트, <strong>스마트케어</strong> 상품은 <strong>&apos;MM월 리스트_결합&apos;</strong> 시트로 분기되어 자동 입력됩니다.
                                     <br />
                                     • 기존 데이터는 그대로 유지되며, 나눔고딕 10pt 테두리 서식과 함께 이어서 삽입됩니다.
-                                    <br />
-                                    • 다운로드 후 개발폴더 <code className="font-bold bg-white/80 px-1 py-0.5 rounded text-emerald-900">hoon/</code> 폴더에도 최신 파일이 자동 보관됩니다.
                                 </p>
                             </div>
                         </div>

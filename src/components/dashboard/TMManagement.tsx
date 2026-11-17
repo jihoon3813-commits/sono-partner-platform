@@ -82,68 +82,90 @@ export default function TMManagement({ partners, parentPartner, onRefresh }: TMM
                 </div>
             </section>
 
-            {/* 검색 필터 바 */}
-            <div className="adm-panel px-5 py-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <label className="flex items-center gap-2.5 border border-[#dfe5d9] rounded-[8px] px-3 py-2 bg-[#f9faf7] focus-within:bg-white focus-within:border-[#295e52] sm:w-80">
-                    <AdminIcon name="search" className="!w-4 !h-4 text-[#8e9988]" />
-                    <input
-                        type="text"
-                        placeholder="상담원명, ID, 연락처 검색"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="border-0 outline-none bg-transparent text-xs text-[#263d36] w-full"
-                    />
-                </label>
-                <span className="text-xs text-[#86918a]">
-                    검색 결과 <strong className="text-[#295e52]">{filteredTMs.length}</strong>명
-                </span>
-            </div>
+            {/* 통합 상담원 패널 */}
+            <section className="adm-panel overflow-hidden">
+                <div className="adm-filter-bar">
+                    <label className="adm-search-field">
+                        <AdminIcon name="search" />
+                        <input
+                            type="text"
+                            placeholder="상담원명, ID, 연락처 검색"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </label>
+                    <div className="adm-filter-end">
+                        검색 결과 <strong className="text-[#295e52]">{filteredTMs.length}</strong>명
+                    </div>
+                </div>
 
-            {/* Desktop Table View */}
-            <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                <div className="adm-table-scroll">
+                    <table className="adm-table">
                         <thead>
-                            <tr className="bg-gray-50 border-b border-gray-100">
-                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">로그인 ID</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">상담원 실명</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">연락처 / 이메일</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">등록일자</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">상태</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">관리</th>
+                            <tr>
+                                <th>상담원</th>
+                                <th>로그인 ID</th>
+                                <th>연락처 / 이메일</th>
+                                <th>등록일자</th>
+                                <th>상태</th>
+                                <th className="text-right">관리</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody>
                             {filteredTMs.length > 0 ? (
                                 filteredTMs.map((tm) => (
-                                    <tr key={tm.partnerId} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-bold text-sono-dark font-mono">{tm.loginId}</div>
-                                            <div className="text-[10px] text-gray-400 font-mono mt-0.5">{tm.partnerId}</div>
+                                    <tr
+                                        key={tm.partnerId}
+                                        className="adm-clickable-row"
+                                        onClick={() => handleEdit(tm)}
+                                    >
+                                        <td>
+                                            <div className="adm-person">
+                                                <span className="adm-person-circle">
+                                                    {(tm.managerName || "상").trim().charAt(0)}
+                                                </span>
+                                                <div>
+                                                    <b>{tm.managerName}</b>
+                                                    <small>소속 상담원 (TM)</small>
+                                                </div>
+                                            </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-bold text-sono-dark">{tm.managerName}</div>
+                                        <td className="whitespace-nowrap">
+                                            <div className="text-xs font-bold text-[#263d36] font-mono">
+                                                {tm.loginId}
+                                            </div>
+                                            <div className="text-[10px] text-[#86918a] font-mono mt-0.5">
+                                                {tm.partnerId}
+                                            </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-medium text-sono-dark">{tm.managerPhone}</div>
-                                            <div className="text-xs text-gray-400 mt-0.5">{tm.managerEmail}</div>
+                                        <td className="whitespace-nowrap">
+                                            <div className="text-xs font-semibold text-[#263d36] font-mono">
+                                                {tm.managerPhone}
+                                            </div>
+                                            <div className="text-[11px] text-[#86918a] mt-0.5">
+                                                {tm.managerEmail}
+                                            </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-sono-dark font-medium">{formatDate(tm.createdAt)}</div>
+                                        <td className="whitespace-nowrap text-xs text-[#6b7768] font-mono">
+                                            {formatDate(tm.createdAt)}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                                                tm.status === 'active' 
-                                                    ? 'bg-green-50 text-green-600 border border-green-100' 
-                                                    : 'bg-red-50 text-red-500 border border-red-100'
-                                            }`}>
-                                                {tm.status === 'active' ? '정상' : '사용중지'}
+                                        <td className="whitespace-nowrap">
+                                            <span
+                                                className={`adm-pill ${
+                                                    tm.status === "active" ? "green" : "red"
+                                                }`}
+                                            >
+                                                {tm.status === "active" ? "정상" : "사용중지"}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-right whitespace-nowrap">
+                                        <td className="text-right whitespace-nowrap">
                                             <button
-                                                onClick={() => handleEdit(tm)}
-                                                className="text-sono-primary hover:text-sono-secondary text-xs font-bold transition-colors"
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleEdit(tm);
+                                                }}
+                                                className="adm-btn small"
                                             >
                                                 정보수정
                                             </button>
@@ -152,7 +174,10 @@ export default function TMManagement({ partners, parentPartner, onRefresh }: TMM
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-20 text-center text-gray-400 font-medium">
+                                    <td
+                                        colSpan={6}
+                                        className="py-16 text-center text-xs text-[#86918a]"
+                                    >
                                         등록된 상담원 계정이 없거나 검색 결과가 없습니다.
                                     </td>
                                 </tr>
@@ -160,55 +185,13 @@ export default function TMManagement({ partners, parentPartner, onRefresh }: TMM
                         </tbody>
                     </table>
                 </div>
-            </div>
 
-            {/* Mobile List View */}
-            <div className="md:hidden space-y-4">
-                {filteredTMs.length > 0 ? (
-                    filteredTMs.map((tm) => (
-                        <div key={tm.partnerId} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-4">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <div className="text-base font-bold text-sono-dark">{tm.managerName}</div>
-                                    <div className="text-xs text-gray-400 font-mono mt-0.5">ID: {tm.loginId}</div>
-                                </div>
-                                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                                    tm.status === 'active' 
-                                        ? 'bg-green-50 text-green-600 border border-green-100' 
-                                        : 'bg-red-50 text-red-500 border border-red-100'
-                                }`}>
-                                    {tm.status === 'active' ? '정상' : '사용중지'}
-                                </span>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-y-2 text-xs bg-gray-50 p-3.5 rounded-xl border border-gray-100/50">
-                                <div>
-                                    <span className="text-gray-400 block mb-0.5">연락처</span>
-                                    <span className="font-bold text-sono-dark">{tm.managerPhone}</span>
-                                </div>
-                                <div>
-                                    <span className="text-gray-400 block mb-0.5">이메일</span>
-                                    <span className="font-bold text-sono-dark break-all">{tm.managerEmail}</span>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-between items-center text-xs text-gray-400 border-t border-gray-100 pt-3">
-                                <span>등록일: {formatDate(tm.createdAt)}</span>
-                                <button
-                                    onClick={() => handleEdit(tm)}
-                                    className="text-sono-primary hover:text-sono-secondary font-bold text-xs"
-                                >
-                                    정보수정
-                                </button>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div className="py-16 text-center text-gray-400 font-medium bg-white rounded-2xl border border-gray-100 shadow-sm">
-                        등록된 상담원 계정이 없거나 검색 결과가 없습니다.
-                    </div>
-                )}
-            </div>
+                <div className="adm-table-foot">
+                    <span>
+                        전체 <b>{tmAccounts.length}</b>명 중 <b>{filteredTMs.length}</b>명 표시
+                    </span>
+                </div>
+            </section>
 
             {/* Modal */}
             {isModalOpen && (

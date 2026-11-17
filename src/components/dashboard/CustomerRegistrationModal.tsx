@@ -568,77 +568,65 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                 </>
             }
         >
-            <div className="space-y-7 relative">
-                    {/* 1. Manual Entry / Excel Actions */}
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {/* Actions */}
-                        <div className="md:col-span-3 flex flex-wrap gap-3 items-center justify-end">
-                            <button
-                                onClick={() => {
-                                    // Use the proxy API route for downloading.
-                                    // This handles secure file fetching from Convex and avoids CORS/Mixed Content issues.
-                                    window.location.assign(`/api/download-template?type=${isAdmin || hasSubPartners ? 'admin' : 'standard'}`);
-                                }}
-                                className="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-200 transition-all flex items-center gap-2"
-                            >
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                양식 다운로드
-                            </button>
-                            <div className="relative">
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    onChange={handleFileUpload}
-                                    accept=".xlsx, .xls"
-                                    className="hidden"
-                                />
-                                <button
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl text-sm font-bold hover:bg-green-100 transition-all flex items-center gap-2"
-                                >
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                    엑셀 업로드
-                                </button>
-                            </div>
-
-                            {/* Guide Text */}
-                            <div className="w-full mt-3 p-3 bg-blue-50 border border-blue-100 rounded-xl text-xs text-blue-800 space-y-1">
-                                <p className="font-bold flex items-center gap-1">
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    엑셀 일괄 등록 가이드
-                                </p>
-                                <ol className="list-decimal text-left list-inside pl-1 space-y-0.5 text-blue-700/80">
+            <div className="space-y-5 relative">
+                    {/* 1. 엑셀 일괄 등록 가이드 & 버튼 */}
+                    <div className="adm-section-note !items-start justify-between flex-col sm:flex-row">
+                        <div className="flex items-start gap-2.5">
+                            <AdminIcon name="info" className="mt-0.5" />
+                            <div className="space-y-1 text-xs">
+                                <strong className="block text-[#263d36]">엑셀 일괄 등록 가이드</strong>
+                                <ol className="list-decimal list-inside space-y-0.5 text-[#5a6659]">
                                     <li>[양식 다운로드] 버튼을 눌러 엑셀 파일을 다운로드합니다.</li>
                                     <li>다운로드한 파일에 고객 정보를 입력합니다. (헤더 삭제 금지)</li>
                                     {hasSubPartners && (
                                         <li>하위파트너로 등록 시 엑셀 1열의 파트너ID에 하위파트너 로그인 ID를 입력하거나, 개별 폼에서 하위파트너를 선택한 후 업로드할 수 있습니다.</li>
                                     )}
-                                    <li>[엑셀 업로드] 버튼을 눌러 작성한 파일을 선택하면 자동으로 목록에 추가됩니다.</li>
+                                    <li>[엑셀 업로드] 버튼을 눌러 작성한 파일을 선택하면 자동으로 대기 목록에 추가됩니다.</li>
                                 </ol>
                             </div>
                         </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    window.location.assign(`/api/download-template?type=${isAdmin || hasSubPartners ? 'admin' : 'standard'}`);
+                                }}
+                                className="adm-btn"
+                            >
+                                <AdminIcon name="download" />
+                                <span>양식 다운로드</span>
+                            </button>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileUpload}
+                                accept=".xlsx, .xls"
+                                className="hidden"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="adm-btn sage"
+                            >
+                                <AdminIcon name="upload" />
+                                <span>엑셀 업로드</span>
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Manual Form */}
-                    <div className="md:col-span-3 bg-gray-50 p-4 sm:p-5 rounded-2xl border border-gray-100">
-                        <h3 className="text-sm font-bold text-gray-500 mb-4 uppercase tracking-wider">개별 등록</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    {/* 2. 개별 입력 폼 */}
+                    <div>
+                        <div className="adm-section-label !mt-0">고객 개별 입력</div>
+                        <div className="adm-field-grid">
                             {showPartnerSelect && (
-                                <div className="col-span-1 sm:col-span-2 md:col-span-1">
-                                    <label className="block text-xs font-bold text-gray-400 mb-1">
-                                        {isAdmin ? "파트너사 *" : "하위파트너 지정 *"}
-                                    </label>
+                                <div className="adm-field">
+                                    <label>{isAdmin ? "파트너사 *" : "하위파트너 지정 *"}</label>
                                     <select
                                         name="selectedPartnerId"
                                         value={manualForm.selectedPartnerId}
                                         onChange={handleManualChange}
-                                        className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white font-medium text-gray-800"
+                                        className="adm-select"
                                     >
                                         {isAdmin && <option value="">선택</option>}
                                         {availablePartners.map(p => {
@@ -656,37 +644,37 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     </select>
                                 </div>
                             )}
-                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">고객명 *</label>
+                            <div className="adm-field">
+                                <label>고객명 *</label>
                                 <input
                                     type="text"
                                     name="customerName"
                                     value={manualForm.customerName}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
+                                    className="adm-input"
                                     placeholder="홍길동"
                                 />
                             </div>
-                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">연락처 *</label>
+                            <div className="adm-field">
+                                <label>연락처 *</label>
                                 <input
                                     type="text"
                                     name="customerPhone"
                                     value={manualForm.customerPhone}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
+                                    className="adm-input font-mono"
                                     placeholder="010-0000-0000"
                                     maxLength={13}
                                     inputMode="numeric"
                                 />
                             </div>
-                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">통화가능 시간 *</label>
+                            <div className="adm-field">
+                                <label>통화가능 시간 *</label>
                                 <select
                                     name="preferredContactTime"
                                     value={manualForm.preferredContactTime}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary font-medium text-gray-700 bg-white"
+                                    className="adm-select"
                                 >
                                     <option value="">선택</option>
                                     <option value="10:00~11:00">10:00~11:00</option>
@@ -697,26 +685,26 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     <option value="17:00~18:00">17:00~18:00</option>
                                 </select>
                             </div>
-                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">상품 *</label>
+                            <div className="adm-field">
+                                <label>상품 *</label>
                                 <select
                                     name="productType"
                                     value={manualForm.productType}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white font-bold text-gray-800"
+                                    className="adm-select"
                                 >
                                     {allowedProductOptions.map(opt => (
                                         <option key={opt.id || opt.name} value={opt.name}>{opt.name}</option>
                                     ))}
                                 </select>
                             </div>
-                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">구좌 *</label>
+                            <div className="adm-field">
+                                <label>구좌 *</label>
                                 <select
                                     name="planType"
                                     value={manualForm.planType}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white font-bold text-gray-800"
+                                    className="adm-select"
                                 >
                                     {(() => {
                                         const selectedItem = allowedProductOptions.find(o => o.name === manualForm.productType);
@@ -731,8 +719,8 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                     })()}
                                 </select>
                             </div>
-                            <div className="col-span-1 sm:col-span-2 md:col-span-2">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">
+                            <div className="adm-field full">
+                                <label>
                                     가전제품 {isSmartCare ? '(스마트케어 필수) *' : '(스마트케어만)'}
                                 </label>
                                 {isSmartCare ? (
@@ -748,7 +736,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                                         setManualForm(prev => ({ ...prev, products: e.target.value }));
                                                     }
                                                 }}
-                                                className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white font-medium text-gray-800"
+                                                className="adm-select"
                                             >
                                                 <option value="">-- 가전제품 선택 ({availableAppliances.length}개) --</option>
                                                 {availableAppliances.map((p: any) => {
@@ -778,7 +766,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                                         </option>
                                                     );
                                                 })}
-                                                <option value="__CUSTOM__">✍️ 직접 입력 (목록에 없는 경우)</option>
+                                                <option value="__CUSTOM__">직접 입력 (목록에 없는 경우)</option>
                                             </select>
                                         ) : (
                                             <div className="flex gap-2">
@@ -787,7 +775,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                                     name="products"
                                                     value={manualForm.products}
                                                     onChange={handleManualChange}
-                                                    className="flex-1 p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
+                                                    className="adm-input flex-1"
                                                     placeholder="예: 삼성 에어드레서"
                                                 />
                                                 <button
@@ -796,7 +784,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                                         setIsCustomProduct(false);
                                                         setManualForm(prev => ({ ...prev, products: "" }));
                                                     }}
-                                                    className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-bold hover:bg-gray-200 shrink-0"
+                                                    className="adm-btn shrink-0"
                                                 >
                                                     목록에서 선택
                                                 </button>
@@ -809,39 +797,39 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                         name="products"
                                         value={manualForm.products}
                                         disabled={true}
-                                        className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none disabled:bg-gray-100 bg-white"
+                                        className="adm-input disabled:opacity-50"
                                         placeholder="스마트케어 선택 시 입력 가능"
                                     />
                                 )}
                             </div>
-                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">생년월일</label>
+                            <div className="adm-field">
+                                <label>생년월일</label>
                                 <input
                                     type="text"
                                     name="customerBirth"
                                     value={manualForm.customerBirth}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
+                                    className="adm-input font-mono"
                                     placeholder="YYYY-MM-DD"
                                     maxLength={10}
                                     inputMode="numeric"
                                 />
                             </div>
-                            <div className="col-span-1 sm:col-span-1 md:col-span-1">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">성별</label>
+                            <div className="adm-field">
+                                <label>성별</label>
                                 <select
                                     name="customerGender"
                                     value={manualForm.customerGender}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
+                                    className="adm-select"
                                 >
                                     <option value="-">선택안함</option>
                                     <option value="남성">남성</option>
                                     <option value="여성">여성</option>
                                 </select>
                             </div>
-                            <div className="col-span-1 sm:col-span-2 md:col-span-2">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">주소</label>
+                            <div className="adm-field">
+                                <label>주소</label>
                                 <div className="flex gap-2">
                                     <input
                                         type="text"
@@ -849,92 +837,99 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                         value={manualForm.customerAddress}
                                         readOnly
                                         onClick={() => setIsOpenPostcode(true)}
-                                        className="flex-1 min-w-0 p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white cursor-pointer"
+                                        className="adm-input flex-1 min-w-0 cursor-pointer"
                                         placeholder="주소 검색"
                                     />
                                     <button
+                                        type="button"
                                         onClick={() => setIsOpenPostcode(true)}
-                                        className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-xs font-bold hover:bg-gray-200 whitespace-nowrap shrink-0"
+                                        className="adm-btn shrink-0"
                                     >
                                         검색
                                     </button>
                                 </div>
                             </div>
-                            <div className="col-span-1 sm:col-span-2 md:col-span-2">
-                                <label className="block text-xs font-bold text-gray-400 mb-1">상세주소</label>
+                            <div className="adm-field">
+                                <label>상세주소</label>
                                 <input
                                     type="text"
                                     name="customerAddressDetail"
                                     value={manualForm.customerAddressDetail}
                                     onChange={handleManualChange}
-                                    className="w-full p-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-sono-primary bg-white"
+                                    className="adm-input"
                                     placeholder="상세주소를 입력하세요"
                                 />
                             </div>
-                            <div className="col-span-1 sm:col-span-2 md:col-span-4 flex justify-end mt-2">
-                                <button
-                                    onClick={addManualCustomer}
-                                    className="w-full sm:w-auto px-6 py-2.5 bg-sono-dark text-white rounded-xl text-sm font-bold hover:bg-black transition-all"
-                                >
-                                    추가하기
-                                </button>
-                            </div>
+                        </div>
+
+                        <div className="flex justify-end mt-3">
+                            <button
+                                type="button"
+                                onClick={addManualCustomer}
+                                className="adm-btn primary"
+                            >
+                                <AdminIcon name="plus" />
+                                <span>대기 목록에 추가</span>
+                            </button>
                         </div>
                     </div>
 
-                    {/* 2. Staging List */}
+                    {/* 3. 등록 대기 목록 */}
                     <div>
-                        <div className="flex justify-between items-end mb-3">
-                            <h3 className="text-lg font-bold text-sono-dark">등록 대기 목록 <span className="text-sono-primary">({stagedCustomers.length})</span></h3>
+                        <div className="adm-section-label">
+                            등록 대기 목록 ({stagedCustomers.length}명)
                         </div>
-                        <div className="border border-gray-200 rounded-xl overflow-x-auto">
-                            <table className="w-full text-left text-sm min-w-[550px]">
-                                <thead className="bg-gray-50 border-b border-gray-100">
-                                    <tr>
-                                        {showPartnerSelect && <th className="px-4 py-3 font-bold text-gray-500 text-xs">파트너</th>}
-                                        <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center w-20">고객명</th>
-                                        <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center">연락처</th>
-                                        <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center">통화가능시간</th>
-                                        <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center">상품</th>
-                                        <th className="px-4 py-3 font-bold text-gray-500 text-xs text-center w-16">구좌</th>
-                                        <th className="px-4 py-3 font-bold text-gray-500 text-xs text-right">관리</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100 bg-white">
-                                    {stagedCustomers.length > 0 ? stagedCustomers.map((c) => (
-                                        <tr key={c.id} className="hover:bg-gray-50">
-                                            {showPartnerSelect && (
-                                                <td className="px-4 py-3 text-gray-600 font-bold text-xs truncate max-w-[130px]">
-                                                    {c.selectedPartnerName || c.selectedPartnerLoginId || "-"}
-                                                </td>
-                                            )}
-                                            <td className="px-4 py-3 font-bold text-sono-dark text-xs text-center">{c.customerName}</td>
-                                            <td className="px-4 py-3 text-gray-600 text-xs text-center">{c.customerPhone}</td>
-                                            <td className="px-4 py-3 text-gray-600 text-xs text-center">{c.preferredContactTime || "-"}</td>
-                                            <td className="px-4 py-3 text-center">
-                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${c.productType === '스마트케어' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'}`}>
-                                                    {c.productType}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-3 text-gray-600 text-xs text-center">{c.planType}구좌</td>
-                                            <td className="px-4 py-3 text-right">
-                                                <button
-                                                    onClick={() => removeStaged(c.id)}
-                                                    className="text-red-500 hover:text-red-700 font-bold text-xs"
-                                                >
-                                                    삭제
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    )) : (
+                        <div className="adm-panel overflow-hidden">
+                            <div className="adm-table-scroll">
+                                <table className="adm-table">
+                                    <thead>
                                         <tr>
-                                            <td colSpan={showPartnerSelect ? 7 : 6} className="px-4 py-10 text-center text-gray-400 text-xs">
-                                                등록된 고객이 없습니다. 고객을 추가해주세요.
-                                            </td>
+                                            {showPartnerSelect && <th>파트너</th>}
+                                            <th>고객명</th>
+                                            <th>연락처</th>
+                                            <th>통화가능시간</th>
+                                            <th>상품</th>
+                                            <th className="text-center">구좌</th>
+                                            <th className="text-right">관리</th>
                                         </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {stagedCustomers.length > 0 ? stagedCustomers.map((c) => (
+                                            <tr key={c.id}>
+                                                {showPartnerSelect && (
+                                                    <td className="font-semibold text-xs text-[#263d36] truncate max-w-[140px]">
+                                                        {c.selectedPartnerName || c.selectedPartnerLoginId || "-"}
+                                                    </td>
+                                                )}
+                                                <td className="font-bold text-[#263d36]">{c.customerName}</td>
+                                                <td className="font-mono text-xs text-[#6b7768]">{c.customerPhone}</td>
+                                                <td className="text-xs text-[#6b7768]">{c.preferredContactTime || "-"}</td>
+                                                <td>
+                                                    <span className={`adm-pill ${c.productType.includes('스마트') ? 'teal' : 'green'}`}>
+                                                        {c.productType}
+                                                    </span>
+                                                </td>
+                                                <td className="text-xs text-center font-semibold">{c.planType}구좌</td>
+                                                <td className="text-right">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeStaged(c.id)}
+                                                        className="adm-btn small danger"
+                                                    >
+                                                        삭제
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        )) : (
+                                            <tr>
+                                                <td colSpan={showPartnerSelect ? 7 : 6} className="py-10 text-center text-xs text-[#86918a]">
+                                                    등록 대기 중인 고객이 없습니다. 위에서 고객을 추가하거나 엑셀을 업로드해 주세요.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     {/* Postcode Modal */}

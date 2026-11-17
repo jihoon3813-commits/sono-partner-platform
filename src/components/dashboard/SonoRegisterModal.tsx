@@ -207,62 +207,50 @@ export default function SonoRegisterModal({
                 </>
             }
         >
-            <div className="space-y-5">
+            <div className="space-y-4">
                     {/* 결과 배너 (성공/실패 시 표시) */}
                     {resultBanner && (
-                        <div className={`p-4 rounded-2xl border text-sm font-bold animate-in fade-in duration-150 ${
+                        <div className={`adm-note-card text-xs font-bold ${
                             resultBanner.type === 'success'
-                                ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                                ? '!bg-[#eef5eb] !border-[#cbe0c4] text-[#295e52]'
                                 : resultBanner.type === 'duplicate'
-                                ? 'bg-amber-50 border-amber-200 text-amber-900'
-                                : 'bg-rose-50 border-rose-200 text-rose-900'
+                                ? '!bg-[#f7f1e2] !border-[#e8d9b8] text-[#9a7840]'
+                                : '!bg-[#fbeef0] !border-[#eccfd2] text-[#a33d46]'
                         }`}>
                             <p className="leading-relaxed whitespace-pre-line">{resultBanner.message}</p>
                         </div>
                     )}
 
                     {/* 안내 문구 */}
-                    <div className="bg-[#f4f7ef] border border-[#dce6d5] rounded-[11px] p-4 text-xs text-[#295e52] space-y-1">
-                        <div className="font-bold flex items-center gap-1.5">
-                            <AdminIcon name="info" className="!w-4 !h-4 shrink-0" />
-                            <span>소노아임레디 상담 접수 페이지로 자동 전송됩니다.</span>
-                        </div>
-                        <p className="text-[#5e6e5f] pl-5">
-                            전송할 고객 정보 및 통화 요청 시간을 확인하신 후 하단의 최종 접수 버튼을 클릭하세요.
-                        </p>
+                    <div className="adm-section-note !mb-0">
+                        <AdminIcon name="info" />
+                        <span>
+                            <strong>소노아임레디 상담 접수 자동 전송:</strong> 전송할 고객 정보 및 통화 요청 시간을 확인하신 후 하단의 최종 접수 버튼을 클릭하세요.
+                        </span>
                     </div>
 
                     {/* 섹션 1: 판매사(대리점) 인증 정보 */}
-                    <div className="bg-gray-50/80 border border-gray-100 rounded-2xl p-4 space-y-3">
-                        <div className="flex items-center justify-between border-b border-gray-200/60 pb-2">
-                            <h3 className="text-xs font-black text-gray-700 uppercase tracking-wider">1. 판매사 정보 (본인확인)</h3>
-                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                                ✓ 소노 인증 계정
-                            </span>
+                    <div className="adm-section-label">1. 판매사 정보 (소노 인증 계정)</div>
+                    <div className="adm-details-list">
+                        <div className="adm-detail-item">
+                            <span>판매사원 성명</span>
+                            <strong>김지훈</strong>
                         </div>
-                        <div className="grid grid-cols-3 gap-2 text-xs">
-                            <div className="bg-white p-2.5 rounded-xl border border-gray-100">
-                                <span className="text-[10px] font-bold text-gray-400 block mb-0.5">판매사원 성명</span>
-                                <span className="font-black text-sono-dark">김지훈</span>
-                            </div>
-                            <div className="bg-white p-2.5 rounded-xl border border-gray-100">
-                                <span className="text-[10px] font-bold text-gray-400 block mb-0.5">판매자 연락처</span>
-                                <span className="font-black text-sono-dark">01043223813</span>
-                            </div>
-                            <div className="bg-white p-2.5 rounded-xl border border-gray-100">
-                                <span className="text-[10px] font-bold text-gray-400 block mb-0.5">생년월일</span>
-                                <span className="font-black text-sono-dark">19811115</span>
-                            </div>
+                        <div className="adm-detail-item">
+                            <span>판매자 연락처</span>
+                            <strong className="font-mono">01043223813</strong>
+                        </div>
+                        <div className="adm-detail-item">
+                            <span>생년월일</span>
+                            <strong className="font-mono">19811115</strong>
                         </div>
                     </div>
 
                     {/* 섹션 2: 웹 접수 인증코드 (authCd) */}
-                    <div className="space-y-1.5">
+                    <div className="adm-field">
                         <div className="flex items-center justify-between">
-                            <label className="text-xs font-bold text-gray-700">
-                                2. 소노접수 인증코드 (authCd)
-                            </label>
-                            <span className="text-[11px] text-indigo-600 font-bold truncate max-w-[320px]" title={partnerBadgeText}>
+                            <label>2. 소노접수 인증코드 (authCd)</label>
+                            <span className="text-[11px] text-[#295e52] font-bold truncate max-w-[300px]" title={partnerBadgeText}>
                                 파트너: {partnerBadgeText || application.partnerName || application.partnerId}
                             </span>
                         </div>
@@ -270,53 +258,42 @@ export default function SonoRegisterModal({
                             type="text"
                             value={authCode}
                             onChange={(e) => setAuthCode(e.target.value)}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm font-bold text-indigo-900 focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none"
+                            className="adm-input font-mono font-bold"
                             placeholder="예: BIZI0011"
                         />
                     </div>
 
                     {/* 섹션 3: 고객 및 접수 정보 확인 */}
-                    <div className="space-y-3 pt-1">
-                        <h3 className="text-xs font-black text-gray-700 uppercase tracking-wider border-b border-gray-100 pb-2">
-                            3. 전송할 고객 정보 및 통화 요청 설정
-                        </h3>
-
-                        <div className="grid grid-cols-2 gap-3 text-xs">
-                            <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-1">
-                                <span className="text-[10px] font-bold text-gray-400 block">고객명</span>
-                                <span className="text-sm font-black text-sono-dark block">{application.customerName}</span>
-                            </div>
-                            <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-1">
-                                <span className="text-[10px] font-bold text-gray-400 block">고객 연락처</span>
-                                <span className="text-sm font-black text-indigo-700 block">{application.customerPhone}</span>
-                            </div>
+                    <div className="adm-section-label">3. 전송할 고객 정보 및 통화 요청 설정</div>
+                    <div className="adm-details-list">
+                        <div className="adm-detail-item">
+                            <span>고객명</span>
+                            <strong>{application.customerName}</strong>
                         </div>
-
-                        <div className="grid grid-cols-2 gap-3 text-xs">
-                            <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-1">
-                                <span className="text-[10px] font-bold text-gray-400 block">상품명 (고정)</span>
-                                <span className="font-bold text-gray-800">더해피 450 ONE_R1</span>
-                            </div>
-                            <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-1">
-                                <span className="text-[10px] font-bold text-gray-400 block">가입 방법</span>
-                                <span className="font-bold text-gray-800">전자계약</span>
-                            </div>
+                        <div className="adm-detail-item">
+                            <span>고객 연락처</span>
+                            <strong className="font-mono text-[#295e52]">{application.customerPhone}</strong>
                         </div>
+                        <div className="adm-detail-item">
+                            <span>상품명 (고정)</span>
+                            <strong>더해피 450 ONE_R1</strong>
+                        </div>
+                        <div className="adm-detail-item">
+                            <span>가입 방법</span>
+                            <strong>전자계약</strong>
+                        </div>
+                    </div>
 
-                        {/* 구좌 수 선택 */}
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-gray-600 block">구좌 수</label>
-                            <div className="grid grid-cols-3 gap-2">
+                    <div className="adm-field-grid">
+                        <div className="adm-field full">
+                            <label>구좌 수</label>
+                            <div className="adm-segmented w-full grid grid-cols-3">
                                 {["1", "2", "3"].map((qty) => (
                                     <button
                                         key={qty}
                                         type="button"
                                         onClick={() => setOrderQty(qty)}
-                                        className={`py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                                            orderQty === qty
-                                                ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
-                                                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
-                                        }`}
+                                        className={`justify-center ${orderQty === qty ? "active" : ""}`}
                                     >
                                         {qty}구좌
                                     </button>
@@ -324,66 +301,63 @@ export default function SonoRegisterModal({
                             </div>
                         </div>
 
-                        {/* 통화 요청 일시 */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-gray-600 block">통화 요청 날짜</label>
-                                <input
-                                    type="date"
-                                    value={callDate}
-                                    onChange={(e) => setCallDate(e.target.value)}
-                                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-sono-dark focus:ring-2 focus:ring-indigo-500 outline-none h-[38px] cursor-pointer"
-                                />
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-gray-600 block">통화 요청 시간</label>
-                                <select
-                                    value={callTime}
-                                    onChange={(e) => setCallTime(e.target.value)}
-                                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-sono-dark focus:ring-2 focus:ring-indigo-500 outline-none h-[38px] cursor-pointer"
-                                >
-                                    <option value="10:00 ~ 11:00">10:00 ~ 11:00</option>
-                                    <option value="11:00 ~ 12:00">11:00 ~ 12:00</option>
-                                    <option value="14:00 ~ 15:00">14:00 ~ 15:00</option>
-                                    <option value="15:00 ~ 16:00">15:00 ~ 16:00</option>
-                                    <option value="16:00 ~ 17:00">16:00 ~ 17:00</option>
-                                    <option value="17:00 ~ 18:00">17:00 ~ 18:00</option>
-                                </select>
-                            </div>
+                        <div className="adm-field">
+                            <label>통화 요청 날짜</label>
+                            <input
+                                type="date"
+                                value={callDate}
+                                onChange={(e) => setCallDate(e.target.value)}
+                                className="adm-input font-mono"
+                            />
                         </div>
 
-                        {/* 특이사항 / 비고 */}
-                        <div className="space-y-1.5">
+                        <div className="adm-field">
+                            <label>통화 요청 시간</label>
+                            <select
+                                value={callTime}
+                                onChange={(e) => setCallTime(e.target.value)}
+                                className="adm-select"
+                            >
+                                <option value="10:00 ~ 11:00">10:00 ~ 11:00</option>
+                                <option value="11:00 ~ 12:00">11:00 ~ 12:00</option>
+                                <option value="14:00 ~ 15:00">14:00 ~ 15:00</option>
+                                <option value="15:00 ~ 16:00">15:00 ~ 16:00</option>
+                                <option value="16:00 ~ 17:00">16:00 ~ 17:00</option>
+                                <option value="17:00 ~ 18:00">17:00 ~ 18:00</option>
+                            </select>
+                        </div>
+
+                        <div className="adm-field full">
                             <div className="flex justify-between">
-                                <label className="text-xs font-bold text-gray-600">특이사항 (비고)</label>
-                                <span className="text-[10px] text-gray-400">{memo.length}/240</span>
+                                <label>특이사항 (비고)</label>
+                                <span className="text-[10px] text-[#86918a] font-mono">{memo.length}/240</span>
                             </div>
                             <textarea
                                 value={memo}
                                 onChange={(e) => setMemo(e.target.value.substring(0, 240))}
                                 placeholder="특이사항 기재"
                                 rows={2}
-                                className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-sono-dark focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+                                className="adm-textarea !min-h-[68px]"
                             />
                         </div>
+                    </div>
 
-                        {/* 당일 재접수/중복 체크 해제 옵션 */}
-                        <div className="pt-1 flex items-center justify-between bg-gray-50/70 p-3 rounded-xl border border-gray-200/60">
-                            <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-bold text-gray-700">
-                                <input
-                                    type="checkbox"
-                                    checked={allowDuplicate}
-                                    onChange={(e) => setAllowDuplicate(e.target.checked)}
-                                    className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 cursor-pointer"
-                                />
-                                <span>당일 재접수 허용 (소노 전산 중복 체크 해제)</span>
-                            </label>
-                            {allowDuplicate && (
-                                <span className="text-[10px] font-bold text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full shrink-0">
-                                    기접수 건 덮어쓰기 전송
-                                </span>
-                            )}
-                        </div>
+                    {/* 당일 재접수/중복 체크 해제 옵션 */}
+                    <div className="adm-note-card flex items-center justify-between">
+                        <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-bold text-[#263d36]">
+                            <input
+                                type="checkbox"
+                                checked={allowDuplicate}
+                                onChange={(e) => setAllowDuplicate(e.target.checked)}
+                                className="w-4 h-4 rounded cursor-pointer accent-[#295e52]"
+                            />
+                            <span>당일 재접수 허용 (소노 전산 중복 체크 해제)</span>
+                        </label>
+                        {allowDuplicate && (
+                            <span className="adm-pill orange">
+                                기접수 건 덮어쓰기 전송
+                            </span>
+                        )}
                     </div>
             </div>
         </AdminDrawer>

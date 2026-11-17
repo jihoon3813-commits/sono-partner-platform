@@ -104,76 +104,88 @@ export default function PartnerRequests({
             </div>
 
             <section className="adm-panel overflow-hidden">
-                <div className="px-6 py-4 border-b border-[#edf0e7] flex flex-wrap items-center justify-between gap-3">
-                    <div className="adm-segmented">
-                        <button
-                            type="button"
-                            onClick={() => setFilterTab("pending")}
-                            className={filterTab === "pending" ? "active" : ""}
-                        >
-                            신청 대기 ({pendingCount})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setFilterTab("hold")}
-                            className={filterTab === "hold" ? "active" : ""}
-                        >
-                            보류 ({holdCount})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setFilterTab("all")}
-                            className={filterTab === "all" ? "active" : ""}
-                        >
-                            전체 ({totalCount})
-                        </button>
-                    </div>
-                    <span className="text-xs text-[#86918a]">신청일 최신순</span>
+                <div className="adm-tabs">
+                    <button
+                        type="button"
+                        onClick={() => setFilterTab("pending")}
+                        className={`adm-tab ${filterTab === "pending" ? "active" : ""}`}
+                    >
+                        <span>신청 대기</span>
+                        <span className="adm-tab-count">{pendingCount}</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setFilterTab("hold")}
+                        className={`adm-tab ${filterTab === "hold" ? "active" : ""}`}
+                    >
+                        <span>보류</span>
+                        <span className="adm-tab-count">{holdCount}</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setFilterTab("all")}
+                        className={`adm-tab ${filterTab === "all" ? "active" : ""}`}
+                    >
+                        <span>전체</span>
+                        <span className="adm-tab-count">{totalCount}</span>
+                    </button>
                 </div>
 
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                <div className="adm-table-scroll">
+                    <table className="adm-table">
                         <thead>
                             <tr>
-                                <th className="px-6 py-3.5 text-xs">상태</th>
-                                <th className="px-6 py-3.5 text-xs">신청일시</th>
-                                <th className="px-6 py-3.5 text-xs">업체명 / 사업자번호</th>
-                                <th className="px-6 py-3.5 text-xs">담당자</th>
-                                <th className="px-6 py-3.5 text-xs">유형</th>
-                                <th className="px-6 py-3.5 text-xs text-right">관리</th>
+                                <th>상태</th>
+                                <th>신청일시</th>
+                                <th>업체명 / 사업자번호</th>
+                                <th>담당자</th>
+                                <th>유형</th>
+                                <th className="text-right">관리</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#eef1e8]">
+                        <tbody>
                             {filteredRequests.length > 0 ? (
                                 filteredRequests.map((req) => (
-                                    <tr key={req.requestId} className="transition-colors">
-                                        <td className="px-6 py-4">{getStatusBadge(req.status)}</td>
-                                        <td className="px-6 py-4 text-xs text-[#6b7768] whitespace-nowrap">
+                                    <tr
+                                        key={req.requestId}
+                                        className="adm-clickable-row"
+                                        onClick={() => onSelectRequest?.(req)}
+                                    >
+                                        <td>{getStatusBadge(req.status)}</td>
+                                        <td className="text-xs text-[#6b7768] font-mono whitespace-nowrap">
                                             {new Date(req.createdAt).toLocaleDateString()}
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm font-bold text-[#263d36]">
-                                                {req.companyName}
-                                            </div>
-                                            <div className="text-xs text-[#86918a] mt-0.5">
-                                                {req.businessNumber}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm font-medium text-[#263d36]">
-                                                {req.managerName}
-                                            </div>
-                                            <div className="text-xs text-[#86918a] mt-0.5">
-                                                {req.managerPhone}
+                                        <td>
+                                            <div className="adm-person">
+                                                <span className="adm-person-circle">
+                                                    {(req.companyName || "업").trim().charAt(0)}
+                                                </span>
+                                                <div>
+                                                    <b>{req.companyName}</b>
+                                                    <small className="font-mono">{req.businessNumber || "-"}</small>
+                                                </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-xs text-[#6b7768]">{req.shopType}</div>
+                                        <td>
+                                            <div>
+                                                <div className="text-xs font-bold text-[#263d36]">
+                                                    {req.managerName}
+                                                </div>
+                                                <div className="text-[11px] text-[#86918a] font-mono mt-0.5">
+                                                    {req.managerPhone}
+                                                </div>
+                                            </div>
                                         </td>
-                                        <td className="px-6 py-4 text-right whitespace-nowrap">
+                                        <td>
+                                            <span className="adm-pill gray">{req.shopType || "-"}</span>
+                                        </td>
+                                        <td className="text-right whitespace-nowrap">
                                             <button
                                                 type="button"
-                                                onClick={() => onSelectRequest?.(req)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onSelectRequest?.(req);
+                                                }}
                                                 className="adm-btn small primary"
                                             >
                                                 <span>
@@ -188,7 +200,7 @@ export default function PartnerRequests({
                                 <tr>
                                     <td
                                         colSpan={6}
-                                        className="px-6 py-16 text-center text-xs text-[#86918a]"
+                                        className="py-16 text-center text-xs text-[#86918a]"
                                     >
                                         {filterTab === "pending"
                                             ? "새로운 신청 대기 내역이 없습니다."

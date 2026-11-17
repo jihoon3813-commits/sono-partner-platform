@@ -509,50 +509,47 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                         </form>
                     )}
 
-                    {/* 고객 요약 정보 카드 */}
-                    <div className="bg-gray-50/80 rounded-2xl p-4 border border-gray-100">
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                            <div>
-                                <span className="text-gray-400 block font-medium">고객명</span>
-                                <span className="text-sono-dark font-bold text-sm">{application.customerName || "-"}</span>
-                            </div>
-                            <div>
-                                <span className="text-gray-400 block font-medium">연락처</span>
-                                <span className="text-sono-dark font-bold text-sm">{application.customerPhone || "-"}</span>
-                            </div>
-                            <div>
-                                <span className="text-gray-400 block font-medium">신청번호</span>
-                                <span className="text-gray-600 font-bold truncate block" title={application.applicationNo}>
-                                    {application.applicationNo}
-                                </span>
-                            </div>
-                            <div>
-                                <span className="text-gray-400 block font-medium">소속 파트너</span>
-                                <span className="text-gray-600 font-bold truncate block">{application.partnerName || "-"}</span>
-                            </div>
+                    {/* 고객 요약 정보 */}
+                    <div className="adm-details-list">
+                        <div className="adm-detail-item">
+                            <span>고객명</span>
+                            <strong>{application.customerName || "-"}</strong>
+                        </div>
+                        <div className="adm-detail-item">
+                            <span>연락처</span>
+                            <strong className="font-mono">{application.customerPhone || "-"}</strong>
+                        </div>
+                        <div className="adm-detail-item">
+                            <span>신청번호</span>
+                            <strong className="font-mono">{application.applicationNo}</strong>
+                        </div>
+                        <div className="adm-detail-item">
+                            <span>소속 파트너</span>
+                            <strong>{application.partnerName || "-"}</strong>
                         </div>
                     </div>
 
                     {/* 녹취 파일 업로드 폼 */}
-                    <form onSubmit={handleUpload} className="bg-white rounded-2xl p-4 border-2 border-dashed border-gray-200 hover:border-sono-primary/40 transition-colors">
-                        <h3 className="text-xs font-black text-gray-700 uppercase tracking-wider mb-3 flex items-center justify-between">
-                            <span className="flex items-center gap-1.5">
-                                <span>📤</span> 새 음성파일 업로드
+                    <form onSubmit={handleUpload} className="adm-panel p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-[#263d36] flex items-center gap-1.5">
+                                <AdminIcon name="upload" />
+                                <span>새 음성파일 업로드</span>
                             </span>
-                            <span className="text-[11px] font-normal text-gray-400">
+                            <span className="text-[11px] text-[#86918a]">
                                 단일 최대 50MB (자동 압축 지원)
                             </span>
-                        </h3>
+                        </div>
 
                         <div
                             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                             onDragLeave={() => setIsDragging(false)}
                             onDrop={handleDrop}
                             onClick={() => fileInputRef.current?.click()}
-                            className={`p-5 rounded-xl border border-dashed text-center cursor-pointer transition-all ${
+                            className={`p-5 rounded-[10px] border border-dashed text-center cursor-pointer transition-all ${
                                 isDragging 
-                                    ? "bg-sono-primary/10 border-sono-primary scale-[0.99]" 
-                                    : "bg-gray-50/60 hover:bg-gray-50 border-gray-200"
+                                    ? "bg-[#f4f7ef] border-[#295e52]" 
+                                    : "bg-[#f9faf7] hover:bg-[#f4f7ef] border-[#cbd8c0]"
                             }`}
                         >
                             <input
@@ -565,11 +562,8 @@ export default function RecordingModal({ application, parentPartnerName, onClose
 
                             {selectedFile ? (
                                 <div className="flex flex-col items-center">
-                                    <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg mb-2 shadow-sm border border-emerald-100">
-                                        🎵
-                                    </div>
-                                    <span className="text-xs text-gray-400 font-medium">등록될 파일명:</span>
-                                    <span className="text-xs sm:text-sm font-bold text-sono-dark truncate max-w-md bg-white px-3 py-1 rounded-xl border border-gray-200 shadow-sm mt-0.5" title={generateRecordingDownloadFileName({
+                                    <span className="adm-pill green mb-1.5">선택된 녹취 파일</span>
+                                    <span className="text-xs font-bold text-[#263d36] truncate max-w-md bg-white px-3 py-1 rounded-[7px] border border-[#dfe5d9]" title={generateRecordingDownloadFileName({
                                         uploadedAt: new Date().toISOString(),
                                         parentPartnerName: parentPartnerName,
                                         partnerName: application.partnerName,
@@ -589,28 +583,26 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                         })}
                                     </span>
                                     <div className="flex items-center gap-2 mt-1.5 flex-wrap justify-center">
-                                        <span className="text-xs font-semibold text-gray-500">
+                                        <span className="text-xs font-semibold text-[#6b7768]">
                                             원본: {selectedFile.name} ({formatBytes(selectedFile.size)})
                                         </span>
                                         {useAutoCompress && (
-                                            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                                                ⚡ 약 {formatBytes(Math.round(selectedFile.size * 0.22))}로 압축 예정
+                                            <span className="adm-pill green">
+                                                약 {formatBytes(Math.round(selectedFile.size * 0.22))}로 압축 예정
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-[11px] text-gray-400 mt-1">
+                                    <span className="text-[11px] text-[#86918a] mt-1">
                                         다른 파일을 선택하려면 클릭하거나 다시 드래그하세요
                                     </span>
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center">
-                                    <div className="w-10 h-10 rounded-full bg-sono-primary/10 text-sono-primary flex items-center justify-center text-lg mb-2">
-                                        📁
-                                    </div>
-                                    <span className="text-sm font-bold text-sono-dark">
+                                    <AdminIcon name="mic" className="!w-6 !h-6 text-[#295e52] mb-1.5" />
+                                    <span className="text-xs font-bold text-[#263d36]">
                                         음성파일을 드래그하거나 클릭하여 선택
                                     </span>
-                                    <span className="text-xs text-gray-400 mt-1">
+                                    <span className="text-[11px] text-[#86918a] mt-0.5">
                                         지원 형식: M4A, MP3, WAV, AAC 등 음성 파일
                                     </span>
                                 </div>
@@ -618,75 +610,59 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                         </div>
 
                         {/* 자동 압축 옵션 토글 */}
-                        <div className="mt-3 p-3 bg-indigo-50/70 rounded-xl border border-indigo-100 flex items-center justify-between">
+                        <div className="adm-note-card flex items-center justify-between">
                             <label className="flex items-center gap-2.5 cursor-pointer flex-1">
                                 <input
                                     type="checkbox"
                                     checked={useAutoCompress}
                                     onChange={(e) => setUseAutoCompress(e.target.checked)}
-                                    className="w-4 h-4 text-sono-primary rounded border-gray-300 focus:ring-sono-primary cursor-pointer accent-indigo-600"
+                                    className="w-4 h-4 rounded cursor-pointer accent-[#295e52]"
                                 />
                                 <div>
-                                    <span className="text-xs font-bold text-indigo-950 flex items-center gap-1">
-                                        <span>⚡</span> 통화 음성 고압축 최적화 적용 (권장)
+                                    <span className="text-xs font-bold text-[#263d36] block">
+                                        통화 음성 고압축 최적화 적용 (권장)
                                     </span>
-                                    <p className="text-[11px] text-indigo-700/80 mt-0.5">
+                                    <p className="text-[11px] text-[#6b7768] mt-0.5">
                                         10분 통화 기준 11MB → 약 2.3MB로 용량 75% 절감 및 모바일/PC 스트리밍·STT 변환 최적화
                                     </p>
                                 </div>
                             </label>
-                            <span className="text-[10px] px-2 py-0.5 rounded font-black bg-indigo-200 text-indigo-900 shrink-0 ml-2">
+                            <span className="adm-pill green shrink-0 ml-2">
                                 75% 절감
                             </span>
                         </div>
 
                         {/* 압축 완료 요약 */}
                         {compressionSummary && (
-                            <div className="mt-3 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 flex items-center gap-1.5 animate-fade-in">
-                                <span>🎉</span>
-                                <span>{compressionSummary}</span>
+                            <div className="adm-note-card !bg-[#eef5eb] !border-[#cbe0c4] text-xs font-bold text-[#295e52]">
+                                {compressionSummary}
                             </div>
                         )}
 
                         {/* 녹취 메모 입력 */}
-                        <div className="mt-3">
-                            <label className="block text-xs font-bold text-gray-600 mb-1">
-                                녹취 메모 (선택사항)
-                            </label>
+                        <div className="adm-field">
+                            <label>녹취 메모 (선택사항)</label>
                             <input
                                 type="text"
                                 value={memo}
                                 onChange={(e) => setMemo(e.target.value)}
                                 placeholder="예: 계약 내용 안내 및 가입동의 완료, 1차 부재 후 재통화 등"
-                                className="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-sono-primary/20 focus:border-sono-primary outline-none transition-all"
+                                className="adm-input"
                             />
                         </div>
 
                         {/* 업로드 버튼 */}
-                        <div className="mt-4 flex items-center justify-between">
-                            <div className="text-[11px] text-gray-500 font-medium">
-                                {isUploading && <span className="font-bold text-sono-primary animate-pulse">{uploadProgress}</span>}
+                        <div className="pt-1 flex items-center justify-between">
+                            <div className="text-[11px] text-[#6b7768] font-medium">
+                                {isUploading && <span className="font-bold text-[#295e52]">{uploadProgress}</span>}
                             </div>
                             <button
                                 type="submit"
                                 disabled={!selectedFile || isUploading}
-                                className={`px-5 py-2.5 rounded-xl text-xs font-bold text-white transition-all shadow-md flex items-center gap-1.5 ${
-                                    !selectedFile || isUploading
-                                        ? "bg-gray-300 cursor-not-allowed shadow-none"
-                                        : "bg-sono-primary hover:bg-sono-secondary active:scale-95 shadow-sono-primary/20"
-                                }`}
+                                className="adm-btn primary"
                             >
-                                {isUploading ? (
-                                    <>
-                                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        <span>처리 중...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <span>💾</span>
-                                        <span>{useAutoCompress ? "압축 후 저장" : "녹취파일 저장"}</span>
-                                    </>
-                                )}
+                                <AdminIcon name="upload" />
+                                <span>{isUploading ? "처리 중..." : useAutoCompress ? "압축 후 저장" : "녹취파일 저장"}</span>
                             </button>
                         </div>
                     </form>
@@ -694,31 +670,29 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                     {/* 등록된 녹취 파일 목록 */}
                     <div className="space-y-3">
                         <div className="flex items-center justify-between flex-wrap gap-2">
-                            <h3 className="text-xs font-black text-sono-dark uppercase tracking-wider flex items-center gap-1.5">
-                                <span>🎧</span>
-                                <span>등록된 녹취 파일 ({recordings?.length || 0}건)</span>
-                            </h3>
-                            <label className="flex items-center gap-1.5 text-[11px] text-gray-600 font-semibold cursor-pointer select-none bg-gray-100 px-2.5 py-1 rounded-lg">
+                            <div className="adm-section-label !m-0">
+                                등록된 녹취 파일 ({recordings?.length || 0}건)
+                            </div>
+                            <label className="flex items-center gap-1.5 text-[11px] text-[#5e6b5b] font-semibold cursor-pointer select-none bg-[#f3f5ef] px-2.5 py-1 rounded-[7px] border border-[#e3e7dc]">
                                 <input
                                     type="checkbox"
                                     checked={includeTimestamps}
                                     onChange={(e) => setIncludeTimestamps(e.target.checked)}
-                                    className="w-3.5 h-3.5 rounded accent-indigo-600 cursor-pointer"
+                                    className="w-3.5 h-3.5 rounded accent-[#295e52] cursor-pointer"
                                 />
-                                <span>⏱️ 텍스트 변환 시 구간별 시간([분:초]) 표시</span>
+                                <span>텍스트 변환 시 구간별 시간([분:초]) 표시</span>
                             </label>
                         </div>
 
                         {recordings === undefined ? (
-                            <div className="py-8 text-center text-xs text-gray-400 flex flex-col items-center gap-2">
-                                <div className="w-5 h-5 border-2 border-sono-primary/30 border-t-sono-primary rounded-full animate-spin" />
-                                <span>녹취 목록을 불러오는 중...</span>
+                            <div className="py-8 text-center text-xs text-[#86918a]">
+                                녹취 목록을 불러오는 중...
                             </div>
                         ) : recordings.length === 0 ? (
-                            <div className="py-10 text-center bg-gray-50/50 rounded-2xl border border-gray-100 text-gray-400">
-                                <span className="text-2xl block mb-1">🔇</span>
-                                <p className="text-xs font-medium">등록된 녹취 음성파일이 없습니다.</p>
-                                <p className="text-[11px] text-gray-400 mt-1">상단의 업로드 영역을 통해 파일을 추가해보세요.</p>
+                            <div className="adm-note-card py-10 text-center text-[#86918a]">
+                                <AdminIcon name="mic" className="mx-auto mb-2 !w-6 !h-6 text-[#a6b6a1]" />
+                                <p className="text-xs font-bold text-[#263d36]">등록된 녹취 음성파일이 없습니다.</p>
+                                <p className="text-[11px] mt-1">상단의 업로드 영역을 통해 파일을 추가해보세요.</p>
                             </div>
                         ) : (
                             <div className="space-y-3">
@@ -744,40 +718,40 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                     return (
                                         <div
                                             key={rec._id}
-                                            className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm hover:border-sono-primary/30 transition-all space-y-3"
+                                            className="adm-panel p-4 space-y-3"
                                         >
                                             <div className="flex items-start justify-between gap-3 flex-wrap sm:flex-nowrap">
                                                 <div className="min-w-0 flex-1">
-                                                    <div className="flex items-center gap-2 flex-wrap">
-                                                        <span className="font-bold text-xs sm:text-sm text-sono-dark truncate block max-w-sm" title={displayFileName}>
+                                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                                        <span className="font-bold text-xs text-[#263d36] truncate block max-w-sm" title={displayFileName}>
                                                             {displayFileName}
                                                         </span>
-                                                        <span className="text-[10px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 font-bold shrink-0">
+                                                        <span className="adm-pill gray">
                                                             {formatBytes(rec.fileSize)}
                                                         </span>
                                                         {rec.duration && (
-                                                            <span className="text-[10px] px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-bold shrink-0">
-                                                                ⏱️ {Math.floor(rec.duration / 60)}분 {Math.floor(rec.duration % 60)}초
+                                                            <span className="adm-pill teal">
+                                                                {Math.floor(rec.duration / 60)}분 {Math.floor(rec.duration % 60)}초
                                                             </span>
                                                         )}
                                                         {hasSavedTranscript && (
-                                                            <span className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 shrink-0">
-                                                                📝 텍스트 변환됨
+                                                            <span className="adm-pill green">
+                                                                텍스트 변환됨
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <div className="flex items-center gap-3 text-[11px] text-gray-400 mt-1 flex-wrap">
+                                                    <div className="flex items-center gap-3 text-[11px] text-[#86918a] mt-1 flex-wrap font-mono">
                                                         <span>등록일시: {formatDate(rec.uploadedAt)}</span>
                                                         {rec.uploadedBy && (
-                                                            <span>등록자: <strong className="text-gray-600">{rec.uploadedBy}</strong></span>
+                                                            <span>등록자: <strong className="text-[#45554e]">{rec.uploadedBy}</strong></span>
                                                         )}
                                                         {rec.transcribedAt && (
                                                             <span>녹취록 저장: {formatDate(rec.transcribedAt)}</span>
                                                         )}
                                                     </div>
                                                     {rec.memo && (
-                                                        <div className="mt-2 text-xs text-sono-dark bg-amber-50/80 border border-amber-200/60 rounded-lg px-2.5 py-1.5 font-medium inline-block">
-                                                            💬 {rec.memo}
+                                                        <div className="mt-2 text-xs text-[#263d36] bg-[#f8f9f5] border border-[#e6eae3] rounded-[7px] px-2.5 py-1.5 font-medium inline-block">
+                                                            {rec.memo}
                                                         </div>
                                                     )}
                                                 </div>
@@ -793,14 +767,12 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                                                     [rec._id]: !prev[rec._id],
                                                                 }))
                                                             }
-                                                            className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer border ${
-                                                                isExpanded
-                                                                    ? "bg-indigo-600 text-white border-indigo-600"
-                                                                    : "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200"
+                                                            className={`adm-btn small ${
+                                                                isExpanded ? "primary" : "sage"
                                                             }`}
                                                             title="변환된 녹취 텍스트 보기 및 편집"
                                                         >
-                                                            <span>📝</span>
+                                                            <AdminIcon name="file" />
                                                             <span>{isExpanded ? "녹취록 접기" : "녹취록 보기"}</span>
                                                         </button>
                                                     ) : (
@@ -808,20 +780,11 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                                             type="button"
                                                             onClick={() => handleTranscribe(rec)}
                                                             disabled={isTranscribingThis || !rec.url}
-                                                            className="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer disabled:opacity-50 shadow-sm"
+                                                            className="adm-btn small primary"
                                                             title="AI(OpenAI Whisper)로 음성을 텍스트로 변환합니다"
                                                         >
-                                                            {isTranscribingThis ? (
-                                                                <>
-                                                                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                                    <span>변환 중...</span>
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <span>📝</span>
-                                                                    <span>텍스트 변환</span>
-                                                                </>
-                                                            )}
+                                                            <AdminIcon name="mic" />
+                                                            <span>{isTranscribingThis ? "변환 중..." : "텍스트 변환"}</span>
                                                         </button>
                                                     )}
 
@@ -830,37 +793,29 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                                             type="button"
                                                             onClick={() => handleDownloadFile(rec)}
                                                             disabled={downloadingId === rec._id}
-                                                            className="px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                                                            className="adm-btn small"
                                                             title={`다운로드: ${displayFileName}`}
                                                         >
-                                                            {downloadingId === rec._id ? (
-                                                                <div className="w-3.5 h-3.5 border-2 border-gray-600/30 border-t-gray-600 rounded-full animate-spin" />
-                                                            ) : (
-                                                                <span>⬇️</span>
-                                                            )}
-                                                            <span className="hidden sm:inline">다운로드</span>
+                                                            <AdminIcon name="download" />
+                                                            <span>다운로드</span>
                                                         </button>
                                                     )}
                                                     <button
                                                         type="button"
                                                         onClick={() => handleDelete(rec._id, rec.fileName)}
                                                         disabled={deletingId === rec._id}
-                                                        className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 disabled:opacity-50"
+                                                        className="adm-btn small danger"
                                                         title="파일 삭제"
                                                     >
-                                                        {deletingId === rec._id ? (
-                                                            <div className="w-3.5 h-3.5 border-2 border-rose-600/30 border-t-rose-600 rounded-full animate-spin" />
-                                                        ) : (
-                                                            <span>🗑️</span>
-                                                        )}
-                                                        <span className="hidden sm:inline">삭제</span>
+                                                        <AdminIcon name="trash" />
+                                                        <span>삭제</span>
                                                     </button>
                                                 </div>
                                             </div>
 
                                             {/* HTML5 Audio Player */}
                                             {rec.url ? (
-                                                <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                                                <div className="bg-[#f8f9f5] p-2.5 rounded-[9px] border border-[#e6eae3]">
                                                     <audio
                                                         controls
                                                         preload="metadata"
@@ -871,21 +826,21 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                                     </audio>
                                                 </div>
                                             ) : (
-                                                <div className="text-[11px] text-rose-500 font-medium">
+                                                <div className="text-[11px] text-[#a33d46] font-medium">
                                                     파일 링크를 불러올 수 없습니다.
                                                 </div>
                                             )}
 
                                             {/* STT 변환 텍스트 표시 및 편집 영역 */}
                                             {(isExpanded || isTranscribingThis) && (
-                                                <div className="mt-2 pt-3 border-t border-gray-100 space-y-2.5 animate-fade-in">
+                                                <div className="mt-2 pt-3 border-t border-[#edf0e7] space-y-2.5">
                                                     <div className="flex items-center justify-between flex-wrap gap-2">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-xs font-black text-indigo-950 flex items-center gap-1">
-                                                                <span>📝</span> 상담 녹취 텍스트 (STT)
+                                                            <span className="text-xs font-bold text-[#263d36]">
+                                                                상담 녹취 텍스트 (STT)
                                                             </span>
                                                             {isDirty && (
-                                                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold">
+                                                                <span className="adm-pill orange">
                                                                     수정됨 (저장 필요)
                                                                 </span>
                                                             )}
@@ -896,10 +851,10 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                                                 type="button"
                                                                 onClick={() => handleTranscribe(rec)}
                                                                 disabled={isTranscribingThis}
-                                                                className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 disabled:opacity-50"
+                                                                className="adm-btn small"
                                                                 title="음성 파일에서 텍스트를 다시 추출합니다"
                                                             >
-                                                                <span>🔄</span>
+                                                                <AdminIcon name="refresh" />
                                                                 <span>{isTranscribingThis ? "변환 중..." : "AI 재변환"}</span>
                                                             </button>
 
@@ -907,9 +862,9 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                                                 type="button"
                                                                 onClick={() => handleCopyTranscript(rec._id, currentTranscriptValue)}
                                                                 disabled={!currentTranscriptValue}
-                                                                className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 disabled:opacity-40"
+                                                                className="adm-btn small"
                                                             >
-                                                                <span>{copiedId === rec._id ? "✅" : "📋"}</span>
+                                                                <AdminIcon name={copiedId === rec._id ? "check" : "copy"} />
                                                                 <span>{copiedId === rec._id ? "복사됨!" : "복사"}</span>
                                                             </button>
 
@@ -917,10 +872,10 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                                                 type="button"
                                                                 onClick={() => handleDownloadTranscriptTxt(rec, currentTranscriptValue)}
                                                                 disabled={!currentTranscriptValue}
-                                                                className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 disabled:opacity-40"
+                                                                className="adm-btn small"
                                                                 title="녹취록을 .txt 문서로 다운로드합니다"
                                                             >
-                                                                <span>📄</span>
+                                                                <AdminIcon name="download" />
                                                                 <span>TXT 저장</span>
                                                             </button>
 
@@ -928,13 +883,9 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                                                 type="button"
                                                                 onClick={() => handleSaveTranscript(rec._id, rec.transcript)}
                                                                 disabled={savingTranscriptId === rec._id || !isDirty}
-                                                                className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 ${
-                                                                    isDirty
-                                                                        ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
-                                                                        : "bg-gray-100 text-gray-400 cursor-default"
-                                                                }`}
+                                                                className={`adm-btn small ${isDirty ? "primary" : ""}`}
                                                             >
-                                                                <span>💾</span>
+                                                                <AdminIcon name="check" />
                                                                 <span>
                                                                     {savingTranscriptId === rec._id ? "저장 중..." : "텍스트 저장"}
                                                                 </span>
@@ -943,12 +894,12 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                                     </div>
 
                                                     {isTranscribingThis ? (
-                                                        <div className="py-8 bg-indigo-50/40 rounded-xl border border-indigo-100 flex flex-col items-center justify-center gap-2 text-indigo-800">
-                                                            <div className="w-6 h-6 border-2 border-indigo-600/30 border-t-indigo-600 rounded-full animate-spin" />
+                                                        <div className="py-8 adm-note-card flex flex-col items-center justify-center gap-2 text-[#295e52]">
+                                                            <div className="w-6 h-6 border-2 border-[#295e52]/30 border-t-[#295e52] rounded-full animate-spin" />
                                                             <p className="text-xs font-bold">
                                                                 OpenAI Whisper가 통화 음성을 한국어 텍스트로 변환하고 있습니다...
                                                             </p>
-                                                            <p className="text-[11px] text-indigo-600/80">
+                                                            <p className="text-[11px] text-[#6b7768]">
                                                                 통화 길이에 따라 약 5~20초 정도 소요될 수 있습니다.
                                                             </p>
                                                         </div>
@@ -963,7 +914,7 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                                             }
                                                             rows={8}
                                                             placeholder="변환된 녹취 텍스트가 여기에 표시됩니다. 내용을 직접 수정하거나 메모를 추가한 뒤 [텍스트 저장]을 누르세요."
-                                                            className="w-full p-3 text-xs leading-relaxed text-gray-800 bg-slate-50/80 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none resize-y font-medium"
+                                                            className="adm-textarea !min-h-[160px]"
                                                         />
                                                     )}
                                                 </div>
