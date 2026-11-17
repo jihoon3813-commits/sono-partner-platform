@@ -21,7 +21,7 @@ import AccountManagement from "@/components/dashboard/AccountManagement";
 import ChannelMappingManagement from "@/components/dashboard/ChannelMappingManagement";
 import DataResetManagement from "@/components/dashboard/DataResetManagement";
 import { AdminIcon, AdminIconName } from "@/components/dashboard/AdminIcons";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { PartnerRequest } from "@/lib/types";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
@@ -394,6 +394,16 @@ export default function PartnerDashboard() {
 
     // Fetch dynamic statuses
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
+    const reorderStatuses = useMutation(api.applicationStatuses.reorderStatuses);
+    const [optimisticOverviewStatuses, setOptimisticOverviewStatuses] = useState<string[] | null>(null);
+    const [draggedOverviewStatus, setDraggedOverviewStatus] = useState<string | null>(null);
+    const [dragOverOverviewStatus, setDragOverOverviewStatus] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (dbStatuses) {
+            setOptimisticOverviewStatuses(dbStatuses.map((s) => s.label));
+        }
+    }, [dbStatuses]);
 
     // 차트 데이터 (실시간 고객 데이터 기반 주간 7일 / 월간 6개월 집계)
     const chartSeries = useMemo(() => {
@@ -560,13 +570,56 @@ export default function PartnerDashboard() {
         "해약",
         "정산완료",
     ];
-    const rawStatusList = dbStatuses
+    const rawStatusList = optimisticOverviewStatuses
+        ? optimisticOverviewStatuses
+        : dbStatuses
         ? dbStatuses.map((s) => s.label)
         : defaultStatusList;
     const statusList =
         partner?.role === "tm"
             ? rawStatusList.filter((s) => s !== "정산예정" && s !== "정산완료")
             : rawStatusList;
+
+    const handleOverviewStatusDrop = async (targetLabel: string) => {
+        if (!isAdmin || !draggedOverviewStatus || draggedOverviewStatus === targetLabel) {
+            setDraggedOverviewStatus(null);
+            setDragOverOverviewStatus(null);
+            return;
+        }
+
+        const currentList = [...rawStatusList];
+        const fromIdx = currentList.indexOf(draggedOverviewStatus);
+        const toIdx = currentList.indexOf(targetLabel);
+        if (fromIdx === -1 || toIdx === -1) {
+            setDraggedOverviewStatus(null);
+            setDragOverOverviewStatus(null);
+            return;
+        }
+
+        const [moved] = currentList.splice(fromIdx, 1);
+        currentList.splice(toIdx, 0, moved);
+
+        setOptimisticOverviewStatuses(currentList);
+        setDraggedOverviewStatus(null);
+        setDragOverOverviewStatus(null);
+
+        if (dbStatuses && dbStatuses.length > 0) {
+            const updates = currentList
+                .map((label, idx) => {
+                    const doc = dbStatuses.find((s) => s.label === label);
+                    return doc ? { id: doc._id, order: idx + 1 } : null;
+                })
+                .filter((u): u is { id: any; order: number } => u !== null);
+
+            if (updates.length > 0) {
+                try {
+                    await reorderStatuses({ statuses: updates });
+                } catch (err) {
+                    console.error("Failed to reorder overview statuses:", err);
+                }
+            }
+        }
+    };
 
     // 핵심 지표 집계 (실제 필터 데이터 기준)
     const totalCount = dateFilteredCustomers.length;
@@ -1847,9 +1900,16 @@ export default function PartnerDashboard() {
                             {/* 진행상태별 세부 집계 카드 그리드 */}
                             <div className="mb-6">
                                 <div className="flex items-center justify-between mb-3 px-0.5">
-                                    <h2 className="text-sm font-bold text-[#263d36]">
-                                        진행 상태별 고객 현황
-                                    </h2>
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-sm font-bold text-[#263d36]">
+                                            진행 상태별 고객 현황
+                                        </h2>
+                                        {isAdmin && (
+                                            <span className="text-[11px] text-[#86918a] font-medium">
+                                                · 드래그하여 상태 순서 변경 가능
+                                            </span>
+                                        )}
+                                    </div>
                                     {selectedOverviewStatus !== "all" && (
                                         <button
                                             type="button"
@@ -1865,18 +1925,58 @@ export default function PartnerDashboard() {
                                     {statusList.map((status) => {
                                         const badge = getStatusBadgeProps(status, dbStatuses);
                                         const isSelected = selectedOverviewStatus === status;
+                                        const isDraggable = isAdmin && Boolean(dbStatuses && dbStatuses.length > 0);
+                                        const isDraggingThis = draggedOverviewStatus === status;
+                                        const isDragOverThis =
+                                            dragOverOverviewStatus === status && draggedOverviewStatus !== status;
                                         return (
                                             <div
                                                 key={status}
+                                                draggable={isDraggable}
+                                                onDragStart={(e) => {
+                                                    if (!isDraggable) return;
+                                                    setDraggedOverviewStatus(status);
+                                                    e.dataTransfer.effectAllowed = "move";
+                                                    e.dataTransfer.setData("text/plain", status);
+                                                }}
+                                                onDragOver={(e) => {
+                                                    if (!isDraggable || !draggedOverviewStatus || draggedOverviewStatus === status)
+                                                        return;
+                                                    e.preventDefault();
+                                                    e.dataTransfer.dropEffect = "move";
+                                                    if (dragOverOverviewStatus !== status) {
+                                                        setDragOverOverviewStatus(status);
+                                                    }
+                                                }}
+                                                onDragLeave={() => {
+                                                    if (dragOverOverviewStatus === status) {
+                                                        setDragOverOverviewStatus(null);
+                                                    }
+                                                }}
+                                                onDrop={(e) => {
+                                                    e.preventDefault();
+                                                    void handleOverviewStatusDrop(status);
+                                                }}
+                                                onDragEnd={() => {
+                                                    setDraggedOverviewStatus(null);
+                                                    setDragOverOverviewStatus(null);
+                                                }}
                                                 onClick={() =>
                                                     setSelectedOverviewStatus(
                                                         isSelected ? "all" : status
                                                     )
                                                 }
+                                                title={
+                                                    isDraggable
+                                                        ? `${status} · 클릭하여 필터링 / 드래그하여 위치 이동`
+                                                        : status
+                                                }
                                                 className={`adm-panel p-3.5 cursor-pointer transition-all hover:border-[#9eb49e] ${
                                                     isSelected
                                                         ? "!border-[#295e52] ring-2 ring-[#295e52]/20 !bg-[#f6faf4]"
                                                         : ""
+                                                } ${isDraggingThis ? "opacity-35" : ""} ${
+                                                    isDragOverThis ? "!border-[#295e52] !bg-[#eef5eb]" : ""
                                                 }`}
                                             >
                                                 <div className="flex justify-between items-start mb-2">
@@ -1886,6 +1986,18 @@ export default function PartnerDashboard() {
                                                     >
                                                         {status}
                                                     </span>
+                                                    {isDraggable && (
+                                                        <span className="text-[#b7c2b0] opacity-60">
+                                                            <svg width="8" height="12" viewBox="0 0 8 12" fill="currentColor">
+                                                                <circle cx="2" cy="2.5" r="1" />
+                                                                <circle cx="6" cy="2.5" r="1" />
+                                                                <circle cx="2" cy="6" r="1" />
+                                                                <circle cx="6" cy="6" r="1" />
+                                                                <circle cx="2" cy="9.5" r="1" />
+                                                                <circle cx="6" cy="9.5" r="1" />
+                                                            </svg>
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 <div className="flex items-baseline gap-1">
                                                     <span className="text-xl font-bold text-[#263d36] tracking-tight tabular-nums">

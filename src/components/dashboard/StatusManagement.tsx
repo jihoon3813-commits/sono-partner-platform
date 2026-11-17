@@ -39,6 +39,8 @@ export default function StatusManagement() {
     const [newColor, setNewColor] = useState("#3b82f6");
     const [newIsPartnerVisible, setNewIsPartnerVisible] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+    const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
     // 새 항목 추가
     const handleAdd = async () => {
@@ -113,6 +115,32 @@ export default function StatusManagement() {
             { id: currentItem._id, order: targetItem.order },
             { id: targetItem._id, order: currentItem.order }
         ];
+
+        try {
+            await reorderStatuses({ statuses: updates });
+        } catch (err) {
+            alert("순서 변경 중 오류가 발생했습니다.");
+        }
+    };
+
+    const handleRowDrop = async (targetIndex: number) => {
+        if (!statuses || draggedIndex === null || draggedIndex === targetIndex) {
+            setDraggedIndex(null);
+            setDragOverIndex(null);
+            return;
+        }
+
+        const reordered = [...statuses];
+        const [moved] = reordered.splice(draggedIndex, 1);
+        reordered.splice(targetIndex, 0, moved);
+
+        setDraggedIndex(null);
+        setDragOverIndex(null);
+
+        const updates = reordered.map((item, idx) => ({
+            id: item._id,
+            order: idx + 1,
+        }));
 
         try {
             await reorderStatuses({ statuses: updates });
@@ -301,9 +329,49 @@ export default function StatusManagement() {
 
                             {/* 기존 상태 목록 */}
                             {statuses.map((status, index) => (
-                                <tr key={status._id} className="group">
+                                <tr
+                                    key={status._id}
+                                    draggable
+                                    onDragStart={(e) => {
+                                        setDraggedIndex(index);
+                                        e.dataTransfer.effectAllowed = "move";
+                                    }}
+                                    onDragOver={(e) => {
+                                        e.preventDefault();
+                                        if (draggedIndex !== null && draggedIndex !== index) {
+                                            setDragOverIndex(index);
+                                        }
+                                    }}
+                                    onDragLeave={() => {
+                                        if (dragOverIndex === index) setDragOverIndex(null);
+                                    }}
+                                    onDrop={(e) => {
+                                        e.preventDefault();
+                                        void handleRowDrop(index);
+                                    }}
+                                    onDragEnd={() => {
+                                        setDraggedIndex(null);
+                                        setDragOverIndex(null);
+                                    }}
+                                    className={`group transition-colors ${
+                                        draggedIndex === index ? "opacity-35" : ""
+                                    } ${dragOverIndex === index ? "!bg-[#eef5eb]" : ""}`}
+                                >
                                     <td>
                                         <div className="flex items-center gap-2">
+                                            <span
+                                                className="cursor-grab active:cursor-grabbing text-[#b7c2b0] hover:text-[#295e52] p-0.5"
+                                                title="드래그하여 순서 변경"
+                                            >
+                                                <svg width="8" height="12" viewBox="0 0 8 12" fill="currentColor">
+                                                    <circle cx="2" cy="2.5" r="1" />
+                                                    <circle cx="6" cy="2.5" r="1" />
+                                                    <circle cx="2" cy="6" r="1" />
+                                                    <circle cx="6" cy="6" r="1" />
+                                                    <circle cx="2" cy="9.5" r="1" />
+                                                    <circle cx="6" cy="9.5" r="1" />
+                                                </svg>
+                                            </span>
                                             <span className="text-xs font-bold text-[#86918a] w-4 font-mono">{status.order}</span>
                                             <div className="flex flex-col">
                                                 <button

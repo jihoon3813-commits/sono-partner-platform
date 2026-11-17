@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Application, Partner } from "@/lib/types";
@@ -51,6 +51,17 @@ export default function CustomerManagement({
     setCustomEndDate: liftedSetCustomEndDate,
 }: CustomerManagementProps) {
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
+    const reorderStatuses = useMutation(api.applicationStatuses.reorderStatuses);
+    const tabsContainerRef = useRef<HTMLDivElement>(null);
+    const [optimisticStatuses, setOptimisticStatuses] = useState<string[] | null>(null);
+    const [draggedStatus, setDraggedStatus] = useState<string | null>(null);
+    const [dragOverStatus, setDragOverStatus] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (dbStatuses) {
+            setOptimisticStatuses(dbStatuses.map((s) => s.label));
+        }
+    }, [dbStatuses]);
 
     const getStatusBadge = (status: string) => {
         return getStatusBadgeProps(status, dbStatuses);
@@ -172,7 +183,9 @@ export default function CustomerManagement({
         "정산완료",
     ];
 
-    const rawAvailableStatuses = dbStatuses
+    const rawAvailableStatuses = optimisticStatuses
+        ? optimisticStatuses
+        : dbStatuses
         ? dbStatuses.map((s) => s.label)
         : defaultStatuses;
 
@@ -182,6 +195,47 @@ export default function CustomerManagement({
             : rawAvailableStatuses;
 
     const statusOptions = ["전체", ...availableStatuses];
+
+    const handleStatusDrop = async (targetLabel: string) => {
+        if (!isAdmin || !draggedStatus || draggedStatus === targetLabel || targetLabel === "전체") {
+            setDraggedStatus(null);
+            setDragOverStatus(null);
+            return;
+        }
+
+        const currentList = [...rawAvailableStatuses];
+        const fromIdx = currentList.indexOf(draggedStatus);
+        const toIdx = currentList.indexOf(targetLabel);
+        if (fromIdx === -1 || toIdx === -1) {
+            setDraggedStatus(null);
+            setDragOverStatus(null);
+            return;
+        }
+
+        const [moved] = currentList.splice(fromIdx, 1);
+        currentList.splice(toIdx, 0, moved);
+
+        setOptimisticStatuses(currentList);
+        setDraggedStatus(null);
+        setDragOverStatus(null);
+
+        if (dbStatuses && dbStatuses.length > 0) {
+            const updates = currentList
+                .map((label, idx) => {
+                    const doc = dbStatuses.find((s) => s.label === label);
+                    return doc ? { id: doc._id, order: idx + 1 } : null;
+                })
+                .filter((u): u is { id: any; order: number } => u !== null);
+
+            if (updates.length > 0) {
+                try {
+                    await reorderStatuses({ statuses: updates });
+                } catch (err) {
+                    console.error("Failed to reorder statuses:", err);
+                }
+            }
+        }
+    };
 
     const productOptions = [
         "전체",
@@ -1185,11 +1239,33 @@ export default function CustomerManagement({
 
                     {/* 통합 고객 관리 패널 (상단 상태 탭 + 필터 바 + 테이블 + 페이지네이션) */}
                     <section className="adm-panel">
-                        {/* 1. 상단 언더라인 상태 탭 */}
-                        <div className="adm-tabs" aria-label="고객 상태 필터">
+                        {/* 1. 상단 언더라인 상태 탭 (총괄 어드민 드래그앤드롭 순서 변경 지원) */}
+                        <div
+                            ref={tabsContainerRef}
+                            className="adm-tabs"
+                            aria-label="고객 상태 필터"
+                            onDragOver={(e) => {
+                                if (!isAdmin || !draggedStatus || !tabsContainerRef.current) return;
+                                e.preventDefault();
+                                const rect = tabsContainerRef.current.getBoundingClientRect();
+                                const edgeZone = 64;
+                                if (e.clientX - rect.left < edgeZone) {
+                                    tabsContainerRef.current.scrollLeft -= 12;
+                                } else if (rect.right - e.clientX < edgeZone) {
+                                    tabsContainerRef.current.scrollLeft += 12;
+                                }
+                            }}
+                        >
                             {statusOptions.map((opt) => {
                                 const val = opt === "전체" ? "all" : opt;
                                 const isActive = statusFilter === val;
+                                const isDraggable =
+                                    isAdmin &&
+                                    opt !== "전체" &&
+                                    Boolean(dbStatuses && dbStatuses.length > 0);
+                                const isDraggingThis = draggedStatus === opt;
+                                const isDragOverThis =
+                                    dragOverStatus === opt && draggedStatus !== opt && opt !== "전체";
                                 const count =
                                     opt === "전체"
                                         ? statusTabCounts.all || 0
@@ -1198,9 +1274,57 @@ export default function CustomerManagement({
                                     <button
                                         key={opt}
                                         type="button"
+                                        draggable={isDraggable}
+                                        onDragStart={(e) => {
+                                            if (!isDraggable) return;
+                                            setDraggedStatus(opt);
+                                            e.dataTransfer.effectAllowed = "move";
+                                            e.dataTransfer.setData("text/plain", opt);
+                                        }}
+                                        onDragOver={(e) => {
+                                            if (!isDraggable || !draggedStatus || draggedStatus === opt)
+                                                return;
+                                            e.preventDefault();
+                                            e.dataTransfer.dropEffect = "move";
+                                            if (dragOverStatus !== opt) {
+                                                setDragOverStatus(opt);
+                                            }
+                                        }}
+                                        onDragLeave={() => {
+                                            if (dragOverStatus === opt) {
+                                                setDragOverStatus(null);
+                                            }
+                                        }}
+                                        onDrop={(e) => {
+                                            e.preventDefault();
+                                            void handleStatusDrop(opt);
+                                        }}
+                                        onDragEnd={() => {
+                                            setDraggedStatus(null);
+                                            setDragOverStatus(null);
+                                        }}
                                         onClick={() => setStatusFilter(val)}
-                                        className={`adm-tab ${isActive ? "active" : ""}`}
+                                        title={
+                                            isDraggable
+                                                ? `${opt} · 드래그하여 상태 분류 위치 이동`
+                                                : opt
+                                        }
+                                        className={`adm-tab ${isActive ? "active" : ""} ${
+                                            isDraggingThis ? "dragging" : ""
+                                        } ${isDragOverThis ? "drag-over" : ""}`}
                                     >
+                                        {isDraggable && (
+                                            <span className="adm-tab-grip" aria-hidden="true">
+                                                <svg width="8" height="12" viewBox="0 0 8 12" fill="currentColor">
+                                                    <circle cx="2" cy="2.5" r="1" />
+                                                    <circle cx="6" cy="2.5" r="1" />
+                                                    <circle cx="2" cy="6" r="1" />
+                                                    <circle cx="6" cy="6" r="1" />
+                                                    <circle cx="2" cy="9.5" r="1" />
+                                                    <circle cx="6" cy="9.5" r="1" />
+                                                </svg>
+                                            </span>
+                                        )}
                                         <span>{opt}</span>
                                         <span className="adm-tab-count">{count}</span>
                                     </button>

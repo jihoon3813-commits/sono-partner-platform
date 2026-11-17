@@ -1021,6 +1021,42 @@
   font-weight: 700;
 }
 
+.sono-admin-theme .adm-tab[draggable="true"] {
+  cursor: grab;
+  user-select: none;
+}
+
+.sono-admin-theme .adm-tab[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.sono-admin-theme .adm-tab-grip {
+  display: inline-flex;
+  align-items: center;
+  color: #b7c2b0;
+  opacity: 0.55;
+  transition: opacity 0.15s, color 0.15s;
+  margin-right: -2px;
+}
+
+.sono-admin-theme .adm-tab:hover .adm-tab-grip {
+  opacity: 1;
+  color: var(--green);
+}
+
+.sono-admin-theme .adm-tab.dragging {
+  opacity: 0.35;
+}
+
+.sono-admin-theme .adm-tab.drag-over {
+  color: var(--green);
+  background: #f2f7ee;
+  border-radius: 6px;
+  padding-left: 8px;
+  padding-right: 8px;
+  box-shadow: inset 2px 0 0 var(--green);
+}
+
 /* Filter Bar & Search & Selects */
 .sono-admin-theme .adm-filter-bar {
   padding: 16px 22px;
