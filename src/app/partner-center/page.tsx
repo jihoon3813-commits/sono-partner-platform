@@ -1,11 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Suspense } from "react";
-import { Footer } from "@/components/layout";
-
+import { AdminIcon } from "@/components/dashboard/AdminIcons";
 
 function LoginForm() {
     const router = useRouter();
@@ -28,11 +26,11 @@ function LoginForm() {
         }
 
         // 2. 파라미터가 없는 순수 접속이고 개발 환경(localhost)인 경우에만 총괄 관리자로 자동 로그인
-        const isDev = typeof window !== "undefined" && (
-            window.location.hostname === "localhost" ||
-            window.location.hostname === "127.0.0.1" ||
-            window.location.hostname.endsWith(".local")
-        );
+        const isDev =
+            typeof window !== "undefined" &&
+            (window.location.hostname === "localhost" ||
+                window.location.hostname === "127.0.0.1" ||
+                window.location.hostname.endsWith(".local"));
 
         if (isDev) {
             const devAdminSession = {
@@ -60,7 +58,6 @@ function LoginForm() {
             const data = await response.json();
 
             if (response.ok && data.success && data.partner) {
-                // 관리자 바로가기(자동 로그인) 세션 저장
                 const sessionStr = JSON.stringify(data.partner);
                 sessionStorage.setItem("partnerSession", sessionStr);
                 localStorage.setItem("partnerSession", sessionStr);
@@ -103,106 +100,169 @@ function LoginForm() {
     };
 
     return (
-        <>
-            {/* 로그인 카드 */}
-            <div className="card bg-white !p-10 md:!p-12 shadow-xl shadow-sono-primary/5">
-                <h2 className="text-2xl font-bold text-sono-dark mb-10 text-center tracking-tight">로그인</h2>
+        <div className="adm-panel p-8 sm:p-10 shadow-[0_14px_45px_rgba(25,63,57,0.06)]">
+            <div className="mb-7">
+                <span className="adm-pill green mb-3">PARTNER &amp; ADMIN PORTAL</span>
+                <h2 className="text-[22px] font-bold text-[#263d36] tracking-tight">
+                    워크스페이스 로그인
+                </h2>
+                <p className="text-xs text-[#86918a] mt-1.5 leading-relaxed">
+                    본사 관리자 및 파트너사·상담원 계정으로 접속하세요.
+                </p>
+            </div>
 
-                {error && (
-                    <div className="bg-red-50 text-red-600 px-5 py-4 rounded-2xl mb-8 text-sm font-medium flex items-center gap-3">
-                        <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                        {error}
-                    </div>
-                )}
+            {error && (
+                <div className="bg-[#faeae5] border border-[#ebd2ca] text-[#a65544] px-4 py-3 rounded-[10px] mb-6 text-xs font-semibold flex items-center gap-2.5">
+                    <AdminIcon name="info" className="!w-4 !h-4 shrink-0" />
+                    <span>{error}</span>
+                </div>
+            )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">아이디</label>
-                        <input
-                            type="text"
-                            value={formData.loginId}
-                            onChange={(e) => setFormData({ ...formData, loginId: e.target.value })}
-                            className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4"
-                            placeholder="아이디를 입력하세요"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="input-label !text-[#4e5968] !font-bold mb-2 block">비밀번호</label>
-                        <input
-                            type="password"
-                            value={formData.password}
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            className="input-field !bg-[#f9fafb] !border-none !rounded-2xl !py-4"
-                            placeholder="비밀번호를 입력하세요"
-                            required
-                        />
-                    </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                    <label className="block text-xs font-semibold text-[#5b6d5c] mb-2">
+                        아이디
+                    </label>
+                    <input
+                        type="text"
+                        value={formData.loginId}
+                        onChange={(e) => setFormData({ ...formData, loginId: e.target.value })}
+                        className="w-full px-3.5 py-3 bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] text-sm text-[#263d36] placeholder:text-[#9ca795] focus:bg-white focus:border-[#295e52] outline-none transition-all"
+                        placeholder="아이디를 입력하세요"
+                        required
+                    />
+                </div>
+                <div>
+                    <label className="block text-xs font-semibold text-[#5b6d5c] mb-2">
+                        비밀번호
+                    </label>
+                    <input
+                        type="password"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        className="w-full px-3.5 py-3 bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] text-sm text-[#263d36] placeholder:text-[#9ca795] focus:bg-white focus:border-[#295e52] outline-none transition-all"
+                        placeholder="비밀번호를 입력하세요"
+                        required
+                    />
+                </div>
+
+                <div className="pt-2">
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="btn-primary w-full py-4 text-lg shadow-lg shadow-sono-primary/20 disabled:opacity-50"
+                        className="adm-btn primary w-full !py-3.5 !text-sm !rounded-[9px]"
                     >
                         {isLoading ? (
                             <span className="flex items-center justify-center gap-2">
-                                <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                </svg>
+                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                 확인 중...
                             </span>
-                        ) : "로그인"}
+                        ) : (
+                            <>
+                                <span>로그인</span>
+                                <AdminIcon name="arrow-right" />
+                            </>
+                        )}
                     </button>
-                </form>
-
-                <div className="mt-10 pt-8 border-t border-gray-100 text-center">
-                    <p className="text-[#8b95a1] font-medium">
-                        아직 파트너가 아니신가요?{" "}
-                        <Link href="/partner/apply" className="text-sono-primary font-bold hover:underline ml-1">
-                            제휴 신청하기
-                        </Link>
-                    </p>
                 </div>
+            </form>
+
+            <div className="mt-7 pt-6 border-t border-[#edf0e7] flex items-center justify-between text-xs text-[#86918a]">
+                <span>아직 파트너가 아니신가요?</span>
+                <Link
+                    href="/partner/apply"
+                    className="text-[#295e52] font-bold hover:underline inline-flex items-center gap-1"
+                >
+                    <span>입점/제휴 신청하기</span>
+                    <AdminIcon name="arrow-up-right" className="!w-3.5 !h-3.5" />
+                </Link>
             </div>
-        </>
+        </div>
     );
 }
 
 export default function PartnerCenterLoginPage() {
     return (
-        <div className="min-h-screen bg-[#f2f4f6] flex flex-col">
-            <div className="flex-1 flex items-center justify-center p-6">
-                <div className="w-full max-w-[440px] animate-fade-in">
-                    {/* 로고 및 제목 */}
-                    <div className="text-center mb-12">
-                        <Link href="/partner-center/dashboard" className="inline-block group">
-                            <img
-                                src="https://raw.githubusercontent.com/jihoon3813-commits/img_sono/main/%EA%B3%B5%EC%8B%9D%EC%B4%9D%ED%8C%90%20BI_%EA%B0%80%EB%A1%9CA_W.png"
-                                alt="SONO Partner Center"
-                                className="h-16 w-auto object-contain mx-auto mb-6 transition-transform group-hover:scale-105 brightness-0"
-                            />
-                            <h1 className="text-3xl font-bold text-sono-dark tracking-tighter mb-2">파트너 센터</h1>
-                            <p className="text-[#6b7684] font-medium">소노아임레디 비즈니스 파트너 전용</p>
-                        </Link>
+        <div className="min-h-screen bg-[#f5f6f3] flex flex-col lg:flex-row">
+            {/* Left Brand Panel (Desktop) */}
+            <aside className="hidden lg:flex lg:w-[440px] xl:w-[480px] bg-[#193f39] text-[#d6e2dc] p-12 flex-col justify-between shrink-0 border-r border-[#13312c]">
+                <div>
+                    <div className="adm-brand !p-0">
+                        <span className="adm-brand-emblem">
+                            S<span>•</span>
+                        </span>
+                        <span>
+                            <small>SONO I&apos;M READY</small>
+                            <strong>파트너센터</strong>
+                        </span>
+                    </div>
+                    <div className="mt-14 space-y-4">
+                        <span className="inline-block text-[10px] tracking-[0.18em] uppercase text-[#a6b6a1] font-semibold">
+                            INTEGRATED SALES ADMIN
+                        </span>
+                        <h1 className="text-[30px] font-bold text-white leading-[1.32] tracking-tight">
+                            소노아임레디의 모든 영업을
+                            <br />
+                            하나의 워크스페이스에서.
+                        </h1>
+                        <p className="text-sm text-[#a6bab0] leading-relaxed pt-1">
+                            스마트케어, 더 해피 450 ONE, 마음든든 상품의 상담 접수부터
+                            녹취·본사 접수·연체 관리까지 일관된 기준으로 운영합니다.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="space-y-3 border-t border-white/10 pt-6 text-xs text-[#8fa89c]">
+                    <div className="flex items-center justify-between">
+                        <span>지원 상품</span>
+                        <span className="text-[#dbe5dd] font-semibold">스마트케어 · 더해피450 · 마음든든</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <span>운영 환경</span>
+                        <span className="text-[#dbe5dd] font-semibold">본사 총괄 · 상위/일반 파트너 · TM</span>
+                    </div>
+                </div>
+            </aside>
+
+            {/* Right Login Area */}
+            <div className="flex-1 flex items-center justify-center p-5 sm:p-8">
+                <div className="w-full max-w-[430px]">
+                    {/* Mobile Brand Header */}
+                    <div className="lg:hidden flex items-center justify-center mb-8">
+                        <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[#193f39] text-white">
+                            <span className="adm-brand-emblem !w-8 !h-9 !text-2xl">
+                                S<span>•</span>
+                            </span>
+                            <div className="text-left">
+                                <small className="block text-[8px] tracking-[1.8px] text-[#b2c5b9]">
+                                    SONO I&apos;M READY
+                                </small>
+                                <strong className="text-lg font-bold tracking-tight">파트너센터</strong>
+                            </div>
+                        </div>
                     </div>
 
-                    <Suspense fallback={<div>Loading...</div>}>
+                    <Suspense
+                        fallback={
+                            <div className="adm-panel p-10 text-center text-xs text-[#86918a]">
+                                로그인 화면을 준비하고 있습니다...
+                            </div>
+                        }
+                    >
                         <LoginForm />
                     </Suspense>
 
-                    {/* 하단 링크 */}
-                    <div className="mt-12 text-center space-y-4">
-                        <p className="text-[#adb5bd] text-sm font-medium">
-                            테스트 계정: <span className="text-[#6b7684]">demo</span> / <span className="text-[#6b7684]">demo1234</span>
+                    <div className="mt-8 text-center space-y-3">
+                        <p className="text-[#96a093] text-xs">
+                            테스트 계정: <strong className="text-[#566859]">demo</strong> /{" "}
+                            <strong className="text-[#566859]">demo1234</strong>
                         </p>
                         <div>
-                            <Link href="/" className="text-[#8b95a1] hover:text-[#4e5968] font-bold text-sm transition-colors flex items-center justify-center gap-2">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                                </svg>
-                                메인 페이지로 돌아가기
+                            <Link
+                                href="/"
+                                className="text-[#6d7c6e] hover:text-[#295e52] font-semibold text-xs inline-flex items-center gap-1.5 transition-colors"
+                            >
+                                <span>← 공식 메인 페이지로 돌아가기</span>
                             </Link>
                         </div>
                     </div>
@@ -210,5 +270,4 @@ export default function PartnerCenterLoginPage() {
             </div>
         </div>
     );
-
 }

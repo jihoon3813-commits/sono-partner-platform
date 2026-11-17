@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Partner } from "@/lib/types";
 import PartnerFormModal from "./PartnerFormModal";
+import { AdminIcon } from "./AdminIcons";
 
 interface PartnerManagementProps {
     partners: Partner[];
@@ -286,6 +287,7 @@ function MobilePartnerRow({
 
 export default function PartnerManagement({ partners, onRefresh, isAdmin = false, currentUser }: PartnerManagementProps) {
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedOrgId, setSelectedOrgId] = useState<string>("all");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
     const [initialFormData, setInitialFormData] = useState<Partial<Partner> | null>(null);
@@ -313,6 +315,13 @@ export default function PartnerManagement({ partners, onRefresh, isAdmin = false
         onRefresh();
     };
 
+    const allRootPartners = partners.filter(
+        p => !p.parentPartnerId || p.parentPartnerId === 'admin' || p.parentPartnerId === '' || !partners.find(parent => parent.partnerId === p.parentPartnerId)
+    );
+
+    const activeCount = partners.filter(p => p.status === "active").length;
+    const activeRatio = partners.length > 0 ? Math.round((activeCount / partners.length) * 100) : 0;
+
     // Filter partners first
     const filteredPartners = partners.filter(p =>
         (p.companyName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -321,64 +330,151 @@ export default function PartnerManagement({ partners, onRefresh, isAdmin = false
         (p.managerName || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Build hierarchy from filtered partners
-    // 1. Find root partners (those whose parent is not in the list or is 'admin' or empty)
-    //    BUT if we are filtering, we might only see a child. 
-    //    The requirement is likely to show structure.
-    //    If search term is active, just show flat list. If not, show hierarchy.
-
     const isSearching = searchTerm.length > 0;
 
-    const rootPartners = isSearching
-        ? filteredPartners
-        : partners.filter(p => !p.parentPartnerId || p.parentPartnerId === 'admin' || p.parentPartnerId === '' || !partners.find(parent => parent.partnerId === p.parentPartnerId));
+    const rootPartners = (isSearching ? filteredPartners : allRootPartners).filter(p => {
+        if (selectedOrgId === "all") return true;
+        if (p.partnerId === selectedOrgId) return true;
+        return p.parentPartnerId === selectedOrgId;
+    });
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 bg-white p-6 rounded-2xl shadow-sm">
+        <div className="space-y-5">
+            <section className="adm-page-heading">
                 <div>
-                    <h2 className="text-xl font-bold text-sono-dark">파트너 관리</h2>
-                    <p className="text-sm text-gray-500 mt-1">총 {partners.length}개의 파트너가 있습니다.</p>
+                    <div className="adm-eyebrow">SONO I&apos;M READY · PARTNERS</div>
+                    <h1>파트너 관리</h1>
+                    <p>함께 성장하는 파트너 조직과 전용 랜딩·계정 상태를 관리하세요.</p>
                 </div>
-                <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                    <div className="relative w-full md:w-auto">
-                        <input
-                            type="text"
-                            placeholder="파트너사명, ID, 담당자 검색"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none w-full md:w-64"
-                        />
-                        <svg className="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <div className="flex gap-2 w-full md:w-auto">
-                        {isAdmin && (
-                            <button
-                                onClick={handleRegister}
-                                className="flex-1 md:flex-none bg-sono-primary text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-sono-primary/90 transition-all flex items-center justify-center gap-2 whitespace-nowrap"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                                </svg>
-                                파트너 신규 등록
-                            </button>
-                        )}
+                <div className="adm-heading-buttons">
+                    <button
+                        type="button"
+                        onClick={onRefresh}
+                        className="adm-btn"
+                        title="새로고침"
+                    >
+                        <AdminIcon name="refresh" />
+                        <span>새로고침</span>
+                    </button>
+                    {isAdmin && (
                         <button
-                            onClick={onRefresh}
-                            className="p-2 text-gray-400 hover:text-sono-primary transition-colors bg-gray-50 rounded-xl md:bg-transparent"
-                            title="새로고침"
+                            type="button"
+                            onClick={handleRegister}
+                            className="adm-btn primary"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
+                            <AdminIcon name="plus" />
+                            <span>파트너 신규 등록</span>
                         </button>
-                    </div>
+                    )}
                 </div>
+            </section>
+
+            {/* 파트너 지표 요약 */}
+            <div className="adm-metrics-grid">
+                <article className="adm-metric !py-4">
+                    <div className="adm-metric-head">
+                        <span>전체 파트너</span>
+                        <span className="adm-metric-icon"><AdminIcon name="network" /></span>
+                    </div>
+                    <div className="adm-metric-value !text-[26px] !my-2">{partners.length}<span>개사</span></div>
+                    <div className="adm-metric-foot"><span className="adm-metric-trend">등록 조직</span><span>하위 파트너 포함</span></div>
+                </article>
+                <article className="adm-metric !py-4">
+                    <div className="adm-metric-head">
+                        <span>정상 운영중</span>
+                        <span className="adm-metric-icon"><AdminIcon name="check-circle" /></span>
+                    </div>
+                    <div className="adm-metric-value !text-[26px] !my-2">{activeCount}<span>개사</span></div>
+                    <div className="adm-metric-foot"><span className="adm-metric-trend">{activeRatio}%</span><span>활성 운영 비율</span></div>
+                </article>
+                <article className="adm-metric !py-4">
+                    <div className="adm-metric-head">
+                        <span>상위(마스터) 조직</span>
+                        <span className="adm-metric-icon"><AdminIcon name="building" /></span>
+                    </div>
+                    <div className="adm-metric-value !text-[26px] !my-2">{allRootPartners.length}<span>개사</span></div>
+                    <div className="adm-metric-foot"><span className="adm-metric-trend">최상위 그룹</span><span>본사 직속 파트너</span></div>
+                </article>
+                <article className="adm-metric !py-4">
+                    <div className="adm-metric-head">
+                        <span>하위 파트너 · TM</span>
+                        <span className="adm-metric-icon"><AdminIcon name="users" /></span>
+                    </div>
+                    <div className="adm-metric-value !text-[26px] !my-2">{Math.max(0, partners.length - allRootPartners.length)}<span>계정</span></div>
+                    <div className="adm-metric-foot"><span className="adm-metric-trend">산하 조직</span><span>하위 제휴 및 상담원</span></div>
+                </article>
             </div>
 
-            <div className="hidden md:block bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-[230px_minmax(0,1fr)] gap-5 items-start">
+                {/* 좌측 파트너 조직 트리 선택 패널 (PC) */}
+                <section className="hidden lg:block adm-panel p-4">
+                    <h2 className="text-sm font-bold text-[#263d36] mb-3 px-2">파트너 조직</h2>
+                    <div className="space-y-1 max-h-[480px] overflow-y-auto">
+                        <button
+                            type="button"
+                            onClick={() => setSelectedOrgId("all")}
+                            className={`w-full flex items-center gap-2 text-xs px-2.5 py-2.5 rounded-[7px] transition-colors cursor-pointer ${
+                                selectedOrgId === "all"
+                                    ? "bg-[#edf3e8] text-[#295e52] font-bold"
+                                    : "text-[#6d7c6b] hover:bg-[#f6f8f3]"
+                            }`}
+                        >
+                            <AdminIcon name="network" className="!w-4 !h-4" />
+                            <span className="truncate">전체 조직</span>
+                            <b className="ml-auto text-[10px] text-[#86918a]">{partners.length}</b>
+                        </button>
+                        {allRootPartners.map((rp) => {
+                            const subCount = partners.filter(c => c.parentPartnerId === rp.partnerId).length;
+                            return (
+                                <button
+                                    key={rp.partnerId}
+                                    type="button"
+                                    onClick={() => setSelectedOrgId(rp.partnerId)}
+                                    className={`w-full flex items-center gap-2 text-xs px-2.5 py-2 rounded-[7px] transition-colors cursor-pointer ${
+                                        selectedOrgId === rp.partnerId
+                                            ? "bg-[#edf3e8] text-[#295e52] font-bold"
+                                            : "text-[#6d7c6b] hover:bg-[#f6f8f3]"
+                                    }`}
+                                >
+                                    <AdminIcon name="building" className="!w-3.5 !h-3.5 shrink-0" />
+                                    <span className="truncate">{rp.companyName}</span>
+                                    {subCount > 0 && (
+                                        <b className="ml-auto text-[10px] text-[#86918a]">+{subCount}</b>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </section>
+
+                <div className="space-y-4 min-w-0">
+                    {/* 검색 필터 바 */}
+                    <div className="adm-panel px-5 py-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                        <label className="flex items-center gap-2.5 border border-[#dfe5d9] rounded-[8px] px-3 py-2 bg-[#f9faf7] focus-within:bg-white focus-within:border-[#295e52] sm:w-80">
+                            <AdminIcon name="search" className="!w-4 !h-4 text-[#8e9988]" />
+                            <input
+                                type="text"
+                                placeholder="파트너사명, ID, 담당자 검색"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="border-0 outline-none bg-transparent text-xs text-[#263d36] w-full"
+                            />
+                        </label>
+                        <div className="flex items-center justify-between sm:justify-end gap-3 text-xs text-[#86918a]">
+                            {selectedOrgId !== "all" && (
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedOrgId("all")}
+                                    className="adm-btn small"
+                                >
+                                    조직 필터 초기화
+                                </button>
+                            )}
+                            <span>전체 <strong className="text-[#295e52]">{partners.length}</strong>개사</span>
+                        </div>
+                    </div>
+
+                    <div className="hidden md:block adm-panel overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
@@ -442,6 +538,8 @@ export default function PartnerManagement({ partners, onRefresh, isAdmin = false
                         검색 결과가 없습니다.
                     </div>
                 )}
+                    </div>
+                </div>
             </div>
 
             {isModalOpen && (

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Partner } from "@/lib/types";
 import TMFormModal from "./TMFormModal";
+import { AdminIcon } from "./AdminIcons";
 
 interface TMManagementProps {
     partners: Partner[];
@@ -59,40 +60,43 @@ export default function TMManagement({ partners, parentPartner, onRefresh }: TMM
     };
 
     return (
-        <div className="space-y-6">
-            {/* Upper Action Bar */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div className="space-y-5">
+            <section className="adm-page-heading">
                 <div>
-                    <h2 className="text-xl font-bold text-sono-dark">상담원 계정 관리</h2>
-                    <p className="text-sm text-gray-500 mt-1">
-                        전체 <b>{tmAccounts.length}명</b>의 상담원 계정이 등록되어 있습니다.
+                    <div className="adm-eyebrow">SONO I&apos;M READY · TM AGENTS</div>
+                    <h1>상담원 관리</h1>
+                    <p>
+                        소속 상담원 계정을 등록하고 관리합니다. 현재 총{" "}
+                        <strong className="text-[#295e52]">{tmAccounts.length}명</strong>이 등록되어 있습니다.
                     </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    {/* Search */}
-                    <div className="relative w-full sm:w-64">
-                        <input
-                            type="text"
-                            placeholder="상담원명, ID, 연락처 검색"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none font-bold"
-                        />
-                        <svg className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    {/* Register button */}
+                <div className="adm-heading-buttons">
                     <button
+                        type="button"
                         onClick={handleRegister}
-                        className="bg-sono-primary text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-sono-secondary transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-md shadow-sono-primary/10"
+                        className="adm-btn primary"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                        </svg>
-                        상담원 신규 등록
+                        <AdminIcon name="plus" />
+                        <span>상담원 신규 등록</span>
                     </button>
                 </div>
+            </section>
+
+            {/* 검색 필터 바 */}
+            <div className="adm-panel px-5 py-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <label className="flex items-center gap-2.5 border border-[#dfe5d9] rounded-[8px] px-3 py-2 bg-[#f9faf7] focus-within:bg-white focus-within:border-[#295e52] sm:w-80">
+                    <AdminIcon name="search" className="!w-4 !h-4 text-[#8e9988]" />
+                    <input
+                        type="text"
+                        placeholder="상담원명, ID, 연락처 검색"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="border-0 outline-none bg-transparent text-xs text-[#263d36] w-full"
+                    />
+                </label>
+                <span className="text-xs text-[#86918a]">
+                    검색 결과 <strong className="text-[#295e52]">{filteredTMs.length}</strong>명
+                </span>
             </div>
 
             {/* Desktop Table View */}

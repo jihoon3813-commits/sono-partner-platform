@@ -4,6 +4,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Application } from "@/lib/types";
+import AdminDrawer from "./AdminDrawer";
+import { AdminIcon } from "./AdminIcons";
 
 interface LifeJoyExportModalProps {
     isOpen: boolean;
@@ -386,39 +388,52 @@ export default function LifeJoyExportModal({
     const newCustomerCount = applications.filter(a => a.status === "접수대기" && !isAlreadyInExcel(a)).length;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-            <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full overflow-hidden border border-gray-100 animate-in fade-in zoom-in duration-200">
-                {/* 헤더 */}
-                <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 px-7 py-6 text-white flex items-center justify-between">
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <span className="bg-white/20 text-white text-xs px-2.5 py-1 rounded-full font-bold">
-                                라이프앤조이 전용
-                            </span>
-                            <h2 className="text-xl font-bold tracking-tight">가입요청 엑셀 자동 업데이트 & 다운로드</h2>
-                        </div>
-                        <p className="text-emerald-100 text-xs mt-1.5 font-medium">
-                            원본 엑셀 양식의 서식·폰트·테두리를 100% 보존하며 신규 등록 고객을 이어서 자동 추가합니다.
-                        </p>
-                    </div>
+        <AdminDrawer
+            title="가입요청 엑셀 자동 업데이트 & 다운로드"
+            subtitle="원본 엑셀 양식의 서식·폰트·테두리를 보존하며 신규 등록 고객을 이어서 자동 추가합니다."
+            headerRight={<span className="adm-pill green">라이프앤조이 전용</span>}
+            maxWidth="980px"
+            zIndex={70}
+            onClose={onClose}
+            footer={
+                <>
                     <button
+                        type="button"
                         onClick={onClose}
-                        className="text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-colors"
+                        disabled={isExporting}
+                        className="adm-btn"
                     >
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        닫기
                     </button>
-                </div>
-
+                    <button
+                        type="button"
+                        onClick={handleExport}
+                        disabled={isExporting || isLoadingInfo || selectedAppNos.length === 0}
+                        className="adm-btn primary"
+                    >
+                        {isExporting ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <span>엑셀 업데이트 및 다운로드 중...</span>
+                            </>
+                        ) : (
+                            <>
+                                <AdminIcon name="download" />
+                                <span>선택한 {selectedAppNos.length}명 엑셀 업데이트 &amp; 다운로드</span>
+                            </>
+                        )}
+                    </button>
+                </>
+            }
+        >
                 {isLoadingInfo ? (
                     <div className="p-12 text-center text-gray-500">
-                        <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                        <p className="font-bold text-gray-700">hoon 폴더의 엑셀 파일 분석 중...</p>
-                        <p className="text-xs text-gray-400 mt-1">기존 입력된 고객과 새로운 고객을 대조하고 있습니다.</p>
+                        <div className="w-9 h-9 border-[3px] border-[#295e52] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                        <p className="font-bold text-[#263d36]">hoon 폴더의 엑셀 파일 분석 중...</p>
+                        <p className="text-xs text-[#86918a] mt-1">기존 입력된 고객과 새로운 고객을 대조하고 있습니다.</p>
                     </div>
                 ) : (
-                    <div className="p-7 space-y-6">
+                    <div className="space-y-6">
                         {/* 1. 파일 및 기본 정보 설정 박스 */}
                         <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200/80 space-y-4">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs pb-3 border-b border-gray-200">
@@ -680,41 +695,8 @@ export default function LifeJoyExportModal({
                                 </p>
                             </div>
                         </div>
-
-                        {/* 하단 액션 버튼 */}
-                        <div className="flex items-center justify-end gap-3 pt-2">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                disabled={isExporting}
-                                className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-bold text-xs hover:bg-gray-50 transition-colors"
-                            >
-                                닫기
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleExport}
-                                disabled={isExporting || selectedAppNos.length === 0}
-                                className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold text-xs shadow-lg shadow-emerald-600/20 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isExporting ? (
-                                    <>
-                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        <span>엑셀 업데이트 및 다운로드 중...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg>
-                                        <span>선택한 {selectedAppNos.length}명 엑셀 업데이트 & 다운로드</span>
-                                    </>
-                                )}
-                            </button>
-                        </div>
                     </div>
                 )}
-            </div>
-        </div>
+        </AdminDrawer>
     );
 }

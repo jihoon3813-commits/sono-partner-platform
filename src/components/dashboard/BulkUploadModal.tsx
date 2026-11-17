@@ -3,6 +3,8 @@
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import { bulkSyncApplications } from "@/lib/db";
+import AdminDrawer from "./AdminDrawer";
+import { AdminIcon } from "./AdminIcons";
 
 interface BulkUploadModalProps {
     onClose: () => void;
@@ -151,125 +153,108 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-3 sm:p-4" onClick={onClose}>
-            <div className="bg-white rounded-[24px] sm:rounded-[32px] w-full max-w-md p-5 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                <div className="flex justify-between items-center mb-4 sm:mb-6">
-                    <h2 className="text-xl sm:text-2xl font-bold text-sono-dark tracking-tight">본사 엑셀 일괄 등록</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-sono-dark">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-
-                <div className="space-y-6">
-                    {/* 환경 식별 배지 */}
-                    {typeof window !== "undefined" && (
-                        <div className={`p-3 rounded-xl border flex items-center justify-between text-xs font-semibold ${
-                            (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
-                                ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-                                : "bg-amber-50 border-amber-200 text-amber-800"
-                        }`}>
-                            <div className="flex items-center gap-2">
-                                <span className={`w-2.5 h-2.5 rounded-full ${
-                                    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
-                                        ? "bg-emerald-500 animate-pulse"
-                                        : "bg-amber-500"
-                                }`}></span>
-                                <span>
-                                    {(window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
-                                        ? "🛠️ 개발 DB 연결됨 (Dev)"
-                                        : "🚀 실사이트 운영 DB 연결됨 (Prod)"}
-                                </span>
-                            </div>
-                            <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
+        <AdminDrawer
+            title="본사 엑셀 일괄 등록"
+            subtitle="본사 현황 엑셀(.xlsx, .xls)을 업로드하여 신규 등록 및 상태를 동기화합니다."
+            maxWidth="540px"
+            zIndex={70}
+            onClose={onClose}
+            footer={
+                <button type="button" onClick={onClose} className="adm-btn">
+                    닫기
+                </button>
+            }
+        >
+            <div className="space-y-5">
+                {typeof window !== "undefined" && (
+                    <div className={`p-3 rounded-[10px] border flex items-center justify-between text-xs font-semibold ${
+                        (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
+                            ? "bg-[#eaf3e8] border-[#cfe0c7] text-[#3a6144]"
+                            : "bg-[#faf0df] border-[#ead7b7] text-[#946b31]"
+                    }`}>
+                        <div className="flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full ${
                                 (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
-                                    ? "bg-emerald-100 text-emerald-700"
-                                    : "bg-amber-100 text-amber-700"
-                            }`}>
+                                    ? "bg-[#4f7d53] animate-pulse"
+                                    : "bg-[#b58c4b]"
+                            }`} />
+                            <span>
                                 {(window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
-                                    ? "실서버 영향 없음"
-                                    : "운영 서버 실시간 반영"}
+                                    ? "개발 DB 연결됨 (Dev)"
+                                    : "실사이트 운영 DB 연결됨 (Prod)"}
                             </span>
                         </div>
-                    )}
-
-                    <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex items-start gap-3">
-                        <svg className="w-5 h-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                        <div className="text-xs text-blue-800 space-y-1 font-medium">
-                            <p>• 본사에서 받은 '더해피450' 엑셀 파일을 선택하세요.</p>
-                            <p>• 모든 시트의 데이터를 자동으로 통합 분석합니다.</p>
-                            <p>• 가입자명 + 연락처 + 채널명을 기준으로 기존 데이터를 업데이트하거나 신규 등록합니다.</p>
-                        </div>
+                        <span className="text-[11px] font-bold">
+                            {(window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
+                                ? "실서버 영향 없음"
+                                : "운영 서버 실시간 반영"}
+                        </span>
                     </div>
+                )}
 
-                    {!result ? (
-                        <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-[24px] p-10 hover:border-sono-primary transition-colors bg-gray-50/50">
-                            <input
-                                type="file"
-                                accept=".xlsx, .xls"
-                                onChange={handleFileUpload}
-                                className="hidden"
-                                id="excel-upload"
-                                disabled={isLoading}
-                            />
-                            <label htmlFor="excel-upload" className="cursor-pointer flex flex-col items-center gap-3">
-                                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-2">
-                                    <svg className="w-8 h-8 text-sono-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                </div>
-                                <span className="font-bold text-sono-dark">엑셀 파일 선택하기</span>
-                                <span className="text-xs text-gray-400 font-medium">.xlsx, .xls 형식의 파일을 지원합니다</span>
-                            </label>
-                        </div>
-                    ) : (
-                        <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center space-y-4">
-                            <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                </svg>
-                            </div>
-                            <h3 className="font-bold text-sono-dark">동기화 완료</h3>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-white p-3 rounded-xl border border-gray-100">
-                                    <p className="text-[10px] font-bold text-gray-400 mb-1">신규 등록</p>
-                                    <p className="text-xl font-black text-sono-primary">{result.created}건</p>
-                                </div>
-                                <div className="bg-white p-3 rounded-xl border border-gray-100">
-                                    <p className="text-[10px] font-bold text-gray-400 mb-1">기존 업데이트</p>
-                                    <p className="text-xl font-black text-sono-secondary">{result.updated}건</p>
-                                </div>
-                            </div>
-
-                            {result.updatedNames && result.updatedNames.length > 0 && (
-                                <div className="text-left bg-white p-4 rounded-xl border border-gray-100 max-h-[120px] overflow-y-auto">
-                                    <p className="text-[10px] font-bold text-gray-400 mb-2">업데이트된 고객 명단:</p>
-                                    <p className="text-xs text-sono-dark leading-relaxed font-medium">
-                                        {[...new Set(result.updatedNames)].join(", ")}
-                                    </p>
-                                </div>
-                            )}
-
-                            <button
-                                onClick={onClose}
-                                className="w-full bg-sono-dark text-white font-bold py-3.5 rounded-2xl text-sm hover:bg-black transition-all"
-                            >
-                                닫기
-                            </button>
-                        </div>
-                    )}
-
-                    {isLoading && (
-                        <div className="text-center space-y-3">
-                            <div className="animate-spin w-8 h-8 border-4 border-sono-primary border-t-transparent rounded-full mx-auto"></div>
-                            <p className="text-sm font-bold text-sono-primary">{progress}</p>
-                        </div>
-                    )}
+                <div className="bg-[#f8f9f5] p-4 rounded-[11px] border border-[#e6eae3] text-xs text-[#5d6c5d] space-y-1.5 leading-relaxed">
+                    <p className="font-bold text-[#295e52] flex items-center gap-1.5 mb-1">
+                        <AdminIcon name="info" className="!w-4 !h-4" />
+                        업로드 기준 안내
+                    </p>
+                    <p>• 본사에서 받은 &apos;더해피450&apos; 엑셀 파일을 선택하세요.</p>
+                    <p>• 모든 시트의 데이터를 자동으로 통합 분석합니다.</p>
+                    <p>• 가입자명 + 연락처 + 채널명을 기준으로 기존 데이터를 업데이트하거나 신규 등록합니다.</p>
                 </div>
+
+                {!result ? (
+                    <div className="border border-dashed border-[#cbd8c0] rounded-[12px] p-10 text-center hover:bg-[#f9fbf7] transition-colors">
+                        <input
+                            type="file"
+                            accept=".xlsx, .xls"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                            id="excel-upload"
+                            disabled={isLoading}
+                        />
+                        <label htmlFor="excel-upload" className="cursor-pointer flex flex-col items-center gap-2.5">
+                            <div className="w-12 h-12 bg-[#edf2e7] text-[#295e52] rounded-xl flex items-center justify-center mb-1">
+                                <AdminIcon name="upload" className="!w-6 !h-6" />
+                            </div>
+                            <span className="font-bold text-[#263d36] text-sm">엑셀 파일 선택하기</span>
+                            <span className="text-xs text-[#86918a]">.xlsx, .xls 형식의 파일을 지원합니다</span>
+                        </label>
+                    </div>
+                ) : (
+                    <div className="bg-[#f8f9f5] p-6 rounded-[12px] border border-[#e6eae3] text-center space-y-4">
+                        <div className="w-11 h-11 bg-[#eaf3e8] text-[#295e52] rounded-full flex items-center justify-center mx-auto">
+                            <AdminIcon name="check" />
+                        </div>
+                        <h3 className="font-bold text-[#263d36]">동기화 완료</h3>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-white p-3.5 rounded-[10px] border border-[#e6eae3]">
+                                <p className="text-[11px] font-semibold text-[#86918a] mb-1">신규 등록</p>
+                                <p className="text-xl font-bold text-[#295e52]">{result.created}건</p>
+                            </div>
+                            <div className="bg-white p-3.5 rounded-[10px] border border-[#e6eae3]">
+                                <p className="text-[11px] font-semibold text-[#86918a] mb-1">기존 업데이트</p>
+                                <p className="text-xl font-bold text-[#263d36]">{result.updated}건</p>
+                            </div>
+                        </div>
+
+                        {result.updatedNames && result.updatedNames.length > 0 && (
+                            <div className="text-left bg-white p-4 rounded-[10px] border border-[#e6eae3] max-h-[140px] overflow-y-auto">
+                                <p className="text-[11px] font-bold text-[#86918a] mb-1.5">업데이트된 고객 명단:</p>
+                                <p className="text-xs text-[#263d36] leading-relaxed">
+                                    {[...new Set(result.updatedNames)].join(", ")}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {isLoading && (
+                    <div className="text-center space-y-2.5 py-2">
+                        <div className="animate-spin w-7 h-7 border-[3px] border-[#295e52] border-t-transparent rounded-full mx-auto" />
+                        <p className="text-xs font-bold text-[#295e52]">{progress}</p>
+                    </div>
+                )}
             </div>
-        </div>
+        </AdminDrawer>
     );
 }

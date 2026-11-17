@@ -6,6 +6,8 @@ import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 import sampleProducts from "@/lib/seedData";
 import { cleanProductName } from "@/lib/productUtils";
+import AdminDrawer from "./AdminDrawer";
+import { AdminIcon } from "./AdminIcons";
 
 interface Product {
     _id: Id<"products">;
@@ -585,30 +587,32 @@ export default function ProductManagement() {
     };
 
     return (
-        <div className="space-y-6">
-            {/* 탭 네비게이션 */}
-            <div className="flex items-center gap-2 bg-gray-100/50 p-1.5 rounded-2xl border border-gray-200/30 w-fit mb-6">
-                <button
-                    onClick={() => setSubTab("care")}
-                    className={`px-6 py-2.5 rounded-xl text-sm font-black transition-all ${
-                        subTab === "care"
-                            ? "bg-white text-sono-primary shadow-sm border border-gray-100"
-                            : "text-gray-400 hover:text-sono-dark"
-                    }`}
-                >
-                    상품정보 관리
-                </button>
-                <button
-                    onClick={() => setSubTab("products")}
-                    className={`px-6 py-2.5 rounded-xl text-sm font-black transition-all ${
-                        subTab === "products"
-                            ? "bg-white text-sono-primary shadow-sm border border-gray-100"
-                            : "text-gray-400 hover:text-sono-dark"
-                    }`}
-                >
-                    결합제품 관리
-                </button>
-            </div>
+        <div className="space-y-5">
+            <section className="adm-page-heading">
+                <div>
+                    <div className="adm-eyebrow">SONO I&apos;M READY · PRODUCTS</div>
+                    <h1>상품관리</h1>
+                    <p>소노아임레디 상조·결합 상품 플랜과 연동 가전제품 구성을 관리합니다.</p>
+                </div>
+                <div className="adm-heading-buttons">
+                    <div className="adm-segmented">
+                        <button
+                            type="button"
+                            onClick={() => setSubTab("care")}
+                            className={subTab === "care" ? "active" : ""}
+                        >
+                            상품정보 관리
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setSubTab("products")}
+                            className={subTab === "products" ? "active" : ""}
+                        >
+                            결합제품 관리
+                        </button>
+                    </div>
+                </div>
+            </section>
 
             {subTab === "products" ? (
                 <div className="space-y-6">
@@ -1234,19 +1238,35 @@ export default function ProductManagement() {
                 </div>
             )}
 
-            {/* 가전제품 등록/수정 모달 */}
+            {/* 가전제품 등록/수정 드로어 */}
             {isModalOpen && editingProduct && (
-                <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
-                    <div className="bg-white rounded-[32px] w-full max-w-2xl overflow-hidden shadow-2xl animate-scale-in">
-                        <div className="bg-sono-dark px-8 py-6 text-white flex justify-between items-center">
-                            <h3 className="text-xl font-black tracking-tight">{editingProduct._id ? "제품 정보 수정" : "새 제품 등록"}</h3>
-                            <button onClick={() => setIsModalOpen(false)} className="opacity-60 hover:opacity-100 transition-opacity">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                <AdminDrawer
+                    title={editingProduct._id ? "제품 정보 수정" : "새 제품 등록"}
+                    subtitle="결합 가전제품 브랜드, 모델명 및 연결 상품을 설정합니다."
+                    maxWidth="680px"
+                    zIndex={80}
+                    onClose={() => setIsModalOpen(false)}
+                    footer={
+                        <>
+                            <button
+                                type="button"
+                                onClick={() => setIsModalOpen(false)}
+                                className="adm-btn"
+                            >
+                                취소
                             </button>
-                        </div>
-                        <form onSubmit={handleSave} className="p-8 space-y-6">
+                            <button
+                                type="submit"
+                                form="product-edit-drawer"
+                                className="adm-btn primary"
+                            >
+                                <AdminIcon name="check" />
+                                <span>저장하기</span>
+                            </button>
+                        </>
+                    }
+                >
+                        <form id="product-edit-drawer" onSubmit={handleSave} className="space-y-6">
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="col-span-1">
                                     <label className="text-xs font-bold text-[#8b95a1] mb-2 block ml-1">브랜드</label>
@@ -1384,40 +1404,39 @@ export default function ProductManagement() {
                                     </label>
                                 </div>
                             </div>
-
-                            <div className="flex justify-end gap-3 mt-10">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="px-8 py-4 rounded-2xl font-bold text-gray-500 hover:bg-gray-100 transition-all"
-                                >
-                                    취소
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-10 py-4 rounded-2xl font-bold bg-sono-primary text-white hover:bg-sono-dark transition-all shadow-xl shadow-sono-primary/20"
-                                >
-                                    저장하기
-                                </button>
-                            </div>
                         </form>
-                    </div>
-                </div>
+                </AdminDrawer>
             )}
 
-            {/* 상품(플랜) 등록/수정 모달 */}
+            {/* 상품(플랜) 등록/수정 드로어 */}
             {isCareModalOpen && editingCareProduct && (
-                <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
-                    <div className="bg-white rounded-[32px] w-full max-w-2xl overflow-hidden shadow-2xl animate-scale-in">
-                        <div className="bg-sono-dark px-8 py-6 text-white flex justify-between items-center">
-                            <h3 className="text-xl font-black tracking-tight">{editingCareProduct._id ? "상품 정보 수정" : "새 상품 등록"}</h3>
-                            <button onClick={() => setIsCareModalOpen(false)} className="opacity-60 hover:opacity-100 transition-opacity">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                <AdminDrawer
+                    title={editingCareProduct._id ? "상품 정보 수정" : "새 상품 등록"}
+                    subtitle="상조·결합 상품 플랜 조건 및 자동 동기화를 설정합니다."
+                    maxWidth="700px"
+                    zIndex={80}
+                    onClose={() => setIsCareModalOpen(false)}
+                    footer={
+                        <>
+                            <button
+                                type="button"
+                                onClick={() => setIsCareModalOpen(false)}
+                                className="adm-btn"
+                            >
+                                취소
                             </button>
-                        </div>
-                        <form onSubmit={handleCareSave} className="p-8 space-y-6">
+                            <button
+                                type="submit"
+                                form="care-product-edit-drawer"
+                                className="adm-btn primary"
+                            >
+                                <AdminIcon name="check" />
+                                <span>저장하기</span>
+                            </button>
+                        </>
+                    }
+                >
+                        <form id="care-product-edit-drawer" onSubmit={handleCareSave} className="space-y-6">
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="col-span-2">
                                     <label className="text-xs font-bold text-[#8b95a1] mb-2 block ml-1">상품 구분 *</label>
@@ -1665,25 +1684,8 @@ export default function ProductManagement() {
                                     </>
                                 )}
                             </div>
-
-                            <div className="flex justify-end gap-3 mt-10">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsCareModalOpen(false)}
-                                    className="px-8 py-4 rounded-2xl font-bold text-gray-500 hover:bg-gray-100 transition-all"
-                                >
-                                    취소
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-10 py-4 rounded-2xl font-bold bg-sono-primary text-white hover:bg-sono-dark transition-all shadow-xl shadow-sono-primary/20"
-                                >
-                                    저장하기
-                                </button>
-                            </div>
                         </form>
-                    </div>
-                </div>
+                </AdminDrawer>
             )}
         </div>
     );

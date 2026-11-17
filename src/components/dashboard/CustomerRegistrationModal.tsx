@@ -7,6 +7,8 @@ import { api } from "../../../convex/_generated/api";
 import { Partner } from "@/lib/types";
 import DaumPostcode from 'react-daum-postcode';
 import { useQuery } from "convex/react";
+import AdminDrawer from "./AdminDrawer";
+import { AdminIcon } from "./AdminIcons";
 
 interface CustomerRegistrationModalProps {
     onClose: () => void;
@@ -537,21 +539,36 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
     };
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-slide-up relative">
-                {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                    <h2 className="text-xl font-bold text-sono-dark">고객 직접 등록</h2>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
-                        <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+        <AdminDrawer
+            title="고객 직접 등록"
+            subtitle="개별 입력 또는 엑셀 업로드로 상담 접수 고객을 등록합니다."
+            maxWidth="960px"
+            zIndex={70}
+            onClose={onClose}
+            footerCaption={`등록 대기 ${stagedCustomers.length}명`}
+            footer={
+                <>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="adm-btn"
+                        disabled={isSubmitting}
+                    >
+                        취소
                     </button>
-                </div>
-
-                {/* Body */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-8">
-
+                    <button
+                        type="button"
+                        onClick={handleSave}
+                        disabled={stagedCustomers.length === 0 || isSubmitting}
+                        className="adm-btn primary"
+                    >
+                        <AdminIcon name="check" />
+                        <span>{isSubmitting ? "저장 중..." : `${stagedCustomers.length}명 저장하기`}</span>
+                    </button>
+                </>
+            }
+        >
+            <div className="space-y-7 relative">
                     {/* 1. Manual Entry / Excel Actions */}
                     <div className="grid md:grid-cols-3 gap-6">
                         {/* Actions */}
@@ -920,45 +937,23 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                             </table>
                         </div>
                     </div>
-                </div>
-
-                {/* Footer */}
-                <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
-                    <button
-                        onClick={onClose}
-                        className="px-6 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50"
-                        disabled={isSubmitting}
-                    >
-                        취소
-                    </button>
-                    <button
-                        onClick={handleSave}
-                        disabled={stagedCustomers.length === 0 || isSubmitting}
-                        className="px-8 py-2.5 bg-sono-primary text-white rounded-xl text-sm font-bold hover:bg-sono-secondary disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-sono-primary/20 transition-all"
-                    >
-                        {isSubmitting ? "저장 중..." : `${stagedCustomers.length}명 저장하기`}
-                    </button>
-                </div>
-
-                {/* Postcode Modal */}
-                {isOpenPostcode && (
-                    <div className="absolute inset-0 z-[210] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden relative">
-                            <div className="flex justify-between items-center px-4 py-3 border-b border-gray-100 bg-gray-50">
-                                <h3 className="font-bold text-sono-dark">주소 검색</h3>
-                                <button onClick={() => setIsOpenPostcode(false)} className="p-1 hover:bg-gray-200 rounded-full transition-colors">
-                                    <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <div className="h-[400px]">
-                                <DaumPostcode onComplete={handleCompletePostcode} style={{ height: '100%' }} />
+                    {/* Postcode Modal */}
+                    {isOpenPostcode && (
+                        <div className="fixed inset-0 z-[210] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setIsOpenPostcode(false)}>
+                            <div className="bg-white rounded-[14px] shadow-2xl w-full max-w-lg overflow-hidden relative border border-[#e6eae3]" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex justify-between items-center px-5 py-3.5 border-b border-[#e6eae3] bg-[#f8f9f5]">
+                                    <h3 className="font-bold text-[#263d36] text-sm">주소 검색</h3>
+                                    <button type="button" onClick={() => setIsOpenPostcode(false)} className="adm-icon-btn">
+                                        <AdminIcon name="close" />
+                                    </button>
+                                </div>
+                                <div className="h-[400px]">
+                                    <DaumPostcode onComplete={handleCompletePostcode} style={{ height: '100%' }} />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )}
             </div>
-        </div>
+        </AdminDrawer>
     );
 }

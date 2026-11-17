@@ -1,0 +1,15 @@
+{
+  "name": "sono-maeum-admin",
+  "export_date": "2026-11-17",
+  "design_version": 1,
+  "source_commit": "17916fd4d47ba6f767e4df22e69702d6bfe8621b",
+  "preview_url": "https://sono-maeum-sales-admin.hoony365.chatgpt.site",
+  "entry": "index.html",
+  "build_required": false,
+  "backend_connected": false,
+  "source_sha256": {
+    "index.html": "eceb4e6fab133d52e501f9a58d3e60ddc649fd4978203669d27d17824a93f4a3",
+    "styles.css": "33fed704c489c1a42ec7b697ef91a186e308c52fc561a638220e8de40fb95690",
+    "app.js": "4dc439125b02a988e41ea48ddff2ff82f5a7afcc6f714b730fad9696c715228a"
+  }
+}

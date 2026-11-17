@@ -5,6 +5,8 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Application } from "@/lib/types";
 import { getDefaultCallDateTime } from "@/lib/callTimeUtils";
+import AdminDrawer from "./AdminDrawer";
+import { AdminIcon } from "./AdminIcons";
 
 interface SonoRegisterModalProps {
     isOpen: boolean;
@@ -168,37 +170,44 @@ export default function SonoRegisterModal({
     };
 
     return (
-        <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-[60] p-4"
-            onClick={onClose}
-        >
-            <div 
-                className="bg-white rounded-3xl w-full max-w-xl max-h-[92vh] overflow-y-auto shadow-2xl flex flex-col animate-in fade-in zoom-in-95 duration-200"
-                onClick={(e) => e.stopPropagation()}
-            >
-                {/* 모달 헤더 */}
-                <div className="p-5 sm:p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black text-sm">
-                            SO
-                        </div>
-                        <div>
-                            <h2 className="text-lg sm:text-xl font-black text-sono-dark">소노아임레디 웹 접수 확인</h2>
-                            <p className="text-xs text-gray-400 font-medium">direct.sonoimready.com/THEHAPPYONE/write 전송</p>
-                        </div>
-                    </div>
-                    <button 
+        <AdminDrawer
+            title="소노아임레디 웹 접수 확인"
+            subtitle="direct.sonoimready.com/THEHAPPYONE/write 전송"
+            maxWidth="580px"
+            zIndex={75}
+            onClose={onClose}
+            footer={
+                <>
+                    <button
+                        type="button"
                         onClick={onClose}
-                        className="w-8 h-8 rounded-full bg-gray-100 text-gray-400 hover:text-gray-700 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                        disabled={isLoading}
+                        className="adm-btn"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        취소
                     </button>
-                </div>
-
-                {/* 모달 본문 */}
-                <div className="p-5 sm:p-6 space-y-5 overflow-y-auto flex-1">
+                    <button
+                        type="button"
+                        onClick={handleSubmit}
+                        disabled={isLoading}
+                        className="adm-btn primary"
+                    >
+                        {isLoading ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
+                                <span>소노아임레디로 전송 중...</span>
+                            </>
+                        ) : (
+                            <>
+                                <AdminIcon name="check" />
+                                <span>소노아임레디로 최종 접수</span>
+                            </>
+                        )}
+                    </button>
+                </>
+            }
+        >
+            <div className="space-y-5">
                     {/* 결과 배너 (성공/실패 시 표시) */}
                     {resultBanner && (
                         <div className={`p-4 rounded-2xl border text-sm font-bold animate-in fade-in duration-150 ${
@@ -213,14 +222,12 @@ export default function SonoRegisterModal({
                     )}
 
                     {/* 안내 문구 */}
-                    <div className="bg-indigo-50/50 border border-indigo-100/80 rounded-2xl p-4 text-xs text-indigo-950 space-y-1">
-                        <div className="font-bold flex items-center gap-1.5 text-indigo-900">
-                            <svg className="w-4 h-4 text-indigo-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                    <div className="bg-[#f4f7ef] border border-[#dce6d5] rounded-[11px] p-4 text-xs text-[#295e52] space-y-1">
+                        <div className="font-bold flex items-center gap-1.5">
+                            <AdminIcon name="info" className="!w-4 !h-4 shrink-0" />
                             <span>소노아임레디 상담 접수 페이지로 자동 전송됩니다.</span>
                         </div>
-                        <p className="text-gray-500 pl-5.5">
+                        <p className="text-[#5e6e5f] pl-5">
                             전송할 고객 정보 및 통화 요청 시간을 확인하신 후 하단의 최종 접수 버튼을 클릭하세요.
                         </p>
                     </div>
@@ -378,40 +385,7 @@ export default function SonoRegisterModal({
                             )}
                         </div>
                     </div>
-                </div>
-
-                {/* 모달 푸터 */}
-                <div className="p-4 sm:p-6 border-t border-gray-100 bg-gray-50/50 flex items-center justify-end gap-2.5 rounded-b-3xl">
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        disabled={isLoading}
-                        className="px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-600 border border-gray-200 text-xs sm:text-sm font-bold rounded-xl transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
-                    >
-                        취소
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleSubmit}
-                        disabled={isLoading}
-                        className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
-                    >
-                        {isLoading ? (
-                            <>
-                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
-                                <span>소노아임레디로 전송 중...</span>
-                            </>
-                        ) : (
-                            <>
-                                <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                                </svg>
-                                <span>소노아임레디로 최종 접수</span>
-                            </>
-                        )}
-                    </button>
-                </div>
             </div>
-        </div>
+        </AdminDrawer>
     );
 }

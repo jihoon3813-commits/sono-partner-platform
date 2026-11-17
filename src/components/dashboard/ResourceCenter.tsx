@@ -4,6 +4,8 @@ import { useState, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
+import AdminDrawer from "./AdminDrawer";
+import { AdminIcon } from "./AdminIcons";
 
 interface ResourceCenterProps {
     isAdmin: boolean;
@@ -14,7 +16,7 @@ export default function ResourceCenter({ isAdmin }: ResourceCenterProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const resources = useQuery(api.resources.listResources, {
-        type: selectedType === "all" ? undefined : selectedType
+        type: selectedType === "all" ? undefined : selectedType,
     });
 
     const deleteResource = useMutation(api.resources.deleteResource);
@@ -26,121 +28,147 @@ export default function ResourceCenter({ isAdmin }: ResourceCenterProps) {
     };
 
     return (
-        <div className="space-y-6 animate-slide-up">
-            {/* Filter & Add Button */}
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div className="flex gap-2 bg-gray-100 p-1.5 rounded-2xl w-full md:w-auto overflow-x-auto">
-                    {["all", "image", "video", "file"].map((type) => (
-                        <button
-                            key={type}
-                            onClick={() => setSelectedType(type)}
-                            className={`px-5 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${selectedType === type
-                                ? "bg-white text-sono-primary shadow-sm"
-                                : "text-gray-400 hover:text-gray-600"
-                                }`}
-                        >
-                            {type === "all" ? "전체" : type === "image" ? "이미지" : type === "video" ? "영상" : "일반파일"}
-                        </button>
-                    ))}
+        <div className="space-y-5">
+            <section className="adm-page-heading">
+                <div>
+                    <div className="adm-eyebrow">SONO I&apos;M READY · RESOURCES</div>
+                    <h1>자료실</h1>
+                    <p>정확한 상품 안내와 편리한 영업을 위한 공식 자료를 확인하고 다운로드하세요.</p>
                 </div>
-                {isAdmin && (
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="w-full md:w-auto px-6 py-3 bg-sono-primary text-white rounded-2xl font-bold hover:bg-sono-secondary transition-all shadow-lg shadow-sono-primary/20 flex items-center justify-center gap-2"
-                    >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                        </svg>
-                        자료 등록
-                    </button>
-                )}
-            </div>
+                <div className="adm-heading-buttons">
+                    <div className="adm-segmented">
+                        {["all", "image", "video", "file"].map((type) => (
+                            <button
+                                key={type}
+                                type="button"
+                                onClick={() => setSelectedType(type)}
+                                className={selectedType === type ? "active" : ""}
+                            >
+                                {type === "all"
+                                    ? "전체"
+                                    : type === "image"
+                                    ? "이미지"
+                                    : type === "video"
+                                    ? "영상"
+                                    : "일반파일"}
+                            </button>
+                        ))}
+                    </div>
+                    {isAdmin && (
+                        <button
+                            type="button"
+                            onClick={() => setIsModalOpen(true)}
+                            className="adm-btn primary"
+                        >
+                            <AdminIcon name="plus" />
+                            <span>자료 등록</span>
+                        </button>
+                    )}
+                </div>
+            </section>
 
             {/* Resource Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {!resources ? (
-                    <div className="col-span-full py-20 text-center text-gray-400 font-bold">자료를 불러오는 중...</div>
+                    <div className="col-span-full adm-panel py-16 text-center text-xs text-[#86918a] font-semibold">
+                        자료를 불러오는 중...
+                    </div>
                 ) : resources.length === 0 ? (
-                    <div className="col-span-full py-20 text-center text-gray-400 font-bold bg-white rounded-[32px] border border-dashed border-gray-200">
-                        등록된 자료가 없습니다.
+                    <div className="col-span-full adm-panel py-16 text-center text-[#86918a]">
+                        <AdminIcon name="folder" className="mx-auto mb-2.5 !w-7 !h-7 text-[#b0bfa8]" />
+                        <strong className="block text-sm text-[#263d36] mb-1">등록된 자료가 없습니다</strong>
+                        <p className="text-xs">선택한 분류에 등록된 자료가 없습니다.</p>
                     </div>
                 ) : (
                     resources.map((res) => (
-                        <div key={res._id} className="group bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col">
+                        <article
+                            key={res._id}
+                            className="group adm-panel flex flex-col overflow-hidden hover:border-[#a7baa6] transition-all"
+                        >
                             {/* Thumbnail Area */}
-                            <div className="aspect-video relative overflow-hidden bg-gray-50 border-b border-gray-100">
+                            <div className="aspect-video relative overflow-hidden bg-[#f4f6f0] border-b border-[#e6eae3]">
                                 {res.directThumbnailUrl ? (
-                                    <img src={res.directThumbnailUrl} alt={res.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                ) : res.type === 'image' && res.directFileUrl ? (
-                                    <img src={res.directFileUrl} alt={res.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    <img
+                                        src={res.directThumbnailUrl}
+                                        alt={res.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                ) : res.type === "image" && res.directFileUrl ? (
+                                    <img
+                                        src={res.directFileUrl}
+                                        alt={res.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">
-                                        {res.type === 'video' ? (
-                                            <div className="p-5 bg-red-50 text-red-500 rounded-3xl group-hover:scale-110 transition-transform">
-                                                <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M8 5v14l11-7z" />
-                                                </svg>
-                                            </div>
-                                        ) : (
-                                            <div className="p-5 bg-blue-50 text-blue-500 rounded-3xl group-hover:scale-110 transition-transform">
-                                                <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                </svg>
-                                            </div>
-                                        )}
+                                        <div className="w-12 h-14 rounded-lg bg-[#e8efe2] text-[#295e52] font-bold text-xs grid place-items-center border border-[#d6e2cd]">
+                                            {res.type === "video" ? "VID" : "FILE"}
+                                        </div>
                                     </div>
                                 )}
                                 <div className="absolute top-3 left-3">
-                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${res.type === 'image' ? 'bg-orange-500 text-white' :
-                                        res.type === 'video' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
-                                        }`}>
-                                        {res.type}
+                                    <span
+                                        className={`adm-pill ${
+                                            res.type === "image"
+                                                ? "orange"
+                                                : res.type === "video"
+                                                ? "red"
+                                                : "green"
+                                        }`}
+                                    >
+                                        {res.type.toUpperCase()}
                                     </span>
                                 </div>
                             </div>
 
                             {/* Info Area */}
-                            <div className="p-6 flex-1 flex flex-col">
-                                <h3 className="font-bold text-sono-dark mb-2 line-clamp-1 group-hover:text-sono-primary transition-colors">{res.title}</h3>
-                                <p className="text-xs text-gray-400 line-clamp-2 mb-6 flex-1 leading-relaxed">{res.description || "등록된 설명이 없습니다."}</p>
+                            <div className="p-5 flex-1 flex flex-col">
+                                <h3 className="font-bold text-sm text-[#263d36] mb-1.5 line-clamp-1 group-hover:text-[#295e52] transition-colors">
+                                    {res.title}
+                                </h3>
+                                <p className="text-xs text-[#86918a] line-clamp-2 mb-5 flex-1 leading-relaxed">
+                                    {res.description || "등록된 설명이 없습니다."}
+                                </p>
 
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 pt-3 border-t border-[#edf0e7]">
                                     <button
-                                        onClick={() => window.open(res.directFileUrl, '_blank')}
-                                        className="flex-1 px-4 py-2.5 bg-gray-50 text-gray-600 rounded-xl text-xs font-bold hover:bg-sono-primary/10 hover:text-sono-primary transition-all flex items-center justify-center gap-1.5"
+                                        type="button"
+                                        onClick={() => window.open(res.directFileUrl, "_blank")}
+                                        className="flex-1 adm-btn small"
                                     >
                                         미리보기
                                     </button>
                                     <button
+                                        type="button"
                                         onClick={() => {
-                                            const downloadUrl = `/api/download?url=${encodeURIComponent(res.directFileUrl)}&filename=${encodeURIComponent(res.title)}`;
+                                            const downloadUrl = `/api/download?url=${encodeURIComponent(
+                                                res.directFileUrl
+                                            )}&filename=${encodeURIComponent(res.title)}`;
                                             window.location.assign(downloadUrl);
                                         }}
-                                        className="flex-1 px-4 py-2.5 bg-sono-primary/5 text-sono-primary rounded-xl text-xs font-bold hover:bg-sono-primary hover:text-white transition-all flex items-center justify-center gap-1.5"
+                                        className="flex-1 adm-btn small sage"
                                     >
-                                        다운로드
+                                        <AdminIcon name="download" />
+                                        <span>다운로드</span>
                                     </button>
                                     {isAdmin && (
                                         <button
+                                            type="button"
                                             onClick={() => handleDelete(res._id)}
-                                            className="p-2.5 text-gray-300 hover:text-red-500 transition-colors"
+                                            className="adm-btn small danger !px-2"
                                             title="삭제"
                                         >
-                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
+                                            <AdminIcon name="trash" />
                                         </button>
                                     )}
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     ))
                 )}
             </div>
 
-            {isModalOpen && (
-                <ResourceRegistrationModal onClose={() => setIsModalOpen(false)} />
-            )}
+            {isModalOpen && <ResourceRegistrationModal onClose={() => setIsModalOpen(false)} />}
         </div>
     );
 }
@@ -177,7 +205,6 @@ function ResourceRegistrationModal({ onClose }: { onClose: () => void }) {
             let thumbnailStorageId: Id<"_storage"> | undefined;
             let finalThumbnailUrl = form.thumbnailUrl;
 
-            // 1. 메인 파일 업로드
             if (!form.isExternalUrl && selectedFile) {
                 const postUrl = await generateUploadUrl();
                 const result = await fetch(postUrl, {
@@ -187,10 +214,9 @@ function ResourceRegistrationModal({ onClose }: { onClose: () => void }) {
                 });
                 const { storageId: sId } = await result.json();
                 storageId = sId;
-                finalFileUrl = sId; // Storage ID를 URL 필드에 임시 저장 (서버에서 변환됨)
+                finalFileUrl = sId;
             }
 
-            // 2. 썸네일 업로드
             if (selectedThumb) {
                 const postUrl = await generateUploadUrl();
                 const result = await fetch(postUrl, {
@@ -225,146 +251,153 @@ function ResourceRegistrationModal({ onClose }: { onClose: () => void }) {
     };
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-            <div className="bg-white rounded-[40px] shadow-2xl w-full max-w-xl flex flex-col overflow-hidden animate-slide-up relative">
-                <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                    <h2 className="text-xl font-black text-sono-dark">자료 등록</h2>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
-                        <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="p-8 space-y-6 overflow-y-auto max-h-[70vh]">
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">구분</label>
-                            <div className="flex gap-2">
-                                {["image", "video", "file"].map((t) => (
-                                    <button
-                                        type="button"
-                                        key={t}
-                                        onClick={() => setForm({ ...form, type: t })}
-                                        className={`flex-1 py-3 rounded-2xl text-sm font-bold transition-all ${form.type === t
-                                            ? "bg-sono-dark text-white shadow-lg"
-                                            : "bg-gray-100 text-gray-400 hover:bg-gray-200"
-                                            }`}
-                                    >
-                                        {t === 'image' ? '이미지' : t === 'video' ? '영상' : '일반파일'}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">제목</label>
-                            <input
-                                type="text"
-                                value={form.title}
-                                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                                className="w-full p-4 rounded-2xl border border-gray-200 text-sm outline-none focus:border-sono-primary focus:ring-4 focus:ring-sono-primary/10 transition-all font-bold"
-                                placeholder="자료 제목을 입력하세요"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">설명 (간략히)</label>
-                            <textarea
-                                value={form.description}
-                                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                                className="w-full p-4 rounded-2xl border border-gray-200 text-sm outline-none focus:border-sono-primary focus:ring-4 focus:ring-sono-primary/10 transition-all font-bold min-h-[100px]"
-                                placeholder="자료에 대한 설명을 입력하세요"
-                            />
-                        </div>
-
-                        <div>
-                            <div className="flex justify-between items-center mb-2">
-                                <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest">자료 파일 / 링크</label>
-                                <button
-                                    type="button"
-                                    onClick={() => setForm({ ...form, isExternalUrl: !form.isExternalUrl })}
-                                    className="text-[10px] font-bold text-sono-primary underline underline-offset-4"
-                                >
-                                    {form.isExternalUrl ? "파일 업로드로 변경" : "외부 URL 링크로 변경"}
-                                </button>
-                            </div>
-
-                            {form.isExternalUrl ? (
-                                <input
-                                    type="text"
-                                    value={form.fileUrl}
-                                    onChange={(e) => setForm({ ...form, fileUrl: e.target.value })}
-                                    className="w-full p-4 rounded-2xl border border-gray-200 text-sm outline-none focus:border-sono-primary focus:ring-4 focus:ring-sono-primary/10 transition-all font-bold"
-                                    placeholder="https://example.com/..."
-                                />
-                            ) : (
-                                <div
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="w-full p-8 border-2 border-dashed border-gray-200 rounded-[32px] flex flex-col items-center justify-center gap-3 cursor-pointer hover:bg-gray-50 hover:border-sono-primary/30 transition-all group"
-                                >
-                                    <div className="p-4 bg-gray-50 text-gray-400 rounded-2xl group-hover:bg-sono-primary/10 group-hover:text-sono-primary transition-all">
-                                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                        </svg>
-                                    </div>
-                                    <span className="text-sm font-bold text-gray-500">{selectedFile ? selectedFile.name : "파일 선택 또는 드래그"}</span>
-                                    <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                                        className="hidden"
-                                    />
-                                </div>
-                            )}
-                        </div>
-
-                        <div>
-                            <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">썸네일 이미지 (선택)</label>
-                            <div
-                                onClick={() => thumbInputRef.current?.click()}
-                                className="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-gray-100 transition-all"
-                            >
-                                <div className="w-12 h-12 bg-white rounded-xl border border-gray-200 flex items-center justify-center overflow-hidden">
-                                    {selectedThumb ? (
-                                        <img src={URL.createObjectURL(selectedThumb)} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <svg className="w-5 h-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                    )}
-                                </div>
-                                <span className="text-xs font-bold text-gray-500">{selectedThumb ? selectedThumb.name : "썸네일용 이미지 선택"}</span>
-                                <input
-                                    type="file"
-                                    ref={thumbInputRef}
-                                    onChange={(e) => setSelectedThumb(e.target.files?.[0] || null)}
-                                    accept="image/*"
-                                    className="hidden"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
-                <div className="p-8 border-t border-gray-100 flex gap-3 bg-gray-50/50">
+        <AdminDrawer
+            title="자료 등록"
+            subtitle="자료실에 게시할 문서, 이미지, 영상 또는 외부 링크를 등록합니다."
+            maxWidth="560px"
+            zIndex={70}
+            onClose={onClose}
+            footer={
+                <>
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex-1 py-4 bg-white border border-gray-200 text-gray-600 rounded-2xl font-black hover:bg-gray-50 transition-all"
+                        className="adm-btn"
                         disabled={isSubmitting}
                     >
                         취소
                     </button>
                     <button
-                        onClick={handleSubmit}
+                        type="submit"
+                        form="resource-reg-drawer"
                         disabled={isSubmitting}
-                        className="flex-[2] py-4 bg-sono-primary text-white rounded-2xl font-black hover:bg-sono-secondary disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-sono-primary/20 transition-all"
+                        className="adm-btn primary"
                     >
-                        {isSubmitting ? "등록 중..." : "자료 등록하기"}
+                        <AdminIcon name="check" />
+                        <span>{isSubmitting ? "등록 중..." : "자료 등록하기"}</span>
                     </button>
+                </>
+            }
+        >
+            <form id="resource-reg-drawer" onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                    <label className="block text-xs font-bold text-[#5d6e5c] mb-2">자료 구분</label>
+                    <div className="grid grid-cols-3 gap-2">
+                        {["image", "video", "file"].map((t) => (
+                            <button
+                                type="button"
+                                key={t}
+                                onClick={() => setForm({ ...form, type: t })}
+                                className={`py-2.5 rounded-[9px] text-xs font-bold border transition-all cursor-pointer ${
+                                    form.type === t
+                                        ? "bg-[#295e52] text-white border-[#295e52]"
+                                        : "bg-[#f8f9f5] text-[#6d7b64] border-[#dfe5d9] hover:bg-white"
+                                }`}
+                            >
+                                {t === "image" ? "이미지" : t === "video" ? "영상" : "일반파일"}
+                            </button>
+                        ))}
+                    </div>
                 </div>
-            </div>
-        </div>
+
+                <div>
+                    <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">제목</label>
+                    <input
+                        type="text"
+                        value={form.title}
+                        onChange={(e) => setForm({ ...form, title: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-[9px] bg-[#f9faf7] border border-[#dfe5d9] text-sm outline-none focus:bg-white focus:border-[#295e52]"
+                        placeholder="자료 제목을 입력하세요"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                        설명 (간략히)
+                    </label>
+                    <textarea
+                        value={form.description}
+                        onChange={(e) => setForm({ ...form, description: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-[9px] bg-[#f9faf7] border border-[#dfe5d9] text-sm outline-none focus:bg-white focus:border-[#295e52] min-h-[96px]"
+                        placeholder="자료에 대한 설명을 입력하세요"
+                    />
+                </div>
+
+                <div>
+                    <div className="flex justify-between items-center mb-2">
+                        <label className="block text-xs font-bold text-[#5d6e5c]">
+                            자료 파일 / 링크
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setForm({ ...form, isExternalUrl: !form.isExternalUrl })
+                            }
+                            className="text-xs font-bold text-[#295e52] hover:underline"
+                        >
+                            {form.isExternalUrl ? "파일 업로드로 변경" : "외부 URL 링크로 변경"}
+                        </button>
+                    </div>
+
+                    {form.isExternalUrl ? (
+                        <input
+                            type="text"
+                            value={form.fileUrl}
+                            onChange={(e) => setForm({ ...form, fileUrl: e.target.value })}
+                            className="w-full px-3.5 py-2.5 rounded-[9px] bg-[#f9faf7] border border-[#dfe5d9] text-sm outline-none focus:bg-white focus:border-[#295e52]"
+                            placeholder="https://example.com/..."
+                        />
+                    ) : (
+                        <div
+                            onClick={() => fileInputRef.current?.click()}
+                            className="w-full p-7 border border-dashed border-[#cbd8c0] rounded-[11px] flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-[#f8faf5] transition-colors"
+                        >
+                            <AdminIcon name="upload" className="!w-6 !h-6 text-[#295e52]" />
+                            <span className="text-xs font-bold text-[#263d36]">
+                                {selectedFile ? selectedFile.name : "파일 선택 (클릭)"}
+                            </span>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                                className="hidden"
+                            />
+                        </div>
+                    )}
+                </div>
+
+                <div>
+                    <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                        썸네일 이미지 (선택)
+                    </label>
+                    <div
+                        onClick={() => thumbInputRef.current?.click()}
+                        className="w-full p-3.5 bg-[#f8f9f5] border border-[#e6eae3] rounded-[10px] flex items-center gap-3.5 cursor-pointer hover:bg-[#f1f4ec] transition-colors"
+                    >
+                        <div className="w-11 h-11 bg-white rounded-[8px] border border-[#dfe5d9] flex items-center justify-center overflow-hidden shrink-0">
+                            {selectedThumb ? (
+                                <img
+                                    src={URL.createObjectURL(selectedThumb)}
+                                    alt="썸네일 미리보기"
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <AdminIcon name="file" className="text-[#96a392]" />
+                            )}
+                        </div>
+                        <span className="text-xs font-semibold text-[#5d6e5c] truncate">
+                            {selectedThumb ? selectedThumb.name : "썸네일용 이미지 선택"}
+                        </span>
+                        <input
+                            type="file"
+                            ref={thumbInputRef}
+                            onChange={(e) => setSelectedThumb(e.target.files?.[0] || null)}
+                            accept="image/*"
+                            className="hidden"
+                        />
+                    </div>
+                </div>
+            </form>
+        </AdminDrawer>
     );
 }

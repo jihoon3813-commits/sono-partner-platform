@@ -4,6 +4,8 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useState } from "react";
 import { Id } from "../../../convex/_generated/dataModel";
+import AdminDrawer from "./AdminDrawer";
+import { AdminIcon } from "./AdminIcons";
 
 export default function PromotionManagement() {
     const promotions = useQuery(api.promotions.get);
@@ -75,146 +77,208 @@ export default function PromotionManagement() {
     };
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
+        <div>
+            <section className="adm-page-heading">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800">프로모션 관리</h2>
-                    <p className="text-gray-500">제품별 이벤트를 관리합니다.</p>
+                    <div className="adm-eyebrow">SONO I&apos;M READY · CAMPAIGN</div>
+                    <h1>프로모션</h1>
+                    <p>제품 및 파트너 영업을 위한 이벤트·프로모션 혜택을 관리합니다.</p>
                 </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
-                >
-                    새 프로모션 추가
-                </button>
-            </div>
+                <div className="adm-heading-buttons">
+                    <button
+                        type="button"
+                        onClick={() => handleOpenModal()}
+                        className="adm-btn primary"
+                    >
+                        <AdminIcon name="plus" />
+                        <span>새 프로모션 추가</span>
+                    </button>
+                </div>
+            </section>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {promotions?.map((p) => (
-                    <div key={p._id} className="bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                        {p.imageUrl && (
-                            <img src={p.imageUrl} alt={p.title} className="w-full h-40 object-cover border-b" />
-                        )}
-                        <div className="p-4">
-                            <div className="flex justify-between items-start mb-2">
-                                <h3 className="font-bold text-lg">{p.title}</h3>
-                                <span className={`text-xs px-2 py-1 rounded-full ${p.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                                    {p.isActive ? "활성" : "비활성"}
-                                </span>
-                            </div>
-                            <p className="text-sm text-gray-600 mb-1"><strong>기간:</strong> {p.period}</p>
-                            <p className="text-sm text-gray-600 line-clamp-2">{p.description}</p>
-                            <div className="mt-4 flex gap-2">
-                                <button
-                                    onClick={() => handleOpenModal(p)}
-                                    className="flex-1 text-sm bg-gray-50 text-indigo-600 border border-indigo-200 py-2 rounded-lg hover:bg-indigo-50"
+            {!promotions ? (
+                <div className="adm-panel p-14 text-center text-xs text-[#86918a]">
+                    프로모션 목록을 불러오는 중...
+                </div>
+            ) : promotions.length === 0 ? (
+                <div className="adm-panel p-16 text-center">
+                    <AdminIcon name="gift" className="mx-auto mb-3 !w-8 !h-8 text-[#a6b6a1]" />
+                    <strong className="block text-sm text-[#263d36] mb-1">등록된 프로모션이 없습니다</strong>
+                    <p className="text-xs text-[#86918a]">우측 상단 버튼을 눌러 새로운 프로모션을 등록하세요.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {promotions.map((p, idx) => (
+                        <article
+                            key={p._id}
+                            className="adm-panel flex flex-col overflow-hidden hover:border-[#adc0ad] transition-all"
+                        >
+                            {p.imageUrl ? (
+                                <img
+                                    src={p.imageUrl}
+                                    alt={p.title}
+                                    className="w-full h-40 object-cover border-b border-[#e6eae3]"
+                                />
+                            ) : (
+                                <div
+                                    className={`h-36 p-6 flex flex-col justify-center relative overflow-hidden ${
+                                        idx % 3 === 1
+                                            ? "bg-[#193f39] text-[#f2f0dc]"
+                                            : idx % 3 === 2
+                                            ? "bg-[#eee8d7] text-[#5e5a3f]"
+                                            : "bg-[#e5ecdc] text-[#263d36]"
+                                    }`}
                                 >
-                                    수정
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(p._id)}
-                                    className="flex-1 text-sm bg-gray-50 text-red-600 border border-red-200 py-2 rounded-lg hover:bg-red-50"
-                                >
-                                    삭제
-                                </button>
+                                    <small className="text-[9px] tracking-[1.8px] uppercase opacity-75 mb-2 font-semibold">
+                                        SONO PROMOTION
+                                    </small>
+                                    <strong className="text-lg leading-snug line-clamp-2 font-bold">
+                                        {p.title}
+                                    </strong>
+                                </div>
+                            )}
+                            <div className="p-5 flex-1 flex flex-col">
+                                <div className="flex justify-between items-center mb-2.5">
+                                    <span className={`adm-pill ${p.isActive ? "green" : "gray"}`}>
+                                        {p.isActive ? "운영중 (활성)" : "비활성"}
+                                    </span>
+                                    <span className="text-[11px] text-[#86918a] font-medium">
+                                        {p.period}
+                                    </span>
+                                </div>
+                                <h3 className="font-bold text-base text-[#263d36] mb-1.5">
+                                    {p.title}
+                                </h3>
+                                <p className="text-xs text-[#7d887b] line-clamp-2 leading-relaxed mb-5 flex-1">
+                                    {p.description || "등록된 혜택 설명이 없습니다."}
+                                </p>
+                                <div className="pt-3.5 border-t border-[#edf0e5] flex gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleOpenModal(p)}
+                                        className="flex-1 adm-btn small sage"
+                                    >
+                                        수정
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDelete(p._id)}
+                                        className="flex-1 adm-btn small danger"
+                                    >
+                                        삭제
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                        </article>
+                    ))}
+                </div>
+            )}
 
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-y-auto">
-                    <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl relative">
-                        <div className="p-6 border-b flex justify-between items-center bg-indigo-50 rounded-t-2xl">
-                            <h3 className="text-xl font-bold text-indigo-900">
-                                {editingPromotion ? "프로모션 수정" : "새 프로모션 생성"}
-                            </h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+                <AdminDrawer
+                    title={editingPromotion ? "프로모션 수정" : "새 프로모션 등록"}
+                    subtitle="프로모션 기간과 혜택 안내 정보를 설정합니다."
+                    maxWidth="540px"
+                    zIndex={70}
+                    onClose={() => setIsModalOpen(false)}
+                    footer={
+                        <>
+                            <button
+                                type="button"
+                                onClick={() => setIsModalOpen(false)}
+                                className="adm-btn"
+                            >
+                                취소
+                            </button>
+                            <button
+                                type="submit"
+                                form="promotion-form-drawer"
+                                className="adm-btn primary"
+                            >
+                                <AdminIcon name="check" />
+                                <span>저장하기</span>
+                            </button>
+                        </>
+                    }
+                >
+                    <form id="promotion-form-drawer" onSubmit={handleSave} className="space-y-4">
+                        <div>
+                            <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                                프로모션 제목
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                className="w-full bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#295e52] outline-none"
+                                required
+                                placeholder="예: 네이버포인트 즉시지급 이벤트"
+                            />
                         </div>
-                        <form onSubmit={handleSave} className="p-6 space-y-4">
+                        <div>
+                            <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                                진행 기간
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.period}
+                                onChange={(e) => setFormData({ ...formData, period: e.target.value })}
+                                className="w-full bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#295e52] outline-none"
+                                required
+                                placeholder="예: 2026.11.01 ~ 2026.11.30"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                                혜택 안내 (텍스트)
+                            </label>
+                            <textarea
+                                value={formData.description}
+                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                className="w-full bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#295e52] outline-none h-28"
+                                placeholder="프로모션 혜택에 대해 설명해주세요."
+                            />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">프로모션 제목</label>
+                                <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                                    혜택 이미지 URL
+                                </label>
                                 <input
                                     type="text"
-                                    value={formData.title}
-                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
-                                    required
-                                    placeholder="예: 4월 네이버포인트 즉시지급 이벤트"
+                                    value={formData.imageUrl}
+                                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                                    className="w-full bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#295e52] outline-none"
+                                    placeholder="https://..."
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">진행 기간</label>
+                                <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                                    외부 링크 (선택)
+                                </label>
                                 <input
                                     type="text"
-                                    value={formData.period}
-                                    onChange={(e) => setFormData({ ...formData, period: e.target.value })}
-                                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
-                                    required
-                                    placeholder="예: 2026.04.01 ~ 2026.04.30"
+                                    value={formData.externalUrl}
+                                    onChange={(e) => setFormData({ ...formData, externalUrl: e.target.value })}
+                                    className="w-full bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#295e52] outline-none"
+                                    placeholder="https://..."
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">혜택 안내 (텍스트)</label>
-                                <textarea
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none h-24"
-                                    placeholder="프로모션 혜택에 대해 설명해주세요."
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">혜택 이미지 URL</label>
-                                    <input
-                                        type="text"
-                                        value={formData.imageUrl}
-                                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                                        className="w-full border rounded-lg px-3 py-2 text-sm"
-                                        placeholder="https://..."
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">외부 링크 (선택)</label>
-                                    <input
-                                        type="text"
-                                        value={formData.externalUrl}
-                                        onChange={(e) => setFormData({ ...formData, externalUrl: e.target.value })}
-                                        className="w-full border rounded-lg px-3 py-2 text-sm"
-                                        placeholder="https://..."
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2 pt-2">
-                                <input
-                                    type="checkbox"
-                                    id="isActive"
-                                    checked={formData.isActive}
-                                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                />
-                                <label htmlFor="isActive" className="text-sm font-bold text-gray-700">활성 상태로 노출</label>
-                            </div>
-
-                            <div className="pt-4 flex gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 py-3 border rounded-xl font-bold bg-white hover:bg-gray-50 transition-colors"
-                                >
-                                    취소
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
-                                >
-                                    저장하기
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                        </div>
+                        <div className="flex items-center gap-2.5 pt-2 bg-[#f8f9f5] p-3.5 rounded-[10px] border border-[#e6eae3]">
+                            <input
+                                type="checkbox"
+                                id="isActive"
+                                checked={formData.isActive}
+                                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                                className="w-4 h-4 rounded cursor-pointer"
+                            />
+                            <label htmlFor="isActive" className="text-xs font-bold text-[#263d36] cursor-pointer">
+                                활성 상태로 노출
+                            </label>
+                        </div>
+                    </form>
+                </AdminDrawer>
             )}
         </div>
     );

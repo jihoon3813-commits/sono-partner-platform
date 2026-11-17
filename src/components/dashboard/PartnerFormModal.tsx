@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Partner } from "@/lib/types";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import AdminDrawer from "./AdminDrawer";
+import { AdminIcon } from "./AdminIcons";
 import { formatPhoneNumber } from "@/lib/phoneUtils";
 
 interface PartnerFormModalProps {
@@ -326,38 +328,70 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-6">
-            <div className="bg-white rounded-[24px] md:rounded-[32px] w-full max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 md:p-10 shadow-2xl no-scrollbar">
-                <div className="flex justify-between items-center mb-6 sm:mb-10">
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-                        <h2 className="text-xl sm:text-2xl font-bold text-sono-dark">
-                            {isEdit ? "파트너 정보 수정" : "파트너 신규 등록"}
-                        </h2>
-                        {isEdit && isAdmin && formData.loginId && (
-                            <a
-                                href={`/partner-center?id=${formData.loginId}&k=${process.env.NEXT_PUBLIC_ADMIN_SECRET_KEY || 'sono_admin_master_pass_2026'}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs bg-gray-800 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-1.5 font-medium shadow-sm"
-                            >
-                                <span>파트너 어드민 바로가기</span>
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                            </a>
-                        )}
-                    </div>
-                    <button onClick={onClose} className="text-gray-400 hover:text-sono-dark transition-colors">
-                        <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+        <AdminDrawer
+            title={isEdit ? "파트너 정보 수정" : requestId ? "입점 신청 검토 및 승인" : "파트너 신규 등록"}
+            subtitle={isEdit ? `${formData.companyName} (${formData.loginId || partner?.partnerId || ""})` : "파트너 기본 정보, 권한 및 노출 상품을 설정합니다."}
+            maxWidth="680px"
+            zIndex={70}
+            onClose={onClose}
+            headerRight={
+                isEdit && isAdmin && formData.loginId ? (
+                    <a
+                        href={`/partner-center?id=${formData.loginId}&k=${process.env.NEXT_PUBLIC_ADMIN_SECRET_KEY || 'sono_admin_master_pass_2026'}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="adm-btn small sage"
+                    >
+                        <span>파트너 어드민 바로가기</span>
+                        <AdminIcon name="external" />
+                    </a>
+                ) : undefined
+            }
+            footer={
+                <>
+                    {isEdit && isAdmin && (
+                        <button
+                            type="button"
+                            onClick={handleDelete}
+                            className="adm-btn danger mr-auto"
+                        >
+                            <AdminIcon name="trash" />
+                            <span>삭제</span>
+                        </button>
+                    )}
+                    {!isEdit && requestId && (
+                        <button
+                            type="button"
+                            onClick={handleHold}
+                            disabled={isLoading}
+                            className="adm-btn mr-auto"
+                        >
+                            보류 처리
+                        </button>
+                    )}
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="adm-btn"
+                    >
+                        취소
                     </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-8">
+                    <button
+                        type="submit"
+                        form="partner-form-drawer"
+                        disabled={isLoading}
+                        className="adm-btn primary"
+                    >
+                        <AdminIcon name="check" />
+                        <span>{isLoading ? "처리 중..." : isEdit ? "정보 수정 완료" : requestId ? "승인 처리" : "파트너 등록 완료"}</span>
+                    </button>
+                </>
+            }
+        >
+            <form id="partner-form-drawer" onSubmit={handleSubmit} className="space-y-8">
                     {/* Basic Info Section */}
                     <div className="space-y-6">
-                        <h3 className="text-lg font-bold text-sono-dark border-l-4 border-sono-primary pl-3">기본 정보</h3>
+                        <h3 className="text-base font-bold text-sono-dark border-l-4 border-sono-primary pl-3">기본 정보</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-400 ml-1">업체명</label>
@@ -983,44 +1017,7 @@ export default function PartnerFormModal({ partner, initialData, requestId, onCl
                             </div>
                         </div>
                     </div>
-
-                    <div className="pt-6 flex gap-3 sm:gap-4">
-                        {isEdit && isAdmin && (
-                            <button
-                                type="button"
-                                onClick={handleDelete}
-                                className="bg-red-50 text-red-500 font-bold px-5 sm:px-6 py-4 rounded-2xl hover:bg-red-100 transition-all whitespace-nowrap"
-                            >
-                                삭제
-                            </button>
-                        )}
-                        {!isEdit && requestId && (
-                            <button
-                                type="button"
-                                onClick={handleHold}
-                                disabled={isLoading}
-                                className="bg-amber-500 text-white font-bold px-5 sm:px-6 py-4 rounded-2xl hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50 whitespace-nowrap"
-                            >
-                                보류
-                            </button>
-                        )}
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="flex-1 bg-gray-100 text-gray-500 font-bold py-4 rounded-2xl hover:bg-gray-200 transition-all whitespace-nowrap"
-                        >
-                            취소
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="flex-[2] bg-sono-primary text-white font-bold py-4 rounded-2xl hover:bg-sono-primary/90 transition-all shadow-xl shadow-sono-primary/20 disabled:opacity-50 whitespace-nowrap"
-                        >
-                            {isLoading ? "처리 중..." : isEdit ? "정보 수정 완료" : requestId ? "승인 처리" : "파트너 등록 완료"}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+            </form>
+        </AdminDrawer>
     );
 }

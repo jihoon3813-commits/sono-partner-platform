@@ -73,9 +73,17 @@ export default function AnalyticsDashboard() {
     const maxPartnerPv = Math.max(...(stats.partner.map((p: any) => p.pv) || [1]), 1);
 
     return (
-        <div className="space-y-8 animate-slide-up pb-20">
+        <div className="space-y-6 pb-12">
+            <section className="adm-page-heading">
+                <div>
+                    <div className="adm-eyebrow">SONO I&apos;M READY · STATISTICS</div>
+                    <h1>통계</h1>
+                    <p>페이지 뷰(PV), 순 방문자(UV), 파트너별 유입 채널 및 상세 접속 현황을 분석합니다.</p>
+                </div>
+            </section>
+
             {/* Filters */}
-            <div className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex flex-wrap gap-4 items-end">
+            <div className="adm-panel p-6 flex flex-wrap gap-4 items-end">
                 <div className="flex-1">
                     <label className="block text-[11px] font-bold text-gray-400 mb-1 ml-1">기간 설정 (대한민국 표준시 KST 기준)</label>
                     <div className="flex flex-wrap gap-2 mb-3">

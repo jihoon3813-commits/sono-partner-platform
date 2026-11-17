@@ -7,6 +7,8 @@ import { Application, ApplicationStatus } from "@/lib/types";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
 import { formatDateTime } from "@/lib/dateUtils";
 import RecordingModal from "./RecordingModal";
+import AdminDrawer from "./AdminDrawer";
+import { AdminIcon } from "./AdminIcons";
 import { downloadFileWithCustomName, generateRecordingDownloadFileName, formatBytes } from "@/lib/downloadUtils";
 
 interface CustomerDetailModalProps {
@@ -24,6 +26,7 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     const statusHistory = useQuery(api.applications.getStatusHistory, { applicationNo: application.applicationNo });
     const recordings = useQuery(api.recordings.getRecordingsByApplication, { applicationNo: application.applicationNo });
     const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false);
+    const [drawerTab, setDrawerTab] = useState<"info" | "history" | "files">("info");
 
     // Dynamic queries for care products, appliance products, and partners
     const careProductsData = useQuery(api.careProducts.get);
@@ -140,6 +143,9 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
         }
         if (type === "smartcare" || type.includes("스마트") || type.includes("smart")) {
             return "스마트케어";
+        }
+        if (type === "maeum" || type.includes("마음든든")) {
+            return type.includes("마음든든") ? productType : "마음든든";
         }
         return productType || "-";
     };
@@ -322,29 +328,106 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
     const isRestrictedStatus = currentUserRole === 'tm' && (application.status === '정산예정' || application.status === '정산완료');
     const canPartnerEditStatus = !isAdmin && statusOptions.length > 0 && !isRestrictedStatus;
 
+    const currentDisplayStatus = getDisplayStatus(status || application.status);
+    const headerStatusBadge = getStatusBadge(currentDisplayStatus);
+    const isStep2Done = !["접수대기", "접수", "대기"].includes(currentDisplayStatus);
+    const isStep3Done = ["녹취완료(출금확인중)", "정상가입", "1회출금", "배송완료", "정산예정", "정산완료"].includes(currentDisplayStatus);
+    const isStep4Done = ["정상가입", "1회출금", "배송완료", "정산예정", "정산완료"].includes(currentDisplayStatus);
+
     return (
         <>
-            <div
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4"
-                onClick={onClose}
+            <AdminDrawer
+                title="고객 상세"
+                subtitle={`${application.applicationNo} · 접수 ${formatDateTime(application.createdAt, (application as any)._creationTime) || "-"}`}
+                maxWidth="610px"
+                zIndex={65}
+                onClose={onClose}
+                tabs={[
+                    { id: "info", label: "고객 · 상담 정보" },
+                    { id: "history", label: "상담 이력", badge: statusHistory?.length || 0 },
+                    { id: "files", label: "녹취 · 관리", badge: recordings?.length || 0 },
+                ]}
+                activeTab={drawerTab}
+                onTabChange={(id) => setDrawerTab(id as any)}
+                footerCaption="변경 사항 입력 후 우측 저장 버튼을 눌러 반영하세요."
+                footer={
+                    <>
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            disabled={isLoading}
+                            className="adm-btn"
+                        >
+                            닫기
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleSaveAll}
+                            disabled={isLoading}
+                            className="adm-btn primary"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <span>저장 중...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <AdminIcon name="check" />
+                                    <span>수정사항 저장하기</span>
+                                </>
+                            )}
+                        </button>
+                    </>
+                }
             >
-            <div
-                className="bg-white rounded-[20px] sm:rounded-[24px] w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="p-4 sm:p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                    <h2 className="text-lg sm:text-xl font-bold text-sono-dark">상담 상세 내역</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-sono-dark">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                {/* 상단 고객 프로필 요약 */}
+                <div className="flex items-center gap-3.5 mb-5">
+                    <span className="w-12 h-12 rounded-full bg-[#edf2e7] text-[#295e52] font-bold text-lg grid place-items-center shrink-0">
+                        {(customerName || application.customerName || "고").charAt(0)}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                        <strong className="text-lg font-bold text-[#263d36] block truncate">
+                            {customerName || application.customerName}
+                        </strong>
+                        <small className="text-xs text-[#86918a] block mt-0.5 truncate">
+                            {customerPhone || application.customerPhone} · {getProductTypeLabel(productType)} ({planType})
+                        </small>
+                    </div>
+                    <span
+                        className={`px-2.5 py-1 rounded-md text-xs font-bold shrink-0 ${headerStatusBadge.className}`}
+                        style={headerStatusBadge.style}
+                    >
+                        {currentDisplayStatus}
+                    </span>
                 </div>
 
-                <div className="p-4 sm:p-6 space-y-5 sm:space-y-6 flex-1 overflow-y-auto pb-24">
+                {/* 단계 진행 플로우 바 */}
+                <div className="adm-flow-mini mb-6">
+                    <span className="done">
+                        <AdminIcon name="check-circle" />
+                        상담 접수
+                    </span>
+                    <span className={isStep2Done ? "done" : ""}>
+                        <AdminIcon name="phone" />
+                        상담 진행
+                    </span>
+                    <span className={isStep3Done ? "done" : ""}>
+                        <AdminIcon name="mic" />
+                        녹취 확인
+                    </span>
+                    <span className={isStep4Done ? "done" : ""}>
+                        <AdminIcon name="shield" />
+                        정상 가입
+                    </span>
+                </div>
+
+                <div className="space-y-5">
+                    {drawerTab === "info" && (
+                        <>
                     {/* Status Update/View Section */}
-                    <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                        <label className="text-xs font-bold text-gray-500 mb-2 block">진행 상태 {(isAdmin || canPartnerEditStatus) ? '변경' : ''}</label>
+                    <div className="bg-[#f8f9f5] p-4 rounded-[12px] border border-[#e6eae3]">
+                        <label className="text-xs font-bold text-[#4f6b41] mb-2 block">진행 상태 {(isAdmin || canPartnerEditStatus) ? '변경' : ''}</label>
                         {(isAdmin || canPartnerEditStatus) ? (
                             <div className="space-y-3">
                                 <select
@@ -352,7 +435,6 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                     onChange={(e) => setStatus(e.target.value as ApplicationStatus)}
                                     className="w-full bg-white border border-gray-200 text-sono-dark text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-sono-primary outline-none font-bold"
                                 >
-                                    {/* 현재 상태가 목록에 없더라도 표시될 수 있게 함 (이미 설정된 상태가 파트너 비노출인 경우 등) */}
                                     {!statusOptions.includes(status) && (
                                         <option value={status}>{getDisplayStatus(status)} (변경불가)</option>
                                     )}
@@ -658,38 +740,41 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             )}
                         </div>
                     </div>
+                        </>
+                    )}
 
-                    {/* 상담 녹취 음성파일 섹션 */}
-                    <div className="border-t border-gray-100 pt-4">
+                    {/* 상담 녹취 음성파일 탭 */}
+                    {drawerTab === "files" && (
+                    <div>
                         <div className="flex justify-between items-center mb-3">
                             <div className="flex items-center gap-1.5">
-                                <span className="text-base">🎙️</span>
-                                <h3 className="text-sm font-bold text-sono-primary">
+                                <AdminIcon name="mic" className="text-[#295e52]" />
+                                <h3 className="text-sm font-bold text-[#295e52]">
                                     상담 녹취 음성파일 ({recordings?.length || 0}건)
                                 </h3>
                             </div>
                             <button
                                 type="button"
                                 onClick={() => setIsRecordingModalOpen(true)}
-                                className="px-3 py-1 bg-sono-primary/10 hover:bg-sono-primary text-sono-primary hover:text-white rounded-lg text-xs font-bold transition-all border border-sono-primary/20 shadow-sm"
+                                className="adm-btn small primary"
                             >
-                                {recordings && recordings.length > 0 ? "+ 추가/관리" : "+ 녹취 등록"}
+                                <AdminIcon name="upload" />
+                                <span>{recordings && recordings.length > 0 ? "추가 / STT 관리" : "녹취 등록"}</span>
                             </button>
                         </div>
 
                         {recordings === undefined ? (
-                            <div className="text-xs text-gray-400 py-3 text-center">녹취 목록 확인 중...</div>
+                            <div className="text-xs text-[#86918a] py-6 text-center">녹취 목록 확인 중...</div>
                         ) : recordings.length === 0 ? (
-                            <div className="bg-gray-50/70 border border-gray-100 rounded-xl p-4 text-center">
-                                <p className="text-xs text-gray-400 font-medium">등록된 상담 녹취 파일이 없습니다.</p>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsRecordingModalOpen(true)}
-                                    className="mt-2 text-xs font-bold text-sono-primary hover:underline inline-flex items-center gap-1"
-                                >
-                                    <span>📤</span> 녹취 파일 업로드하기
-                                </button>
-                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsRecordingModalOpen(true)}
+                                className="w-full border border-dashed border-[#cbd8c0] rounded-[11px] p-8 text-center text-[#7d8d73] hover:bg-[#f8faf5] transition-colors cursor-pointer"
+                            >
+                                <AdminIcon name="upload" className="mx-auto mb-2 !w-6 !h-6 text-[#7d8d73]" />
+                                <strong className="text-xs font-bold block text-[#263d36]">등록된 상담 녹취 파일이 없습니다</strong>
+                                <span className="text-[11px] text-[#86918a] block mt-1">클릭하여 음성파일(MP3, M4A, WAV) 업로드 및 STT 변환을 진행하세요.</span>
+                            </button>
                         ) : (
                             <div className="space-y-2.5">
                                 {recordings.map((rec) => {
@@ -704,17 +789,17 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                     });
 
                                     return (
-                                        <div key={rec._id} className="bg-gray-50/80 p-3 rounded-xl border border-gray-100 space-y-2">
+                                        <div key={rec._id} className="bg-[#f8f9f5] p-3.5 rounded-[11px] border border-[#e6eae3] space-y-2">
                                             <div className="flex items-center justify-between text-xs gap-2">
                                                 <div className="flex items-center gap-1.5 min-w-0">
-                                                    <span className="font-bold text-sono-dark truncate max-w-[240px]" title={customFileName}>
+                                                    <span className="font-bold text-[#263d36] truncate max-w-[240px]" title={customFileName}>
                                                         {customFileName}
                                                     </span>
-                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-200/70 text-gray-700 font-bold shrink-0">
+                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#eaeee6] text-[#556455] font-bold shrink-0">
                                                         {formatBytes(rec.fileSize)}
                                                     </span>
                                                     {rec.duration && (
-                                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold shrink-0">
+                                                        <span className="adm-pill green !py-0.5 !px-1.5 !text-[10px] shrink-0">
                                                             {Math.floor(rec.duration / 60)}분 {Math.floor(rec.duration % 60)}초
                                                         </span>
                                                     )}
@@ -723,16 +808,16 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                                     <button
                                                         type="button"
                                                         onClick={() => downloadFileWithCustomName(rec.url!, customFileName)}
-                                                        className="text-[11px] text-sono-primary font-bold hover:underline shrink-0 flex items-center gap-1"
+                                                        className="text-[11px] text-[#295e52] font-bold hover:underline shrink-0 flex items-center gap-1"
                                                         title={`다운로드: ${customFileName}`}
                                                     >
+                                                        <AdminIcon name="download" className="!w-3.5 !h-3.5" />
                                                         <span>다운로드</span>
-                                                        <span>⬇️</span>
                                                     </button>
                                                 )}
                                             </div>
                                             {rec.memo && (
-                                                <p className="text-[11px] text-gray-600 bg-white p-2 rounded-lg border border-gray-100">
+                                                <p className="text-[11px] text-[#45554e] bg-white p-2 rounded-[8px] border border-[#e6eae3]">
                                                     💬 {rec.memo}
                                                 </p>
                                             )}
@@ -747,22 +832,26 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             </div>
                         )}
                     </div>
+                    )}
 
-                    {/* Status History Section */}
-                    <div className="border-t border-gray-100 pt-4">
-                        <h3 className="text-sm font-bold text-sono-primary mb-3">상태 변경 이력</h3>
+                    {/* 상태 변경 이력 탭 */}
+                    {drawerTab === "history" && (
+                    <div>
+                        <h3 className="text-sm font-bold text-[#295e52] mb-3">상담 · 상태 변경 타임라인</h3>
                         <div className="space-y-4">
                             {statusHistory === undefined ? (
-                                <div className="text-xs text-gray-400 py-2">이력을 불러오는 중...</div>
+                                <div className="text-xs text-[#86918a] py-4">이력을 불러오는 중...</div>
                             ) : statusHistory.length === 0 ? (
-                                <div className="text-xs text-gray-400 py-2">변경 이력이 없습니다.</div>
+                                <div className="bg-[#f8f9f5] border border-[#e6eae3] rounded-[11px] p-6 text-center text-xs text-[#86918a]">
+                                    기록된 상태 변경 이력이 없습니다.
+                                </div>
                             ) : (
-                                <div className="relative pl-4 space-y-4 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gray-100">
-                                    {statusHistory.map((history: any, idx: number) => (
-                                        <div key={history.historyId} className="relative">
-                                            <div className="absolute -left-[9px] top-1.5 w-3 h-3 rounded-full bg-gray-200 border-2 border-white" />
-                                            <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                                                <div className="flex justify-between items-start mb-1">
+                                <div className="relative pl-4 space-y-4 before:absolute before:left-[5px] before:top-2 before:bottom-2 before:w-[1px] before:bg-[#dce3d6]">
+                                    {statusHistory.map((history: any) => (
+                                        <div key={history.historyId} className="relative pl-2">
+                                            <div className="absolute -left-[15px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#9fb395] border-2 border-white" />
+                                            <div className="bg-[#f8f9f5] rounded-[10px] p-3.5 border border-[#e6eae3]">
+                                                <div className="flex justify-between items-start mb-1.5">
                                                     {(() => {
                                                         const badge = getStatusBadge(getDisplayStatus(history.newStatus));
                                                         return (
@@ -774,17 +863,17 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                                                             </span>
                                                         );
                                                     })()}
-                                                    <span className="text-[10px] text-gray-400 font-medium">
+                                                    <span className="text-[10px] text-[#86918a] font-medium">
                                                         {formatHistoryDate(history.changedAt)}
                                                     </span>
                                                 </div>
                                                 {history.memo && (
-                                                    <p className="text-xs text-sono-dark mt-1 font-medium bg-white p-2 rounded-lg border border-gray-100/50">
+                                                    <p className="text-xs text-[#263d36] mt-1.5 font-medium bg-white p-2.5 rounded-[8px] border border-[#e6eae3]">
                                                         {history.memo}
                                                     </p>
                                                 )}
-                                                <div className="mt-1 flex justify-end">
-                                                    <span className="text-[9px] text-gray-400">작업자: {history.changedBy}</span>
+                                                <div className="mt-1.5 flex justify-end">
+                                                    <span className="text-[10px] text-[#86918a]">작업자: {history.changedBy}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -793,42 +882,21 @@ export default function CustomerDetailModal({ application, onClose, onUpdate, is
                             )}
                         </div>
                     </div>
+                    )}
                 </div>
+            </AdminDrawer>
 
-
-                {/* Sticky Bottom Save Bar - Always visible if anything is editable */}
-                <div className="p-4 border-t border-gray-100 bg-white sticky bottom-0 rounded-b-[24px]">
-                    <button
-                        onClick={handleSaveAll}
-                        disabled={isLoading}
-                        className="w-full bg-sono-primary text-white text-base font-bold py-3.5 rounded-2xl shadow-lg shadow-sono-primary/20 hover:bg-sono-secondary transition-all flex items-center justify-center gap-2"
-                    >
-                            {isLoading ? (
-                                <>
-                                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    <span>처리 중...</span>
-                                </>
-                            ) : (
-                                "수정사항 저장하기"
-                            )}
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        {/* 녹취 관리 모달 */}
-        {isRecordingModalOpen && (
-            <RecordingModal
-                application={application}
-                parentPartnerName={parentPartner?.name}
-                onClose={() => setIsRecordingModalOpen(false)}
-                currentUserName={isAdmin ? "총괄관리자" : (partnerLoginId || "파트너")}
-            />
-        )}
-    </>
+            {/* 녹취 관리 슬라이드 패널 */}
+            {isRecordingModalOpen && (
+                <RecordingModal
+                    application={application}
+                    parentPartnerName={parentPartner?.name}
+                    onClose={() => setIsRecordingModalOpen(false)}
+                    currentUserName={isAdmin ? "총괄관리자" : (partnerLoginId || "파트너")}
+                    isAdmin={isAdmin}
+                />
+            )}
+        </>
     );
 }
 

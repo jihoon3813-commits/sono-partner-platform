@@ -820,9 +820,17 @@ export default function RetentionManagementPostAug({ isAdmin = false, partnerId,
     if (!records) return <div className="p-8 text-center font-bold">데이터를 불러오는 중...</div>;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
+            <section className="adm-page-heading">
+                <div>
+                    <div className="adm-eyebrow">SONO I&apos;M READY · RETENTION (AUG+)</div>
+                    <h1>연체 관리 · 8월 이후 가입</h1>
+                    <p>8월 이후 신규 가입 구간 고객의 납입 상태와 후속 상담 현황을 집중 관리합니다.</p>
+                </div>
+            </section>
+
             {/* 상단 헤더 & 업로드 */}
-            <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 space-y-4">
+            <div className="adm-panel p-6 space-y-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <div className="flex items-center gap-3">

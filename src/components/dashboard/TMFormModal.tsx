@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Partner } from "@/lib/types";
+import AdminDrawer from "./AdminDrawer";
+import { AdminIcon } from "./AdminIcons";
 
 interface TMFormModalProps {
     tm?: Partner | null;
@@ -154,156 +156,135 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
     };
 
     return (
-        <div 
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4"
-            onClick={onClose}
-        >
-            <div 
-                className="bg-white rounded-[20px] sm:rounded-[24px] w-full max-w-md shadow-2xl flex flex-col overflow-hidden max-h-[90vh]"
-                onClick={(e) => e.stopPropagation()}
-            >
-                {/* Header */}
-                <div className="p-4 sm:p-6 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0">
-                    <h2 className="text-lg sm:text-xl font-bold text-sono-dark">
-                        {isEdit ? "상담원 정보 수정" : "신규 상담원 등록"}
-                    </h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-sono-dark transition-colors">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+        <AdminDrawer
+            title={isEdit ? "상담원 정보 수정" : "신규 상담원 등록"}
+            subtitle={`${parentPartner.companyName} 소속 상담원 계정`}
+            maxWidth="520px"
+            zIndex={70}
+            onClose={onClose}
+            footer={
+                <>
+                    <button type="button" onClick={onClose} className="adm-btn">
+                        취소
                     </button>
+                    <button
+                        type="submit"
+                        form="tm-form-drawer"
+                        disabled={isLoading}
+                        className="adm-btn primary"
+                    >
+                        {isLoading ? (
+                            <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                        ) : (
+                            <>
+                                <AdminIcon name="check" />
+                                <span>{isEdit ? "수정하기" : "등록하기"}</span>
+                            </>
+                        )}
+                    </button>
+                </>
+            }
+        >
+            <form id="tm-form-drawer" onSubmit={handleSubmit} className="space-y-5">
+                <div className="bg-[#f4f7ef] rounded-[11px] p-4 border border-[#dce6d5] text-xs text-[#3b5242] space-y-1">
+                    <p className="font-bold text-[#295e52] text-sm mb-1.5">상위 파트너 정보 상속</p>
+                    <p>• <b>회사명</b>: {parentPartner.companyName}</p>
+                    <p>• <b>대표자명</b>: {parentPartner.ceoName}</p>
+                    <p>• <b>사업자번호</b>: {parentPartner.businessNumber}</p>
+                    <p className="text-[10px] text-[#7c8c7b] pt-1">* 회사 정보 및 마케팅 설정은 상위 파트너와 동일하게 유지됩니다.</p>
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 flex-1 overflow-y-auto max-h-[75vh]">
-                    <div className="bg-sono-primary/5 rounded-2xl p-4 border border-sono-primary/10 text-xs text-sono-dark/80 space-y-1">
-                        <p className="font-bold text-sono-primary text-sm mb-1.5">상위 파트너 정보 상속</p>
-                        <p>• <b>회사명</b>: {parentPartner.companyName}</p>
-                        <p>• <b>대표자명</b>: {parentPartner.ceoName}</p>
-                        <p>• <b>사업자번호</b>: {parentPartner.businessNumber}</p>
-                        <p className="text-[10px] text-gray-400 pt-1">* 회사 정보 및 마케팅 설정은 상위 파트너와 동일하게 유지됩니다.</p>
+                <div className="space-y-4">
+                    <div>
+                        <label className="text-xs font-bold text-[#5d6e5c] mb-1.5 block">
+                            로그인 ID {!isEdit && <span className="text-[#295e52]">*</span>}
+                        </label>
+                        <input
+                            type="text"
+                            name="loginId"
+                            value={formData.loginId}
+                            onChange={handleChange}
+                            disabled={isEdit}
+                            className="w-full bg-[#f9faf7] border border-[#dfe5d9] text-[#263d36] text-sm rounded-[9px] px-3.5 py-2.5 focus:border-[#295e52] focus:bg-white outline-none disabled:bg-gray-100 disabled:text-gray-400 font-semibold"
+                            required
+                            placeholder="영문, 숫자만 사용 가능"
+                        />
                     </div>
 
-                    <div className="space-y-4">
-                        {/* Login ID */}
-                        <div>
-                            <label className="text-xs font-bold text-gray-500 mb-2 block ml-1">
-                                로그인 ID {!isEdit && <span className="text-sono-primary">*</span>}
-                            </label>
-                            <input
-                                type="text"
-                                name="loginId"
-                                value={formData.loginId}
-                                onChange={handleChange}
-                                disabled={isEdit}
-                                className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-xl px-4 py-3 focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none disabled:bg-gray-100 disabled:text-gray-400 font-bold"
-                                required
-                                placeholder="영문, 숫자만 사용 가능"
-                            />
-                        </div>
-
-                        {/* Password */}
-                        <div>
-                            <label className="text-xs font-bold text-gray-500 mb-2 block ml-1">
-                                비밀번호 {!isEdit && <span className="text-sono-primary">*</span>}
-                            </label>
-                            <input
-                                type="password"
-                                name="loginPassword"
-                                value={formData.loginPassword}
-                                onChange={handleChange}
-                                className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-xl px-4 py-3 focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none font-bold"
-                                required={!isEdit}
-                                placeholder={isEdit ? "변경시에만 입력하세요" : "비밀번호를 입력하세요"}
-                            />
-                        </div>
-
-                        {/* Manager Name */}
-                        <div>
-                            <label className="text-xs font-bold text-gray-500 mb-2 block ml-1">
-                                상담원명 (이름) <span className="text-sono-primary">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="managerName"
-                                value={formData.managerName}
-                                onChange={handleChange}
-                                className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-xl px-4 py-3 focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none font-bold"
-                                required
-                                placeholder="상담원 실명을 입력하세요"
-                            />
-                        </div>
-
-                        {/* Manager Phone */}
-                        <div>
-                            <label className="text-xs font-bold text-gray-500 mb-2 block ml-1">
-                                연락처 (휴대폰) <span className="text-sono-primary">*</span>
-                            </label>
-                            <input
-                                type="tel"
-                                name="managerPhone"
-                                value={formData.managerPhone}
-                                onChange={handleChange}
-                                className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-xl px-4 py-3 focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none font-bold"
-                                required
-                                placeholder="010-0000-0000"
-                            />
-                        </div>
-
-                        {/* Manager Email */}
-                        <div>
-                            <label className="text-xs font-bold text-gray-500 mb-2 block ml-1">
-                                이메일 <span className="text-sono-primary">*</span>
-                            </label>
-                            <input
-                                type="email"
-                                name="managerEmail"
-                                value={formData.managerEmail}
-                                onChange={handleChange}
-                                className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-xl px-4 py-3 focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none font-bold"
-                                required
-                                placeholder="email@company.com"
-                            />
-                        </div>
-
-                        {/* Status */}
-                        <div>
-                            <label className="text-xs font-bold text-gray-500 mb-2 block ml-1">계정 상태</label>
-                            <select
-                                name="status"
-                                value={formData.status}
-                                onChange={handleChange}
-                                className="w-full bg-gray-50 border border-gray-200 text-sono-dark text-sm rounded-xl px-4 py-3 focus:ring-2 focus:ring-sono-primary focus:border-transparent outline-none font-bold"
-                            >
-                                <option value="active">정상 사용</option>
-                                <option value="inactive">사용 중지</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label className="text-xs font-bold text-[#5d6e5c] mb-1.5 block">
+                            비밀번호 {!isEdit && <span className="text-[#295e52]">*</span>}
+                        </label>
+                        <input
+                            type="password"
+                            name="loginPassword"
+                            value={formData.loginPassword}
+                            onChange={handleChange}
+                            className="w-full bg-[#f9faf7] border border-[#dfe5d9] text-[#263d36] text-sm rounded-[9px] px-3.5 py-2.5 focus:border-[#295e52] focus:bg-white outline-none font-semibold"
+                            required={!isEdit}
+                            placeholder={isEdit ? "변경시에만 입력하세요" : "비밀번호를 입력하세요"}
+                        />
                     </div>
 
-                    {/* Bottom buttons */}
-                    <div className="flex gap-3 pt-4 border-t border-gray-100">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="flex-1 py-3.5 rounded-xl border border-gray-200 text-sono-dark text-sm font-bold hover:bg-gray-50 transition-colors"
+                    <div>
+                        <label className="text-xs font-bold text-[#5d6e5c] mb-1.5 block">
+                            상담원명 (이름) <span className="text-[#295e52]">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="managerName"
+                            value={formData.managerName}
+                            onChange={handleChange}
+                            className="w-full bg-[#f9faf7] border border-[#dfe5d9] text-[#263d36] text-sm rounded-[9px] px-3.5 py-2.5 focus:border-[#295e52] focus:bg-white outline-none font-semibold"
+                            required
+                            placeholder="상담원 실명을 입력하세요"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="text-xs font-bold text-[#5d6e5c] mb-1.5 block">
+                            연락처 (휴대폰) <span className="text-[#295e52]">*</span>
+                        </label>
+                        <input
+                            type="tel"
+                            name="managerPhone"
+                            value={formData.managerPhone}
+                            onChange={handleChange}
+                            className="w-full bg-[#f9faf7] border border-[#dfe5d9] text-[#263d36] text-sm rounded-[9px] px-3.5 py-2.5 focus:border-[#295e52] focus:bg-white outline-none font-semibold"
+                            required
+                            placeholder="010-0000-0000"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="text-xs font-bold text-[#5d6e5c] mb-1.5 block">
+                            이메일 <span className="text-[#295e52]">*</span>
+                        </label>
+                        <input
+                            type="email"
+                            name="managerEmail"
+                            value={formData.managerEmail}
+                            onChange={handleChange}
+                            className="w-full bg-[#f9faf7] border border-[#dfe5d9] text-[#263d36] text-sm rounded-[9px] px-3.5 py-2.5 focus:border-[#295e52] focus:bg-white outline-none font-semibold"
+                            required
+                            placeholder="email@company.com"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="text-xs font-bold text-[#5d6e5c] mb-1.5 block">계정 상태</label>
+                        <select
+                            name="status"
+                            value={formData.status}
+                            onChange={handleChange}
+                            className="w-full bg-[#f9faf7] border border-[#dfe5d9] text-[#263d36] text-sm rounded-[9px] px-3.5 py-2.5 focus:border-[#295e52] focus:bg-white outline-none font-semibold"
                         >
-                            취소
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="flex-1 py-3.5 rounded-xl bg-sono-primary text-white text-sm font-bold hover:bg-sono-secondary transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                        >
-                            {isLoading ? (
-                                <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                            ) : (
-                                isEdit ? "수정하기" : "등록하기"
-                            )}
-                        </button>
+                            <option value="active">정상 사용</option>
+                            <option value="inactive">사용 중지</option>
+                        </select>
                     </div>
-                </form>
-            </div>
-        </div>
+                </div>
+            </form>
+        </AdminDrawer>
     );
 }

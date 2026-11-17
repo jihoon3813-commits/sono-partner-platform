@@ -67,6 +67,9 @@ export default function CustomerManagement({
         if (type === "smartcare" || type.includes("스마트") || type.includes("smart")) {
             return "스마트케어";
         }
+        if (type === "maeum" || type.includes("마음든든")) {
+            return type.includes("마음든든") ? productType : "마음든든";
+        }
         return productType || "-";
     };
 
@@ -457,22 +460,27 @@ export default function CustomerManagement({
     };
 
     return (
-        <div className={isWidget ? "" : "space-y-6"}>
-            {isWidget ? (
-                <div className="bg-white p-6 pb-0 rounded-t-2xl shadow-none space-y-2">
-                    <h2 className="text-xl font-bold text-sono-dark">고객 상담 내역(최근 10건)</h2>
-                    <p className="text-sm text-gray-500 whitespace-nowrap">고객 상태 변경 기준, 최근 10건 고객리스트입니다</p>
-                </div>
-            ) : (
-                <div className="bg-white p-6 rounded-2xl shadow-sm space-y-6">
-                    {/* Header Row: Title & Action Buttons */}
-                    <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 border-b border-gray-100 pb-6">
-                        <div className="shrink-0">
-                            <h2 className="text-2xl font-black text-sono-dark tracking-tighter">고객 상담 내역</h2>
-                            <p className="text-sm text-gray-400 mt-1.5 font-medium">총 <span className="text-sono-primary font-bold">{filteredApplications.length}</span>건의 신청 내역이 있습니다.</p>
+        <div className={isWidget ? "" : "space-y-5"}>
+            {isWidget ? null : (
+                <>
+                <section className="adm-page-heading">
+                    <div>
+                        <div className="adm-eyebrow">SONO I&apos;M READY · CUSTOMERS</div>
+                        <h1>고객 관리</h1>
+                        <p>
+                            상담 접수부터 녹취·본사 접수·정상 가입까지 전체 고객 현황을 관리하세요. (검색 결과{" "}
+                            <strong className="text-[#295e52]">{filteredApplications.length}</strong>건)
+                        </p>
+                    </div>
+                </section>
+                <div className="adm-panel p-5 sm:p-6 space-y-5">
+                    {/* Header Row: Action Buttons */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#edf0e7] pb-4">
+                        <div className="text-xs font-semibold text-[#6b7768]">
+                            선택 고객 <strong className="text-[#295e52]">{selectedAppIds.length}</strong>건 · 총 <strong className="text-[#263d36]">{filteredApplications.length}</strong>건
                         </div>
                         
-                        <div className="flex flex-wrap items-center justify-start xl:justify-end gap-2 w-full xl:w-auto py-1">
+                        <div className="flex flex-wrap items-center justify-start xl:justify-end gap-2 w-full xl:w-auto">
                             <button
                                 onClick={() => setIsRegistrationModalOpen(true)}
                                 className="flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-sono-dark text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-black transition-all shadow-md active:scale-95 text-center whitespace-nowrap shrink-0"
@@ -735,6 +743,7 @@ export default function CustomerManagement({
                     <div className="flex flex-col md:flex-row items-center gap-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
                         <div className="relative flex-1 w-full">
                             <input
+                                id="adminCustomerSearch"
                                 type="text"
                                 placeholder="고객명, 연락처, 파트너사명, 상위파트너 검색"
                                 value={searchTerm}
@@ -914,19 +923,20 @@ export default function CustomerManagement({
                         )}
                     </div>
                 </div>
+                </>
             )}
 
             {!isWidget && (
-                <div className="flex items-center gap-2 px-6 py-4 bg-indigo-50 border border-indigo-100 rounded-2xl">
-                    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                <div className="flex flex-wrap items-center gap-3 px-5 py-3.5 bg-[#f2f4ec] border border-[#dfe5d6] rounded-[12px]">
+                    <div className="w-8 h-8 rounded-[9px] bg-[#e4ecdd] flex items-center justify-center text-[#295e52] shrink-0">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                         </svg>
                     </div>
-                    <span className="text-sm font-bold text-indigo-700">
-                        가입센터 발신번호 안내 : <span className="text-lg tracking-tight ml-1">1833-8434</span>
+                    <span className="text-sm font-bold text-[#263d36]">
+                        가입센터 발신번호 안내 : <span className="text-base text-[#295e52] tracking-tight ml-1">1833-8434</span>
                     </span>
-                    <span className="text-xs text-indigo-400 font-medium ml-2">고객님께 안내 시 활용해 주세요.</span>
+                    <span className="text-xs text-[#798676] font-medium">고객님께 안내 시 활용해 주세요.</span>
                 </div>
             )}
 

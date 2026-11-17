@@ -820,9 +820,17 @@ export default function RetentionManagement2({ isAdmin = false, partnerId, partn
     if (!records) return <div className="p-8 text-center font-bold">데이터를 불러오는 중...</div>;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
+            <section className="adm-page-heading">
+                <div>
+                    <div className="adm-eyebrow">SONO I&apos;M READY · RETENTION</div>
+                    <h1>연체 관리</h1>
+                    <p>전체 가입 고객의 납입 회차·연체 해결·환수 및 부활 진행 상태를 관리합니다.</p>
+                </div>
+            </section>
+
             {/* 상단 헤더 & 업로드 */}
-            <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 space-y-4">
+            <div className="adm-panel p-6 space-y-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <div className="flex items-center gap-3">

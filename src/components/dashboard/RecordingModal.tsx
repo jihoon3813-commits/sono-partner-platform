@@ -7,6 +7,8 @@ import { Application } from "@/lib/types";
 import { Id } from "../../../convex/_generated/dataModel";
 import { compressAudioFile } from "@/lib/audioCompressor";
 import { downloadFileWithCustomName, generateRecordingDownloadFileName } from "@/lib/downloadUtils";
+import AdminDrawer from "./AdminDrawer";
+import { AdminIcon } from "./AdminIcons";
 
 interface RecordingModalProps {
     application: Application;
@@ -434,58 +436,37 @@ export default function RecordingModal({ application, parentPartnerName, onClose
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-            <div className="bg-white rounded-[28px] w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-scale-up border border-gray-100">
-                {/* Modal Header */}
-                <div className="px-6 py-5 bg-gradient-to-r from-slate-900 to-sono-dark text-white flex justify-between items-center shrink-0">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-sono-primary text-xl shadow-inner">
-                            🎙️
-                        </div>
-                        <div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <h2 className="text-lg font-black tracking-tight">상담 녹취 음성파일 & 텍스트 변환</h2>
-                                <span className="text-[11px] px-2 py-0.5 rounded-full bg-sono-primary/20 text-sono-primary font-bold border border-sono-primary/30">
-                                    Convex + Whisper STT
-                                </span>
-                            </div>
-                            <p className="text-xs text-gray-300 font-medium mt-0.5">
-                                고객별 상담 녹취파일을 보관·청취하고 AI로 대화 내용을 텍스트로 변환할 수 있습니다.
-                            </p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        {isAdmin && (
-                            <button
-                                type="button"
-                                onClick={() => setShowApiKeySettings((prev) => !prev)}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
-                                    isApiKeyReady
-                                        ? "bg-white/10 hover:bg-white/20 text-gray-200 border-white/15"
-                                        : "bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-400/40"
-                                }`}
-                                title="OpenAI Whisper API 키 설정 (총괄 어드민 전용)"
-                            >
-                                <span className={`w-2 h-2 rounded-full ${isApiKeyReady ? "bg-emerald-400" : "bg-amber-400 animate-pulse"}`} />
-                                <span>🔑 STT 설정</span>
-                            </button>
-                        )}
-                        <button
-                            onClick={onClose}
-                            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-gray-300 hover:text-white transition-colors"
-                        >
-                            ✕
-                        </button>
-                    </div>
-                </div>
-
-                {/* Modal Body */}
-                <div className="p-6 overflow-y-auto space-y-6 flex-1">
+        <AdminDrawer
+            title="상담 녹취 음성파일 & 텍스트 변환"
+            subtitle="고객별 상담 녹취파일 보관·청취 및 Whisper AI 텍스트 변환"
+            maxWidth="680px"
+            zIndex={85}
+            onClose={onClose}
+            headerRight={
+                isAdmin ? (
+                    <button
+                        type="button"
+                        onClick={() => setShowApiKeySettings((prev) => !prev)}
+                        className={`adm-btn small ${isApiKeyReady ? "sage" : ""}`}
+                        title="OpenAI Whisper API 키 설정 (총괄 어드민 전용)"
+                    >
+                        <span className={`w-2 h-2 rounded-full ${isApiKeyReady ? "bg-[#295e52]" : "bg-[#b58c4b] animate-pulse"}`} />
+                        <span>STT 키 설정</span>
+                    </button>
+                ) : undefined
+            }
+            footer={
+                <button type="button" onClick={onClose} className="adm-btn primary">
+                    닫기
+                </button>
+            }
+        >
+            <div className="space-y-6">
                     {/* OpenAI API Key 설정 패널 (총괄 어드민 전용 토글) */}
                     {isAdmin && showApiKeySettings && (
                         <form
                             onSubmit={handleSaveApiKey}
-                            className="bg-slate-900 text-white rounded-2xl p-4 border border-slate-700 shadow-lg space-y-3 animate-fade-in"
+                            className="bg-[#193f39] text-white rounded-[12px] p-4 border border-[#2d584e] shadow-md space-y-3"
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
@@ -995,28 +976,18 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                     </div>
 
                     {/* 안내 팁 박스 */}
-                    <div className="bg-blue-50/70 border border-blue-100 rounded-2xl p-4 text-xs text-blue-900 leading-relaxed space-y-1">
-                        <div className="font-bold flex items-center gap-1.5 text-blue-950">
-                            <span>💡</span> 스마트 음성 압축 및 AI 텍스트 변환 안내
+                    <div className="bg-[#f4f7ef] border border-[#dce6d5] rounded-[12px] p-4 text-xs text-[#295e52] leading-relaxed space-y-1">
+                        <div className="font-bold flex items-center gap-1.5 text-[#193f39]">
+                            <AdminIcon name="info" className="!w-4 !h-4" />
+                            스마트 음성 압축 및 AI 텍스트 변환 안내
                         </div>
-                        <ul className="list-disc list-inside space-y-0.5 text-blue-800 text-[11px] pl-1">
+                        <ul className="list-disc list-inside space-y-0.5 text-[#45554e] text-[11px] pl-1">
                             <li><strong>AI 텍스트 변환 (Whisper STT):</strong> 각 녹취 파일의 <strong>[📝 텍스트 변환]</strong> 버튼을 누르면 구간별 타임스탬프와 함께 한국어 대화 내용이 자동 추출·저장됩니다.</li>
                             <li><strong>자동 고압축:</strong> 업로드 시 브라우저에서 통화 음성을 자동으로 <strong>22.05kHz 32kbps 고음질 MP3</strong>로 압축 변환합니다. (10분 통화 기준 11MB → 약 2.3MB)</li>
-                            <li><strong>편집 및 내보내기:</strong> 변환된 녹취록은 팝업 내에서 오탈자를 직접 수정하여 저장하거나, 클립보드 복사 및 <strong>TXT 파일 다운로드</strong>가 가능합니다.</li>
+                            <li><strong>편집 및 내보내기:</strong> 변환된 녹취록은 오탈자를 직접 수정하여 저장하거나, 클립보드 복사 및 <strong>TXT 파일 다운로드</strong>가 가능합니다.</li>
                         </ul>
                     </div>
-                </div>
-
-                {/* Modal Footer */}
-                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end shrink-0">
-                    <button
-                        onClick={onClose}
-                        className="px-6 py-2.5 bg-sono-dark hover:bg-black text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
-                    >
-                        닫기
-                    </button>
-                </div>
             </div>
-        </div>
+        </AdminDrawer>
     );
 }
