@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import "./maeum.css";
+import MaeumEcontractDrawer from "./MaeumEcontractDrawer";
 
 interface MaeumContentProps {
     partnerMode?: boolean;
@@ -65,6 +67,9 @@ export default function MaeumContent({
     const [chosenPlan, setChosenPlan] = useState<"3" | "4" | "5">("4");
     const [showSummary, setShowSummary] = useState(false);
 
+    // 6. 우측 전자계약 슬라이드 드로어
+    const [isEcontractOpen, setIsEcontractOpen] = useState(false);
+
     // 금액 포맷터
     const money = (n: number) => n.toLocaleString("ko-KR");
 
@@ -87,8 +92,14 @@ export default function MaeumContent({
 
     const currentService = serviceData[servicePlan];
     const planPrices: Record<string, number> = { "3": 32000, "4": 43000, "5": 54000 };
+    const contractBasePath =
+        partnerMode && partnerUrl && partnerUrl !== "admin"
+            ? `/${partnerUrl}/maeum/contract`
+            : "/products/maeum/contract";
+    const contractHref = `${contractBasePath}?plan=${chosenPlan}`;
 
     return (
+        <>
         <div className="maeum-wrapper">
             
 
@@ -110,9 +121,16 @@ export default function MaeumContent({
                         <a href="#ceremony">의전서비스</a>
                         <a href="#plans">상품 비교</a>
                         <a href="#membership">멤버십</a>
-                        <a href="#consult" className="button">
+                        <a href="#consult" className="button light">
                             가입 조건 확인 <span>↗</span>
                         </a>
+                        <button
+                            type="button"
+                            onClick={() => setIsEcontractOpen(true)}
+                            className="button econtract-btn"
+                        >
+                            전자계약 하기 <span>→</span>
+                        </button>
                     </nav>
                 </div>
             </header>
@@ -1396,6 +1414,13 @@ export default function MaeumContent({
                             >
                                 선택한 가입 조건 확인하기 <span>→</span>
                             </button>
+                            <Link
+                                href={contractHref}
+                                className="button"
+                                style={{ marginTop: "8px", background: "#193f39", display: "inline-flex", justifyContent: "center" }}
+                            >
+                                전자계약 바로가기 <span>→</span>
+                            </Link>
 
                             {showSummary && (
                                 <div className="summarybox" role="status">
@@ -1433,8 +1458,22 @@ export default function MaeumContent({
             {/* Floating Mobile Bar */}
             <div className="mobilebar">
                 <span>가족을 위한 2·5·1<strong>마음든든</strong></span>
-                <a href="#consult" className="button">내 가입 조건 확인 →</a>
+                <button type="button" onClick={() => setIsEcontractOpen(true)} className="button">
+                    전자계약 하기 →
+                </button>
             </div>
         </div>
+
+        {/* Right-side Full-Height E-Contract Drawer */}
+        <MaeumEcontractDrawer
+            isOpen={isEcontractOpen}
+            onClose={() => setIsEcontractOpen(false)}
+            initialPlan={chosenPlan}
+            partnerId={partnerId}
+            partnerUrl={partnerUrl}
+            partnerName={partnerName}
+            partnerPhone={partnerPhone}
+        />
+        </>
     );
 }

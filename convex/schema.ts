@@ -37,6 +37,9 @@ export default defineSchema({
         parentPartnerName: v.optional(v.string()),
         role: v.optional(v.string()), // 'master', 'tm'
         sonoAuthCode: v.optional(v.string()), // 소노접수 인증코드 (예: BIZI0011)
+        affiliation: v.optional(v.string()), // 소속 (마음든든 파트너용)
+        employeeNumber: v.optional(v.string()), // 사원번호 (마음든든 파트너용)
+        departmentName: v.optional(v.string()), // 부서(팀)명 (마음든든 파트너용)
         createdAt: v.string(),
         approvedAt: v.optional(v.string()),
         approvedBy: v.optional(v.string()),
@@ -88,6 +91,12 @@ export default defineSchema({
         sonoRegisteredAt: v.optional(v.string()), // 접수 시도/성공 일시
         sonoRegisterMessage: v.optional(v.string()), // 접수 결과 메시지 (예: '상담 신청 완료', '오늘 접수된 내용입니다' 등)
         sonoAuthCodeUsed: v.optional(v.string()), // 전송 시 사용된 소노 인증코드
+        // 마음든든 전자계약 관련 필드
+        contractTemplateId: v.optional(v.string()), // 전자계약 양식 ID
+        contractData: v.optional(v.any()), // 전자계약 입력 데이터
+        contractSignatureDataUrl: v.optional(v.string()), // 전자서명 이미지 데이터 URL
+        contractPdfStorageId: v.optional(v.id("_storage")), // 생성된 전자계약 PDF 파일 ID
+        contractSignedAt: v.optional(v.string()), // 전자서명 일시
     })
         .index("by_applicationNo", ["applicationNo"])
         .index("by_partnerId", ["partnerId"])
@@ -470,5 +479,86 @@ export default defineSchema({
     })
         .index("by_applicationNo", ["applicationNo"])
         .index("by_uploadedAt", ["uploadedAt"]),
+    // 마음든든 전자계약서 양식 테이블
+    maeumContractTemplates: defineTable({
+        name: v.string(),
+        storageId: v.id("_storage"),
+        fileName: v.string(),
+        pageCount: v.number(),
+        fields: v.array(
+            v.object({
+                id: v.string(),
+                type: v.string(), // 'text' | 'checkbox' | 'signature' | 'date'
+                fieldKey: v.string(),
+                label: v.string(),
+                placeholder: v.optional(v.string()),
+                required: v.optional(v.boolean()),
+                page: v.number(),
+                xRatio: v.number(),
+                yRatio: v.number(),
+                widthRatio: v.number(),
+                heightRatio: v.number(),
+                fontSize: v.optional(v.number()),
+                checkedValue: v.optional(v.string()),
+                groupName: v.optional(v.string()),
+            })
+        ),
+        isActive: v.boolean(),
+        createdAt: v.string(),
+        updatedAt: v.string(),
+    }).index("by_isActive", ["isActive"]),
+
+    // 마음든든 연체 관리 데이터 테이블
+    maeumRetentionRecords: defineTable({
+        memberNo: v.string(),
+        uniqueNo: v.optional(v.string()),
+        customerName: v.string(),
+        birth: v.string(),
+        phone: v.string(),
+        productName: v.string(),
+        paymentStatus: v.string(),
+        joinStatus: v.string(),
+        joinDate: v.string(),
+        transferDate: v.optional(v.string()),
+        paymentMethod: v.string(),
+        cancelStatus: v.optional(v.string()),
+        cancelDate: v.optional(v.string()),
+        approvalStatus: v.string(),
+        b2bCompany: v.string(),
+        idNo: v.string(),
+        discountCount: v.number(),
+        actualPaymentCount: v.number(),
+        subCompany: v.optional(v.string()),
+        transferorName: v.optional(v.string()),
+        partnerId: v.optional(v.string()),
+        partnerName: v.optional(v.string()),
+        parentPartnerId: v.optional(v.string()),
+        parentPartnerName: v.optional(v.string()),
+        refundStatus: v.optional(v.string()),
+        refundUpdatedAt: v.optional(v.string()),
+        revivalStatus: v.optional(v.string()),
+        revivalUpdatedAt: v.optional(v.string()),
+        delinquencyResolveStatus: v.optional(v.string()),
+        delinquencyResolveUpdatedAt: v.optional(v.string()),
+        uploadedAt: v.string(),
+    })
+        .index("by_idNo", ["idNo"])
+        .index("by_partnerId", ["partnerId"])
+        .index("by_parentPartnerId", ["parentPartnerId"]),
+
+    // 마음든든 파트너별 연체 ID_NO 매핑 테이블
+    maeumPartnerRetentionMappings: defineTable({
+        partnerId: v.string(),
+        idNos: v.array(v.string()),
+        updatedAt: v.string(),
+    }).index("by_partnerId", ["partnerId"]),
+
+    // 마음든든 연체 관리 메모/이력 테이블
+    maeumRetentionMemos: defineTable({
+        customerKey: v.string(),
+        content: v.string(),
+        createdBy: v.string(),
+        createdAt: v.string(),
+    }).index("by_customerKey", ["customerKey"]),
 });
 

@@ -18,6 +18,7 @@ import {
 } from "@/lib/dateUtils";
 import { formatBytes } from "@/lib/downloadUtils";
 import { formatPhoneNumber } from "@/lib/phoneUtils";
+import { generateFilledContractPdf, triggerPdfDownload, ContractFieldDef } from "@/lib/maeumPdf";
 
 interface CustomerManagementProps {
     applications: Application[];
@@ -33,6 +34,7 @@ interface CustomerManagementProps {
     setCustomStartDate?: (val: string) => void;
     customEndDate?: string;
     setCustomEndDate?: (val: string) => void;
+    mode?: "default" | "maeum";
 }
 
 export default function CustomerManagement({
@@ -49,6 +51,7 @@ export default function CustomerManagement({
     setCustomStartDate: liftedSetCustomStartDate,
     customEndDate: liftedCustomEndDate,
     setCustomEndDate: liftedSetCustomEndDate,
+    mode = "default",
 }: CustomerManagementProps) {
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
     const reorderStatuses = useMutation(api.applicationStatuses.reorderStatuses);
@@ -124,6 +127,38 @@ export default function CustomerManagement({
     // 녹취 파일 관리 상태
     const recordingStats = useQuery(api.recordings.getRecordingStats) || {};
     const [recordingTargetApp, setRecordingTargetApp] = useState<Application | null>(null);
+    const contractPdfMap = useQuery(api.maeumContracts.getContractPdfMap, mode === "maeum" ? {} : "skip") || {};
+    const activeMaeumTemplate = useQuery(api.maeumContracts.getActiveTemplate, mode === "maeum" ? {} : "skip");
+
+    const handleDownloadContractPdf = async (app: Application) => {
+        const info = contractPdfMap[app.applicationNo];
+        if (info?.pdfUrl) {
+            const a = document.createElement("a");
+            a.href = info.pdfUrl;
+            a.download = `마음든든_전자계약서_${app.customerName || "고객"}_${app.applicationNo}.pdf`;
+            a.target = "_blank";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            return;
+        }
+        if (app.contractData && activeMaeumTemplate?.pdfUrl) {
+            try {
+                const bytes = await generateFilledContractPdf({
+                    templatePdfUrl: activeMaeumTemplate.pdfUrl,
+                    fields: (activeMaeumTemplate.fields || []) as ContractFieldDef[],
+                    contractData: app.contractData,
+                    signatureDataUrl: app.contractSignatureDataUrl,
+                });
+                triggerPdfDownload(
+                    bytes,
+                    `마음든든_전자계약서_${app.customerName || "고객"}_${app.applicationNo}.pdf`
+                );
+            } catch (err: any) {
+                alert("PDF 생성 중 오류가 발생했습니다: " + (err?.message || ""));
+            }
+        }
+    };
 
     // Filters
     const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter);
@@ -332,6 +367,11 @@ export default function CustomerManagement({
     // 1. Initial filtered applications (search, date, partner)
     const initialFiltered = (applications || []).filter((app) => {
         if (!app) return false;
+        const isMaeumApp =
+            (app.productType || "").toLowerCase().includes("maeum") ||
+            (app.productType || "").includes("마음든든");
+        if (mode === "maeum" && !isMaeumApp) return false;
+        if (mode !== "maeum" && isMaeumApp) return false;
 
         const name = (app.customerName || "").toLowerCase();
         const cleanName = name.replace(/\s+/g, "");
@@ -915,34 +955,55 @@ export default function CustomerManagement({
                                         className="text-center"
                                         onClick={(e) => e.stopPropagation()}
                                     >
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setRecordingTargetApp(app);
-                                            }}
-                                            className={`adm-btn small !py-1 !px-2 !min-h-[27px] ${
-                                                recCount > 0 ? "sage" : ""
-                                            }`}
-                                            title={
-                                                recCount > 0
-                                                    ? `녹취 파일 ${recCount}건 (${recSizeText}) - 클릭하여 듣기/관리`
-                                                    : "녹취 음성파일 업로드"
-                                            }
-                                        >
-                                            <AdminIcon
-                                                name="mic"
-                                                className="!w-3.5 !h-3.5"
-                                            />
-                                            <span>
-                                                {recCount > 0 ? `${recCount}건` : "등록"}
-                                            </span>
-                                            {recCount > 0 && recSizeText && (
-                                                <span className="text-[9.5px] opacity-80 font-mono">
-                                                    ({recSizeText})
+                                        <div className="inline-flex items-center justify-center gap-1">
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setRecordingTargetApp(app);
+                                                }}
+                                                className={`adm-btn small !py-1 !px-2 !min-h-[27px] ${
+                                                    recCount > 0 ? "sage" : ""
+                                                }`}
+                                                title={
+                                                    recCount > 0
+                                                        ? `녹취 파일 ${recCount}건 (${recSizeText}) - 클릭하여 듣기/관리`
+                                                        : "녹취 음성파일 업로드"
+                                                }
+                                            >
+                                                <AdminIcon
+                                                    name="mic"
+                                                    className="!w-3.5 !h-3.5"
+                                                />
+                                                <span>
+                                                    {recCount > 0 ? `${recCount}건` : "등록"}
                                                 </span>
-                                            )}
-                                        </button>
+                                                {recCount > 0 && recSizeText && (
+                                                    <span className="text-[9.5px] opacity-80 font-mono">
+                                                        ({recSizeText})
+                                                    </span>
+                                                )}
+                                            </button>
+                                            {mode === "maeum" &&
+                                                (contractPdfMap[app.applicationNo]?.pdfUrl ||
+                                                    contractPdfMap[app.applicationNo]?.hasContractData) && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleDownloadContractPdf(app);
+                                                        }}
+                                                        className="adm-btn small primary !py-1 !px-2 !min-h-[27px]"
+                                                        title="전자계약서 PDF 다운로드"
+                                                    >
+                                                        <AdminIcon
+                                                            name="download"
+                                                            className="!w-3.5 !h-3.5"
+                                                        />
+                                                        <span>PDF</span>
+                                                    </button>
+                                                )}
+                                        </div>
                                     </td>
                                     {isAdmin && (
                                         <td
@@ -1031,8 +1092,12 @@ export default function CustomerManagement({
                     {/* 상단 페이지 헤딩 & 주요 액션 버튼 */}
                     <section className="adm-page-heading">
                         <div>
-                            <div className="adm-eyebrow">SONO I&apos;M READY · CUSTOMERS</div>
-                            <h1>고객 관리</h1>
+                            <div className="adm-eyebrow">
+                                {mode === "maeum"
+                                    ? "MAEUM · CUSTOMERS"
+                                    : "SONO I'M READY · CUSTOMERS"}
+                            </div>
+                            <h1>{mode === "maeum" ? "고객 관리 (마음든든)" : "고객 관리"}</h1>
                             <p>
                                 상담 접수부터 녹취·본사 접수·정상 가입까지 전체 고객 여정을 한눈에 관리하세요. (검색 결과{" "}
                                 <strong className="text-[#295e52]">
@@ -1586,6 +1651,7 @@ export default function CustomerManagement({
                         selectedApp.partnerName
                     )}
                     currentUserRole={currentUser?.role || "master"}
+                    mode={mode}
                 />
             )}
 
@@ -1611,6 +1677,7 @@ export default function CustomerManagement({
                     partner={currentUser || null}
                     partners={partners}
                     isAdmin={isAdmin}
+                    mode={mode}
                 />
             )}
 

@@ -16,6 +16,7 @@ interface CustomerRegistrationModalProps {
     partner: any; // Logged in partner (session) or selected partner - session has 'name', db has 'companyName'
     partners?: Partner[]; // List of partners for Admin to select
     isAdmin?: boolean;
+    mode?: "default" | "maeum";
 }
 
 interface StagedCustomer {
@@ -38,7 +39,7 @@ interface StagedCustomer {
     selectedPartnerLoginId?: string; // 로그인 ID
 }
 
-export default function CustomerRegistrationModal({ onClose, onSuccess, partner, partners = [], isAdmin = false }: CustomerRegistrationModalProps) {
+export default function CustomerRegistrationModal({ onClose, onSuccess, partner, partners = [], isAdmin = false, mode = "default" }: CustomerRegistrationModalProps) {
     const createApplications = useMutation(api.applications.createApplications);
 
     // Get template URLs from settings
@@ -167,6 +168,13 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
 
     // Calculate allowed product types for the selected partner (dynamically read from careProductsData)
     const allowedProductOptions = useMemo(() => {
+        if (mode === "maeum") {
+            return [
+                { id: "maeum3", name: "마음든든3", productType: "standard", slotCount: 1 },
+                { id: "maeum4", name: "마음든든4", productType: "standard", slotCount: 1 },
+                { id: "maeum5", name: "마음든든5", productType: "standard", slotCount: 1 },
+            ];
+        }
         const selectedP = availablePartners.find(p => p.partnerId === manualForm.selectedPartnerId || p.loginId === manualForm.selectedPartnerId) || partner;
         const pGroup = selectedP?.partnerGroup || "전체 상품 판매";
 
@@ -215,7 +223,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
         });
 
         return filtered.length > 0 ? filtered : dbList;
-    }, [careProductsData, availablePartners, manualForm.selectedPartnerId, partner]);
+    }, [mode, careProductsData, availablePartners, manualForm.selectedPartnerId, partner]);
 
     // Keep manualForm.productType aligned with allowedProductOptions
     useEffect(() => {

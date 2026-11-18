@@ -187,6 +187,11 @@ export async function POST(request: Request) {
                 parentPartnerId: partnerData.parentPartnerId || '',
                 parentPartnerName: partnerData.parentPartnerName || '',
                 role: partnerData.role || 'master',
+                inquiryPhone: partnerData.inquiryPhone || '',
+                sonoAuthCode: partnerData.sonoAuthCode || '',
+                affiliation: partnerData.affiliation || '',
+                employeeNumber: partnerData.employeeNumber || '',
+                departmentName: partnerData.departmentName || '',
                 approvedAt: new Date().toISOString().split('T')[0],
                 approvedBy: partnerData.approvedBy || 'admin',
             });

@@ -16,6 +16,8 @@ import type * as careProducts from "../careProducts.js";
 import type * as crons from "../crons.js";
 import type * as dashboard from "../dashboard.js";
 import type * as dataManagement from "../dataManagement.js";
+import type * as maeumContracts from "../maeumContracts.js";
+import type * as maeumRetention from "../maeumRetention.js";
 import type * as partners from "../partners.js";
 import type * as products from "../products.js";
 import type * as promotions from "../promotions.js";
@@ -45,6 +47,8 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   dashboard: typeof dashboard;
   dataManagement: typeof dataManagement;
+  maeumContracts: typeof maeumContracts;
+  maeumRetention: typeof maeumRetention;
   partners: typeof partners;
   products: typeof products;
   promotions: typeof promotions;

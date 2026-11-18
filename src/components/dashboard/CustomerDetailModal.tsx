@@ -22,6 +22,7 @@ interface CustomerDetailModalProps {
     isAdmin?: boolean;
     partnerLoginId?: string;
     currentUserRole?: string;
+    mode?: "default" | "maeum";
 }
 
 export default function CustomerDetailModal({
@@ -31,6 +32,7 @@ export default function CustomerDetailModal({
     isAdmin = false,
     partnerLoginId,
     currentUserRole = "master",
+    mode = "default",
 }: CustomerDetailModalProps) {
     const updateDetails = useMutation(api.applications.updateApplicationDetails);
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
@@ -735,19 +737,29 @@ export default function CustomerDetailModal({
                                     onChange={(e) => setProductType(e.target.value)}
                                     className="adm-select w-full font-bold text-[#295e52]"
                                 >
-                                    {productType &&
-                                        !allowedCareProducts.some(
-                                            (cp) => cp.name === productType
-                                        ) && (
-                                            <option value={productType}>
-                                                {getProductTypeLabel(productType)}
-                                            </option>
-                                        )}
-                                    {allowedCareProducts.map((cp) => (
-                                        <option key={cp._id} value={cp.name}>
-                                            {cp.name}
-                                        </option>
-                                    ))}
+                                    {mode === "maeum" ? (
+                                        <>
+                                            <option value="마음든든3">마음든든3</option>
+                                            <option value="마음든든4">마음든든4</option>
+                                            <option value="마음든든5">마음든든5</option>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {productType &&
+                                                !allowedCareProducts.some(
+                                                    (cp) => cp.name === productType
+                                                ) && (
+                                                    <option value={productType}>
+                                                        {getProductTypeLabel(productType)}
+                                                    </option>
+                                                )}
+                                            {allowedCareProducts.map((cp) => (
+                                                <option key={cp._id} value={cp.name}>
+                                                    {cp.name}
+                                                </option>
+                                            ))}
+                                        </>
+                                    )}
                                 </select>
                             </label>
 

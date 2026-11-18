@@ -34,6 +34,9 @@ export interface Partner {
     parentPartnerName?: string;
     role?: string; // 'master' | 'tm'
     sonoAuthCode?: string; // 소노접수 인증코드 (예: BIZI0011)
+    affiliation?: string; // 소속
+    employeeNumber?: string; // 사원번호
+    departmentName?: string; // 부서(팀)명
     createdAt: string;
     approvedAt: string;
     approvedBy: string;
@@ -44,7 +47,7 @@ export interface Application {
     applicationNo: string;
     partnerId: string;
     partnerName: string;
-    productType: 'happy450' | 'smartcare';
+    productType: 'happy450' | 'smartcare' | 'maeum' | string;
     planType: string;
     products?: string;
     customerName: string;
@@ -79,6 +82,11 @@ export interface Application {
     sonoRegisteredAt?: string;
     sonoRegisterMessage?: string;
     sonoAuthCodeUsed?: string;
+    contractTemplateId?: string;
+    contractData?: Record<string, any>;
+    contractSignatureDataUrl?: string;
+    contractPdfStorageId?: string;
+    contractSignedAt?: string;
 }
 
 // 계약 상태 (진행상태 설정에서 동적으로 관리됨)
@@ -210,7 +218,7 @@ export interface PartnerApplyFormData {
 export interface CustomerApplyFormData {
     partnerId: string;
     partnerName: string;
-    productType: 'happy450' | 'smartcare';
+    productType: 'happy450' | 'smartcare' | 'maeum' | string;
     planType: string;
     products?: string;
     name: string;

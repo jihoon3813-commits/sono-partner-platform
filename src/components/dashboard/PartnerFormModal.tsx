@@ -15,6 +15,7 @@ interface PartnerFormModalProps {
     onClose: () => void;
     onSuccess: () => void;
     isAdmin?: boolean;
+    mode?: "default" | "maeum";
 }
 
 export default function PartnerFormModal({
@@ -24,6 +25,7 @@ export default function PartnerFormModal({
     onClose,
     onSuccess,
     isAdmin = false,
+    mode = "default",
 }: PartnerFormModalProps) {
     const isEdit = !!partner;
     const [isLoading, setIsLoading] = useState(false);
@@ -63,9 +65,9 @@ export default function PartnerFormModal({
         partnerGroup: "전체 상품 판매",
         showLandingUrl: true,
         landingVisibility: {
-            smartcare: true,
-            happy450: true,
-            maeum: false,
+            smartcare: mode !== "maeum",
+            happy450: mode !== "maeum",
+            maeum: mode === "maeum",
         },
         customUrl: "",
         logoUrl: "",
@@ -79,6 +81,9 @@ export default function PartnerFormModal({
         parentPartnerName: "",
         role: "master" as "master" | "tm",
         sonoAuthCode: "",
+        affiliation: "",
+        employeeNumber: "",
+        departmentName: "",
     });
 
     useEffect(() => {
@@ -127,6 +132,9 @@ export default function PartnerFormModal({
                 parentPartnerName: partner.parentPartnerName || "",
                 role: (partner.role || "master") as "master" | "tm",
                 sonoAuthCode: partner.sonoAuthCode || "",
+                affiliation: partner.affiliation || "",
+                employeeNumber: partner.employeeNumber || "",
+                departmentName: partner.departmentName || "",
             });
         } else if (initialData) {
             setFormData((prev) => ({
@@ -153,6 +161,9 @@ export default function PartnerFormModal({
                 status: "active",
                 role: (initialData.role || "master") as "master" | "tm",
                 sonoAuthCode: initialData.sonoAuthCode || "",
+                affiliation: initialData.affiliation || "",
+                employeeNumber: initialData.employeeNumber || "",
+                departmentName: initialData.departmentName || "",
             }));
         }
     }, [partner, initialData]);
@@ -1060,6 +1071,58 @@ export default function PartnerFormModal({
                                 : ""}
                         </small>
                     </div>
+                </div>
+
+                {/* 8. 계정 및 권한 설정 */}
+                <h3 className="adm-section-label">
+                    <span>마음든든 파트너 정보 (전자계약서 반영)</span>
+                </h3>
+                <div className="adm-field-grid">
+                    <label className="adm-field">
+                        <span>소속</span>
+                        <input
+                            type="text"
+                            value={formData.affiliation}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    affiliation: e.target.value,
+                                })
+                            }
+                            className="adm-input"
+                            placeholder="예: 소노영업본부"
+                        />
+                    </label>
+                    <label className="adm-field">
+                        <span>사원번호</span>
+                        <input
+                            type="text"
+                            value={formData.employeeNumber}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    employeeNumber: e.target.value,
+                                })
+                            }
+                            className="adm-input font-mono"
+                            placeholder="예: EMP-001"
+                        />
+                    </label>
+                    <label className="adm-field">
+                        <span>부서(팀)명</span>
+                        <input
+                            type="text"
+                            value={formData.departmentName}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    departmentName: e.target.value,
+                                })
+                            }
+                            className="adm-input"
+                            placeholder="예: 영업1팀"
+                        />
+                    </label>
                 </div>
 
                 {/* 8. 계정 및 권한 설정 */}

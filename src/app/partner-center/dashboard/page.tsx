@@ -16,6 +16,8 @@ import StatusManagement from "@/components/dashboard/StatusManagement";
 import IndividualPageManagement from "@/components/dashboard/IndividualPageManagement";
 import RetentionManagement2 from "@/components/dashboard/RetentionManagement2";
 import RetentionManagementPostAug from "@/components/dashboard/RetentionManagementPostAug";
+import MaeumRetentionManagement from "@/components/dashboard/MaeumRetentionManagement";
+import MaeumContractTemplateEditor from "@/components/dashboard/MaeumContractTemplateEditor";
 import TMManagement from "@/components/dashboard/TMManagement";
 import AccountManagement from "@/components/dashboard/AccountManagement";
 import ChannelMappingManagement from "@/components/dashboard/ChannelMappingManagement";
@@ -41,6 +43,10 @@ type Tab =
     | "retention"
     | "retention2"
     | "retentionPostAug"
+    | "maeumCustomers"
+    | "maeumPartners"
+    | "maeumRetention"
+    | "maeumContractTemplate"
     | "tms"
     | "reset";
 
@@ -53,6 +59,10 @@ const TAB_TITLES: Record<Tab, string> = {
     retention: "유지율 관리",
     retention2: "연체 관리",
     retentionPostAug: "연체 관리 · 8월 이후 가입",
+    maeumCustomers: "고객 관리 · 마음든든",
+    maeumPartners: "파트너 관리 · 마음든든",
+    maeumRetention: "연체 관리 · 마음든든",
+    maeumContractTemplate: "전자계약 양식 관리 · 마음든든",
     products: "상품관리",
     promotions: "프로모션",
     stats: "통계",
@@ -238,26 +248,34 @@ export default function PartnerDashboard() {
         allRequests: realTimeData?.allRequests || [],
     };
 
+    const isMaeumCustomer = (c: any) => {
+        const pt = (c.productType || "").toLowerCase();
+        return pt.includes("maeum") || pt.includes("마음든든");
+    };
+
     const today = getKSTDateString();
-    const newCustomerCount = (dashboardData.customers || []).filter((c: any) => {
+    const todayInitialCustomers = (dashboardData.customers || []).filter((c: any) => {
         const isInitialStatus = c.status === "접수대기" || c.status === "접수";
         if (!isInitialStatus) return false;
         const regDate = getKSTDateString(c.registrationDate || c.createdAt || c._creationTime);
         return regDate === today;
-    }).length;
+    });
+    const newCustomerCount = todayInitialCustomers.filter((c: any) => !isMaeumCustomer(c)).length;
+    const newMaeumCustomerCount = todayInitialCustomers.filter((c: any) => isMaeumCustomer(c)).length;
+    const totalNewCustomerCount = newCustomerCount + newMaeumCustomerCount;
 
     // 브라우저 탭 파비콘 및 탭 제목 알림 뱃지
     useEffect(() => {
         if (typeof window === "undefined") return;
-        updateFaviconBadge(newCustomerCount);
+        updateFaviconBadge(totalNewCustomerCount);
 
-        if (newCustomerCount <= 0) {
+        if (totalNewCustomerCount <= 0) {
             document.title = BASE_TITLE;
             return;
         }
 
-        const badgeTitle = `🔴 (${newCustomerCount}) ${BASE_TITLE}`;
-        const alertTitle = `🔴 (${newCustomerCount}) 신규 고객 접수!`;
+        const badgeTitle = `🔴 (${totalNewCustomerCount}) ${BASE_TITLE}`;
+        const alertTitle = `🔴 (${totalNewCustomerCount}) 신규 고객 접수!`;
 
         let isAlert = false;
         let blinkInterval: NodeJS.Timeout | null = null;
@@ -288,7 +306,7 @@ export default function PartnerDashboard() {
             document.title = BASE_TITLE;
             updateFaviconBadge(0);
         };
-    }, [newCustomerCount]);
+    }, [totalNewCustomerCount]);
 
     const currentPartner =
         dashboardData.partners.find(
@@ -936,6 +954,38 @@ export default function PartnerDashboard() {
                         isSub={true}
                     />
 
+                    {(isAdmin || isMaeumVisible) && (
+                        <>
+                            <div className="adm-nav-group">마음든든 관리</div>
+                            <SidebarNavButton
+                                id="maeumCustomers"
+                                label="고객 관리 (마음든든)"
+                                icon="users"
+                                count={newMaeumCustomerCount}
+                                isAlert={newMaeumCustomerCount > 0}
+                            />
+                            {(isAdmin || isParentPartner) && (
+                                <SidebarNavButton
+                                    id="maeumPartners"
+                                    label="파트너 관리 (마음든든)"
+                                    icon="network"
+                                />
+                            )}
+                            <SidebarNavButton
+                                id="maeumRetention"
+                                label="연체 관리 (마음든든)"
+                                icon="clock"
+                            />
+                            {isAdmin && (
+                                <SidebarNavButton
+                                    id="maeumContractTemplate"
+                                    label="전자계약 양식 관리"
+                                    icon="file"
+                                />
+                            )}
+                        </>
+                    )}
+
                     <div className="adm-nav-group">운영 관리</div>
                     {isAdmin && (
                         <>
@@ -957,6 +1007,19 @@ export default function PartnerDashboard() {
                         >
                             <AdminIcon name="external" />
                             <span>{isAdmin ? "공식 홈페이지" : "전용 상품 랜딩"}</span>
+                            <AdminIcon name="arrow-up-right" />
+                        </Link>
+                    )}
+
+                    {(isAdmin || isMaeumVisible) && (
+                        <Link
+                            href={isAdmin ? "/products/maeum" : `/${partner?.customUrl}/maeum`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="adm-landing-link"
+                        >
+                            <AdminIcon name="external" />
+                            <span>마음든든 바로가기</span>
                             <AdminIcon name="arrow-up-right" />
                         </Link>
                     )}
@@ -2214,6 +2277,46 @@ export default function PartnerDashboard() {
                             parentPartner={currentPartner}
                             onRefresh={() => fetchData()}
                         />
+                    )}
+
+                    {activeTab === "maeumCustomers" && (isAdmin || isMaeumVisible) && (
+                        <CustomerManagement
+                            applications={dashboardData.customers as any}
+                            onRefresh={() => fetchData()}
+                            partners={dashboardData.partners as any}
+                            isAdmin={isAdmin}
+                            initialStatusFilter={customersInitialStatus}
+                            currentUser={partner}
+                            dateFilter={dateFilter}
+                            setDateFilter={setDateFilter}
+                            customStartDate={customStartDate}
+                            setCustomStartDate={setCustomStartDate}
+                            customEndDate={customEndDate}
+                            setCustomEndDate={setCustomEndDate}
+                            mode="maeum"
+                        />
+                    )}
+
+                    {activeTab === "maeumPartners" && (isAdmin || (isParentPartner && isMaeumVisible)) && (
+                        <PartnerManagement
+                            partners={dashboardData.partners as any}
+                            isAdmin={isAdmin}
+                            currentUser={currentPartner}
+                            onRefresh={() => fetchData()}
+                            mode="maeum"
+                        />
+                    )}
+
+                    {activeTab === "maeumRetention" && (isAdmin || isMaeumVisible) && (
+                        <MaeumRetentionManagement
+                            isAdmin={isAdmin}
+                            partnerId={partner?.partnerId}
+                            partners={dashboardData.partners as any}
+                        />
+                    )}
+
+                    {activeTab === "maeumContractTemplate" && isAdmin && (
+                        <MaeumContractTemplateEditor />
                     )}
                 </main>
 

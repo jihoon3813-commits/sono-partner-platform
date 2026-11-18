@@ -113,6 +113,9 @@ export const createPartner = mutation({
         approvedBy: v.optional(v.string()),
         inquiryPhone: v.optional(v.string()),
         sonoAuthCode: v.optional(v.string()),
+        affiliation: v.optional(v.string()),
+        employeeNumber: v.optional(v.string()),
+        departmentName: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const partnerId = `P-${Date.now()}`;

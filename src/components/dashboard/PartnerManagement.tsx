@@ -10,6 +10,7 @@ interface PartnerManagementProps {
     onRefresh: () => void;
     isAdmin?: boolean;
     currentUser?: Partner | null;
+    mode?: "default" | "maeum";
 }
 
 function getLandingBadge(p: Partner) {
@@ -142,6 +143,13 @@ function PartnerRow({
                     <div className="text-[11px] text-[#86918a] mt-0.5 tabular-nums">
                         {partner.managerPhone || "-"}
                     </div>
+                    {(partner.affiliation || partner.employeeNumber || partner.departmentName) && (
+                        <div className="text-[10.5px] text-[#295e52] mt-0.5 font-medium">
+                            {[partner.affiliation, partner.departmentName, partner.employeeNumber]
+                                .filter(Boolean)
+                                .join(" · ")}
+                        </div>
+                    )}
                 </td>
                 <td>
                     <div className="flex items-center gap-1.5 flex-wrap">
@@ -209,10 +217,15 @@ function PartnerRow({
 }
 
 export default function PartnerManagement({
-    partners,
+    partners: rawPartners,
     onRefresh,
     isAdmin = false,
+    mode = "default",
 }: PartnerManagementProps) {
+    const partners =
+        mode === "maeum"
+            ? rawPartners.filter((p) => p.landingVisibility?.maeum === true)
+            : rawPartners;
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedOrgId, setSelectedOrgId] = useState<string>("all");
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -278,9 +291,15 @@ export default function PartnerManagement({
         <div className="space-y-5">
             <section className="adm-page-heading">
                 <div>
-                    <div className="adm-eyebrow">SONO I&apos;M READY · PARTNERS</div>
-                    <h1>파트너 관리</h1>
-                    <p>함께 성장하는 파트너 조직과 전용 랜딩·계정 상태를 관리하세요.</p>
+                    <div className="adm-eyebrow">
+                        {mode === "maeum" ? "MAEUM · PARTNERS" : "SONO I'M READY · PARTNERS"}
+                    </div>
+                    <h1>{mode === "maeum" ? "파트너 관리 (마음든든)" : "파트너 관리"}</h1>
+                    <p>
+                        {mode === "maeum"
+                            ? "마음든든 상품 파트너의 소속·사원번호·부서명 및 전용 랜딩을 관리하세요."
+                            : "함께 성장하는 파트너 조직과 전용 랜딩·계정 상태를 관리하세요."}
+                    </p>
                 </div>
                 <div className="adm-heading-buttons">
                     <button
@@ -526,6 +545,7 @@ export default function PartnerManagement({
                     onClose={handleModalClose}
                     onSuccess={handleSuccess}
                     isAdmin={isAdmin}
+                    mode={mode}
                 />
             )}
         </div>
