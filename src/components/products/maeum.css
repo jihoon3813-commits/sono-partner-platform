@@ -3771,3 +3771,102 @@
         height: 34px !important;
     }
 }
+
+
+/* Hero CTA Row & Mid-Page Consultation Banners */
+.maeum-wrapper .hero-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.maeum-wrapper .hero .hero-cta-row .button {
+    margin-top: 22px;
+}
+
+.maeum-wrapper .maeum-mid-cta {
+    margin-top: 34px;
+    padding: 22px 26px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #f1f5ef 0%, #fffdf8 100%);
+    border: 1px solid #d7e2d5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.maeum-wrapper .maeum-mid-cta.dark {
+    background: linear-gradient(135deg, #173c37 0%, #23534c 100%);
+    border-color: #173c37;
+    color: #fffefa;
+}
+
+.maeum-wrapper .maeum-mid-cta-text strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+}
+
+.maeum-wrapper .maeum-mid-cta.dark .maeum-mid-cta-text strong {
+    color: #fffefa;
+}
+
+.maeum-wrapper .maeum-mid-cta-text p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.maeum-wrapper .maeum-mid-cta.dark .maeum-mid-cta-text p {
+    color: rgba(255, 254, 250, 0.82);
+}
+
+.maeum-wrapper .maeum-mid-cta-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.maeum-wrapper .maeum-mid-cta.dark .button.consult-btn {
+    background: #c9a962;
+    border-color: #c9a962;
+    color: #173c37;
+    font-weight: 700;
+}
+
+.maeum-wrapper .maeum-mid-cta.dark .button.consult-btn:hover {
+    background: #d7b873;
+    border-color: #d7b873;
+}
+
+.maeum-wrapper .mobilebar-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 760px) {
+    .maeum-wrapper .maeum-mid-cta {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 18px 16px;
+        gap: 14px;
+        margin-top: 22px;
+    }
+
+    .maeum-wrapper .maeum-mid-cta-actions {
+        width: 100%;
+    }
+
+    .maeum-wrapper .maeum-mid-cta-actions .button {
+        flex: 1;
+        justify-content: center;
+    }
+}

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import "./maeum.css";
 import MaeumEcontractDrawer from "./MaeumEcontractDrawer";
+import MaeumConsultDrawer from "./MaeumConsultDrawer";
 
 interface MaeumContentProps {
     partnerMode?: boolean;
@@ -67,8 +68,14 @@ export default function MaeumContent({
     const [chosenPlan, setChosenPlan] = useState<"3" | "4" | "5">("4");
     const [showSummary, setShowSummary] = useState(false);
 
-    // 6. 우측 전자계약 슬라이드 드로어
+    // 6. 우측 전자계약 & 빠른 상담 신청 슬라이드 드로어
     const [isEcontractOpen, setIsEcontractOpen] = useState(false);
+    const [isConsultOpen, setIsConsultOpen] = useState(false);
+
+    const openConsultDrawer = (plan?: "3" | "4" | "5") => {
+        if (plan) setChosenPlan(plan);
+        setIsConsultOpen(true);
+    };
 
     // 금액 포맷터
     const money = (n: number) => n.toLocaleString("ko-KR");
@@ -121,9 +128,13 @@ export default function MaeumContent({
                         <a href="#ceremony">의전서비스</a>
                         <a href="#plans">상품 비교</a>
                         <a href="#membership">멤버십</a>
-                        <a href="#consult" className="button light">
-                            가입 조건 확인 <span>↗</span>
-                        </a>
+                        <button
+                            type="button"
+                            onClick={() => openConsultDrawer()}
+                            className="button light"
+                        >
+                            빠른 상담 신청 <span>↗</span>
+                        </button>
                         <button
                             type="button"
                             onClick={() => setIsEcontractOpen(true)}
@@ -147,9 +158,18 @@ export default function MaeumContent({
                                     아직 납입이 끝나지 않았어도.<br />
                                     정해진 기간, 지정한 가족의 상조 납입 잔금을 보장합니다.
                                 </p>
-                                <a className="button" href="#audience">
-                                    누구를 위해 준비하시나요? <span>→</span>
-                                </a>
+                                <div className="hero-cta-row">
+                                    <a className="button" href="#audience">
+                                        누구를 위해 준비하시나요? <span>→</span>
+                                    </a>
+                                    <button
+                                        type="button"
+                                        className="button light"
+                                        onClick={() => openConsultDrawer()}
+                                    >
+                                        빠른 상담 신청 <span>↗</span>
+                                    </button>
+                                </div>
                                 <p className="price">월 32,000원부터 · 96회 납입 · 총 3,072,000원부터</p>
                                 {/* <a className="reviewlink" href="#reviews">
                                     공개된 장례서비스 이용 사례 읽어보기 ↗
@@ -625,6 +645,22 @@ export default function MaeumContent({
                             <strong>납입 완료와 전액 환급 시점은 다릅니다.</strong><br />
                             96회 납입 완료 후 97~180회차에는 추가 납입 없이 유지합니다. 이 기간 해약환급률은 85%이며, 100% 환급은 181회차 이후 만기 해약 기준입니다.
                         </div>
+
+                        <div className="maeum-mid-cta">
+                            <div className="maeum-mid-cta-text">
+                                <strong>내 상황에 맞는 2·5·1 잔금 보장 조건이 궁금하신가요?</strong>
+                                <p>지정인 연령·가족 범위·월 납입 구성을 전문 상담원이 1:1로 안내해 드립니다.</p>
+                            </div>
+                            <div className="maeum-mid-cta-actions">
+                                <button
+                                    type="button"
+                                    className="button"
+                                    onClick={() => openConsultDrawer()}
+                                >
+                                    빠른 상담 신청 <span>→</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -1058,6 +1094,30 @@ export default function MaeumContent({
                         </div>
 
                         <p className="smallnote">주요 구성 비교입니다. 관·수의·장례지도사 기본 사양은 공통이며, 상세 품목과 지원 시간·추가 비용은 계약명세에 따릅니다. 일회용 식기에는 음식이 포함되지 않습니다.</p>
+
+                        <div className="maeum-mid-cta dark">
+                            <div className="maeum-mid-cta-text">
+                                <strong>마음든든 3·4·5 중 어떤 구성이 맞을지 고민되시나요?</strong>
+                                <p>준비하시는 분의 상황에 맞춰 가장 알맞은 상품과 혜택을 바로 상담받으실 수 있습니다.</p>
+                            </div>
+                            <div className="maeum-mid-cta-actions">
+                                <button
+                                    type="button"
+                                    className="button consult-btn"
+                                    onClick={() => openConsultDrawer(chosenPlan)}
+                                >
+                                    빠른 상담 신청 <span>→</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    className="button light"
+                                    style={{ borderColor: "rgba(255,255,255,0.35)", color: "#fffefa" }}
+                                    onClick={() => setIsEcontractOpen(true)}
+                                >
+                                    전자계약 하기 <span>→</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -1326,6 +1386,22 @@ export default function MaeumContent({
                                 <p>무료 숙박이 아닌 회원 적용 요금 혜택입니다. 이용 날짜·객실·예약 가능 여부에 따라 달라집니다. 장례 및 전환서비스 이용 시 멤버십은 가입일로부터 5년간 제공한다는 조건이 있으므로 상세 적용 기준을 확인해야 합니다.</p>
                             </details>
                         </div>
+
+                        <div className="maeum-mid-cta">
+                            <div className="maeum-mid-cta-text">
+                                <strong>궁금한 점이 남으셨나요? 1분이면 상담 신청이 완료됩니다.</strong>
+                                <p>연락처만 남겨주시면 전문 상담원이 확인 후 빠르게 연락드립니다.</p>
+                            </div>
+                            <div className="maeum-mid-cta-actions">
+                                <button
+                                    type="button"
+                                    className="button"
+                                    onClick={() => openConsultDrawer()}
+                                >
+                                    빠른 상담 신청 <span>→</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -1414,6 +1490,14 @@ export default function MaeumContent({
                             >
                                 선택한 가입 조건 확인하기 <span>→</span>
                             </button>
+                            <button
+                                type="button"
+                                className="button"
+                                style={{ marginTop: "8px", background: "#24564f" }}
+                                onClick={() => openConsultDrawer(chosenPlan)}
+                            >
+                                빠른 상담 신청하기 <span>↗</span>
+                            </button>
                             <Link
                                 href={contractHref}
                                 className="button"
@@ -1458,11 +1542,32 @@ export default function MaeumContent({
             {/* Floating Mobile Bar */}
             <div className="mobilebar">
                 <span>가족을 위한 2·5·1<strong>마음든든</strong></span>
-                <button type="button" onClick={() => setIsEcontractOpen(true)} className="button">
-                    전자계약 하기 →
-                </button>
+                <div className="mobilebar-actions">
+                    <button type="button" onClick={() => openConsultDrawer()} className="button light">
+                        상담 신청
+                    </button>
+                    <button type="button" onClick={() => setIsEcontractOpen(true)} className="button">
+                        전자계약 →
+                    </button>
+                </div>
             </div>
         </div>
+
+        {/* Right-side Full-Height Quick Consultation Drawer */}
+        <MaeumConsultDrawer
+            isOpen={isConsultOpen}
+            onClose={() => setIsConsultOpen(false)}
+            initialPlan={chosenPlan}
+            initialTarget={target}
+            partnerId={partnerId}
+            partnerUrl={partnerUrl}
+            partnerName={partnerName}
+            partnerPhone={partnerPhone}
+            onOpenEcontract={(plan) => {
+                setChosenPlan(plan);
+                setIsEcontractOpen(true);
+            }}
+        />
 
         {/* Right-side Full-Height E-Contract Drawer */}
         <MaeumEcontractDrawer

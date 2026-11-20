@@ -54,7 +54,7 @@ export async function POST(request: Request) {
             }
         }
 
-        // 데모 계정 예외 처리 (DB에 없을 경우)
+        // 데모 계정 및 본사 직접 신청 예외 처리 (DB에 없을 경우)
         if (!partner && (partnerId === 'demo' || partnerId.startsWith('P-DEMO'))) {
             console.log('[API] Using demo partner fallback for:', partnerId);
             partner = {
@@ -62,6 +62,14 @@ export async function POST(request: Request) {
                 companyName: partnerName || '데모 파트너',
                 status: 'active',
                 customUrl: 'demo'
+            } as any;
+        } else if (!partner && (partnerId === 'ADMIN' || partnerId.startsWith('P-TEMP-'))) {
+            console.log('[API] Using direct/temp partner fallback for:', partnerId);
+            partner = {
+                partnerId,
+                companyName: partnerName || '본사 직접 신청',
+                status: 'active',
+                customUrl: ''
             } as any;
         }
 
