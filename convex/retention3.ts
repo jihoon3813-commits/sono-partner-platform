@@ -114,9 +114,21 @@ function resolvePartnerForRecord(
     return hq || null;
 }
 
+// 기존 8월 이후 가입 데이터 배치 삭제 (대용량 업로드 시 트랜잭션 한도 방지)
+export const clearRetentionRecordsBatch = mutation({
+    args: { batchSize: v.optional(v.number()) },
+    handler: async (ctx, args) => {
+        const limit = Math.min(args.batchSize ?? 500, 1000);
+        const batch = await ctx.db.query("retentionRecords3").take(limit);
+        await Promise.all(batch.map((record) => ctx.db.delete(record._id)));
+        return { deleted: batch.length, hasMore: batch.length === limit };
+    },
+});
+
 // 엑셀 업로드 뮤테이션 (8월 이후 가입 전용 테이블 retentionRecords3)
 export const uploadRetentionRecords = mutation({
     args: {
+        append: v.optional(v.boolean()),
         records: v.array(
             v.object({
                 memberNo: v.string(),
@@ -145,10 +157,10 @@ export const uploadRetentionRecords = mutation({
     handler: async (ctx, args) => {
         const now = nowKST();
 
-        // 기존 8월 이후 가입 데이터 전체 삭제 후 일괄 덮어쓰기
-        const existing = await ctx.db.query("retentionRecords3").collect();
-        for (const record of existing) {
-            await ctx.db.delete(record._id);
+        if (!args.append) {
+            // 기존 8월 이후 가입 데이터 전체 삭제 후 일괄 덮어쓰기
+            const existing = await ctx.db.query("retentionRecords3").collect();
+            await Promise.all(existing.map((record) => ctx.db.delete(record._id)));
         }
 
         // 전체 파트너 및 신청서 DB 조회 (매칭용)
@@ -168,27 +180,29 @@ export const uploadRetentionRecords = mutation({
         }
 
         // 새 데이터 삽입 (파트너 정보 바인딩 후 저장)
-        for (const record of args.records) {
-            const joinStatus = record.joinStatus || "";
-            const paymentStatus = (joinStatus.includes("해약") || joinStatus === "해약") ? "해약처리" : record.paymentStatus;
-            
-            const matchedP = resolvePartnerForRecord(record, allPartners, allApps, allMappings1, allMappings2, allMappings3, appBucketMap);
-            
-            const partnerId = matchedP?.partnerId || matchedP?.loginId || "";
-            const partnerName = matchedP?.companyName || "";
-            const parentPartnerId = matchedP?.parentPartnerId || "";
-            const parentPartnerName = matchedP?.parentPartnerName || "";
+        await Promise.all(
+            args.records.map((record) => {
+                const joinStatus = record.joinStatus || "";
+                const paymentStatus = (joinStatus.includes("해약") || joinStatus === "해약") ? "해약처리" : record.paymentStatus;
+                
+                const matchedP = resolvePartnerForRecord(record, allPartners, allApps, allMappings1, allMappings2, allMappings3, appBucketMap);
+                
+                const partnerId = matchedP?.partnerId || matchedP?.loginId || "";
+                const partnerName = matchedP?.companyName || "";
+                const parentPartnerId = matchedP?.parentPartnerId || "";
+                const parentPartnerName = matchedP?.parentPartnerName || "";
 
-            await ctx.db.insert("retentionRecords3", {
-                ...record,
-                paymentStatus,
-                partnerId,
-                partnerName,
-                parentPartnerId,
-                parentPartnerName,
-                uploadedAt: now,
-            });
-        }
+                return ctx.db.insert("retentionRecords3", {
+                    ...record,
+                    paymentStatus,
+                    partnerId,
+                    partnerName,
+                    parentPartnerId,
+                    parentPartnerName,
+                    uploadedAt: now,
+                });
+            })
+        );
         return { count: args.records.length };
     }
 });

@@ -8,6 +8,10 @@ import {
     createApplicationBucketMap,
 } from "@/lib/retentionMatcher";
 import { AdminIcon } from "./AdminIcons";
+import {
+    parseRetentionExcelFile,
+    uploadRetentionRecordsInChunks,
+} from "@/lib/retentionExcelUtils";
 
 const normalizeDate = (val: string | number | undefined): string => {
     if (val === undefined || val === null) return "";
@@ -143,6 +147,7 @@ export default function MaeumRetentionManagement({
     });
     const allApplications = useQuery(api.applications.getAllApplications);
 
+    const clearRecordsBatch = useMutation(api.maeumRetention.clearRetentionRecordsBatch);
     const uploadRecords = useMutation(api.maeumRetention.uploadRetentionRecords);
     const updateRetentionStatus = useMutation(
         api.maeumRetention.updateRetentionStatus
@@ -356,53 +361,17 @@ export default function MaeumRetentionManagement({
 
         setIsUploading(true);
         try {
-            const data = await file.arrayBuffer();
-            const workbook = XLSX.read(data);
-            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-            const json: any[][] = XLSX.utils.sheet_to_json(worksheet, {
-                header: 1,
-            });
-
-            const rows = json.slice(1).filter((row: any) => row && row.length > 0);
-
-            const formattedRecords = rows.map((row: any) => {
-                const joinStatus = String(row[7] || "");
-                let paymentStatus = String(row[6] || "");
-                if (joinStatus.includes("해약") || joinStatus === "해약") {
-                    paymentStatus = "해약처리";
-                }
-                return {
-                    memberNo: String(row[0] || ""),
-                    uniqueNo: String(row[1] || ""),
-                    customerName: String(row[2] || ""),
-                    birth: String(row[3] || ""),
-                    phone: String(row[4] || ""),
-                    productName: String(row[5] || ""),
-                    paymentStatus: paymentStatus,
-                    joinStatus: joinStatus,
-                    joinDate: normalizeDate(row[8]),
-                    transferDate: String(row[9] ?? "")
-                        .trim()
-                        .replace(/\.0$/, "")
-                        .replace(/[^0-9]/g, ""),
-                    paymentMethod: String(row[10] || ""),
-                    cancelStatus: String(row[11] || ""),
-                    cancelDate: String(row[12] || ""),
-                    approvalStatus: String(row[13] || ""),
-                    b2bCompany: String(row[14] || ""),
-                    idNo: String(row[15] || ""),
-                    discountCount: Number(row[16] || 0),
-                    actualPaymentCount: Number(row[17] || 0),
-                    subCompany: String(row[18] || ""),
-                    transferorName: String(row[19] || ""),
-                };
-            });
-
-            await uploadRecords({ records: formattedRecords });
+            const formattedRecords = await parseRetentionExcelFile(file, normalizeDate);
+            await uploadRetentionRecordsInChunks(
+                formattedRecords,
+                clearRecordsBatch,
+                uploadRecords
+            );
             alert("연체 관리 데이터가 성공적으로 업로드되었습니다.");
         } catch (error) {
             console.error(error);
-            alert("업로드 중 오류가 발생했습니다.");
+            const message = error instanceof Error ? error.message : String(error);
+            alert(`업로드 중 오류가 발생했습니다.\n(${message})`);
         } finally {
             setIsUploading(false);
             if (e.target) e.target.value = "";

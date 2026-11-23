@@ -82,9 +82,21 @@ function resolvePartnerForRecord(
     return hq || null;
 }
 
+// 기존 마음든든 연체 데이터 배치 삭제 (대용량 업로드 시 트랜잭션 한도 방지)
+export const clearRetentionRecordsBatch = mutation({
+    args: { batchSize: v.optional(v.number()) },
+    handler: async (ctx, args) => {
+        const limit = Math.min(args.batchSize ?? 500, 1000);
+        const batch = await ctx.db.query("maeumRetentionRecords").take(limit);
+        await Promise.all(batch.map((record) => ctx.db.delete(record._id)));
+        return { deleted: batch.length, hasMore: batch.length === limit };
+    },
+});
+
 // 유지율2 데이터 업로드 (매칭 파트너 및 상위 파트너 정보 DB 즉시 저장)
 export const uploadRetentionRecords = mutation({
     args: {
+        append: v.optional(v.boolean()),
         records: v.array(v.object({
             memberNo: v.string(),
             uniqueNo: v.optional(v.string()),
@@ -111,10 +123,10 @@ export const uploadRetentionRecords = mutation({
     handler: async (ctx, args) => {
         const now = nowKST();
         
-        // 기존 데이터 삭제 (새로고침 방식)
-        const existing = await ctx.db.query("maeumRetentionRecords").collect();
-        for (const record of existing) {
-            await ctx.db.delete(record._id);
+        if (!args.append) {
+            // 기존 데이터 삭제 (새로고침 방식)
+            const existing = await ctx.db.query("maeumRetentionRecords").collect();
+            await Promise.all(existing.map((record) => ctx.db.delete(record._id)));
         }
 
         const allPartners = await ctx.db.query("partners").collect();
@@ -131,27 +143,29 @@ export const uploadRetentionRecords = mutation({
         }
 
         // 새 데이터 삽입 (파트너 정보 바인딩 후 저장)
-        for (const record of args.records) {
-            const joinStatus = record.joinStatus || "";
-            const paymentStatus = (joinStatus.includes("해약") || joinStatus === "해약") ? "해약처리" : record.paymentStatus;
-            
-            const matchedP = resolvePartnerForRecord(record, allPartners, allApps, allMappings1, allMappings2, appBucketMap);
-            
-            const partnerId = matchedP?.partnerId || matchedP?.loginId || "";
-            const partnerName = matchedP?.companyName || "";
-            const parentPartnerId = matchedP?.parentPartnerId || "";
-            const parentPartnerName = matchedP?.parentPartnerName || "";
+        await Promise.all(
+            args.records.map((record) => {
+                const joinStatus = record.joinStatus || "";
+                const paymentStatus = (joinStatus.includes("해약") || joinStatus === "해약") ? "해약처리" : record.paymentStatus;
+                
+                const matchedP = resolvePartnerForRecord(record, allPartners, allApps, allMappings1, allMappings2, appBucketMap);
+                
+                const partnerId = matchedP?.partnerId || matchedP?.loginId || "";
+                const partnerName = matchedP?.companyName || "";
+                const parentPartnerId = matchedP?.parentPartnerId || "";
+                const parentPartnerName = matchedP?.parentPartnerName || "";
 
-            await ctx.db.insert("maeumRetentionRecords", {
-                ...record,
-                paymentStatus,
-                partnerId,
-                partnerName,
-                parentPartnerId,
-                parentPartnerName,
-                uploadedAt: now,
-            });
-        }
+                return ctx.db.insert("maeumRetentionRecords", {
+                    ...record,
+                    paymentStatus,
+                    partnerId,
+                    partnerName,
+                    parentPartnerId,
+                    parentPartnerName,
+                    uploadedAt: now,
+                });
+            })
+        );
         return { count: args.records.length };
     }
 });
