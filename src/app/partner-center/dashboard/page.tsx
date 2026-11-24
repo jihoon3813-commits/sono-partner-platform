@@ -126,6 +126,7 @@ export default function PartnerDashboard() {
     const [copySuccessSmartCare, setCopySuccessSmartCare] = useState(false);
     const [copySuccessHappy450, setCopySuccessHappy450] = useState(false);
     const [copySuccessMaeum, setCopySuccessMaeum] = useState(false);
+    const [copySuccessMaeumAd, setCopySuccessMaeumAd] = useState(false);
     const [copySuccessInquiry, setCopySuccessInquiry] = useState(false);
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
     const [selectedRequest, setSelectedRequest] = useState<PartnerRequest | null>(null);
@@ -1692,6 +1693,67 @@ export default function PartnerDashboard() {
                                                     </button>
                                                     <a
                                                         href="/products/maeum"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="adm-btn primary"
+                                                    >
+                                                        <span>페이지 이동</span>
+                                                        <AdminIcon name="external" />
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            {/* 마음든든(광고) - 총괄 어드민 전용 */}
+                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#adc0ad] transition-all">
+                                                <div>
+                                                    <div className="flex items-center gap-1.5 mb-3">
+                                                        <span className="adm-pill orange">광고 전용</span>
+                                                        <span className="adm-pill gray">총괄 어드민 전용</span>
+                                                    </div>
+                                                    <div className="flex gap-3.5 items-start mb-4">
+                                                        <img
+                                                            src="/images/maeum/family-moment.png"
+                                                            alt="마음든든(광고)"
+                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e6eae3]"
+                                                        />
+                                                        <div>
+                                                            <h3 className="text-base font-bold text-[#263d36] mb-1">
+                                                                마음든든(광고)
+                                                            </h3>
+                                                            <p className="text-xs text-[#7c877b] line-clamp-2 leading-relaxed">
+                                                                마음든든 3·4·5 상세 랜딩 (고객관리 마음든든 연동 · 별도 상품 구분)
+                                                            </p>
+                                                            <p className="text-xs font-bold text-[#9a7840] mt-1.5">
+                                                                월 32,000원부터
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="bg-[#f8f9f5] border border-[#e6eae3] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                        <span className="text-[#8e978a] font-sans block text-[10px] font-semibold mb-0.5">
+                                                            마음든든(광고) 공식 대표 URL
+                                                        </span>
+                                                        <span className="font-semibold text-[#295e52] truncate block">
+                                                            {baseUrl.replace(/^https?:\/\//, "")}/products/maeum-ad
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#edf0e7]">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const url = `${baseUrl}/products/maeum-ad`;
+                                                            navigator.clipboard.writeText(url).then(() => {
+                                                                setCopySuccessMaeumAd(true);
+                                                                setTimeout(() => setCopySuccessMaeumAd(false), 2000);
+                                                            });
+                                                        }}
+                                                        className={`adm-btn ${copySuccessMaeumAd ? "primary" : "sage"}`}
+                                                    >
+                                                        <AdminIcon name={copySuccessMaeumAd ? "check" : "copy"} />
+                                                        <span>{copySuccessMaeumAd ? "복사 완료!" : "URL 복사"}</span>
+                                                    </button>
+                                                    <a
+                                                        href="/products/maeum-ad"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="adm-btn primary"
