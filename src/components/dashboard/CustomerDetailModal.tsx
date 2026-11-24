@@ -25,6 +25,27 @@ interface CustomerDetailModalProps {
     mode?: "default" | "maeum";
 }
 
+const MAEUM_PRODUCT_OPTIONS = [
+    "마음든든3",
+    "마음든든4",
+    "마음든든5",
+    "마음든든(광고) 3",
+    "마음든든(광고) 4",
+    "마음든든(광고) 5",
+];
+
+function normalizeInitialProductType(raw?: string): string {
+    if (!raw) return "happy450";
+    const trimmed = raw.trim();
+    if (/^마음든든\s*[345]$/.test(trimmed)) {
+        return trimmed.replace(/\s+/g, "");
+    }
+    if (/^마음든든\(광고\)\s*[345]$/.test(trimmed)) {
+        return trimmed.replace(/^마음든든\(광고\)\s*([345])$/, "마음든든(광고) $1");
+    }
+    return raw;
+}
+
 export default function CustomerDetailModal({
     application,
     onClose,
@@ -259,7 +280,7 @@ export default function CustomerDetailModal({
 
     // 신청 상품 정보
     const [productType, setProductType] = useState<string>(
-        application.productType || "happy450"
+        normalizeInitialProductType(application.productType)
     );
     const [products, setProducts] = useState(application.products || "");
     const rawPlanType = application.planType || "1구좌";
@@ -739,9 +760,17 @@ export default function CustomerDetailModal({
                                 >
                                     {mode === "maeum" ? (
                                         <>
-                                            <option value="마음든든3">마음든든3</option>
-                                            <option value="마음든든4">마음든든4</option>
-                                            <option value="마음든든5">마음든든5</option>
+                                            {productType &&
+                                                !MAEUM_PRODUCT_OPTIONS.includes(productType) && (
+                                                    <option value={productType}>
+                                                        {getProductTypeLabel(productType)}
+                                                    </option>
+                                                )}
+                                            {MAEUM_PRODUCT_OPTIONS.map((opt) => (
+                                                <option key={opt} value={opt}>
+                                                    {opt}
+                                                </option>
+                                            ))}
                                         </>
                                     ) : (
                                         <>

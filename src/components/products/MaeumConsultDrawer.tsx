@@ -130,7 +130,10 @@ export default function MaeumConsultDrawer({
                 body: JSON.stringify({
                     partnerId: effectivePartnerId,
                     partnerName: partnerName || "본사 직접 신청",
-                    productType: `${productNamePrefix} ${plan}`,
+                    productType:
+                        productNamePrefix === "마음든든"
+                            ? `${productNamePrefix}${plan}`
+                            : `${productNamePrefix} ${plan}`,
                     planType: `${target} · 월 ${selectedPlanInfo.price.toLocaleString("ko-KR")}원`,
                     name: trimmedName,
                     phone,
