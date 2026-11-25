@@ -217,19 +217,19 @@ export function MaeumGiftEventSection({
     // 2개 이상일 경우 모바일 2열, PC에서는 2개=2열, 3개=3열, 4개이상=4열 (좌우 폭 자동 맞춤)
     const gridClass =
         gifts.length === 2
-            ? "grid grid-cols-2 gap-3 sm:gap-5"
+            ? "grid grid-cols-2 gap-2 sm:gap-5"
             : gifts.length === 3
-            ? "grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5"
-            : "grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4";
+            ? "grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-5"
+            : "grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4";
 
     return (
         <section
             aria-label={position === "top" ? "상단 사은품 증정 이벤트" : "하단 사은품 증정 이벤트"}
             className={`w-full max-w-[860px] mx-auto px-3 sm:px-0 ${
-                position === "top" ? "pt-4 pb-5" : "pt-6 pb-8"
+                position === "top" ? "pt-2.5 pb-3.5 sm:pt-4 sm:pb-5" : "pt-4 pb-6 sm:pt-6 sm:pb-8"
             }`}
         >
-            <div className="relative overflow-hidden rounded-[24px] border-2 border-[#b98a6a] bg-gradient-to-br from-[#2b2119] via-[#36281e] to-[#241b14] text-[#faf5ef] shadow-[0_20px_50px_rgba(43,33,25,0.28)] p-5 sm:p-8">
+            <div className="relative overflow-hidden rounded-[18px] sm:rounded-[24px] border-2 border-[#b98a6a] bg-gradient-to-br from-[#2b2119] via-[#36281e] to-[#241b14] text-[#faf5ef] shadow-[0_20px_50px_rgba(43,33,25,0.28)] p-3.5 sm:p-8">
                 {/* 은은한 상단 골드 글로우 */}
                 <div
                     aria-hidden="true"
@@ -241,22 +241,22 @@ export function MaeumGiftEventSection({
                 />
 
                 {/* 헤더 */}
-                <div className="relative text-center mb-5 sm:mb-7">
-                    <div className="inline-flex flex-wrap items-center justify-center gap-2 mb-3">
-                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#b98a6a] text-[#1a130e] font-extrabold text-[11px] sm:text-xs tracking-wider uppercase shadow">
-                            <span className="inline-block w-2 h-2 rounded-full bg-[#1a130e] animate-ping" />
+                <div className="relative text-center mb-3 sm:mb-7">
+                    <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-[#b98a6a] text-[#1a130e] font-extrabold text-[10px] sm:text-xs tracking-wider uppercase shadow leading-tight break-keep">
+                            <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#1a130e] animate-ping shrink-0" />
                             <span>{config.badgeText || "SPECIAL GIFT EVENT · 사은품 증정 이벤트 진행중"}</span>
                         </span>
-                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 border border-[#b98a6a]/40 text-[#f3dcc9] font-bold text-[11px] sm:text-xs">
+                        <span className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/10 border border-[#b98a6a]/40 text-[#f3dcc9] font-bold text-[10px] sm:text-xs whitespace-nowrap">
                             📅 {periodLabel}
                         </span>
                     </div>
 
-                    <h2 className="text-xl sm:text-3xl font-extrabold tracking-tight text-[#fff9f2] leading-snug">
+                    <h2 className="text-[17px] sm:text-3xl font-extrabold tracking-tight text-[#fff9f2] leading-[1.3] sm:leading-snug break-keep">
                         {config.title || "지금 마음든든 상담·가입 시 특별 사은품 증정!"}
                     </h2>
                     {config.subtitle && (
-                        <p className="mt-1.5 text-xs sm:text-sm text-[#d9cbbd]">
+                        <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-sm text-[#d9cbbd] leading-snug break-keep">
                             {config.subtitle}
                         </p>
                     )}
@@ -277,43 +277,43 @@ export function MaeumGiftEventSection({
                         return (
                             <div
                                 onClick={() => onSelectGift(gift)}
-                                className={`relative cursor-pointer rounded-2xl overflow-hidden border transition-all bg-[#fbf6ee] text-[#2b2119] grid grid-cols-1 md:grid-cols-12 shadow-xl ${
+                                className={`relative cursor-pointer rounded-xl sm:rounded-2xl overflow-hidden border transition-all bg-[#fbf6ee] text-[#2b2119] grid grid-cols-1 md:grid-cols-12 shadow-xl ${
                                     isSelected
                                         ? "border-[#e3b08b] ring-2 ring-[#b98a6a]"
                                         : "border-[#dccfbc] hover:border-[#b98a6a]"
                                 }`}
                             >
-                                <div className="md:col-span-5 relative bg-[#efe5d7] aspect-[4/3] md:aspect-auto md:min-h-[260px]">
+                                <div className="md:col-span-5 relative bg-[#efe5d7] aspect-[16/10] sm:aspect-[4/3] md:aspect-auto md:min-h-[260px]">
                                     <ThumbnailCarousel
                                         images={thumbs}
                                         alt={gift.name}
                                         intervalMs={config.slideIntervalMs}
                                         className="w-full h-full"
                                         overlayBadge={
-                                            <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#2b2119]/85 text-[#f6efe4] text-[11px] font-bold z-10 pointer-events-none">
+                                            <span className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-[#2b2119]/85 text-[#f6efe4] text-[10px] sm:text-[11px] font-bold z-10 pointer-events-none">
                                                 증정 사은품
                                             </span>
                                         }
                                     />
                                 </div>
-                                <div className="md:col-span-7 p-5 sm:p-7 flex flex-col justify-between gap-4">
+                                <div className="md:col-span-7 p-3.5 sm:p-7 flex flex-col justify-between gap-2.5 sm:gap-4">
                                     <div>
-                                        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                                            <span className="text-[11px] font-bold text-[#8a5d3b] tracking-wide">
+                                        <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                                            <span className="text-[10px] sm:text-[11px] font-bold text-[#8a5d3b] tracking-wide">
                                                 행사기간 · {giftPeriod}
                                             </span>
                                             {isSelected && (
-                                                <span className="px-2.5 py-0.5 rounded-full bg-[#2b2119] text-[#faf5ef] text-[11px] font-bold">
+                                                <span className="px-2 py-0.5 sm:px-2.5 rounded-full bg-[#2b2119] text-[#faf5ef] text-[10px] sm:text-[11px] font-bold whitespace-nowrap">
                                                     ✓ 선택됨
                                                 </span>
                                             )}
                                         </div>
-                                        <h3 className="text-xl sm:text-2xl font-black text-[#2b2119] leading-snug">
+                                        <h3 className="text-base sm:text-2xl font-black text-[#2b2119] leading-snug break-keep">
                                             {gift.name}
                                         </h3>
                                         {gift.notice && (
-                                            <div className="mt-3 p-3 rounded-xl bg-[#f3eadc] border border-[#e2d4c0] text-xs text-[#5e4f42] whitespace-pre-line leading-relaxed">
-                                                <strong className="block text-[#2b2119] mb-1">
+                                            <div className="mt-2 sm:mt-3 p-2.5 sm:p-3 rounded-xl bg-[#f3eadc] border border-[#e2d4c0] text-[11px] sm:text-xs text-[#5e4f42] whitespace-pre-line leading-snug sm:leading-relaxed break-keep">
+                                                <strong className="block text-[#2b2119] mb-0.5 sm:mb-1">
                                                     ※ 사은품 유의사항
                                                 </strong>
                                                 {gift.notice}
@@ -321,7 +321,7 @@ export function MaeumGiftEventSection({
                                         )}
                                     </div>
 
-                                    <div className="flex flex-wrap items-center gap-2.5 pt-2">
+                                    <div className="flex items-center gap-2 sm:gap-2.5 pt-1 sm:pt-2">
                                         {detail && (
                                             <button
                                                 type="button"
@@ -329,7 +329,7 @@ export function MaeumGiftEventSection({
                                                     e.stopPropagation();
                                                     onOpenDetail(gift);
                                                 }}
-                                                className="px-4 py-2.5 rounded-xl border border-[#cbb9a4] bg-white text-[#2b2119] font-bold text-xs sm:text-sm hover:bg-[#f6efe4] transition"
+                                                className="shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-[#cbb9a4] bg-white text-[#2b2119] font-bold text-[11px] sm:text-sm hover:bg-[#f6efe4] transition whitespace-nowrap"
                                             >
                                                 상세이미지 보기
                                             </button>
@@ -340,7 +340,7 @@ export function MaeumGiftEventSection({
                                                 e.stopPropagation();
                                                 onApplyWithGift(gift);
                                             }}
-                                            className="flex-1 min-w-[180px] px-5 py-2.5 rounded-xl bg-[#2b2119] text-[#faf5ef] font-extrabold text-xs sm:text-sm hover:bg-[#3f3126] transition shadow-md"
+                                            className="flex-1 min-w-0 px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-[#2b2119] text-[#faf5ef] font-extrabold text-[11px] sm:text-sm hover:bg-[#3f3126] transition shadow-md whitespace-nowrap"
                                         >
                                             이 사은품으로 상담 신청하기 →
                                         </button>
@@ -360,26 +360,26 @@ export function MaeumGiftEventSection({
                                 <article
                                     key={gift._id}
                                     onClick={() => onSelectGift(gift)}
-                                    className={`group cursor-pointer rounded-2xl overflow-hidden bg-[#fbf6ee] text-[#2b2119] border-2 transition-all flex flex-col ${
+                                    className={`group cursor-pointer rounded-xl sm:rounded-2xl overflow-hidden bg-[#fbf6ee] text-[#2b2119] border-2 transition-all flex flex-col ${
                                         isSelected
                                             ? "border-[#e3b08b] ring-2 ring-[#b98a6a]/70 shadow-xl -translate-y-0.5"
                                             : "border-transparent hover:border-[#b98a6a]/80"
                                     }`}
                                 >
-                                    <div className="relative aspect-[4/3] bg-[#efe5d7]">
+                                    <div className="relative aspect-[5/4] sm:aspect-[4/3] bg-[#efe5d7]">
                                         <ThumbnailCarousel
                                             images={thumbs}
                                             alt={gift.name}
                                             intervalMs={config.slideIntervalMs}
                                             className="w-full h-full"
                                             overlayBadge={
-                                                <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-[#2b2119]/85 text-[#f6efe4] text-[10px] font-bold z-10 pointer-events-none">
+                                                <span className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 px-1.5 py-0.5 sm:px-2 rounded-full bg-[#2b2119]/85 text-[#f6efe4] text-[9.5px] sm:text-[10px] font-bold z-10 pointer-events-none">
                                                     혜택 {String(idx + 1).padStart(2, "0")}
                                                 </span>
                                             }
                                             rightBadge={
                                                 isSelected ? (
-                                                    <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-[#b98a6a] text-[#1a130e] text-[10px] font-black shadow z-10 pointer-events-none">
+                                                    <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 px-1.5 py-0.5 sm:px-2 rounded-full bg-[#b98a6a] text-[#1a130e] text-[9.5px] sm:text-[10px] font-black shadow z-10 pointer-events-none">
                                                         ✓ 선택
                                                     </span>
                                                 ) : null
@@ -387,24 +387,24 @@ export function MaeumGiftEventSection({
                                         />
                                     </div>
 
-                                    <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between gap-2.5">
+                                    <div className="p-2.5 sm:p-4 flex-1 flex flex-col justify-between gap-1.5 sm:gap-2.5">
                                         <div>
-                                            <h3 className="font-extrabold text-xs sm:text-sm text-[#2b2119] leading-snug line-clamp-2">
+                                            <h3 className="font-extrabold text-[11.5px] sm:text-sm text-[#2b2119] leading-tight sm:leading-snug line-clamp-2 break-keep">
                                                 {gift.name}
                                             </h3>
                                             {(gift.startDate || gift.endDate) && (
-                                                <p className="mt-1 text-[10px] sm:text-[11px] font-semibold text-[#8a5d3b]">
+                                                <p className="mt-0.5 sm:mt-1 text-[9.5px] sm:text-[11px] font-semibold text-[#8a5d3b] leading-tight">
                                                     {formatPeriodText(gift.startDate, gift.endDate)}
                                                 </p>
                                             )}
                                             {gift.notice && (
-                                                <p className="mt-1.5 text-[10px] sm:text-[11px] text-[#6d5c4e] line-clamp-2 whitespace-pre-line">
+                                                <p className="mt-1 sm:mt-1.5 text-[9.5px] sm:text-[11px] text-[#6d5c4e] leading-tight sm:leading-snug line-clamp-2 whitespace-pre-line break-keep">
                                                     {gift.notice}
                                                 </p>
                                             )}
                                         </div>
 
-                                        <div className="flex flex-col gap-1.5 pt-1">
+                                        <div className="flex flex-col gap-1 sm:gap-1.5 pt-0.5 sm:pt-1">
                                             {detail && (
                                                 <button
                                                     type="button"
@@ -412,7 +412,7 @@ export function MaeumGiftEventSection({
                                                         e.stopPropagation();
                                                         onOpenDetail(gift);
                                                     }}
-                                                    className="w-full py-1.5 rounded-lg border border-[#d6c6b2] bg-white text-[#2b2119] font-bold text-[11px] hover:bg-[#f6efe4] transition"
+                                                    className="w-full py-1 sm:py-1.5 px-1.5 rounded-lg border border-[#d6c6b2] bg-white text-[#2b2119] font-bold text-[10px] sm:text-[11px] hover:bg-[#f6efe4] transition whitespace-nowrap"
                                                 >
                                                     상세이미지 / 유의사항
                                                 </button>
@@ -423,7 +423,7 @@ export function MaeumGiftEventSection({
                                                     e.stopPropagation();
                                                     onApplyWithGift(gift);
                                                 }}
-                                                className={`w-full py-2 rounded-lg font-extrabold text-[11px] sm:text-xs transition ${
+                                                className={`w-full py-1.5 sm:py-2 px-1.5 rounded-lg font-extrabold text-[10.5px] sm:text-xs transition whitespace-nowrap ${
                                                     isSelected
                                                         ? "bg-[#b98a6a] text-[#1a130e]"
                                                         : "bg-[#2b2119] text-[#faf5ef] hover:bg-[#3f3126]"
@@ -441,7 +441,7 @@ export function MaeumGiftEventSection({
 
                 {/* 공통 유의사항 */}
                 {config.commonNotice && (
-                    <div className="relative mt-4 sm:mt-5 rounded-xl bg-black/25 border border-[#b98a6a]/30 px-4 py-3 text-[11px] sm:text-xs text-[#dfd2c3] whitespace-pre-line leading-relaxed">
+                    <div className="relative mt-3 sm:mt-5 rounded-xl bg-black/25 border border-[#b98a6a]/30 px-3 py-2 sm:px-4 sm:py-3 text-[10px] sm:text-xs text-[#dfd2c3] whitespace-pre-line leading-snug sm:leading-relaxed break-keep">
                         <strong className="text-[#f3dcc9] font-bold mr-1.5">[이벤트 유의사항]</strong>
                         {config.commonNotice}
                     </div>

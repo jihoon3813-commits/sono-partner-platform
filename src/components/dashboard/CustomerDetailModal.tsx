@@ -538,14 +538,14 @@ export default function CustomerDetailModal({
             >
                 {/* 상단 고객 프로필 요약 */}
                 <div className="flex items-center gap-3.5 mb-4">
-                    <span className="w-11 h-11 rounded-full bg-[#eaf0e4] text-[#295e52] font-bold text-base grid place-items-center shrink-0">
+                    <span className="w-11 h-11 rounded-full bg-[#eaf0e4] text-[#163a6b] font-bold text-base grid place-items-center shrink-0">
                         {(customerName || application.customerName || "고").charAt(0)}
                     </span>
                     <div className="min-w-0 flex-1">
-                        <strong className="text-base font-bold text-[#263d36] block truncate">
+                        <strong className="text-base font-bold text-[#162438] block truncate">
                             {customerName || application.customerName}
                         </strong>
-                        <small className="text-xs text-[#86918a] block mt-0.5 truncate">
+                        <small className="text-xs text-[#788699] block mt-0.5 truncate">
                             {customerPhone || application.customerPhone} ·{" "}
                             {getProductTypeLabel(productType)} ({planType})
                         </small>
@@ -583,10 +583,10 @@ export default function CustomerDetailModal({
                         {/* 1. 진행 상태 관리 카드 */}
                         <div className="adm-note-card mb-5">
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-xs font-bold text-[#295e52]">
+                                <span className="text-xs font-bold text-[#163a6b]">
                                     진행 상태 {isAdmin || canPartnerEditStatus ? "변경" : ""}
                                 </span>
-                                <span className="text-[11px] text-[#86918a]">
+                                <span className="text-[11px] text-[#788699]">
                                     상태 변경 시 상담 이력에 자동 기록됩니다
                                 </span>
                             </div>
@@ -633,7 +633,7 @@ export default function CustomerDetailModal({
                         {/* 2. 고객 기본 정보 (2열 그리드) */}
                         <h3 className="adm-section-label">
                             <span>고객 기본 정보</span>
-                            <span className="text-[11px] font-normal text-[#86918a]">
+                            <span className="text-[11px] font-normal text-[#788699]">
                                 복사 버튼으로 연락처·성명을 빠르게 복사하세요
                             </span>
                         </h3>
@@ -644,7 +644,7 @@ export default function CustomerDetailModal({
                                     <button
                                         type="button"
                                         onClick={() => handleCopy(customerName)}
-                                        className="text-[10.5px] text-[#295e52] hover:underline inline-flex items-center gap-0.5 bg-transparent border-0 p-0 cursor-pointer"
+                                        className="text-[10.5px] text-[#163a6b] hover:underline inline-flex items-center gap-0.5 bg-transparent border-0 p-0 cursor-pointer"
                                         title="고객명 복사"
                                     >
                                         <AdminIcon name="copy" className="!w-3 !h-3" />
@@ -666,7 +666,7 @@ export default function CustomerDetailModal({
                                         <button
                                             type="button"
                                             onClick={() => handleCopy(customerPhone)}
-                                            className="text-[10.5px] text-[#295e52] hover:underline inline-flex items-center gap-0.5 bg-transparent border-0 p-0 cursor-pointer"
+                                            className="text-[10.5px] text-[#163a6b] hover:underline inline-flex items-center gap-0.5 bg-transparent border-0 p-0 cursor-pointer"
                                             title="연락처 전체 복사"
                                         >
                                             <AdminIcon name="copy" className="!w-3 !h-3" />
@@ -677,7 +677,7 @@ export default function CustomerDetailModal({
                                             onClick={() =>
                                                 handleCopy(customerPhone.replace(/-/g, ""))
                                             }
-                                            className="text-[10.5px] text-[#45554e] hover:text-[#295e52] hover:underline inline-flex items-center gap-0.5 bg-transparent border-0 p-0 cursor-pointer"
+                                            className="text-[10.5px] text-[#3b495c] hover:text-[#163a6b] hover:underline inline-flex items-center gap-0.5 bg-transparent border-0 p-0 cursor-pointer"
                                             title="숫자만 복사"
                                         >
                                             <span>숫자만</span>
@@ -761,7 +761,7 @@ export default function CustomerDetailModal({
                                 <select
                                     value={productType}
                                     onChange={(e) => setProductType(e.target.value)}
-                                    className="adm-select w-full font-bold text-[#295e52]"
+                                    className="adm-select w-full font-bold text-[#163a6b]"
                                 >
                                     {mode === "maeum" ? (
                                         <>
@@ -841,7 +841,7 @@ export default function CustomerDetailModal({
                                         <button
                                             type="button"
                                             onClick={() => handleCopy(products)}
-                                            className="text-[10.5px] text-[#295e52] hover:underline inline-flex items-center gap-0.5 bg-transparent border-0 p-0 cursor-pointer"
+                                            className="text-[10.5px] text-[#163a6b] hover:underline inline-flex items-center gap-0.5 bg-transparent border-0 p-0 cursor-pointer"
                                         >
                                             <AdminIcon name="copy" className="!w-3 !h-3" />
                                             <span>제품명 복사</span>
@@ -1243,8 +1243,8 @@ export default function CustomerDetailModal({
                     <div>
                         <div className="flex justify-between items-center mb-3">
                             <div className="flex items-center gap-1.5">
-                                <AdminIcon name="mic" className="text-[#295e52]" />
-                                <h3 className="text-sm font-bold text-[#295e52]">
+                                <AdminIcon name="mic" className="text-[#163a6b]" />
+                                <h3 className="text-sm font-bold text-[#163a6b]">
                                     상담 녹취 음성파일 ({recordings?.length || 0}건)
                                 </h3>
                             </div>
@@ -1263,23 +1263,23 @@ export default function CustomerDetailModal({
                         </div>
 
                         {recordings === undefined ? (
-                            <div className="text-xs text-[#86918a] py-6 text-center">
+                            <div className="text-xs text-[#788699] py-6 text-center">
                                 녹취 목록 확인 중...
                             </div>
                         ) : recordings.length === 0 ? (
                             <button
                                 type="button"
                                 onClick={() => setIsRecordingModalOpen(true)}
-                                className="w-full border border-dashed border-[#cbd8c0] rounded-[11px] p-8 text-center text-[#7d8d73] hover:bg-[#f8faf5] transition-colors cursor-pointer"
+                                className="w-full border border-dashed border-[#cfdcf0] rounded-[11px] p-8 text-center text-[#7d8d73] hover:bg-[#f8faf5] transition-colors cursor-pointer"
                             >
                                 <AdminIcon
                                     name="upload"
                                     className="mx-auto mb-2 !w-6 !h-6 text-[#7d8d73]"
                                 />
-                                <strong className="text-xs font-bold block text-[#263d36]">
+                                <strong className="text-xs font-bold block text-[#162438]">
                                     등록된 상담 녹취 파일이 없습니다
                                 </strong>
-                                <span className="text-[11px] text-[#86918a] block mt-1">
+                                <span className="text-[11px] text-[#788699] block mt-1">
                                     클릭하여 음성파일(MP3, M4A, WAV) 업로드 및 STT 변환을 진행하세요.
                                 </span>
                             </button>
@@ -1305,7 +1305,7 @@ export default function CustomerDetailModal({
                                             <div className="flex items-center justify-between text-xs gap-2">
                                                 <div className="flex items-center gap-1.5 min-w-0">
                                                     <span
-                                                        className="font-bold text-[#263d36] truncate max-w-[240px]"
+                                                        className="font-bold text-[#162438] truncate max-w-[240px]"
                                                         title={customFileName}
                                                     >
                                                         {customFileName}
@@ -1344,7 +1344,7 @@ export default function CustomerDetailModal({
                                                 )}
                                             </div>
                                             {rec.memo && (
-                                                <p className="text-[11px] text-[#45554e] bg-white p-2 rounded-[7px] border border-[#e6eae3]">
+                                                <p className="text-[11px] text-[#3b495c] bg-white p-2 rounded-[7px] border border-[#e1e7f0]">
                                                     {rec.memo}
                                                 </p>
                                             )}
@@ -1374,11 +1374,11 @@ export default function CustomerDetailModal({
                         </h3>
                         <div className="space-y-3.5">
                             {statusHistory === undefined ? (
-                                <div className="text-xs text-[#86918a] py-4">
+                                <div className="text-xs text-[#788699] py-4">
                                     이력을 불러오는 중...
                                 </div>
                             ) : statusHistory.length === 0 ? (
-                                <div className="adm-note-card text-center py-6 text-xs text-[#86918a]">
+                                <div className="adm-note-card text-center py-6 text-xs text-[#788699]">
                                     기록된 상태 변경 이력이 없습니다.
                                 </div>
                             ) : (
@@ -1392,7 +1392,7 @@ export default function CustomerDetailModal({
                                                 key={history.historyId}
                                                 className="relative pl-2"
                                             >
-                                                <div className="absolute -left-[15px] top-2 w-2.5 h-2.5 rounded-full bg-[#295e52] border-2 border-white" />
+                                                <div className="absolute -left-[15px] top-2 w-2.5 h-2.5 rounded-full bg-[#163a6b] border-2 border-white" />
                                                 <div className="adm-note-card">
                                                     <div className="flex justify-between items-center mb-1.5">
                                                         <span
@@ -1403,19 +1403,19 @@ export default function CustomerDetailModal({
                                                                 history.newStatus
                                                             )}
                                                         </span>
-                                                        <span className="text-[10.5px] text-[#86918a] tabular-nums">
+                                                        <span className="text-[10.5px] text-[#788699] tabular-nums">
                                                             {formatHistoryDate(
                                                                 history.changedAt
                                                             )}
                                                         </span>
                                                     </div>
                                                     {history.memo && (
-                                                        <p className="text-xs text-[#263d36] mt-1.5 font-medium bg-white p-2.5 rounded-[7px] border border-[#e6eae3]">
+                                                        <p className="text-xs text-[#162438] mt-1.5 font-medium bg-white p-2.5 rounded-[7px] border border-[#e1e7f0]">
                                                             {history.memo}
                                                         </p>
                                                     )}
                                                     <div className="mt-1.5 flex justify-end">
-                                                        <span className="text-[10px] text-[#86918a]">
+                                                        <span className="text-[10px] text-[#788699]">
                                                             처리자: {history.changedBy}
                                                         </span>
                                                     </div>

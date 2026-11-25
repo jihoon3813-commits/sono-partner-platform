@@ -224,12 +224,12 @@ export default function ChannelMappingManagement() {
                 </div>
 
                 {/* 신규 매핑 등록 폼 */}
-                <div className="p-5 bg-[#fbfcf9] border-b border-[#edf0e7]">
+                <div className="p-5 bg-[#fbfcf9] border-b border-[#eaeff7]">
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-bold text-[#263d36]">
+                        <span className="text-xs font-bold text-[#162438]">
                             새 판매채널 매핑 추가 / 수정
                         </span>
-                        <span className="text-[11px] text-[#86918a]">
+                        <span className="text-[11px] text-[#788699]">
                             등록된 파트너를 선택하면 추천 엑셀 표기명이 자동으로 채워집니다.
                         </span>
                     </div>
@@ -300,7 +300,7 @@ export default function ChannelMappingManagement() {
                         />
                     </label>
                     <div className="adm-filter-end">
-                        설정된 판매채널 매핑 <strong className="text-[#295e52]">{mappings.length}</strong>건
+                        설정된 판매채널 매핑 <strong className="text-[#163a6b]">{mappings.length}</strong>건
                     </div>
                 </div>
 
@@ -321,11 +321,11 @@ export default function ChannelMappingManagement() {
                         <tbody>
                             {filteredMappings.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="py-14 text-center text-xs text-[#86918a]">
+                                    <td colSpan={7} className="py-14 text-center text-xs text-[#788699]">
                                         {mappings.length === 0 ? (
                                             <div className="space-y-2.5">
-                                                <p className="font-bold text-[#263d36]">아직 등록된 판매채널 매핑이 없습니다.</p>
-                                                <p className="text-xs text-[#86918a]">상단의 &apos;기본 추천값 자동채우기&apos;를 누르시면 플랫폼에 등록된 파트너들의 채널명이 자동으로 채워집니다.</p>
+                                                <p className="font-bold text-[#162438]">아직 등록된 판매채널 매핑이 없습니다.</p>
+                                                <p className="text-xs text-[#788699]">상단의 &apos;기본 추천값 자동채우기&apos;를 누르시면 플랫폼에 등록된 파트너들의 채널명이 자동으로 채워집니다.</p>
                                                 <button
                                                     type="button"
                                                     onClick={handleAutoFillAll}
@@ -342,13 +342,13 @@ export default function ChannelMappingManagement() {
                             ) : (
                                 filteredMappings.map((m, idx) => (
                                     <tr key={m.partnerId}>
-                                        <td className="text-center text-[#86918a] font-mono text-xs">
+                                        <td className="text-center text-[#788699] font-mono text-xs">
                                             {idx + 1}
                                         </td>
-                                        <td className="font-bold text-[#263d36]">
+                                        <td className="font-bold text-[#162438]">
                                             {m.partnerName}
                                         </td>
-                                        <td className="font-mono text-xs text-[#6b7768]">
+                                        <td className="font-mono text-xs text-[#5a6b82]">
                                             {m.partnerId}
                                         </td>
                                         <td>
@@ -372,7 +372,7 @@ export default function ChannelMappingManagement() {
                                                 className="adm-input !h-8 !py-1 max-w-xs"
                                             />
                                         </td>
-                                        <td className="text-center text-[#86918a] font-mono text-[11px]">
+                                        <td className="text-center text-[#788699] font-mono text-[11px]">
                                             {m.updatedAt || "-"}
                                         </td>
                                         <td className="text-center">

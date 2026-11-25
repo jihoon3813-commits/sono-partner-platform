@@ -388,10 +388,10 @@ export default function MaeumContractTemplateEditor() {
             {/* 저장된 양식 목록 */}
             <div className="adm-panel p-4">
                 <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-bold text-[#193f39]">등록된 전자계약 양식 ({templates.length}건)</h3>
+                    <h3 className="text-sm font-bold text-[#0c2340]">등록된 전자계약 양식 ({templates.length}건)</h3>
                 </div>
                 {templates.length === 0 ? (
-                    <div className="text-center py-8 text-xs text-[#86918a] bg-[#f8faf7] rounded-lg border border-dashed border-[#d5e0d0]">
+                    <div className="text-center py-8 text-xs text-[#788699] bg-[#f8faf7] rounded-lg border border-dashed border-[#d5e0d0]">
                         등록된 PDF 양식이 없습니다. 우측 상단의 &quot;새 PDF 양식 업로드&quot; 버튼을 눌러 양식을 등록해주세요.
                     </div>
                 ) : (
@@ -404,14 +404,14 @@ export default function MaeumContractTemplateEditor() {
                                     onClick={() => handleSelectTemplate(t)}
                                     className={`p-3 rounded-xl border cursor-pointer transition-all ${
                                         isSelected
-                                            ? "border-[#295e52] bg-[#f2f7f1] shadow-sm"
+                                            ? "border-[#163a6b] bg-[#f2f7f1] shadow-sm"
                                             : "border-[#e3ebdf] bg-white hover:border-[#b8ccb4]"
                                     }`}
                                 >
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-1.5">
-                                                <strong className="text-xs font-bold text-[#193f39] truncate">
+                                                <strong className="text-xs font-bold text-[#0c2340] truncate">
                                                     {t.name}
                                                 </strong>
                                                 {t.isActive && (
@@ -463,7 +463,7 @@ export default function MaeumContractTemplateEditor() {
                     {/* 좌측: 필드 팔레트 */}
                     <div className="lg:col-span-3 adm-panel p-4 space-y-4">
                         <div>
-                            <label className="block text-[11px] font-bold text-[#45554e] mb-1">양식 이름</label>
+                            <label className="block text-[11px] font-bold text-[#3b495c] mb-1">양식 이름</label>
                             <input
                                 type="text"
                                 value={templateName}
@@ -478,7 +478,7 @@ export default function MaeumContractTemplateEditor() {
                         </div>
 
                         <div>
-                            <div className="text-[11px] font-bold text-[#295e52] mb-1.5">가입자 기본 정보</div>
+                            <div className="text-[11px] font-bold text-[#163a6b] mb-1.5">가입자 기본 정보</div>
                             <div className="flex flex-wrap gap-1.5">
                                 {PRESET_FIELDS.filter((p) => p.category === "customer").map((p) => (
                                     <button
@@ -487,8 +487,8 @@ export default function MaeumContractTemplateEditor() {
                                         onClick={() => setPendingPreset(pendingPreset?.fieldKey === p.fieldKey ? null : p)}
                                         className={`px-2.5 py-1.5 rounded-md text-[11px] font-semibold border transition-colors ${
                                             pendingPreset?.fieldKey === p.fieldKey
-                                                ? "bg-[#295e52] text-white border-[#295e52]"
-                                                : "bg-white text-[#263d36] border-[#d6e0d2] hover:bg-[#f2f6f0]"
+                                                ? "bg-[#163a6b] text-white border-[#163a6b]"
+                                                : "bg-white text-[#162438] border-[#d6e0d2] hover:bg-[#f2f6f0]"
                                         }`}
                                     >
                                         + {p.label}
@@ -498,7 +498,7 @@ export default function MaeumContractTemplateEditor() {
                         </div>
 
                         <div>
-                            <div className="text-[11px] font-bold text-[#295e52] mb-1.5">파트너 정보 (자동 반영)</div>
+                            <div className="text-[11px] font-bold text-[#163a6b] mb-1.5">파트너 정보 (자동 반영)</div>
                             <div className="flex flex-wrap gap-1.5">
                                 {PRESET_FIELDS.filter((p) => p.category === "partner").map((p) => (
                                     <button
@@ -507,8 +507,8 @@ export default function MaeumContractTemplateEditor() {
                                         onClick={() => setPendingPreset(pendingPreset?.fieldKey === p.fieldKey ? null : p)}
                                         className={`px-2.5 py-1.5 rounded-md text-[11px] font-semibold border transition-colors ${
                                             pendingPreset?.fieldKey === p.fieldKey
-                                                ? "bg-[#295e52] text-white border-[#295e52]"
-                                                : "bg-white text-[#263d36] border-[#d6e0d2] hover:bg-[#f2f6f0]"
+                                                ? "bg-[#163a6b] text-white border-[#163a6b]"
+                                                : "bg-white text-[#162438] border-[#d6e0d2] hover:bg-[#f2f6f0]"
                                         }`}
                                     >
                                         + {p.label}
@@ -518,7 +518,7 @@ export default function MaeumContractTemplateEditor() {
                         </div>
 
                         <div>
-                            <div className="text-[11px] font-bold text-[#295e52] mb-1.5">체크 · 자유입력 · 전자서명</div>
+                            <div className="text-[11px] font-bold text-[#163a6b] mb-1.5">체크 · 자유입력 · 전자서명</div>
                             <div className="flex flex-wrap gap-1.5">
                                 {PRESET_FIELDS.filter((p) => p.category === "custom").map((p) => (
                                     <button
@@ -527,8 +527,8 @@ export default function MaeumContractTemplateEditor() {
                                         onClick={() => setPendingPreset(pendingPreset?.fieldKey === p.fieldKey ? null : p)}
                                         className={`px-2.5 py-1.5 rounded-md text-[11px] font-semibold border transition-colors ${
                                             pendingPreset?.fieldKey === p.fieldKey
-                                                ? "bg-[#295e52] text-white border-[#295e52]"
-                                                : "bg-[#faf8f2] text-[#263d36] border-[#dfd8c5] hover:bg-[#f2ede0]"
+                                                ? "bg-[#163a6b] text-white border-[#163a6b]"
+                                                : "bg-[#faf8f2] text-[#162438] border-[#dfd8c5] hover:bg-[#f2ede0]"
                                         }`}
                                     >
                                         + {p.label}
@@ -542,7 +542,7 @@ export default function MaeumContractTemplateEditor() {
                     <div className="lg:col-span-6 adm-panel p-4">
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
-                                <span className="text-xs font-bold text-[#193f39]">
+                                <span className="text-xs font-bold text-[#0c2340]">
                                     페이지 {activePage} / {pdfPages.length || currentTemplate.pageCount}
                                 </span>
                                 {pendingPreset && (
@@ -559,8 +559,8 @@ export default function MaeumContractTemplateEditor() {
                                         onClick={() => setActivePage(p)}
                                         className={`px-2.5 py-1 rounded text-xs font-bold ${
                                             activePage === p
-                                                ? "bg-[#295e52] text-white"
-                                                : "bg-[#f0f4ee] text-[#45554e] hover:bg-[#e1e9de]"
+                                                ? "bg-[#163a6b] text-white"
+                                                : "bg-[#f0f4ee] text-[#3b495c] hover:bg-[#e1e9de]"
                                         }`}
                                     >
                                         {p}P
@@ -622,7 +622,7 @@ export default function MaeumContractTemplateEditor() {
                                                 height: `${field.heightRatio * 100}%`,
                                             }}
                                             className={`absolute border-2 rounded-sm flex items-center justify-center text-[10px] font-bold cursor-move transition-shadow ${colorClass} ${
-                                                isSelected ? "ring-2 ring-[#193f39] z-20 shadow-md" : "z-10"
+                                                isSelected ? "ring-2 ring-[#0c2340] z-20 shadow-md" : "z-10"
                                             }`}
                                             title={`${field.label} (${field.fieldKey})`}
                                         >
@@ -644,14 +644,14 @@ export default function MaeumContractTemplateEditor() {
                                                         origHRatio: field.heightRatio,
                                                     });
                                                 }}
-                                                className="absolute -right-1 -bottom-1 w-2.5 h-2.5 bg-[#193f39] border border-white rounded-xs cursor-nwse-resize"
+                                                className="absolute -right-1 -bottom-1 w-2.5 h-2.5 bg-[#0c2340] border border-white rounded-xs cursor-nwse-resize"
                                             />
                                         </div>
                                     );
                                 })}
                             </div>
                         ) : (
-                            <div className="py-20 text-center text-xs text-[#86918a]">
+                            <div className="py-20 text-center text-xs text-[#788699]">
                                 PDF 미리보기를 표시할 수 없습니다.
                             </div>
                         )}
@@ -659,17 +659,17 @@ export default function MaeumContractTemplateEditor() {
 
                     {/* 우측: 선택된 필드 속성 */}
                     <div className="lg:col-span-3 adm-panel p-4 space-y-3">
-                        <h3 className="text-xs font-bold text-[#193f39] border-b border-[#edf2ea] pb-2">
+                        <h3 className="text-xs font-bold text-[#0c2340] border-b border-[#edf2ea] pb-2">
                             선택된 필드 속성
                         </h3>
                         {!selectedField ? (
-                            <p className="text-xs text-[#86918a] py-6 text-center">
+                            <p className="text-xs text-[#788699] py-6 text-center">
                                 캔버스에서 필드를 선택하면 세부 속성을 수정할 수 있습니다.
                             </p>
                         ) : (
                             <div className="space-y-3">
                                 <div>
-                                    <label className="block text-[11px] font-bold text-[#45554e] mb-1">표시 라벨 (항목명)</label>
+                                    <label className="block text-[11px] font-bold text-[#3b495c] mb-1">표시 라벨 (항목명)</label>
                                     <input
                                         type="text"
                                         value={selectedField.label}
@@ -678,7 +678,7 @@ export default function MaeumContractTemplateEditor() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[11px] font-bold text-[#45554e] mb-1">필드 키 (매핑 키)</label>
+                                    <label className="block text-[11px] font-bold text-[#3b495c] mb-1">필드 키 (매핑 키)</label>
                                     <input
                                         type="text"
                                         value={selectedField.fieldKey}
@@ -687,7 +687,7 @@ export default function MaeumContractTemplateEditor() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[11px] font-bold text-[#45554e] mb-1">입력 유형</label>
+                                    <label className="block text-[11px] font-bold text-[#3b495c] mb-1">입력 유형</label>
                                     <select
                                         value={selectedField.type}
                                         onChange={(e) => updateSelectedField({ type: e.target.value as any })}
@@ -701,7 +701,7 @@ export default function MaeumContractTemplateEditor() {
                                 </div>
                                 {selectedField.type !== "checkbox" && selectedField.type !== "signature" && (
                                     <div>
-                                        <label className="block text-[11px] font-bold text-[#45554e] mb-1">글자 크기 (pt)</label>
+                                        <label className="block text-[11px] font-bold text-[#3b495c] mb-1">글자 크기 (pt)</label>
                                         <input
                                             type="number"
                                             min={6}
@@ -714,7 +714,7 @@ export default function MaeumContractTemplateEditor() {
                                         />
                                     </div>
                                 )}
-                                <label className="flex items-center gap-2 text-xs font-semibold text-[#263d36] cursor-pointer">
+                                <label className="flex items-center gap-2 text-xs font-semibold text-[#162438] cursor-pointer">
                                     <input
                                         type="checkbox"
                                         checked={Boolean(selectedField.required)}

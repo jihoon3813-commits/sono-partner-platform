@@ -214,7 +214,7 @@ export default function AccountManagement({ partner, isAdmin, onRefresh }: Accou
 
                     <div className="p-5 flex-1 flex flex-col justify-between">
                         {infoMsg.text && (
-                            <div className={`adm-note-card text-xs font-bold mb-4 flex items-center gap-2 ${infoMsg.type === 'success' ? '!bg-[#eef5eb] !border-[#cbe0c4] text-[#295e52]' : '!bg-[#fbeef0] !border-[#eccfd2] text-[#a33d46]'}`}>
+                            <div className={`adm-note-card text-xs font-bold mb-4 flex items-center gap-2 ${infoMsg.type === 'success' ? '!bg-[#edf2fa] !border-[#cfdcf0] text-[#163a6b]' : '!bg-[#fbeef0] !border-[#eccfd2] text-[#a33d46]'}`}>
                                 <AdminIcon name={infoMsg.type === 'success' ? "check-circle" : "info"} />
                                 <span>{infoMsg.text}</span>
                             </div>
@@ -296,7 +296,7 @@ export default function AccountManagement({ partner, isAdmin, onRefresh }: Accou
                                             className="adm-input font-mono"
                                             placeholder="예: 1588-9999 또는 010-0000-0000"
                                         />
-                                        <p className="text-[11px] text-[#7c877b] leading-relaxed mt-1">
+                                        <p className="text-[11px] text-[#68778c] leading-relaxed mt-1">
                                             * 파트너 전용 랜딩페이지 하단 상담바에 노출되는 대표번호입니다. 미입력 시 등록된 담당자 연락처로 자동 노출됩니다.
                                         </p>
                                     </div>
@@ -329,7 +329,7 @@ export default function AccountManagement({ partner, isAdmin, onRefresh }: Accou
 
                     <div className="p-5 flex-1 flex flex-col justify-between">
                         {pwMsg.text && (
-                            <div className={`adm-note-card text-xs font-bold mb-4 flex items-center gap-2 ${pwMsg.type === 'success' ? '!bg-[#eef5eb] !border-[#cbe0c4] text-[#295e52]' : '!bg-[#fbeef0] !border-[#eccfd2] text-[#a33d46]'}`}>
+                            <div className={`adm-note-card text-xs font-bold mb-4 flex items-center gap-2 ${pwMsg.type === 'success' ? '!bg-[#edf2fa] !border-[#cfdcf0] text-[#163a6b]' : '!bg-[#fbeef0] !border-[#eccfd2] text-[#a33d46]'}`}>
                                 <AdminIcon name={pwMsg.type === 'success' ? "check-circle" : "info"} />
                                 <span>{pwMsg.text}</span>
                             </div>
@@ -349,7 +349,7 @@ export default function AccountManagement({ partner, isAdmin, onRefresh }: Accou
                                     <button
                                         type="button"
                                         onClick={() => setShowNewPassword(!showNewPassword)}
-                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#86918a] hover:text-[#263d36] p-1"
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#788699] hover:text-[#162438] p-1"
                                         title={showNewPassword ? "비밀번호 숨기기" : "비밀번호 미리보기"}
                                     >
                                         <AdminIcon name="eye" />
@@ -366,7 +366,7 @@ export default function AccountManagement({ partner, isAdmin, onRefresh }: Accou
                                         onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                                         className={`adm-input !pr-10 ${
                                             isPasswordMatch
-                                                ? "!border-[#295e52]"
+                                                ? "!border-[#163a6b]"
                                                 : isPasswordMismatch
                                                 ? "!border-[#c8565d]"
                                                 : ""
@@ -376,7 +376,7 @@ export default function AccountManagement({ partner, isAdmin, onRefresh }: Accou
                                     <button
                                         type="button"
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#86918a] hover:text-[#263d36] p-1"
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#788699] hover:text-[#162438] p-1"
                                         title={showConfirmPassword ? "비밀번호 숨기기" : "비밀번호 미리보기"}
                                     >
                                         <AdminIcon name="eye" />
@@ -384,7 +384,7 @@ export default function AccountManagement({ partner, isAdmin, onRefresh }: Accou
                                 </div>
 
                                 {isPasswordMatch && (
-                                    <p className="text-[11px] font-bold text-[#295e52] mt-1 flex items-center gap-1">
+                                    <p className="text-[11px] font-bold text-[#163a6b] mt-1 flex items-center gap-1">
                                         <AdminIcon name="check" className="!w-3.5 !h-3.5" />
                                         비밀번호가 일치합니다.
                                     </p>

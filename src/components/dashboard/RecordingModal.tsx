@@ -450,7 +450,7 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                         className={`adm-btn small ${isApiKeyReady ? "sage" : ""}`}
                         title="OpenAI Whisper API 키 설정 (총괄 어드민 전용)"
                     >
-                        <span className={`w-2 h-2 rounded-full ${isApiKeyReady ? "bg-[#295e52]" : "bg-[#b58c4b] animate-pulse"}`} />
+                        <span className={`w-2 h-2 rounded-full ${isApiKeyReady ? "bg-[#163a6b]" : "bg-[#b58c4b] animate-pulse"}`} />
                         <span>STT 키 설정</span>
                     </button>
                 ) : undefined
@@ -466,7 +466,7 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                     {isAdmin && showApiKeySettings && (
                         <form
                             onSubmit={handleSaveApiKey}
-                            className="bg-[#193f39] text-white rounded-[12px] p-4 border border-[#2d584e] shadow-md space-y-3"
+                            className="bg-[#0c2340] text-white rounded-[12px] p-4 border border-[#2d584e] shadow-md space-y-3"
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
@@ -532,11 +532,11 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                     {/* 녹취 파일 업로드 폼 */}
                     <form onSubmit={handleUpload} className="adm-panel p-4 space-y-3">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-[#263d36] flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-[#162438] flex items-center gap-1.5">
                                 <AdminIcon name="upload" />
                                 <span>새 음성파일 업로드</span>
                             </span>
-                            <span className="text-[11px] text-[#86918a]">
+                            <span className="text-[11px] text-[#788699]">
                                 단일 최대 50MB (자동 압축 지원)
                             </span>
                         </div>
@@ -548,8 +548,8 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                             onClick={() => fileInputRef.current?.click()}
                             className={`p-5 rounded-[10px] border border-dashed text-center cursor-pointer transition-all ${
                                 isDragging 
-                                    ? "bg-[#f4f7ef] border-[#295e52]" 
-                                    : "bg-[#f9faf7] hover:bg-[#f4f7ef] border-[#cbd8c0]"
+                                    ? "bg-[#f1f4fa] border-[#163a6b]" 
+                                    : "bg-[#f7f9fc] hover:bg-[#f1f4fa] border-[#cfdcf0]"
                             }`}
                         >
                             <input
@@ -563,7 +563,7 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                             {selectedFile ? (
                                 <div className="flex flex-col items-center">
                                     <span className="adm-pill green mb-1.5">선택된 녹취 파일</span>
-                                    <span className="text-xs font-bold text-[#263d36] truncate max-w-md bg-white px-3 py-1 rounded-[7px] border border-[#dfe5d9]" title={generateRecordingDownloadFileName({
+                                    <span className="text-xs font-bold text-[#162438] truncate max-w-md bg-white px-3 py-1 rounded-[7px] border border-[#dce4f0]" title={generateRecordingDownloadFileName({
                                         uploadedAt: new Date().toISOString(),
                                         parentPartnerName: parentPartnerName,
                                         partnerName: application.partnerName,
@@ -583,7 +583,7 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                         })}
                                     </span>
                                     <div className="flex items-center gap-2 mt-1.5 flex-wrap justify-center">
-                                        <span className="text-xs font-semibold text-[#6b7768]">
+                                        <span className="text-xs font-semibold text-[#5a6b82]">
                                             원본: {selectedFile.name} ({formatBytes(selectedFile.size)})
                                         </span>
                                         {useAutoCompress && (
@@ -592,17 +592,17 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-[11px] text-[#86918a] mt-1">
+                                    <span className="text-[11px] text-[#788699] mt-1">
                                         다른 파일을 선택하려면 클릭하거나 다시 드래그하세요
                                     </span>
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center">
-                                    <AdminIcon name="mic" className="!w-6 !h-6 text-[#295e52] mb-1.5" />
-                                    <span className="text-xs font-bold text-[#263d36]">
+                                    <AdminIcon name="mic" className="!w-6 !h-6 text-[#163a6b] mb-1.5" />
+                                    <span className="text-xs font-bold text-[#162438]">
                                         음성파일을 드래그하거나 클릭하여 선택
                                     </span>
-                                    <span className="text-[11px] text-[#86918a] mt-0.5">
+                                    <span className="text-[11px] text-[#788699] mt-0.5">
                                         지원 형식: M4A, MP3, WAV, AAC 등 음성 파일
                                     </span>
                                 </div>
@@ -616,13 +616,13 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                     type="checkbox"
                                     checked={useAutoCompress}
                                     onChange={(e) => setUseAutoCompress(e.target.checked)}
-                                    className="w-4 h-4 rounded cursor-pointer accent-[#295e52]"
+                                    className="w-4 h-4 rounded cursor-pointer accent-[#163a6b]"
                                 />
                                 <div>
-                                    <span className="text-xs font-bold text-[#263d36] block">
+                                    <span className="text-xs font-bold text-[#162438] block">
                                         통화 음성 고압축 최적화 적용 (권장)
                                     </span>
-                                    <p className="text-[11px] text-[#6b7768] mt-0.5">
+                                    <p className="text-[11px] text-[#5a6b82] mt-0.5">
                                         10분 통화 기준 11MB → 약 2.3MB로 용량 75% 절감 및 모바일/PC 스트리밍·STT 변환 최적화
                                     </p>
                                 </div>
@@ -634,7 +634,7 @@ export default function RecordingModal({ application, parentPartnerName, onClose
 
                         {/* 압축 완료 요약 */}
                         {compressionSummary && (
-                            <div className="adm-note-card !bg-[#eef5eb] !border-[#cbe0c4] text-xs font-bold text-[#295e52]">
+                            <div className="adm-note-card !bg-[#edf2fa] !border-[#cfdcf0] text-xs font-bold text-[#163a6b]">
                                 {compressionSummary}
                             </div>
                         )}
@@ -653,8 +653,8 @@ export default function RecordingModal({ application, parentPartnerName, onClose
 
                         {/* 업로드 버튼 */}
                         <div className="pt-1 flex items-center justify-between">
-                            <div className="text-[11px] text-[#6b7768] font-medium">
-                                {isUploading && <span className="font-bold text-[#295e52]">{uploadProgress}</span>}
+                            <div className="text-[11px] text-[#5a6b82] font-medium">
+                                {isUploading && <span className="font-bold text-[#163a6b]">{uploadProgress}</span>}
                             </div>
                             <button
                                 type="submit"
@@ -678,20 +678,20 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                     type="checkbox"
                                     checked={includeTimestamps}
                                     onChange={(e) => setIncludeTimestamps(e.target.checked)}
-                                    className="w-3.5 h-3.5 rounded accent-[#295e52] cursor-pointer"
+                                    className="w-3.5 h-3.5 rounded accent-[#163a6b] cursor-pointer"
                                 />
                                 <span>텍스트 변환 시 구간별 시간([분:초]) 표시</span>
                             </label>
                         </div>
 
                         {recordings === undefined ? (
-                            <div className="py-8 text-center text-xs text-[#86918a]">
+                            <div className="py-8 text-center text-xs text-[#788699]">
                                 녹취 목록을 불러오는 중...
                             </div>
                         ) : recordings.length === 0 ? (
-                            <div className="adm-note-card py-10 text-center text-[#86918a]">
-                                <AdminIcon name="mic" className="mx-auto mb-2 !w-6 !h-6 text-[#a6b6a1]" />
-                                <p className="text-xs font-bold text-[#263d36]">등록된 녹취 음성파일이 없습니다.</p>
+                            <div className="adm-note-card py-10 text-center text-[#788699]">
+                                <AdminIcon name="mic" className="mx-auto mb-2 !w-6 !h-6 text-[#8da4c4]" />
+                                <p className="text-xs font-bold text-[#162438]">등록된 녹취 음성파일이 없습니다.</p>
                                 <p className="text-[11px] mt-1">상단의 업로드 영역을 통해 파일을 추가해보세요.</p>
                             </div>
                         ) : (
@@ -723,7 +723,7 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                             <div className="flex items-start justify-between gap-3 flex-wrap sm:flex-nowrap">
                                                 <div className="min-w-0 flex-1">
                                                     <div className="flex items-center gap-1.5 flex-wrap">
-                                                        <span className="font-bold text-xs text-[#263d36] truncate block max-w-sm" title={displayFileName}>
+                                                        <span className="font-bold text-xs text-[#162438] truncate block max-w-sm" title={displayFileName}>
                                                             {displayFileName}
                                                         </span>
                                                         <span className="adm-pill gray">
@@ -740,17 +740,17 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <div className="flex items-center gap-3 text-[11px] text-[#86918a] mt-1 flex-wrap font-mono">
+                                                    <div className="flex items-center gap-3 text-[11px] text-[#788699] mt-1 flex-wrap font-mono">
                                                         <span>등록일시: {formatDate(rec.uploadedAt)}</span>
                                                         {rec.uploadedBy && (
-                                                            <span>등록자: <strong className="text-[#45554e]">{rec.uploadedBy}</strong></span>
+                                                            <span>등록자: <strong className="text-[#3b495c]">{rec.uploadedBy}</strong></span>
                                                         )}
                                                         {rec.transcribedAt && (
                                                             <span>녹취록 저장: {formatDate(rec.transcribedAt)}</span>
                                                         )}
                                                     </div>
                                                     {rec.memo && (
-                                                        <div className="mt-2 text-xs text-[#263d36] bg-[#f8f9f5] border border-[#e6eae3] rounded-[7px] px-2.5 py-1.5 font-medium inline-block">
+                                                        <div className="mt-2 text-xs text-[#162438] bg-[#f6f8fc] border border-[#e1e7f0] rounded-[7px] px-2.5 py-1.5 font-medium inline-block">
                                                             {rec.memo}
                                                         </div>
                                                     )}
@@ -815,7 +815,7 @@ export default function RecordingModal({ application, parentPartnerName, onClose
 
                                             {/* HTML5 Audio Player */}
                                             {rec.url ? (
-                                                <div className="bg-[#f8f9f5] p-2.5 rounded-[9px] border border-[#e6eae3]">
+                                                <div className="bg-[#f6f8fc] p-2.5 rounded-[9px] border border-[#e1e7f0]">
                                                     <audio
                                                         controls
                                                         preload="metadata"
@@ -833,10 +833,10 @@ export default function RecordingModal({ application, parentPartnerName, onClose
 
                                             {/* STT 변환 텍스트 표시 및 편집 영역 */}
                                             {(isExpanded || isTranscribingThis) && (
-                                                <div className="mt-2 pt-3 border-t border-[#edf0e7] space-y-2.5">
+                                                <div className="mt-2 pt-3 border-t border-[#eaeff7] space-y-2.5">
                                                     <div className="flex items-center justify-between flex-wrap gap-2">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-xs font-bold text-[#263d36]">
+                                                            <span className="text-xs font-bold text-[#162438]">
                                                                 상담 녹취 텍스트 (STT)
                                                             </span>
                                                             {isDirty && (
@@ -894,12 +894,12 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                                                     </div>
 
                                                     {isTranscribingThis ? (
-                                                        <div className="py-8 adm-note-card flex flex-col items-center justify-center gap-2 text-[#295e52]">
-                                                            <div className="w-6 h-6 border-2 border-[#295e52]/30 border-t-[#295e52] rounded-full animate-spin" />
+                                                        <div className="py-8 adm-note-card flex flex-col items-center justify-center gap-2 text-[#163a6b]">
+                                                            <div className="w-6 h-6 border-2 border-[#163a6b]/30 border-t-[#163a6b] rounded-full animate-spin" />
                                                             <p className="text-xs font-bold">
                                                                 OpenAI Whisper가 통화 음성을 한국어 텍스트로 변환하고 있습니다...
                                                             </p>
-                                                            <p className="text-[11px] text-[#6b7768]">
+                                                            <p className="text-[11px] text-[#5a6b82]">
                                                                 통화 길이에 따라 약 5~20초 정도 소요될 수 있습니다.
                                                             </p>
                                                         </div>
@@ -927,12 +927,12 @@ export default function RecordingModal({ application, parentPartnerName, onClose
                     </div>
 
                     {/* 안내 팁 박스 */}
-                    <div className="bg-[#f4f7ef] border border-[#dce6d5] rounded-[12px] p-4 text-xs text-[#295e52] leading-relaxed space-y-1">
-                        <div className="font-bold flex items-center gap-1.5 text-[#193f39]">
+                    <div className="bg-[#f1f4fa] border border-[#dce6d5] rounded-[12px] p-4 text-xs text-[#163a6b] leading-relaxed space-y-1">
+                        <div className="font-bold flex items-center gap-1.5 text-[#0c2340]">
                             <AdminIcon name="info" className="!w-4 !h-4" />
                             스마트 음성 압축 및 AI 텍스트 변환 안내
                         </div>
-                        <ul className="list-disc list-inside space-y-0.5 text-[#45554e] text-[11px] pl-1">
+                        <ul className="list-disc list-inside space-y-0.5 text-[#3b495c] text-[11px] pl-1">
                             <li><strong>AI 텍스트 변환 (Whisper STT):</strong> 각 녹취 파일의 <strong>[📝 텍스트 변환]</strong> 버튼을 누르면 구간별 타임스탬프와 함께 한국어 대화 내용이 자동 추출·저장됩니다.</li>
                             <li><strong>자동 고압축:</strong> 업로드 시 브라우저에서 통화 음성을 자동으로 <strong>22.05kHz 32kbps 고음질 MP3</strong>로 압축 변환합니다. (10분 통화 기준 11MB → 약 2.3MB)</li>
                             <li><strong>편집 및 내보내기:</strong> 변환된 녹취록은 오탈자를 직접 수정하여 저장하거나, 클립보드 복사 및 <strong>TXT 파일 다운로드</strong>가 가능합니다.</li>

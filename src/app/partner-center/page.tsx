@@ -103,10 +103,10 @@ function LoginForm() {
         <div className="adm-panel p-8 sm:p-10 shadow-[0_14px_45px_rgba(25,63,57,0.06)]">
             <div className="mb-7">
                 <span className="adm-pill green mb-3">PARTNER &amp; ADMIN PORTAL</span>
-                <h2 className="text-[22px] font-bold text-[#263d36] tracking-tight">
+                <h2 className="text-[22px] font-bold text-[#162438] tracking-tight">
                     워크스페이스 로그인
                 </h2>
-                <p className="text-xs text-[#86918a] mt-1.5 leading-relaxed">
+                <p className="text-xs text-[#788699] mt-1.5 leading-relaxed">
                     본사 관리자 및 파트너사·상담원 계정으로 접속하세요.
                 </p>
             </div>
@@ -127,7 +127,7 @@ function LoginForm() {
                         type="text"
                         value={formData.loginId}
                         onChange={(e) => setFormData({ ...formData, loginId: e.target.value })}
-                        className="w-full px-3.5 py-3 bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] text-sm text-[#263d36] placeholder:text-[#9ca795] focus:bg-white focus:border-[#295e52] outline-none transition-all"
+                        className="w-full px-3.5 py-3 bg-[#f7f9fc] border border-[#dce4f0] rounded-[9px] text-sm text-[#162438] placeholder:text-[#9ca795] focus:bg-white focus:border-[#163a6b] outline-none transition-all"
                         placeholder="아이디를 입력하세요"
                         required
                     />
@@ -140,7 +140,7 @@ function LoginForm() {
                         type="password"
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        className="w-full px-3.5 py-3 bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] text-sm text-[#263d36] placeholder:text-[#9ca795] focus:bg-white focus:border-[#295e52] outline-none transition-all"
+                        className="w-full px-3.5 py-3 bg-[#f7f9fc] border border-[#dce4f0] rounded-[9px] text-sm text-[#162438] placeholder:text-[#9ca795] focus:bg-white focus:border-[#163a6b] outline-none transition-all"
                         placeholder="비밀번호를 입력하세요"
                         required
                     />
@@ -167,11 +167,11 @@ function LoginForm() {
                 </div>
             </form>
 
-            <div className="mt-7 pt-6 border-t border-[#edf0e7] flex items-center justify-between text-xs text-[#86918a]">
+            <div className="mt-7 pt-6 border-t border-[#eaeff7] flex items-center justify-between text-xs text-[#788699]">
                 <span>아직 파트너가 아니신가요?</span>
                 <Link
                     href="/partner/apply"
-                    className="text-[#295e52] font-bold hover:underline inline-flex items-center gap-1"
+                    className="text-[#163a6b] font-bold hover:underline inline-flex items-center gap-1"
                 >
                     <span>입점/제휴 신청하기</span>
                     <AdminIcon name="arrow-up-right" className="!w-3.5 !h-3.5" />
@@ -183,9 +183,9 @@ function LoginForm() {
 
 export default function PartnerCenterLoginPage() {
     return (
-        <div className="min-h-screen bg-[#f5f6f3] flex flex-col lg:flex-row">
+        <div className="min-h-screen bg-[#f4f6fa] flex flex-col lg:flex-row">
             {/* Left Brand Panel (Desktop) */}
-            <aside className="hidden lg:flex lg:w-[440px] xl:w-[480px] bg-[#193f39] text-[#d6e2dc] p-12 flex-col justify-between shrink-0 border-r border-[#13312c]">
+            <aside className="hidden lg:flex lg:w-[440px] xl:w-[480px] bg-[#0c2340] text-[#d8e4f5] p-12 flex-col justify-between shrink-0 border-r border-[#081930]">
                 <div>
                     <div className="adm-brand !p-0">
                         <span className="adm-brand-emblem">
@@ -197,7 +197,7 @@ export default function PartnerCenterLoginPage() {
                         </span>
                     </div>
                     <div className="mt-14 space-y-4">
-                        <span className="inline-block text-[10px] tracking-[0.18em] uppercase text-[#a6b6a1] font-semibold">
+                        <span className="inline-block text-[10px] tracking-[0.18em] uppercase text-[#8da4c4] font-semibold">
                             INTEGRATED SALES ADMIN
                         </span>
                         <h1 className="text-[30px] font-bold text-white leading-[1.32] tracking-tight">
@@ -229,12 +229,12 @@ export default function PartnerCenterLoginPage() {
                 <div className="w-full max-w-[430px]">
                     {/* Mobile Brand Header */}
                     <div className="lg:hidden flex items-center justify-center mb-8">
-                        <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[#193f39] text-white">
+                        <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[#0c2340] text-white">
                             <span className="adm-brand-emblem !w-8 !h-9 !text-2xl">
                                 S<span>•</span>
                             </span>
                             <div className="text-left">
-                                <small className="block text-[8px] tracking-[1.8px] text-[#b2c5b9]">
+                                <small className="block text-[8px] tracking-[1.8px] text-[#a7bdd9]">
                                     SONO I&apos;M READY
                                 </small>
                                 <strong className="text-lg font-bold tracking-tight">파트너센터</strong>
@@ -244,7 +244,7 @@ export default function PartnerCenterLoginPage() {
 
                     <Suspense
                         fallback={
-                            <div className="adm-panel p-10 text-center text-xs text-[#86918a]">
+                            <div className="adm-panel p-10 text-center text-xs text-[#788699]">
                                 로그인 화면을 준비하고 있습니다...
                             </div>
                         }
@@ -260,7 +260,7 @@ export default function PartnerCenterLoginPage() {
                         <div>
                             <Link
                                 href="/"
-                                className="text-[#6d7c6e] hover:text-[#295e52] font-semibold text-xs inline-flex items-center gap-1.5 transition-colors"
+                                className="text-[#6d7c6e] hover:text-[#163a6b] font-semibold text-xs inline-flex items-center gap-1.5 transition-colors"
                             >
                                 <span>← 공식 메인 페이지로 돌아가기</span>
                             </Link>

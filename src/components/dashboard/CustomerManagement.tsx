@@ -755,7 +755,7 @@ export default function CustomerManagement({
                                         e.stopPropagation();
                                         setShowStatusHelp(true);
                                     }}
-                                    className="text-[#94a08f] hover:text-[#295e52] transition-colors inline-grid place-items-center"
+                                    className="text-[#94a08f] hover:text-[#163a6b] transition-colors inline-grid place-items-center"
                                     title="상태 용어 설명"
                                 >
                                     <AdminIcon name="info" className="!w-3.5 !h-3.5" />
@@ -848,11 +848,11 @@ export default function CustomerManagement({
                                             {app.accessPath || "D"}
                                         </span>
                                     </td>
-                                    <td className="text-center text-xs text-[#8e9988] font-mono tabular-nums">
+                                    <td className="text-center text-xs text-[#788699] font-mono tabular-nums">
                                         {sortedApplications.length -
                                             ((currentPage - 1) * itemsPerPage + index)}
                                     </td>
-                                    <td className="text-xs text-[#6b7768] tabular-nums">
+                                    <td className="text-xs text-[#5a6b82] tabular-nums">
                                         {formatDateTime(
                                             app.createdAt,
                                             (app as any)._creationTime
@@ -861,25 +861,25 @@ export default function CustomerManagement({
                                     <td>
                                         {parentInfo ? (
                                             <div>
-                                                <div className="text-xs font-bold text-[#263d36]">
+                                                <div className="text-xs font-bold text-[#162438]">
                                                     {parentInfo.name}
                                                 </div>
                                                 {parentInfo.loginId && (
-                                                    <div className="text-[10px] text-[#8e9988] font-mono">
+                                                    <div className="text-[10px] text-[#788699] font-mono">
                                                         {parentInfo.loginId}
                                                     </div>
                                                 )}
                                             </div>
                                         ) : (
-                                            <span className="text-xs text-[#a3ad99]">-</span>
+                                            <span className="text-xs text-[#8b9cb3]">-</span>
                                         )}
                                     </td>
                                     <td>
-                                        <div className="text-xs font-bold text-[#263d36]">
+                                        <div className="text-xs font-bold text-[#162438]">
                                             {app.partnerName}
                                         </div>
                                         {partners.length > 0 && (
-                                            <div className="text-[10px] text-[#8e9988] font-mono">
+                                            <div className="text-[10px] text-[#788699] font-mono">
                                                 {getPartnerLoginId(
                                                     app.partnerId,
                                                     app.partnerName
@@ -915,7 +915,7 @@ export default function CustomerManagement({
                                                         app.duplicateConfirmed
                                                             ? app.isAdditionalRegistration
                                                                 ? "blue border-[#cde0ee]"
-                                                                : "green border-[#cfe0c7]"
+                                                                : "green border-[#d4e1f4]"
                                                             : "red border-[#ead5cf] animate-pulse"
                                                     }`}
                                                 >
@@ -928,10 +928,10 @@ export default function CustomerManagement({
                                             )}
                                         </div>
                                     </td>
-                                    <td className="font-bold text-[#295e52] text-xs">
+                                    <td className="font-bold text-[#163a6b] text-xs">
                                         {getProductTypeLabel(app.productType)}
                                     </td>
-                                    <td className="text-center text-xs font-semibold text-[#45554e]">
+                                    <td className="text-center text-xs font-semibold text-[#3b495c]">
                                         {app.planType
                                             ? app.planType.includes("구좌")
                                                 ? app.planType
@@ -939,7 +939,7 @@ export default function CustomerManagement({
                                             : "-"}
                                     </td>
                                     <td
-                                        className="text-xs text-[#6b7768] max-w-[180px] truncate"
+                                        className="text-xs text-[#5a6b82] max-w-[180px] truncate"
                                         title={mode === "maeum" ? app.selectedGift : app.products || app.selectedGift}
                                     >
                                         {mode === "maeum" ? (
@@ -1094,7 +1094,7 @@ export default function CustomerManagement({
                         <tr>
                             <td
                                 colSpan={isAdmin ? 13 : 12}
-                                className="py-16 text-center text-xs text-[#86918a]"
+                                className="py-16 text-center text-xs text-[#788699]"
                             >
                                 검색 조건에 해당하는 고객 내역이 없습니다.
                             </td>
@@ -1120,7 +1120,7 @@ export default function CustomerManagement({
                             <h1>{mode === "maeum" ? "고객 관리 (마음든든)" : "고객 관리"}</h1>
                             <p>
                                 상담 접수부터 녹취·본사 접수·정상 가입까지 전체 고객 여정을 한눈에 관리하세요. (검색 결과{" "}
-                                <strong className="text-[#295e52]">
+                                <strong className="text-[#163a6b]">
                                     {filteredApplications.length.toLocaleString()}
                                 </strong>
                                 명)
@@ -1189,7 +1189,7 @@ export default function CustomerManagement({
                     {selectedAppIds.length > 0 && (
                         <div className="adm-bulk-bar">
                             <div className="flex items-center gap-3">
-                                <span className="adm-pill green !bg-[#295e52] !text-white">
+                                <span className="adm-pill green !bg-[#163a6b] !text-white">
                                     {selectedAppIds.length}명 선택됨
                                 </span>
                                 <button
@@ -1207,7 +1207,7 @@ export default function CustomerManagement({
                                         <select
                                             value={bulkStatus}
                                             onChange={(e) => setBulkStatus(e.target.value)}
-                                            className="bg-white text-[#263d36] text-xs font-semibold rounded-[6px] px-2.5 py-1 border-0 outline-none"
+                                            className="bg-white text-[#162438] text-xs font-semibold rounded-[6px] px-2.5 py-1 border-0 outline-none"
                                         >
                                             <option value="" disabled>
                                                 변경할 상태 선택
@@ -1277,7 +1277,7 @@ export default function CustomerManagement({
                                         type="button"
                                         onClick={handleBulkRegisterSono}
                                         disabled={isBulkRegisteringSono}
-                                        className="adm-btn small !bg-[#e4ecdd] !border-[#e4ecdd] !text-[#193f39]"
+                                        className="adm-btn small !bg-[#dce7f7] !border-[#dce7f7] !text-[#0c2340]"
                                     >
                                         <AdminIcon name="external" />
                                         <span>
@@ -1461,7 +1461,7 @@ export default function CustomerManagement({
                                         }}
                                         className="adm-input !min-h-[34px] !py-1 !px-2.5 text-xs cursor-pointer"
                                     />
-                                    <span className="text-[#86918a] text-xs">~</span>
+                                    <span className="text-[#788699] text-xs">~</span>
                                     <input
                                         type="date"
                                         value={customEndDate}
@@ -1561,7 +1561,7 @@ export default function CustomerManagement({
                         <div className="adm-table-foot">
                             <span>
                                 검색 결과{" "}
-                                <strong className="text-[#295e52]">
+                                <strong className="text-[#163a6b]">
                                     {sortedApplications.length.toLocaleString()}
                                 </strong>
                                 명 중{" "}
@@ -1572,7 +1572,7 @@ export default function CustomerManagement({
                                       )}`
                                     : "0"}{" "}
                                 표시 · 선택{" "}
-                                <strong className="text-[#263d36]">
+                                <strong className="text-[#162438]">
                                     {selectedAppIds.length}
                                 </strong>
                                 명
@@ -1748,8 +1748,8 @@ export default function CustomerManagement({
                         className="adm-panel w-full max-w-sm shadow-xl"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="px-5 py-4 border-b border-[#edf0e7] flex justify-between items-center bg-[#f8f9f5]">
-                            <h3 className="font-bold text-[#263d36] text-sm">
+                        <div className="px-5 py-4 border-b border-[#eaeff7] flex justify-between items-center bg-[#f6f8fc]">
+                            <h3 className="font-bold text-[#162438] text-sm">
                                 진행 상태 용어 안내
                             </h3>
                             <button
@@ -1763,13 +1763,13 @@ export default function CustomerManagement({
                         <div className="p-5 space-y-3.5 text-xs">
                             <div>
                                 <span className="adm-pill gray mb-1">접수대기</span>
-                                <p className="text-[#5d6c5d] leading-relaxed">
+                                <p className="text-[#475870] leading-relaxed">
                                     영업자 또는 랜딩을 통해 신규 상담이 등록된 상태입니다.
                                 </p>
                             </div>
                             <div>
                                 <span className="adm-pill blue mb-1">접수완료</span>
-                                <p className="text-[#5d6c5d] leading-relaxed">
+                                <p className="text-[#475870] leading-relaxed">
                                     소노 콜센터에 해피콜 및 상담을 요청한 상태입니다.
                                 </p>
                             </div>
@@ -1777,18 +1777,18 @@ export default function CustomerManagement({
                                 <span className="adm-pill teal mb-1">
                                     녹취완료(출금확인중)
                                 </span>
-                                <p className="text-[#5d6c5d] leading-relaxed">
+                                <p className="text-[#475870] leading-relaxed">
                                     계약 녹취(해피콜)는 완료되었으나 1회차 출금 확인 대기 상태입니다. (신용카드 실시간, CMS 2~3일 소요)
                                 </p>
                             </div>
                             <div>
                                 <span className="adm-pill green mb-1">정상가입</span>
-                                <p className="text-[#5d6c5d] leading-relaxed">
+                                <p className="text-[#475870] leading-relaxed">
                                     1회차 출금 완료 후 정상 계약이 유지 중인 상태입니다.
                                 </p>
                             </div>
                         </div>
-                        <div className="px-5 py-3 bg-[#fafbf8] border-t border-[#edf0e7] flex justify-end">
+                        <div className="px-5 py-3 bg-[#f8fafd] border-t border-[#eaeff7] flex justify-end">
                             <button
                                 type="button"
                                 onClick={() => setShowStatusHelp(false)}
@@ -1850,12 +1850,12 @@ function DuplicateCheckModal({
                 className="adm-panel w-full max-w-md shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="px-5 py-4 border-b border-[#edf0e7] bg-[#f8f9f5] flex justify-between items-center">
+                <div className="px-5 py-4 border-b border-[#eaeff7] bg-[#f6f8fc] flex justify-between items-center">
                     <div>
-                        <h3 className="text-base font-bold text-[#263d36]">
+                        <h3 className="text-base font-bold text-[#162438]">
                             중복 가입 내역 확인
                         </h3>
-                        <p className="text-xs text-[#86918a] mt-0.5">
+                        <p className="text-xs text-[#788699] mt-0.5">
                             {(app.customerName || "").trim()}님 · {app.customerPhone}
                         </p>
                     </div>
@@ -1866,13 +1866,13 @@ function DuplicateCheckModal({
 
                 <div className="p-5">
                     {duplicates === undefined ? (
-                        <div className="py-10 text-center text-xs text-[#86918a]">
+                        <div className="py-10 text-center text-xs text-[#788699]">
                             중복 데이터를 조회하는 중...
                         </div>
                     ) : duplicates.length === 0 ? (
                         <div className="py-8 text-center space-y-2">
                             <span className="adm-pill green">중복 없음</span>
-                            <p className="text-xs text-[#6b7768]">
+                            <p className="text-xs text-[#5a6b82]">
                                 해당 고객 정보로 등록된 다른 접수 내역이 없습니다.
                             </p>
                         </div>
@@ -1882,7 +1882,7 @@ function DuplicateCheckModal({
                                 <AdminIcon name="info" />
                                 <span>
                                     동일한 고객명·연락처로 등록된 내역이{" "}
-                                    <strong className="text-[#295e52]">
+                                    <strong className="text-[#163a6b]">
                                         {duplicates.length}건
                                     </strong>{" "}
                                     발견되었습니다.
@@ -1896,20 +1896,20 @@ function DuplicateCheckModal({
                                         className="adm-note-card space-y-1.5"
                                     >
                                         <div className="flex justify-between items-center">
-                                            <strong className="text-xs text-[#263d36]">
+                                            <strong className="text-xs text-[#162438]">
                                                 {dup.partnerName}
                                             </strong>
                                             <span className="adm-pill gray">
                                                 {dup.status}
                                             </span>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-y-1 text-[11px] pt-1 border-t border-[#e6eae3]">
-                                            <span className="text-[#86918a]">신청번호</span>
-                                            <span className="text-right font-mono text-[#263d36]">
+                                        <div className="grid grid-cols-2 gap-y-1 text-[11px] pt-1 border-t border-[#e1e7f0]">
+                                            <span className="text-[#788699]">신청번호</span>
+                                            <span className="text-right font-mono text-[#162438]">
                                                 {dup.applicationNo}
                                             </span>
-                                            <span className="text-[#86918a]">등록일시</span>
-                                            <span className="text-right text-[#263d36]">
+                                            <span className="text-[#788699]">등록일시</span>
+                                            <span className="text-right text-[#162438]">
                                                 {formatDateTime(
                                                     dup.createdAt,
                                                     dup._creationTime
@@ -1917,10 +1917,10 @@ function DuplicateCheckModal({
                                             </span>
                                             {dup.productType && (
                                                 <>
-                                                    <span className="text-[#86918a]">
+                                                    <span className="text-[#788699]">
                                                         상품명
                                                     </span>
-                                                    <span className="text-right font-semibold text-[#295e52] truncate">
+                                                    <span className="text-right font-semibold text-[#163a6b] truncate">
                                                         {dup.productType}
                                                     </span>
                                                 </>
@@ -1932,7 +1932,7 @@ function DuplicateCheckModal({
                         </div>
                     )}
 
-                    <div className="flex gap-2 mt-5 pt-4 border-t border-[#edf0e7] justify-end">
+                    <div className="flex gap-2 mt-5 pt-4 border-t border-[#eaeff7] justify-end">
                         {!app.duplicateConfirmed && (
                             <>
                                 <button

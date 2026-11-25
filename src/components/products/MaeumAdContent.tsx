@@ -302,14 +302,15 @@ export default function MaeumAdContent() {
                    </div>`;
 
         midEl.style.display = "block";
-        midEl.style.padding = "90px 44px";
+        midEl.style.padding = "64px 44px";
         midEl.style.background = "linear-gradient(180deg,#2b2119 0%,#36281e 100%)";
         midEl.style.color = "#faf5ef";
 
         midEl.innerHTML = `
           <style>
             #maeum-gift-mid *{box-sizing:border-box}
-            #maeum-gift-mid .mg-head{text-align:center;margin-bottom:38px}
+            #maeum-gift-mid{word-break:keep-all;overflow-wrap:break-word}
+            #maeum-gift-mid .mg-head{text-align:center;margin-bottom:32px}
             #maeum-gift-mid .mg-badges{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-bottom:16px}
             #maeum-gift-mid .mg-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:999px;background:#b98a6a;color:#1a130e;font-weight:900;font-size:16px;letter-spacing:.06em}
             #maeum-gift-mid .mg-period{display:inline-flex;align-items:center;padding:8px 16px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(185,138,106,.45);color:#f3dcc9;font-weight:700;font-size:16px}

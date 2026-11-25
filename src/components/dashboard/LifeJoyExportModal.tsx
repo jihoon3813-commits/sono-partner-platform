@@ -428,18 +428,18 @@ export default function LifeJoyExportModal({
         >
                 {isLoadingInfo ? (
                     <div className="p-12 text-center text-gray-500">
-                        <div className="w-9 h-9 border-[3px] border-[#295e52] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                        <p className="font-bold text-[#263d36]">hoon 폴더의 엑셀 파일 분석 중...</p>
-                        <p className="text-xs text-[#86918a] mt-1">기존 입력된 고객과 새로운 고객을 대조하고 있습니다.</p>
+                        <div className="w-9 h-9 border-[3px] border-[#163a6b] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                        <p className="font-bold text-[#162438]">hoon 폴더의 엑셀 파일 분석 중...</p>
+                        <p className="text-xs text-[#788699] mt-1">기존 입력된 고객과 새로운 고객을 대조하고 있습니다.</p>
                     </div>
                 ) : (
                     <div className="space-y-5">
                         {/* 1. 파일 및 기본 정보 설정 박스 */}
                         <div className="adm-note-card space-y-4">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs pb-3 border-b border-[#e6eae3]">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs pb-3 border-b border-[#e1e7f0]">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="font-bold text-[#6f7c6c]">기존 기준 엑셀 파일:</span>
-                                    <span className="font-mono bg-white px-2.5 py-1 rounded-[6px] border border-[#dfe5d9] text-[#263d36] font-bold">
+                                    <span className="font-bold text-[#5a6b82]">기존 기준 엑셀 파일:</span>
+                                    <span className="font-mono bg-white px-2.5 py-1 rounded-[6px] border border-[#dce4f0] text-[#162438] font-bold">
                                         {latestFileName || "hoon/라이프앤조이_더해피one_가입요청_260911_1.xlsx"}
                                     </span>
                                     <input
@@ -512,8 +512,8 @@ export default function LifeJoyExportModal({
                         <div className="adm-panel overflow-hidden">
                             <div className="adm-filter-bar justify-between">
                                 <div className="flex items-center gap-3 flex-wrap">
-                                    <span className="text-xs font-bold text-[#263d36]">
-                                        추가할 고객 선택 (<strong className="text-[#295e52]">{selectedAppNos.length}</strong>명 선택됨)
+                                    <span className="text-xs font-bold text-[#162438]">
+                                        추가할 고객 선택 (<strong className="text-[#163a6b]">{selectedAppNos.length}</strong>명 선택됨)
                                     </span>
                                     <div className="adm-segmented">
                                         <button
@@ -568,7 +568,7 @@ export default function LifeJoyExportModal({
                                     <tbody>
                                         {filteredApplications.length === 0 ? (
                                             <tr>
-                                                <td colSpan={9} className="py-10 text-center text-xs text-[#86918a]">
+                                                <td colSpan={9} className="py-10 text-center text-xs text-[#788699]">
                                                     선택한 조건의 고객 데이터가 없습니다.
                                                 </td>
                                             </tr>
@@ -588,7 +588,7 @@ export default function LifeJoyExportModal({
                                                                 type="checkbox"
                                                                 checked={isSelected}
                                                                 onChange={() => handleToggleSelect(app.applicationNo)}
-                                                                className="w-4 h-4 rounded cursor-pointer accent-[#295e52]"
+                                                                className="w-4 h-4 rounded cursor-pointer accent-[#163a6b]"
                                                             />
                                                         </td>
                                                         <td className="text-center">
@@ -607,15 +607,15 @@ export default function LifeJoyExportModal({
                                                                 {app.status || "미지정"}
                                                             </span>
                                                         </td>
-                                                        <td className="font-bold text-[#263d36]">
+                                                        <td className="font-bold text-[#162438]">
                                                             {app.customerName}
                                                         </td>
-                                                        <td className="font-mono text-xs text-[#6b7768]">
+                                                        <td className="font-mono text-xs text-[#5a6b82]">
                                                             {app.customerPhone}
                                                         </td>
                                                         <td>
                                                             <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                                                                <span className="font-semibold text-xs text-[#263d36]">
+                                                                <span className="font-semibold text-xs text-[#162438]">
                                                                     {app.productType || "더 해피 450 ONE"}
                                                                 </span>
                                                                 {getSheetType(app) === "combined" ? (
@@ -624,12 +624,12 @@ export default function LifeJoyExportModal({
                                                                     <span className="adm-pill green">더해피450</span>
                                                                 )}
                                                             </div>
-                                                            <div className="text-[11px] text-[#86918a]">
+                                                            <div className="text-[11px] text-[#788699]">
                                                                 {app.planType || "1구좌"}
                                                                 {app.products ? ` (${app.products})` : ""}
                                                             </div>
                                                         </td>
-                                                        <td className="text-[#86918a] font-mono text-[11px]">
+                                                        <td className="text-[#788699] font-mono text-[11px]">
                                                             {app.createdAt ? app.createdAt.slice(0, 10) : "-"}
                                                         </td>
                                                         <td>
@@ -645,7 +645,7 @@ export default function LifeJoyExportModal({
                                                                 className="adm-input !h-8 !py-1 !w-36"
                                                             />
                                                         </td>
-                                                        <td className="text-[#86918a] text-[11px]">
+                                                        <td className="text-[#788699] text-[11px]">
                                                             {app.preferredContactTime || "무관"}
                                                         </td>
                                                     </tr>
@@ -661,7 +661,7 @@ export default function LifeJoyExportModal({
                         <div className="adm-section-note !items-start">
                             <AdminIcon name="info" className="mt-0.5" />
                             <div className="space-y-1 text-xs">
-                                <p className="font-bold text-[#263d36]">가입요청 엑셀 업데이트 &amp; 시트 안내</p>
+                                <p className="font-bold text-[#162438]">가입요청 엑셀 업데이트 &amp; 시트 안내</p>
                                 <p className="text-[#5a6659] leading-relaxed">
                                     • <strong>26년 09월 기준 적용</strong>: 24년/25년 및 26년 8월 이전 과거 데이터는 모두 반영완료 처리되어, <strong>26년 9월 이후 신규 미등록 고객 및 향후 등록 고객만</strong> 자동 감지됩니다.
                                     <br />

@@ -212,7 +212,7 @@ export default function SonoRegisterModal({
                     {resultBanner && (
                         <div className={`adm-note-card text-xs font-bold ${
                             resultBanner.type === 'success'
-                                ? '!bg-[#eef5eb] !border-[#cbe0c4] text-[#295e52]'
+                                ? '!bg-[#edf2fa] !border-[#cfdcf0] text-[#163a6b]'
                                 : resultBanner.type === 'duplicate'
                                 ? '!bg-[#f7f1e2] !border-[#e8d9b8] text-[#9a7840]'
                                 : '!bg-[#fbeef0] !border-[#eccfd2] text-[#a33d46]'
@@ -250,7 +250,7 @@ export default function SonoRegisterModal({
                     <div className="adm-field">
                         <div className="flex items-center justify-between">
                             <label>2. 소노접수 인증코드 (authCd)</label>
-                            <span className="text-[11px] text-[#295e52] font-bold truncate max-w-[300px]" title={partnerBadgeText}>
+                            <span className="text-[11px] text-[#163a6b] font-bold truncate max-w-[300px]" title={partnerBadgeText}>
                                 파트너: {partnerBadgeText || application.partnerName || application.partnerId}
                             </span>
                         </div>
@@ -272,7 +272,7 @@ export default function SonoRegisterModal({
                         </div>
                         <div className="adm-detail-item">
                             <span>고객 연락처</span>
-                            <strong className="font-mono text-[#295e52]">{application.customerPhone}</strong>
+                            <strong className="font-mono text-[#163a6b]">{application.customerPhone}</strong>
                         </div>
                         <div className="adm-detail-item">
                             <span>상품명 (고정)</span>
@@ -330,7 +330,7 @@ export default function SonoRegisterModal({
                         <div className="adm-field full">
                             <div className="flex justify-between">
                                 <label>특이사항 (비고)</label>
-                                <span className="text-[10px] text-[#86918a] font-mono">{memo.length}/240</span>
+                                <span className="text-[10px] text-[#788699] font-mono">{memo.length}/240</span>
                             </div>
                             <textarea
                                 value={memo}
@@ -344,12 +344,12 @@ export default function SonoRegisterModal({
 
                     {/* 당일 재접수/중복 체크 해제 옵션 */}
                     <div className="adm-note-card flex items-center justify-between">
-                        <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-bold text-[#263d36]">
+                        <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-bold text-[#162438]">
                             <input
                                 type="checkbox"
                                 checked={allowDuplicate}
                                 onChange={(e) => setAllowDuplicate(e.target.checked)}
-                                className="w-4 h-4 rounded cursor-pointer accent-[#295e52]"
+                                className="w-4 h-4 rounded cursor-pointer accent-[#163a6b]"
                             />
                             <span>당일 재접수 허용 (소노 전산 중복 체크 해제)</span>
                         </label>

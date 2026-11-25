@@ -715,7 +715,7 @@ export default function ProductManagement() {
                         <div className="adm-filter-end">
                             <span>
                                 전체 {products?.length || 0}개 중{" "}
-                                <strong className="text-[#295e52]">
+                                <strong className="text-[#163a6b]">
                                     {filteredProducts.length}
                                 </strong>
                                 개 표시
@@ -724,10 +724,10 @@ export default function ProductManagement() {
                     </div>
 
                     {/* 1순위~4순위 다중 우선순위 정렬 바 */}
-                    <div className="px-5 py-3.5 bg-[#fafbf8] border-b border-[#edf0e7] space-y-2.5">
+                    <div className="px-5 py-3.5 bg-[#f8fafd] border-b border-[#eaeff7] space-y-2.5">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-xs font-bold text-[#263d36]">
+                                <span className="text-xs font-bold text-[#162438]">
                                     우선순위 다중 정렬 기준
                                 </span>
                                 <span className="adm-pill orange">
@@ -737,7 +737,7 @@ export default function ProductManagement() {
                             <button
                                 type="button"
                                 onClick={resetSortRules}
-                                className="text-xs font-semibold text-[#6b7768] hover:text-[#295e52] underline cursor-pointer bg-transparent border-0"
+                                className="text-xs font-semibold text-[#5a6b82] hover:text-[#163a6b] underline cursor-pointer bg-transparent border-0"
                             >
                                 기본 정렬로 초기화 (브랜드-카테고리-모델명-제품명)
                             </button>
@@ -750,7 +750,7 @@ export default function ProductManagement() {
                                 return (
                                     <div
                                         key={idx}
-                                        className="bg-white px-2.5 py-1.5 rounded-[8px] border border-[#dfe5d9] flex items-center gap-2"
+                                        className="bg-white px-2.5 py-1.5 rounded-[8px] border border-[#dce4f0] flex items-center gap-2"
                                     >
                                         <span className="adm-pill green !py-0.5 !px-2">
                                             {idx + 1}순위
@@ -763,7 +763,7 @@ export default function ProductManagement() {
                                                     e.target.value as SortField
                                                 )
                                             }
-                                            className="bg-transparent text-xs font-bold text-[#263d36] border-0 outline-none flex-1 cursor-pointer"
+                                            className="bg-transparent text-xs font-bold text-[#162438] border-0 outline-none flex-1 cursor-pointer"
                                         >
                                             {(
                                                 Object.keys(
@@ -857,7 +857,7 @@ export default function ProductManagement() {
                                             }`}
                                         >
                                             <td
-                                                className="text-center cursor-grab active:cursor-grabbing text-[#9ba596] hover:text-[#295e52]"
+                                                className="text-center cursor-grab active:cursor-grabbing text-[#9ba596] hover:text-[#163a6b]"
                                                 title="드래그하여 순서 변경"
                                             >
                                                 ⋮⋮
@@ -877,7 +877,7 @@ export default function ProductManagement() {
                                                 />
                                             </td>
                                             <td>
-                                                <div className="w-11 h-11 rounded-[7px] bg-[#f8f9f5] border border-[#e6eae3] p-1">
+                                                <div className="w-11 h-11 rounded-[7px] bg-[#f6f8fc] border border-[#e1e7f0] p-1">
                                                     <img
                                                         src={product.image}
                                                         alt=""
@@ -890,19 +890,19 @@ export default function ProductManagement() {
                                                     <span className="adm-pill gray">
                                                         {product.brand}
                                                     </span>
-                                                    <span className="text-xs font-bold text-[#295e52]">
+                                                    <span className="text-xs font-bold text-[#163a6b]">
                                                         {product.category}
                                                     </span>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div className="text-xs font-bold text-[#263d36]">
+                                                <div className="text-xs font-bold text-[#162438]">
                                                     {cleanProductName(
                                                         product.name,
                                                         product.brand
                                                     )}
                                                 </div>
-                                                <div className="text-[11px] font-mono text-[#86918a] mt-0.5">
+                                                <div className="text-[11px] font-mono text-[#788699] mt-0.5">
                                                     {product.model}
                                                 </div>
                                             </td>
@@ -922,7 +922,7 @@ export default function ProductManagement() {
                                                 </span>
                                             </td>
                                             <td className="text-right tabular-nums">
-                                                <div className="text-xs font-bold text-[#263d36]">
+                                                <div className="text-xs font-bold text-[#162438]">
                                                     {(
                                                         product.monthlyPayment ??
                                                         0
@@ -1058,7 +1058,7 @@ export default function ProductManagement() {
                                     <tr>
                                         <td
                                             colSpan={12}
-                                            className="py-16 text-center text-xs text-[#86918a]"
+                                            className="py-16 text-center text-xs text-[#788699]"
                                         >
                                             검색된 결합제품이 없습니다.
                                         </td>
@@ -1071,9 +1071,9 @@ export default function ProductManagement() {
             ) : (
                 <section className="adm-panel">
                     <div className="adm-filter-bar">
-                        <span className="text-xs font-semibold text-[#45554e]">
+                        <span className="text-xs font-semibold text-[#3b495c]">
                             등록된 상조·결합 상품 플랜{" "}
-                            <strong className="text-[#295e52]">
+                            <strong className="text-[#163a6b]">
                                 {careProducts?.length || 0}
                             </strong>
                             개 · 좌측 핸들을 드래그하여 노출 순서를 조정할 수 있습니다.
@@ -1130,16 +1130,16 @@ export default function ProductManagement() {
                                             }`}
                                         >
                                             <td
-                                                className="text-center cursor-grab active:cursor-grabbing text-[#9ba596] hover:text-[#295e52]"
+                                                className="text-center cursor-grab active:cursor-grabbing text-[#9ba596] hover:text-[#163a6b]"
                                                 title="드래그하여 순서 변경"
                                             >
                                                 ⋮⋮
                                             </td>
                                             <td>
-                                                <div className="text-xs font-bold text-[#263d36]">
+                                                <div className="text-xs font-bold text-[#162438]">
                                                     {plan.name}
                                                 </div>
-                                                <div className="text-[11px] text-[#86918a] mt-0.5">
+                                                <div className="text-[11px] text-[#788699] mt-0.5">
                                                     {plan.target || "-"}
                                                 </div>
                                             </td>
@@ -1167,12 +1167,12 @@ export default function ProductManagement() {
                                                 </span>
                                             </td>
                                             <td className="text-right tabular-nums">
-                                                <div className="text-xs font-bold text-[#263d36]">
+                                                <div className="text-xs font-bold text-[#162438]">
                                                     {plan.monthlyPayment.toLocaleString()}
                                                     원
                                                 </div>
                                                 {plan.cardDiscountPayment ? (
-                                                    <div className="text-[10.5px] font-semibold text-[#295e52]">
+                                                    <div className="text-[10.5px] font-semibold text-[#163a6b]">
                                                         카드 -
                                                         {plan.cardDiscountPayment.toLocaleString()}
                                                         원
@@ -1315,7 +1315,7 @@ export default function ProductManagement() {
                                                         <span className="adm-pill teal">
                                                             동기화됨
                                                         </span>
-                                                        <span className="text-[11px] font-mono text-[#6b7768]">
+                                                        <span className="text-[11px] font-mono text-[#5a6b82]">
                                                             {formatSimpleDate(
                                                                 plan.lastSyncedAt
                                                             )}
@@ -1326,26 +1326,26 @@ export default function ProductManagement() {
                                                         <span className="adm-pill gray">
                                                             수정일
                                                         </span>
-                                                        <span className="text-[11px] font-mono text-[#86918a]">
+                                                        <span className="text-[11px] font-mono text-[#788699]">
                                                             {formatSimpleDate(
                                                                 plan.updatedAt
                                                             )}
                                                         </span>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-xs text-[#a3ad99]">
+                                                    <span className="text-xs text-[#8b9cb3]">
                                                         미동기화
                                                     </span>
                                                 )}
                                             </td>
                                             <td>
                                                 {urls.length === 0 ? (
-                                                    <span className="text-xs text-[#a3ad99]">
+                                                    <span className="text-xs text-[#8b9cb3]">
                                                         미등록
                                                     </span>
                                                 ) : urls.length === 1 ? (
                                                     <div
-                                                        className="text-xs font-mono text-[#295e52] truncate max-w-[160px]"
+                                                        className="text-xs font-mono text-[#163a6b] truncate max-w-[160px]"
                                                         title={urls[0]}
                                                     >
                                                         {urls[0]}
@@ -1356,7 +1356,7 @@ export default function ProductManagement() {
                                                             {urls.length}개 URL
                                                         </span>
                                                         <div
-                                                            className="text-[10.5px] font-mono text-[#86918a] truncate max-w-[150px] mt-0.5"
+                                                            className="text-[10.5px] font-mono text-[#788699] truncate max-w-[150px] mt-0.5"
                                                             title={urls.join(
                                                                 "\n"
                                                             )}
@@ -1470,7 +1470,7 @@ export default function ProductManagement() {
                                     <tr>
                                         <td
                                             colSpan={10}
-                                            className="py-16 text-center text-xs text-[#86918a]"
+                                            className="py-16 text-center text-xs text-[#788699]"
                                         >
                                             등록된 상품 플랜 정보가 없습니다.
                                         </td>
@@ -1699,7 +1699,7 @@ export default function ProductManagement() {
                         </div>
 
                         <div className="adm-note-card mt-5 flex flex-wrap gap-6">
-                            <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-[#263d36]">
+                            <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-[#162438]">
                                 <input
                                     type="checkbox"
                                     checked={editingProduct.isVisible !== false}
@@ -1713,7 +1713,7 @@ export default function ProductManagement() {
                                 />
                                 <span>랜딩 페이지 노출</span>
                             </label>
-                            <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-[#263d36]">
+                            <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-[#162438]">
                                 <input
                                     type="checkbox"
                                     checked={!!editingProduct.isBest}
@@ -2017,7 +2017,7 @@ export default function ProductManagement() {
                             <>
                                 <h3 className="adm-section-label">
                                     <span>가전 데이터 동기화 설정</span>
-                                    <span className="text-[11px] font-normal text-[#86918a]">
+                                    <span className="text-[11px] font-normal text-[#788699]">
                                         줄바꿈 또는 쉼표로 다중 URL 입력 가능
                                     </span>
                                 </h3>
@@ -2038,10 +2038,10 @@ export default function ProductManagement() {
                                     <div className="adm-note-card space-y-3">
                                         <div className="flex justify-between items-center">
                                             <div>
-                                                <strong className="text-xs font-bold text-[#263d36] block">
+                                                <strong className="text-xs font-bold text-[#162438] block">
                                                     자동 동기화 스케줄
                                                 </strong>
-                                                <small className="text-[11px] text-[#86918a]">
+                                                <small className="text-[11px] text-[#788699]">
                                                     지정된 시각(KST)마다 최신 가전 목록을 자동 갱신합니다.
                                                 </small>
                                             </div>
@@ -2078,8 +2078,8 @@ export default function ProductManagement() {
                                         </div>
 
                                         {editingCareProduct.autoUpdate && (
-                                            <div className="pt-2.5 border-t border-[#e6eae3] flex flex-wrap items-center justify-between gap-2">
-                                                <span className="text-xs font-semibold text-[#45554e]">
+                                            <div className="pt-2.5 border-t border-[#e1e7f0] flex flex-wrap items-center justify-between gap-2">
+                                                <span className="text-xs font-semibold text-[#3b495c]">
                                                     업데이트 주기 (KST)
                                                 </span>
                                                 <div className="flex items-center gap-2">

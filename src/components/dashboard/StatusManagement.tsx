@@ -196,7 +196,7 @@ export default function StatusManagement() {
         return found ? found.hex : "#3b82f6";
     };
 
-    if (statuses === undefined) return <div className="adm-panel p-14 text-center text-xs text-[#86918a] font-semibold">불러오는 중...</div>;
+    if (statuses === undefined) return <div className="adm-panel p-14 text-center text-xs text-[#788699] font-semibold">불러오는 중...</div>;
 
     return (
         <div className="space-y-4">
@@ -243,8 +243,8 @@ export default function StatusManagement() {
                         <tbody>
                             {/* 신규 상태 추가 행 */}
                             {isAdding && (
-                                <tr className="bg-[#f4f7ef]">
-                                    <td className="text-xs font-bold text-[#86918a]">-</td>
+                                <tr className="bg-[#f1f4fa]">
+                                    <td className="text-xs font-bold text-[#788699]">-</td>
                                     <td>
                                         <div className="flex items-center gap-3 flex-wrap">
                                             <input
@@ -256,7 +256,7 @@ export default function StatusManagement() {
                                                 autoFocus
                                             />
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[10px] text-[#86918a] font-bold uppercase">PREVIEW</span>
+                                                <span className="text-[10px] text-[#788699] font-bold uppercase">PREVIEW</span>
                                                 {renderBadge(newLabel || "미리보기", newColor, true)}
                                             </div>
                                         </div>
@@ -270,14 +270,14 @@ export default function StatusManagement() {
                                                         key={p.name}
                                                         type="button"
                                                         onClick={() => setNewColor(p.hex)}
-                                                        className={`w-4 h-4 rounded-full border transition-all ${newColor === p.hex ? 'border-[#263d36] scale-125 shadow-sm' : 'border-transparent opacity-70 hover:opacity-100'}`}
+                                                        className={`w-4 h-4 rounded-full border transition-all ${newColor === p.hex ? 'border-[#162438] scale-125 shadow-sm' : 'border-transparent opacity-70 hover:opacity-100'}`}
                                                         style={{ backgroundColor: p.hex }}
                                                         title={p.name}
                                                     />
                                                 ))}
                                             </div>
                                             {/* 색상표 (Native Color Picker + HEX) */}
-                                            <div className="flex items-center gap-1 bg-white border border-[#dfe5d9] rounded-[7px] px-1.5 py-1">
+                                            <div className="flex items-center gap-1 bg-white border border-[#dce4f0] rounded-[7px] px-1.5 py-1">
                                                 <input
                                                     type="color"
                                                     value={getHexFromColorStr(newColor)}
@@ -289,7 +289,7 @@ export default function StatusManagement() {
                                                     type="text"
                                                     value={newColor}
                                                     onChange={(e) => setNewColor(e.target.value)}
-                                                    className="w-16 text-[11px] font-mono font-bold text-[#263d36] bg-transparent border-0 outline-none uppercase"
+                                                    className="w-16 text-[11px] font-mono font-bold text-[#162438] bg-transparent border-0 outline-none uppercase"
                                                     placeholder="#000000"
                                                 />
                                             </div>
@@ -355,12 +355,12 @@ export default function StatusManagement() {
                                     }}
                                     className={`group transition-colors ${
                                         draggedIndex === index ? "opacity-35" : ""
-                                    } ${dragOverIndex === index ? "!bg-[#eef5eb]" : ""}`}
+                                    } ${dragOverIndex === index ? "!bg-[#edf2fa]" : ""}`}
                                 >
                                     <td>
                                         <div className="flex items-center gap-2">
                                             <span
-                                                className="cursor-grab active:cursor-grabbing text-[#b7c2b0] hover:text-[#295e52] p-0.5"
+                                                className="cursor-grab active:cursor-grabbing text-[#b7c2b0] hover:text-[#163a6b] p-0.5"
                                                 title="드래그하여 순서 변경"
                                             >
                                                 <svg width="8" height="12" viewBox="0 0 8 12" fill="currentColor">
@@ -372,13 +372,13 @@ export default function StatusManagement() {
                                                     <circle cx="6" cy="9.5" r="1" />
                                                 </svg>
                                             </span>
-                                            <span className="text-xs font-bold text-[#86918a] w-4 font-mono">{status.order}</span>
+                                            <span className="text-xs font-bold text-[#788699] w-4 font-mono">{status.order}</span>
                                             <div className="flex flex-col">
                                                 <button
                                                     type="button"
                                                     onClick={() => handleMove(index, 'up')}
                                                     disabled={index === 0}
-                                                    className="p-0.5 text-[#a6b6a1] hover:text-[#295e52] disabled:opacity-20"
+                                                    className="p-0.5 text-[#8da4c4] hover:text-[#163a6b] disabled:opacity-20"
                                                 >
                                                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
@@ -388,7 +388,7 @@ export default function StatusManagement() {
                                                     type="button"
                                                     onClick={() => handleMove(index, 'down')}
                                                     disabled={index === statuses.length - 1}
-                                                    className="p-0.5 text-[#a6b6a1] hover:text-[#295e52] disabled:opacity-20"
+                                                    className="p-0.5 text-[#8da4c4] hover:text-[#163a6b] disabled:opacity-20"
                                                 >
                                                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
@@ -401,7 +401,7 @@ export default function StatusManagement() {
                                         <div className="flex items-center gap-2.5">
                                             {renderBadge(status.label, status.color, status.isActive)}
                                             {status.isSystem && (
-                                                <span className="text-[10px] font-bold text-[#86918a] uppercase tracking-wider">Default</span>
+                                                <span className="text-[10px] font-bold text-[#788699] uppercase tracking-wider">Default</span>
                                             )}
                                         </div>
                                     </td>
@@ -416,7 +416,7 @@ export default function StatusManagement() {
                                                         onClick={() => handleUpdateColor(status._id, p.hex)}
                                                         className={`w-3.5 h-3.5 rounded-full border transition-all ${
                                                             (status.color === p.hex || status.color === p.class)
-                                                                ? 'border-[#263d36] scale-125 shadow-sm'
+                                                                ? 'border-[#162438] scale-125 shadow-sm'
                                                                 : 'border-transparent opacity-40 hover:opacity-100'
                                                         }`}
                                                         style={{ backgroundColor: p.hex }}
@@ -426,7 +426,7 @@ export default function StatusManagement() {
                                             </div>
 
                                             {/* 색상표 (Custom Color Picker Input) */}
-                                            <div className="flex items-center gap-1 bg-white border border-[#dfe5d9] rounded-[7px] px-1.5 py-1 hover:border-[#295e52] transition-colors">
+                                            <div className="flex items-center gap-1 bg-white border border-[#dce4f0] rounded-[7px] px-1.5 py-1 hover:border-[#163a6b] transition-colors">
                                                 <input
                                                     type="color"
                                                     value={getHexFromColorStr(status.color)}
@@ -438,7 +438,7 @@ export default function StatusManagement() {
                                                     type="text"
                                                     value={status.color || ""}
                                                     onChange={(e) => handleUpdateColor(status._id, e.target.value)}
-                                                    className="w-16 text-[10px] font-mono font-bold text-[#263d36] bg-transparent border-0 outline-none uppercase"
+                                                    className="w-16 text-[10px] font-mono font-bold text-[#162438] bg-transparent border-0 outline-none uppercase"
                                                     placeholder="#000000"
                                                 />
                                             </div>
@@ -472,7 +472,7 @@ export default function StatusManagement() {
                             ))}
                             {statuses.length === 0 && !isAdding && (
                                 <tr>
-                                    <td colSpan={6} className="py-16 text-center text-xs text-[#86918a] whitespace-pre-wrap">
+                                    <td colSpan={6} className="py-16 text-center text-xs text-[#788699] whitespace-pre-wrap">
                                         설정된 진행상태가 없습니다.{"\n"}관리자 시스템 초기화를 위해 &apos;기본값 시딩&apos; 버튼을 눌러주세요.
                                     </td>
                                 </tr>

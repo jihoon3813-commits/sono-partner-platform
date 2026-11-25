@@ -459,7 +459,7 @@ export default function MaeumGiftManagement() {
             {/* 랜딩페이지 선택 탭 */}
             <div className="adm-panel p-4 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-bold text-[#45554e] mr-1">
+                    <span className="text-xs font-bold text-[#3b495c] mr-1">
                         랜딩 선택:
                     </span>
                     {LANDING_OPTIONS.map((opt) => (
@@ -475,24 +475,24 @@ export default function MaeumGiftManagement() {
                         </button>
                     ))}
                 </div>
-                <span className="text-[11px] text-[#6b7768]">
+                <span className="text-[11px] text-[#5a6b82]">
                     경로: <code className="font-mono">{currentLandingMeta.url}</code>
                 </span>
             </div>
 
             {/* 1. 이벤트 진행 설정 패널 */}
             <form onSubmit={handleSaveConfig} className="adm-panel p-6 space-y-5">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e6eae3] pb-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e1e7f0] pb-4">
                     <div className="flex items-center gap-2.5">
-                        <AdminIcon name="gift" className="text-[#295e52]" />
-                        <h2 className="text-base font-bold text-[#263d36]">
+                        <AdminIcon name="gift" className="text-[#163a6b]" />
+                        <h2 className="text-base font-bold text-[#162438]">
                             사은품 증정 이벤트 기본 설정
                         </h2>
                         <span className={`adm-pill ${eventStatus.pill}`}>
                             {eventStatus.label}
                         </span>
                     </div>
-                    <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#263d36]">
+                    <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#162438]">
                         <input
                             type="checkbox"
                             checked={eventForm.isEnabled}
@@ -502,7 +502,7 @@ export default function MaeumGiftManagement() {
                                     isEnabled: e.target.checked,
                                 }))
                             }
-                            className="w-4 h-4 accent-[#295e52]"
+                            className="w-4 h-4 accent-[#163a6b]"
                         />
                         <span>랜딩페이지에 사은품 이벤트 노출</span>
                     </label>
@@ -510,7 +510,7 @@ export default function MaeumGiftManagement() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-xs font-bold text-[#45554e] mb-1.5">
+                        <label className="block text-xs font-bold text-[#3b495c] mb-1.5">
                             상단 강조 배지 문구
                         </label>
                         <input
@@ -527,7 +527,7 @@ export default function MaeumGiftManagement() {
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-[#45554e] mb-1.5">
+                        <label className="block text-xs font-bold text-[#3b495c] mb-1.5">
                             이벤트 진행 기간 (비워두면 상시 진행)
                         </label>
                         <div className="flex items-center gap-2">
@@ -542,7 +542,7 @@ export default function MaeumGiftManagement() {
                                 }
                                 className="adm-input flex-1"
                             />
-                            <span className="text-xs text-[#86918a]">~</span>
+                            <span className="text-xs text-[#788699]">~</span>
                             <input
                                 type="date"
                                 value={eventForm.endDate}
@@ -575,7 +575,7 @@ export default function MaeumGiftManagement() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-xs font-bold text-[#45554e] mb-1.5">
+                        <label className="block text-xs font-bold text-[#3b495c] mb-1.5">
                             이벤트 메인 제목 *
                         </label>
                         <input
@@ -593,7 +593,7 @@ export default function MaeumGiftManagement() {
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-[#45554e] mb-1.5">
+                        <label className="block text-xs font-bold text-[#3b495c] mb-1.5">
                             이벤트 부제목 (설명)
                         </label>
                         <input
@@ -613,7 +613,7 @@ export default function MaeumGiftManagement() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-xs font-bold text-[#45554e] mb-1.5">
+                        <label className="block text-xs font-bold text-[#3b495c] mb-1.5">
                             썸네일 자동 슬라이딩 속도 (초, 기본 1.5초)
                         </label>
                         <div className="flex items-center gap-2">
@@ -631,7 +631,7 @@ export default function MaeumGiftManagement() {
                                 }
                                 className="adm-input w-28"
                             />
-                            <span className="text-xs font-semibold text-[#45554e]">초</span>
+                            <span className="text-xs font-semibold text-[#3b495c]">초</span>
                             <div className="flex items-center gap-1 ml-1">
                                 {["1.0", "1.5", "2.0", "3.0"].map((preset) => (
                                     <button
@@ -656,7 +656,7 @@ export default function MaeumGiftManagement() {
                 </div>
 
                 <div>
-                    <label className="block text-xs font-bold text-[#45554e] mb-1.5">
+                    <label className="block text-xs font-bold text-[#3b495c] mb-1.5">
                         공통 유의사항 (모든 사은품 하단에 공통 표시)
                     </label>
                     <textarea
@@ -688,17 +688,17 @@ export default function MaeumGiftManagement() {
             <section className="space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                        <h2 className="text-sm font-bold text-[#263d36]">
+                        <h2 className="text-sm font-bold text-[#162438]">
                             등록된 사은품 목록 ({gifts ? gifts.length : 0}개)
                         </h2>
-                        <div className="inline-flex rounded-lg border border-[#dce3d8] bg-white p-0.5">
+                        <div className="inline-flex rounded-lg border border-[#dce4f0] bg-white p-0.5">
                             <button
                                 type="button"
                                 onClick={() => setGiftListFilter("selected")}
                                 className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
                                     giftListFilter === "selected"
-                                        ? "bg-[#295e52] text-white"
-                                        : "text-[#6b7768] hover:text-[#263d36]"
+                                        ? "bg-[#163a6b] text-white"
+                                        : "text-[#5a6b82] hover:text-[#162438]"
                                 }`}
                             >
                                 {currentLandingMeta.label}만
@@ -708,33 +708,33 @@ export default function MaeumGiftManagement() {
                                 onClick={() => setGiftListFilter("ALL")}
                                 className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
                                     giftListFilter === "ALL"
-                                        ? "bg-[#295e52] text-white"
-                                        : "text-[#6b7768] hover:text-[#263d36]"
+                                        ? "bg-[#163a6b] text-white"
+                                        : "text-[#5a6b82] hover:text-[#162438]"
                                 }`}
                             >
                                 전체 랜딩 보기
                             </button>
                         </div>
                     </div>
-                    <p className="text-xs text-[#6b7768]">
+                    <p className="text-xs text-[#5a6b82]">
                         1개 등록 시 단독 강조 카드 / 2개 이상 등록 시 모바일 2열 · PC 최대 4열 자동 배치됩니다.
                     </p>
                 </div>
 
                 {!gifts ? (
-                    <div className="adm-panel p-14 text-center text-xs text-[#86918a]">
+                    <div className="adm-panel p-14 text-center text-xs text-[#788699]">
                         사은품 목록을 불러오는 중...
                     </div>
                 ) : gifts.length === 0 ? (
                     <div className="adm-panel p-16 text-center">
                         <AdminIcon
                             name="gift"
-                            className="mx-auto mb-3 !w-8 !h-8 text-[#a6b6a1]"
+                            className="mx-auto mb-3 !w-8 !h-8 text-[#8da4c4]"
                         />
-                        <strong className="block text-sm text-[#263d36] mb-1">
+                        <strong className="block text-sm text-[#162438] mb-1">
                             등록된 사은품이 없습니다
                         </strong>
-                        <p className="text-xs text-[#86918a] mb-4">
+                        <p className="text-xs text-[#788699] mb-4">
                             우측 상단 &ldquo;새 사은품 추가&rdquo; 버튼을 눌러 사은품을 등록해 보세요.
                         </p>
                         <button
@@ -763,9 +763,9 @@ export default function MaeumGiftManagement() {
                             return (
                                 <article
                                     key={gift._id}
-                                    className="adm-panel flex flex-col overflow-hidden hover:border-[#adc0ad] transition-all"
+                                    className="adm-panel flex flex-col overflow-hidden hover:border-[#9cb2cf] transition-all"
                                 >
-                                    <div className="relative bg-[#f5f6f3] aspect-[4/3] overflow-hidden border-b border-[#e6eae3]">
+                                    <div className="relative bg-[#f4f6fa] aspect-[4/3] overflow-hidden border-b border-[#e1e7f0]">
                                         {thumbSrc ? (
                                             <img
                                                 src={thumbSrc}
@@ -773,7 +773,7 @@ export default function MaeumGiftManagement() {
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-xs text-[#86918a]">
+                                            <div className="w-full h-full flex items-center justify-center text-xs text-[#788699]">
                                                 이미지 없음
                                             </div>
                                         )}
@@ -797,17 +797,17 @@ export default function MaeumGiftManagement() {
                                             {(gift.resolvedLandingKeys || [gift.landingKey]).map((lk: string) => (
                                                 <span
                                                     key={lk}
-                                                    className="px-1.5 py-0.5 rounded bg-[#edf3ee] text-[#295e52] border border-[#d0dfd3] text-[10px] font-bold"
+                                                    className="px-1.5 py-0.5 rounded bg-[#eaf0fa] text-[#163a6b] border border-[#d0dfd3] text-[10px] font-bold"
                                                 >
                                                     {getLandingLabel(lk)}
                                                 </span>
                                             ))}
                                         </div>
-                                        <h3 className="font-bold text-sm text-[#263d36] line-clamp-2">
+                                        <h3 className="font-bold text-sm text-[#162438] line-clamp-2">
                                             {gift.name}
                                         </h3>
 
-                                        <div className="text-[11px] text-[#6b7768] space-y-1">
+                                        <div className="text-[11px] text-[#5a6b82] space-y-1">
                                             <div>
                                                 기간:{" "}
                                                 {gift.startDate || gift.endDate
@@ -821,8 +821,8 @@ export default function MaeumGiftManagement() {
                                                 <strong
                                                     className={
                                                         hasDetail
-                                                            ? "text-[#295e52]"
-                                                            : "text-[#86918a]"
+                                                            ? "text-[#163a6b]"
+                                                            : "text-[#788699]"
                                                     }
                                                 >
                                                     {hasDetail ? "등록됨" : "미등록"}
@@ -831,7 +831,7 @@ export default function MaeumGiftManagement() {
                                         </div>
 
                                         {gift.notice && (
-                                            <p className="text-[11px] text-[#6b7768] bg-[#f8f9f7] border border-[#e6eae3] rounded-md p-2 line-clamp-2 whitespace-pre-line">
+                                            <p className="text-[11px] text-[#5a6b82] bg-[#f8f9f7] border border-[#e1e7f0] rounded-md p-2 line-clamp-2 whitespace-pre-line">
                                                 {gift.notice}
                                             </p>
                                         )}
@@ -880,10 +880,10 @@ export default function MaeumGiftManagement() {
                 >
                 <form onSubmit={handleSaveGift} className="space-y-4">
                     <div>
-                        <label className="block text-xs font-bold text-[#263d36] mb-1.5">
+                        <label className="block text-xs font-bold text-[#162438] mb-1.5">
                             연결할 랜딩페이지 * (다중 선택 가능)
                         </label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-lg border border-[#e6eae3] bg-[#fafbf9]">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-lg border border-[#e1e7f0] bg-[#f8fafd]">
                             {LANDING_OPTIONS.map((opt) => {
                                 const checked = giftForm.landingKeys.includes(opt.key);
                                 return (
@@ -891,8 +891,8 @@ export default function MaeumGiftManagement() {
                                         key={opt.key}
                                         className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md border text-xs font-semibold cursor-pointer transition ${
                                             checked
-                                                ? "bg-[#edf3ee] border-[#295e52] text-[#1f493f]"
-                                                : "bg-white border-[#dce3d8] text-[#45554e]"
+                                                ? "bg-[#eaf0fa] border-[#163a6b] text-[#0f2a4d]"
+                                                : "bg-white border-[#dce4f0] text-[#3b495c]"
                                         }`}
                                     >
                                         <input
@@ -908,7 +908,7 @@ export default function MaeumGiftManagement() {
                                                     return { ...prev, landingKeys: next };
                                                 });
                                             }}
-                                            className="w-3.5 h-3.5 accent-[#295e52]"
+                                            className="w-3.5 h-3.5 accent-[#163a6b]"
                                         />
                                         <span>{opt.label}</span>
                                     </label>
@@ -918,7 +918,7 @@ export default function MaeumGiftManagement() {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold text-[#263d36] mb-1.5">
+                        <label className="block text-xs font-bold text-[#162438] mb-1.5">
                             사은품 제품명 *
                         </label>
                         <input
@@ -937,13 +937,13 @@ export default function MaeumGiftManagement() {
                     </div>
 
                     {/* 다중 섬네일 이미지 (좌우 슬라이드) */}
-                    <div className="p-3.5 rounded-lg border border-[#e6eae3] bg-[#fafbf9] space-y-2.5">
+                    <div className="p-3.5 rounded-lg border border-[#e1e7f0] bg-[#f8fafd] space-y-2.5">
                         <div className="flex items-center justify-between gap-2">
                             <div>
-                                <label className="text-xs font-bold text-[#263d36]">
+                                <label className="text-xs font-bold text-[#162438]">
                                     섬네일 이미지 * ({giftForm.thumbnailImages.length}장)
                                 </label>
-                                <p className="text-[11px] text-[#86918a]">
+                                <p className="text-[11px] text-[#788699]">
                                     여러 장 등록 시 랜딩페이지에서 좌우 슬라이드로 표시됩니다.
                                 </p>
                             </div>
@@ -1000,7 +1000,7 @@ export default function MaeumGiftManagement() {
                                 {giftForm.thumbnailImages.map((item, idx) => (
                                     <div
                                         key={`${item.storageId || item.url || idx}-${idx}`}
-                                        className="relative rounded-md overflow-hidden border border-[#dce3d8] bg-white flex flex-col"
+                                        className="relative rounded-md overflow-hidden border border-[#dce4f0] bg-white flex flex-col"
                                     >
                                         <div className="relative aspect-[4/3] bg-[#f3f5f1]">
                                             <img
@@ -1020,12 +1020,12 @@ export default function MaeumGiftManagement() {
                                             </button>
                                         </div>
                                         {giftForm.thumbnailImages.length > 1 && (
-                                            <div className="flex border-t border-[#e6eae3] bg-[#fafbf9]">
+                                            <div className="flex border-t border-[#e1e7f0] bg-[#f8fafd]">
                                                 <button
                                                     type="button"
                                                     disabled={idx === 0}
                                                     onClick={() => handleMoveThumbnail(idx, -1)}
-                                                    className="flex-1 py-1 text-[10px] font-bold text-[#45554e] disabled:opacity-30 hover:bg-[#eef1ec]"
+                                                    className="flex-1 py-1 text-[10px] font-bold text-[#3b495c] disabled:opacity-30 hover:bg-[#eef1ec]"
                                                 >
                                                     ◀
                                                 </button>
@@ -1033,7 +1033,7 @@ export default function MaeumGiftManagement() {
                                                     type="button"
                                                     disabled={idx === giftForm.thumbnailImages.length - 1}
                                                     onClick={() => handleMoveThumbnail(idx, 1)}
-                                                    className="flex-1 py-1 text-[10px] font-bold text-[#45554e] disabled:opacity-30 hover:bg-[#eef1ec] border-l border-[#e6eae3]"
+                                                    className="flex-1 py-1 text-[10px] font-bold text-[#3b495c] disabled:opacity-30 hover:bg-[#eef1ec] border-l border-[#e1e7f0]"
                                                 >
                                                     ▶
                                                 </button>
@@ -1046,9 +1046,9 @@ export default function MaeumGiftManagement() {
                     </div>
 
                     {/* 상세 이미지 */}
-                    <div className="p-3.5 rounded-lg border border-[#e6eae3] bg-[#fafbf9] space-y-2.5">
+                    <div className="p-3.5 rounded-lg border border-[#e1e7f0] bg-[#f8fafd] space-y-2.5">
                         <div className="flex items-center justify-between">
-                            <label className="text-xs font-bold text-[#263d36]">
+                            <label className="text-xs font-bold text-[#162438]">
                                 상세 이미지 (클릭 시 팝업으로 노출)
                             </label>
                             <label className="adm-btn small cursor-pointer">
@@ -1083,7 +1083,7 @@ export default function MaeumGiftManagement() {
                             className="adm-input w-full text-xs"
                         />
                         {giftForm.detailImagePreview && (
-                            <div className="relative w-full max-h-48 rounded-md overflow-hidden border border-[#dce3d8] bg-white">
+                            <div className="relative w-full max-h-48 rounded-md overflow-hidden border border-[#dce4f0] bg-white">
                                 <img
                                     src={giftForm.detailImagePreview}
                                     alt="상세이미지 미리보기"
@@ -1108,7 +1108,7 @@ export default function MaeumGiftManagement() {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold text-[#263d36] mb-1.5">
+                        <label className="block text-xs font-bold text-[#162438] mb-1.5">
                             사은품 유의사항
                         </label>
                         <textarea
@@ -1127,7 +1127,7 @@ export default function MaeumGiftManagement() {
 
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-xs font-bold text-[#263d36] mb-1.5">
+                            <label className="block text-xs font-bold text-[#162438] mb-1.5">
                                 개별 시작일 (선택)
                             </label>
                             <input
@@ -1143,7 +1143,7 @@ export default function MaeumGiftManagement() {
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-[#263d36] mb-1.5">
+                            <label className="block text-xs font-bold text-[#162438] mb-1.5">
                                 개별 종료일 (선택)
                             </label>
                             <input
@@ -1162,7 +1162,7 @@ export default function MaeumGiftManagement() {
 
                     <div className="grid grid-cols-2 gap-3 items-center">
                         <div>
-                            <label className="block text-xs font-bold text-[#263d36] mb-1.5">
+                            <label className="block text-xs font-bold text-[#162438] mb-1.5">
                                 노출 순서 (숫자가 작을수록 먼저)
                             </label>
                             <input
@@ -1177,7 +1177,7 @@ export default function MaeumGiftManagement() {
                                 className="adm-input w-full"
                             />
                         </div>
-                        <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-[#263d36] pt-5">
+                        <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-[#162438] pt-5">
                             <input
                                 type="checkbox"
                                 checked={giftForm.isActive}
@@ -1187,13 +1187,13 @@ export default function MaeumGiftManagement() {
                                         isActive: e.target.checked,
                                     }))
                                 }
-                                className="w-4 h-4 accent-[#295e52]"
+                                className="w-4 h-4 accent-[#163a6b]"
                             />
                             <span>랜딩페이지에 노출</span>
                         </label>
                     </div>
 
-                    <div className="pt-4 border-t border-[#e6eae3] flex justify-end gap-2">
+                    <div className="pt-4 border-t border-[#e1e7f0] flex justify-end gap-2">
                         <button
                             type="button"
                             onClick={() => setIsDrawerOpen(false)}

@@ -1,16 +1,16 @@
 /* 소노아임레디 통합 어드민 & 파트너센터 디자인 시스템 (sono-maeum-admin 기반) */
 
 .sono-admin-theme {
-  --green: #295e52;
-  --green-hover: #214d43;
-  --green-dark: #193f39;
-  --ink: #263d36;
-  --text: #45554e;
-  --muted: #86918a;
-  --bg: #f5f6f3;
-  --border: #e6eae3;
+  --green: #163a6b;
+  --green-hover: #0f2a4d;
+  --green-dark: #0c2340;
+  --ink: #162438;
+  --text: #3b495c;
+  --muted: #788699;
+  --bg: #f4f6fa;
+  --border: #e1e7f0;
   --cream: #f5f1e7;
-  --sage: #a6b6a1;
+  --sage: #8da4c4;
   --gold: #b99a61;
   --radius: 14px;
   --sidebar: 232px;
@@ -50,11 +50,11 @@
   inset: 0 auto 0 0;
   background: var(--green-dark);
   z-index: 45;
-  color: #c1cec8;
+  color: #c3d1e6;
   display: flex;
   flex-direction: column;
   padding: 28px 17px 18px;
-  border-right: 1px solid #13312c;
+  border-right: 1px solid #081930;
 }
 
 .sono-admin-theme .adm-sidebar.has-banner {
@@ -77,7 +77,7 @@
   letter-spacing: -4px;
   width: 38px;
   height: 43px;
-  border: 1px solid #8da69a;
+  border: 1px solid #7b95b8;
   border-radius: 12px 12px 3px 3px;
   display: flex;
   align-items: center;
@@ -90,7 +90,7 @@
 
 .sono-admin-theme .adm-brand-emblem span {
   font-size: 18px;
-  color: #b9c89b;
+  color: #a7bdd9;
   margin-left: 3px;
 }
 
@@ -98,7 +98,7 @@
   display: block;
   font-size: 8.5px;
   letter-spacing: 1.8px;
-  color: #b2c5b9;
+  color: #a7bdd9;
   margin-bottom: 3px;
   font-weight: 600;
 }
@@ -127,7 +127,7 @@
   padding: 7px;
   background: rgba(255, 255, 255, 0.07);
   border-radius: 7px;
-  color: #d6e2dc;
+  color: #d8e4f5;
   flex-shrink: 0;
 }
 
@@ -139,7 +139,7 @@
 .sono-admin-theme .adm-workspace b {
   display: block;
   font-size: 12.5px;
-  color: #edf0e7;
+  color: #eaeff7;
   font-weight: 650;
   white-space: nowrap;
   overflow: hidden;
@@ -149,7 +149,7 @@
 .sono-admin-theme .adm-workspace small {
   display: block;
   font-size: 10px;
-  color: #92aaa0;
+  color: #8da5c4;
   margin-top: 3px;
   white-space: nowrap;
   overflow: hidden;
@@ -168,7 +168,7 @@
 
 .sono-admin-theme .adm-nav-group {
   font-size: 10px;
-  color: #7e9d90;
+  color: #7b95b8;
   margin: 0 13px 8px;
   letter-spacing: 1px;
   font-weight: 600;
@@ -189,7 +189,7 @@
   margin: 2px 0;
   border-radius: 8px;
   transition: background 0.15s, color 0.15s;
-  color: #c4d0c7;
+  color: #c3d1e6;
   background: transparent;
   border: 0;
   text-align: left;
@@ -204,8 +204,8 @@
 }
 
 .sono-admin-theme .adm-nav-link.active {
-  background: #e4ecdd;
-  color: #254a3c;
+  background: #dce7f7;
+  color: #0c2340;
   font-weight: 700;
 }
 
@@ -233,14 +233,14 @@
 }
 
 .sono-admin-theme .adm-nav-link.active .adm-nav-count {
-  background: #c5d6bd;
-  color: #28553e;
+  background: #c3d5ec;
+  color: #0c2340;
 }
 
 .sono-admin-theme .adm-nav-link.sub {
   font-size: 11.5px;
   padding: 8px 12px 8px 42px;
-  color: #9ab2a6;
+  color: #9bb0cc;
 }
 
 .sono-admin-theme .adm-nav-link.sub::before {
@@ -410,7 +410,7 @@
 .sono-admin-theme .adm-role-badge {
   font-size: 10.5px;
   border: 1px solid #dfe5dc;
-  background: #f8f9f5;
+  background: #f6f8fc;
   color: #556a5b;
   border-radius: 20px;
   padding: 5px 10px;
@@ -469,12 +469,12 @@
   height: 30px;
   font-size: 11px;
   background: #edf1e8;
-  color: #295e52;
+  color: #163a6b;
 }
 
 .sono-admin-theme .adm-top-user {
   font-size: 12px;
-  color: #45554e;
+  color: #3b495c;
   font-weight: 600;
 }
 
@@ -595,7 +595,7 @@
 
 .sono-admin-theme .adm-btn.sage {
   background: #edf3e8;
-  border-color: #cfe0c7;
+  border-color: #d4e1f4;
   color: #2f5b43;
 }
 
@@ -653,7 +653,7 @@
 
 .sono-admin-theme .adm-metric-icon {
   color: #62826c;
-  background: #f4f7ef;
+  background: #f1f4fa;
   display: grid;
   place-items: center;
   width: 32px;
@@ -764,7 +764,7 @@
 
 .sono-admin-theme .adm-segmented button.active {
   background: #fff;
-  color: #295e52;
+  color: #163a6b;
   box-shadow: 0 1px 4px rgba(36, 54, 32, 0.08);
   font-weight: 700;
 }
@@ -794,7 +794,7 @@
 }
 
 .sono-admin-theme .adm-legend-dot.sage {
-  background: #a6b6a1;
+  background: #8da4c4;
 }
 
 .sono-admin-theme .adm-chart-wrap {
@@ -820,7 +820,7 @@
 }
 
 .sono-admin-theme .adm-line-chart .chart-main {
-  stroke: #295e52;
+  stroke: #163a6b;
   stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -828,7 +828,7 @@
 }
 
 .sono-admin-theme .adm-line-chart .chart-secondary {
-  stroke: #a6b6a1;
+  stroke: #8da4c4;
   stroke-width: 2;
   stroke-dasharray: 4 4;
   stroke-linecap: round;
@@ -916,7 +916,7 @@
   margin-top: auto;
   padding-top: 12px;
   font-size: 11px;
-  color: #8e9988;
+  color: #788699;
   display: flex;
   gap: 6px;
   align-items: center;
@@ -940,12 +940,12 @@
   line-height: 1.3;
 }
 
-.sono-admin-theme .adm-pill.green { background: #eaf3e8; color: #4c7047; }
+.sono-admin-theme .adm-pill.green { background: #e8effa; color: #4c7047; }
 .sono-admin-theme .adm-pill.orange { background: #faf0df; color: #a97f3f; }
 .sono-admin-theme .adm-pill.blue { background: #eaf1f7; color: #547996; }
 .sono-admin-theme .adm-pill.gray { background: #f0f2ed; color: #7f8777; }
 .sono-admin-theme .adm-pill.red { background: #faeae5; color: #ad6654; }
-.sono-admin-theme .adm-pill.teal { background: #e6f1ed; color: #467363; }
+.sono-admin-theme .adm-pill.teal { background: #e4ecf8; color: #467363; }
 
 /* =========================================================
    2-B. Tabs / Filter Bars / Tables / Forms / Notes (sono-maeum-admin)
@@ -1065,14 +1065,14 @@
   align-items: center;
   flex-wrap: wrap;
   background: #fff;
-  border-bottom: 1px solid #edf0e7;
+  border-bottom: 1px solid #eaeff7;
 }
 
 .sono-admin-theme .adm-search-field {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid #dfe5d9;
+  border: 1px solid #dce4f0;
   border-radius: 7px;
   padding: 0 12px;
   background: #fff;
@@ -1083,13 +1083,13 @@
 
 .sono-admin-theme .adm-search-field:focus-within {
   border-color: var(--green);
-  box-shadow: 0 0 0 2px rgba(41, 94, 82, 0.12);
+  box-shadow: 0 0 0 2px rgba(22, 58, 107, 0.12);
 }
 
 .sono-admin-theme .adm-search-field .adm-icon {
   width: 15px;
   height: 15px;
-  color: #8e9988;
+  color: #788699;
 }
 
 .sono-admin-theme .adm-search-field input {
@@ -1112,7 +1112,7 @@
 .sono-admin-theme .adm-select,
 .sono-admin-theme .adm-input,
 .sono-admin-theme .adm-textarea {
-  border: 1px solid #dfe5d9;
+  border: 1px solid #dce4f0;
   border-radius: 7px;
   background: #fff;
   color: var(--ink);
@@ -1128,7 +1128,7 @@
 .sono-admin-theme .adm-input:focus,
 .sono-admin-theme .adm-textarea:focus {
   border-color: var(--green);
-  box-shadow: 0 0 0 2px rgba(41, 94, 82, 0.12);
+  box-shadow: 0 0 0 2px rgba(22, 58, 107, 0.12);
 }
 
 .sono-admin-theme .adm-select:disabled,
@@ -1171,10 +1171,10 @@
   font-weight: 600;
   font-size: 11px;
   color: #7d8879;
-  background: #f8f9f5;
+  background: #f6f8fc;
   padding: 12px 14px;
-  border-top: 1px solid #edf0e7;
-  border-bottom: 1px solid #edf0e7;
+  border-top: 1px solid #eaeff7;
+  border-bottom: 1px solid #eaeff7;
   letter-spacing: -0.01em;
 }
 
@@ -1246,19 +1246,19 @@
 .sono-admin-theme .adm-person small {
   display: block;
   font-size: 10.5px;
-  color: #8e9988;
+  color: #788699;
   margin-top: 2px;
 }
 
 .sono-admin-theme .adm-table-foot {
-  border-top: 1px solid #edf0e7;
+  border-top: 1px solid #eaeff7;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 22px;
   color: #8c9686;
   font-size: 11.5px;
-  background: #fafbf8;
+  background: #f8fafd;
   flex-wrap: wrap;
   gap: 10px;
 }
@@ -1333,7 +1333,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  box-shadow: 0 6px 20px rgba(25, 63, 57, 0.14);
+  box-shadow: 0 6px 20px rgba(12, 35, 64, 0.14);
 }
 
 /* Drawer & Form Sections */
@@ -1346,7 +1346,7 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 7px;
-  border-bottom: 1px solid #edf0e7;
+  border-bottom: 1px solid #eaeff7;
 }
 
 .sono-admin-theme .adm-section-label:first-child {
@@ -1384,7 +1384,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px 20px;
-  background: #f8f9f5;
+  background: #f6f8fc;
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 15px 18px;
@@ -1408,7 +1408,7 @@
 
 .sono-admin-theme .adm-note-card {
   padding: 15px 17px;
-  background: #f8f9f5;
+  background: #f6f8fc;
   border: 1px solid var(--border);
   border-radius: 10px;
   font-size: 12px;
@@ -1498,13 +1498,13 @@
 }
 
 .sono-admin-theme .adm-settings-nav button:hover {
-  background: #f6f8f3;
+  background: #f4f6fa;
   color: var(--ink);
 }
 
 .sono-admin-theme .adm-settings-nav button.active {
   background: #eaf1e4;
-  color: #295e52;
+  color: #163a6b;
   font-weight: 700;
 }
 
@@ -1534,7 +1534,7 @@
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 20px 22px;
-  box-shadow: 0 15px 50px rgba(25, 63, 57, 0.14);
+  box-shadow: 0 15px 50px rgba(12, 35, 64, 0.14);
 }
 
 /* =========================================================
@@ -1594,7 +1594,7 @@
   padding: 0 26px;
   overflow-x: auto;
   white-space: nowrap;
-  background: #fafbf8;
+  background: #f8fafd;
   flex-shrink: 0;
 }
 
@@ -1670,7 +1670,7 @@
 }
 
 .sono-admin-theme .adm-flow-mini span.done {
-  color: #295e52;
+  color: #163a6b;
   font-weight: 700;
 }
 
@@ -1692,7 +1692,7 @@
 /* =========================================================
    4. Scoped Harmonization for All 24 Dashboard Sub-Components
       (Maps Toss Blue / Indigo / Gray / Sharp-or-Bubble radii to
-       Deep Green #295e52, Forest #193f39, Ivory #f5f6f3, 14px)
+       Deep Green #163a6b, Forest #0c2340, Ivory #f4f6fa, 14px)
    ========================================================= */
 
 /* Primary Brand Color Remap inside Admin */
@@ -1700,10 +1700,10 @@
 .sono-admin-theme .hover\:bg-sono-primary:hover { background-color: var(--green) !important; }
 .sono-admin-theme .hover\:bg-sono-secondary:hover,
 .sono-admin-theme .bg-sono-secondary { background-color: var(--green-hover) !important; }
-.sono-admin-theme .bg-sono-primary\/10 { background-color: rgba(41, 94, 82, 0.1) !important; }
-.sono-admin-theme .bg-sono-primary\/5 { background-color: rgba(41, 94, 82, 0.05) !important; }
-.sono-admin-theme .bg-sono-primary\/\[0\.02\] { background-color: rgba(41, 94, 82, 0.03) !important; }
-.sono-admin-theme .hover\:bg-sono-primary\/10:hover { background-color: rgba(41, 94, 82, 0.12) !important; }
+.sono-admin-theme .bg-sono-primary\/10 { background-color: rgba(22, 58, 107, 0.1) !important; }
+.sono-admin-theme .bg-sono-primary\/5 { background-color: rgba(22, 58, 107, 0.05) !important; }
+.sono-admin-theme .bg-sono-primary\/\[0\.02\] { background-color: rgba(22, 58, 107, 0.03) !important; }
+.sono-admin-theme .hover\:bg-sono-primary\/10:hover { background-color: rgba(22, 58, 107, 0.12) !important; }
 .sono-admin-theme .hover\:bg-sono-primary\/90:hover { background-color: var(--green-hover) !important; }
 
 .sono-admin-theme .text-sono-primary { color: var(--green) !important; }
@@ -1714,12 +1714,12 @@
 .sono-admin-theme .hover\:bg-sono-dark:hover { background-color: #122e2a !important; }
 
 .sono-admin-theme .border-sono-primary { border-color: var(--green) !important; }
-.sono-admin-theme .border-sono-primary\/20 { border-color: rgba(41, 94, 82, 0.22) !important; }
+.sono-admin-theme .border-sono-primary\/20 { border-color: rgba(22, 58, 107, 0.22) !important; }
 .sono-admin-theme .border-sono-primary\/40,
-.sono-admin-theme .hover\:border-sono-primary\/40:hover { border-color: rgba(41, 94, 82, 0.4) !important; }
+.sono-admin-theme .hover\:border-sono-primary\/40:hover { border-color: rgba(22, 58, 107, 0.4) !important; }
 .sono-admin-theme .focus\:border-sono-primary:focus { border-color: var(--green) !important; }
 .sono-admin-theme .ring-sono-primary { --tw-ring-color: var(--green) !important; }
-.sono-admin-theme .focus\:ring-sono-primary:focus { --tw-ring-color: rgba(41, 94, 82, 0.28) !important; }
+.sono-admin-theme .focus\:ring-sono-primary:focus { --tw-ring-color: rgba(22, 58, 107, 0.28) !important; }
 
 /* Harmonize Indigo/Slate Action Buttons & Headers in Sub-modules to Deep Green / Sage */
 .sono-admin-theme .bg-indigo-600 { background-color: var(--green) !important; }
@@ -1743,14 +1743,14 @@
   background-color: var(--green) !important;
   border-radius: 10px !important;
   color: #fff !important;
-  box-shadow: 0 2px 8px rgba(25, 63, 57, 0.14) !important;
+  box-shadow: 0 2px 8px rgba(12, 35, 64, 0.14) !important;
 }
 .sono-admin-theme .btn-primary:hover {
   background-color: var(--green-hover) !important;
   filter: none !important;
 }
 
-/* Harmonize Panel Radii & Borders to DESIGN_TOKENS (14px, #e6eae3) */
+/* Harmonize Panel Radii & Borders to DESIGN_TOKENS (14px, #e1e7f0) */
 .sono-admin-theme .rounded-\[40px\],
 .sono-admin-theme .rounded-\[32px\],
 .sono-admin-theme .rounded-\[24px\],
@@ -1779,9 +1779,9 @@
 }
 
 .sono-admin-theme thead tr {
-  background-color: #f8f9f5 !important;
-  border-top: 1px solid #edf0e7;
-  border-bottom: 1px solid #edf0e7 !important;
+  background-color: #f6f8fc !important;
+  border-top: 1px solid #eaeff7;
+  border-bottom: 1px solid #eaeff7 !important;
 }
 
 .sono-admin-theme thead th {

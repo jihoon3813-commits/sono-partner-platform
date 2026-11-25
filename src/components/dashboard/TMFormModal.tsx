@@ -206,7 +206,7 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
                 <div className="adm-field-grid">
                     <div className="adm-field">
                         <label>
-                            로그인 ID {!isEdit && <span className="text-[#295e52]">*</span>}
+                            로그인 ID {!isEdit && <span className="text-[#163a6b]">*</span>}
                         </label>
                         <input
                             type="text"
@@ -222,7 +222,7 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
 
                     <div className="adm-field">
                         <label>
-                            비밀번호 {!isEdit && <span className="text-[#295e52]">*</span>}
+                            비밀번호 {!isEdit && <span className="text-[#163a6b]">*</span>}
                         </label>
                         <input
                             type="password"
@@ -237,7 +237,7 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
 
                     <div className="adm-field">
                         <label>
-                            상담원명 (실명) <span className="text-[#295e52]">*</span>
+                            상담원명 (실명) <span className="text-[#163a6b]">*</span>
                         </label>
                         <input
                             type="text"
@@ -252,7 +252,7 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
 
                     <div className="adm-field">
                         <label>
-                            연락처 (휴대폰) <span className="text-[#295e52]">*</span>
+                            연락처 (휴대폰) <span className="text-[#163a6b]">*</span>
                         </label>
                         <input
                             type="tel"
@@ -267,7 +267,7 @@ export default function TMFormModal({ tm, parentPartner, onClose, onSuccess }: T
 
                     <div className="adm-field">
                         <label>
-                            이메일 <span className="text-[#295e52]">*</span>
+                            이메일 <span className="text-[#163a6b]">*</span>
                         </label>
                         <input
                             type="email"

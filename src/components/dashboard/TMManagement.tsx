@@ -67,7 +67,7 @@ export default function TMManagement({ partners, parentPartner, onRefresh }: TMM
                     <h1>상담원 관리</h1>
                     <p>
                         소속 상담원 계정을 등록하고 관리합니다. 현재 총{" "}
-                        <strong className="text-[#295e52]">{tmAccounts.length}명</strong>이 등록되어 있습니다.
+                        <strong className="text-[#163a6b]">{tmAccounts.length}명</strong>이 등록되어 있습니다.
                     </p>
                 </div>
                 <div className="adm-heading-buttons">
@@ -95,7 +95,7 @@ export default function TMManagement({ partners, parentPartner, onRefresh }: TMM
                         />
                     </label>
                     <div className="adm-filter-end">
-                        검색 결과 <strong className="text-[#295e52]">{filteredTMs.length}</strong>명
+                        검색 결과 <strong className="text-[#163a6b]">{filteredTMs.length}</strong>명
                     </div>
                 </div>
 
@@ -131,22 +131,22 @@ export default function TMManagement({ partners, parentPartner, onRefresh }: TMM
                                             </div>
                                         </td>
                                         <td className="whitespace-nowrap">
-                                            <div className="text-xs font-bold text-[#263d36] font-mono">
+                                            <div className="text-xs font-bold text-[#162438] font-mono">
                                                 {tm.loginId}
                                             </div>
-                                            <div className="text-[10px] text-[#86918a] font-mono mt-0.5">
+                                            <div className="text-[10px] text-[#788699] font-mono mt-0.5">
                                                 {tm.partnerId}
                                             </div>
                                         </td>
                                         <td className="whitespace-nowrap">
-                                            <div className="text-xs font-semibold text-[#263d36] font-mono">
+                                            <div className="text-xs font-semibold text-[#162438] font-mono">
                                                 {tm.managerPhone}
                                             </div>
-                                            <div className="text-[11px] text-[#86918a] mt-0.5">
+                                            <div className="text-[11px] text-[#788699] mt-0.5">
                                                 {tm.managerEmail}
                                             </div>
                                         </td>
-                                        <td className="whitespace-nowrap text-xs text-[#6b7768] font-mono">
+                                        <td className="whitespace-nowrap text-xs text-[#5a6b82] font-mono">
                                             {formatDate(tm.createdAt)}
                                         </td>
                                         <td className="whitespace-nowrap">
@@ -176,7 +176,7 @@ export default function TMManagement({ partners, parentPartner, onRefresh }: TMM
                                 <tr>
                                     <td
                                         colSpan={6}
-                                        className="py-16 text-center text-xs text-[#86918a]"
+                                        className="py-16 text-center text-xs text-[#788699]"
                                     >
                                         등록된 상담원 계정이 없거나 검색 결과가 없습니다.
                                     </td>

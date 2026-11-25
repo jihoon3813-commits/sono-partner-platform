@@ -70,13 +70,13 @@ export default function ResourceCenter({ isAdmin }: ResourceCenterProps) {
             {/* Resource Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {!resources ? (
-                    <div className="col-span-full adm-panel py-16 text-center text-xs text-[#86918a] font-semibold">
+                    <div className="col-span-full adm-panel py-16 text-center text-xs text-[#788699] font-semibold">
                         자료를 불러오는 중...
                     </div>
                 ) : resources.length === 0 ? (
-                    <div className="col-span-full adm-panel py-16 text-center text-[#86918a]">
+                    <div className="col-span-full adm-panel py-16 text-center text-[#788699]">
                         <AdminIcon name="folder" className="mx-auto mb-2.5 !w-7 !h-7 text-[#b0bfa8]" />
-                        <strong className="block text-sm text-[#263d36] mb-1">등록된 자료가 없습니다</strong>
+                        <strong className="block text-sm text-[#162438] mb-1">등록된 자료가 없습니다</strong>
                         <p className="text-xs">선택한 분류에 등록된 자료가 없습니다.</p>
                     </div>
                 ) : (
@@ -86,7 +86,7 @@ export default function ResourceCenter({ isAdmin }: ResourceCenterProps) {
                             className="group adm-panel flex flex-col overflow-hidden hover:border-[#a7baa6] transition-all"
                         >
                             {/* Thumbnail Area */}
-                            <div className="aspect-video relative overflow-hidden bg-[#f4f6f0] border-b border-[#e6eae3]">
+                            <div className="aspect-video relative overflow-hidden bg-[#f4f6f0] border-b border-[#e1e7f0]">
                                 {res.directThumbnailUrl ? (
                                     <img
                                         src={res.directThumbnailUrl}
@@ -101,7 +101,7 @@ export default function ResourceCenter({ isAdmin }: ResourceCenterProps) {
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">
-                                        <div className="w-12 h-14 rounded-lg bg-[#e8efe2] text-[#295e52] font-bold text-xs grid place-items-center border border-[#d6e2cd]">
+                                        <div className="w-12 h-14 rounded-lg bg-[#e8efe2] text-[#163a6b] font-bold text-xs grid place-items-center border border-[#d6e2cd]">
                                             {res.type === "video" ? "VID" : "FILE"}
                                         </div>
                                     </div>
@@ -123,14 +123,14 @@ export default function ResourceCenter({ isAdmin }: ResourceCenterProps) {
 
                             {/* Info Area */}
                             <div className="p-5 flex-1 flex flex-col">
-                                <h3 className="font-bold text-sm text-[#263d36] mb-1.5 line-clamp-1 group-hover:text-[#295e52] transition-colors">
+                                <h3 className="font-bold text-sm text-[#162438] mb-1.5 line-clamp-1 group-hover:text-[#163a6b] transition-colors">
                                     {res.title}
                                 </h3>
-                                <p className="text-xs text-[#86918a] line-clamp-2 mb-5 flex-1 leading-relaxed">
+                                <p className="text-xs text-[#788699] line-clamp-2 mb-5 flex-1 leading-relaxed">
                                     {res.description || "등록된 설명이 없습니다."}
                                 </p>
 
-                                <div className="flex gap-2 pt-3 border-t border-[#edf0e7]">
+                                <div className="flex gap-2 pt-3 border-t border-[#eaeff7]">
                                     <button
                                         type="button"
                                         onClick={() => window.open(res.directFileUrl, "_blank")}
@@ -281,7 +281,7 @@ function ResourceRegistrationModal({ onClose }: { onClose: () => void }) {
         >
             <form id="resource-reg-drawer" onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                    <label className="block text-xs font-bold text-[#5d6e5c] mb-2">자료 구분</label>
+                    <label className="block text-xs font-bold text-[#475870] mb-2">자료 구분</label>
                     <div className="grid grid-cols-3 gap-2">
                         {["image", "video", "file"].map((t) => (
                             <button
@@ -290,8 +290,8 @@ function ResourceRegistrationModal({ onClose }: { onClose: () => void }) {
                                 onClick={() => setForm({ ...form, type: t })}
                                 className={`py-2.5 rounded-[9px] text-xs font-bold border transition-all cursor-pointer ${
                                     form.type === t
-                                        ? "bg-[#295e52] text-white border-[#295e52]"
-                                        : "bg-[#f8f9f5] text-[#6d7b64] border-[#dfe5d9] hover:bg-white"
+                                        ? "bg-[#163a6b] text-white border-[#163a6b]"
+                                        : "bg-[#f6f8fc] text-[#6d7b64] border-[#dce4f0] hover:bg-white"
                                 }`}
                             >
                                 {t === "image" ? "이미지" : t === "video" ? "영상" : "일반파일"}
@@ -301,31 +301,31 @@ function ResourceRegistrationModal({ onClose }: { onClose: () => void }) {
                 </div>
 
                 <div>
-                    <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">제목</label>
+                    <label className="block text-xs font-bold text-[#475870] mb-1.5">제목</label>
                     <input
                         type="text"
                         value={form.title}
                         onChange={(e) => setForm({ ...form, title: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-[9px] bg-[#f9faf7] border border-[#dfe5d9] text-sm outline-none focus:bg-white focus:border-[#295e52]"
+                        className="w-full px-3.5 py-2.5 rounded-[9px] bg-[#f7f9fc] border border-[#dce4f0] text-sm outline-none focus:bg-white focus:border-[#163a6b]"
                         placeholder="자료 제목을 입력하세요"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                    <label className="block text-xs font-bold text-[#475870] mb-1.5">
                         설명 (간략히)
                     </label>
                     <textarea
                         value={form.description}
                         onChange={(e) => setForm({ ...form, description: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-[9px] bg-[#f9faf7] border border-[#dfe5d9] text-sm outline-none focus:bg-white focus:border-[#295e52] min-h-[96px]"
+                        className="w-full px-3.5 py-2.5 rounded-[9px] bg-[#f7f9fc] border border-[#dce4f0] text-sm outline-none focus:bg-white focus:border-[#163a6b] min-h-[96px]"
                         placeholder="자료에 대한 설명을 입력하세요"
                     />
                 </div>
 
                 <div>
                     <div className="flex justify-between items-center mb-2">
-                        <label className="block text-xs font-bold text-[#5d6e5c]">
+                        <label className="block text-xs font-bold text-[#475870]">
                             자료 파일 / 링크
                         </label>
                         <button
@@ -333,7 +333,7 @@ function ResourceRegistrationModal({ onClose }: { onClose: () => void }) {
                             onClick={() =>
                                 setForm({ ...form, isExternalUrl: !form.isExternalUrl })
                             }
-                            className="text-xs font-bold text-[#295e52] hover:underline"
+                            className="text-xs font-bold text-[#163a6b] hover:underline"
                         >
                             {form.isExternalUrl ? "파일 업로드로 변경" : "외부 URL 링크로 변경"}
                         </button>
@@ -344,16 +344,16 @@ function ResourceRegistrationModal({ onClose }: { onClose: () => void }) {
                             type="text"
                             value={form.fileUrl}
                             onChange={(e) => setForm({ ...form, fileUrl: e.target.value })}
-                            className="w-full px-3.5 py-2.5 rounded-[9px] bg-[#f9faf7] border border-[#dfe5d9] text-sm outline-none focus:bg-white focus:border-[#295e52]"
+                            className="w-full px-3.5 py-2.5 rounded-[9px] bg-[#f7f9fc] border border-[#dce4f0] text-sm outline-none focus:bg-white focus:border-[#163a6b]"
                             placeholder="https://example.com/..."
                         />
                     ) : (
                         <div
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full p-7 border border-dashed border-[#cbd8c0] rounded-[11px] flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-[#f8faf5] transition-colors"
+                            className="w-full p-7 border border-dashed border-[#cfdcf0] rounded-[11px] flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-[#f8faf5] transition-colors"
                         >
-                            <AdminIcon name="upload" className="!w-6 !h-6 text-[#295e52]" />
-                            <span className="text-xs font-bold text-[#263d36]">
+                            <AdminIcon name="upload" className="!w-6 !h-6 text-[#163a6b]" />
+                            <span className="text-xs font-bold text-[#162438]">
                                 {selectedFile ? selectedFile.name : "파일 선택 (클릭)"}
                             </span>
                             <input
@@ -367,14 +367,14 @@ function ResourceRegistrationModal({ onClose }: { onClose: () => void }) {
                 </div>
 
                 <div>
-                    <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                    <label className="block text-xs font-bold text-[#475870] mb-1.5">
                         썸네일 이미지 (선택)
                     </label>
                     <div
                         onClick={() => thumbInputRef.current?.click()}
-                        className="w-full p-3.5 bg-[#f8f9f5] border border-[#e6eae3] rounded-[10px] flex items-center gap-3.5 cursor-pointer hover:bg-[#f1f4ec] transition-colors"
+                        className="w-full p-3.5 bg-[#f6f8fc] border border-[#e1e7f0] rounded-[10px] flex items-center gap-3.5 cursor-pointer hover:bg-[#f1f4ec] transition-colors"
                     >
-                        <div className="w-11 h-11 bg-white rounded-[8px] border border-[#dfe5d9] flex items-center justify-center overflow-hidden shrink-0">
+                        <div className="w-11 h-11 bg-white rounded-[8px] border border-[#dce4f0] flex items-center justify-center overflow-hidden shrink-0">
                             {selectedThumb ? (
                                 <img
                                     src={URL.createObjectURL(selectedThumb)}
@@ -385,7 +385,7 @@ function ResourceRegistrationModal({ onClose }: { onClose: () => void }) {
                                 <AdminIcon name="file" className="text-[#96a392]" />
                             )}
                         </div>
-                        <span className="text-xs font-semibold text-[#5d6e5c] truncate">
+                        <span className="text-xs font-semibold text-[#475870] truncate">
                             {selectedThumb ? selectedThumb.name : "썸네일용 이미지 선택"}
                         </span>
                         <input

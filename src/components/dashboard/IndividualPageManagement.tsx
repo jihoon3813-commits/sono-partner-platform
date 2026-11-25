@@ -43,11 +43,11 @@ export default function IndividualPageManagement() {
                         <div key={page.path} className="adm-note-card flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                             <div className="flex-1 space-y-1.5 min-w-0">
                                 <div className="flex items-center gap-2">
-                                    <h3 className="text-sm font-bold text-[#263d36]">{page.title}</h3>
+                                    <h3 className="text-sm font-bold text-[#162438]">{page.title}</h3>
                                     <span className="adm-pill green">Standalone</span>
                                 </div>
-                                <p className="text-xs text-[#6b7768]">{page.description}</p>
-                                <div className="bg-white px-3 py-2 rounded-[8px] border border-[#e6eae3] font-mono text-xs text-[#295e52] font-semibold truncate">
+                                <p className="text-xs text-[#5a6b82]">{page.description}</p>
+                                <div className="bg-white px-3 py-2 rounded-[8px] border border-[#e1e7f0] font-mono text-xs text-[#163a6b] font-semibold truncate">
                                     {baseUrl}{page.path}
                                 </div>
                             </div>

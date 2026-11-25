@@ -566,7 +566,7 @@ export default function PartnerFormModal({
                 {/* 2. 상위 파트너 설정 */}
                 <h3 className="adm-section-label">
                     <span>상위 파트너 소속</span>
-                    <span className="text-[11px] font-normal text-[#86918a]">
+                    <span className="text-[11px] font-normal text-[#788699]">
                         미선택 시 최상위(Master) 파트너로 지정
                     </span>
                 </h3>
@@ -576,10 +576,10 @@ export default function PartnerFormModal({
                             <div>
                                 <span className="adm-pill teal mb-1">상위 파트너</span>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <strong className="text-sm font-bold text-[#263d36]">
+                                    <strong className="text-sm font-bold text-[#162438]">
                                         {formData.parentPartnerName}
                                     </strong>
-                                    <span className="text-xs font-mono text-[#86918a]">
+                                    <span className="text-xs font-mono text-[#788699]">
                                         ({formData.parentPartnerId})
                                     </span>
                                 </div>
@@ -604,24 +604,24 @@ export default function PartnerFormModal({
                                     className="!w-full"
                                 />
                                 {isSearching && (
-                                    <span className="w-4 h-4 border-2 border-[#295e52] border-t-transparent rounded-full animate-spin shrink-0" />
+                                    <span className="w-4 h-4 border-2 border-[#163a6b] border-t-transparent rounded-full animate-spin shrink-0" />
                                 )}
                             </label>
 
                             {searchResults.length > 0 && (
-                                <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-[#dfe5d9] rounded-[9px] shadow-lg overflow-hidden z-20 max-h-48 overflow-y-auto">
+                                <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-[#dce4f0] rounded-[9px] shadow-lg overflow-hidden z-20 max-h-48 overflow-y-auto">
                                     {searchResults.map((p) => (
                                         <button
                                             key={p.partnerId}
                                             type="button"
                                             onClick={() => selectParent(p)}
-                                            className="w-full text-left px-3.5 py-2.5 hover:bg-[#f6f8f3] border-b border-[#edf0e7] last:border-none flex justify-between items-center cursor-pointer bg-white"
+                                            className="w-full text-left px-3.5 py-2.5 hover:bg-[#f4f6fa] border-b border-[#eaeff7] last:border-none flex justify-between items-center cursor-pointer bg-white"
                                         >
                                             <div>
-                                                <div className="font-bold text-[#263d36] text-xs">
+                                                <div className="font-bold text-[#162438] text-xs">
                                                     {p.companyName}
                                                 </div>
-                                                <div className="text-[11px] text-[#86918a] font-mono">
+                                                <div className="text-[11px] text-[#788699] font-mono">
                                                     {p.partnerId} · {p.ceoName}
                                                 </div>
                                             </div>
@@ -704,7 +704,7 @@ export default function PartnerFormModal({
                         <span>커스텀 URL 경로 *</span>
                         <div className="flex gap-1.5">
                             <div className="relative flex-1 flex items-center">
-                                <span className="absolute left-3 text-xs text-[#86918a] font-mono">
+                                <span className="absolute left-3 text-xs text-[#788699] font-mono">
                                     /p/
                                 </span>
                                 <input
@@ -927,7 +927,7 @@ export default function PartnerFormModal({
                                         />
                                         <div>
                                             <div className="flex items-center gap-1.5">
-                                                <strong className="text-xs text-[#263d36]">
+                                                <strong className="text-xs text-[#162438]">
                                                     {p.name}
                                                 </strong>
                                                 <span
@@ -942,7 +942,7 @@ export default function PartnerFormModal({
                                                         : "결합상품"}
                                                 </span>
                                             </div>
-                                            <div className="text-[11px] text-[#86918a] mt-0.5">
+                                            <div className="text-[11px] text-[#788699] mt-0.5">
                                                 {p.slotCount}구좌 · 월{" "}
                                                 {(
                                                     p.monthlyPayment || 0
@@ -962,7 +962,7 @@ export default function PartnerFormModal({
                             );
                         })
                     ) : (
-                        <div className="text-xs text-center text-[#86918a] py-4">
+                        <div className="text-xs text-center text-[#788699] py-4">
                             등록된 상품이 없습니다.
                         </div>
                     )}
@@ -1001,8 +1001,8 @@ export default function PartnerFormModal({
                                     onClick={() => handleToggleLanding(item.key)}
                                     className={`p-3 rounded-[9px] border transition-all cursor-pointer flex flex-col justify-between ${
                                         item.isVisible
-                                            ? "bg-white border-[#295e52]"
-                                            : "bg-[#f4f6f1] border-[#e6eae3] opacity-65"
+                                            ? "bg-white border-[#163a6b]"
+                                            : "bg-[#f4f6f1] border-[#e1e7f0] opacity-65"
                                     }`}
                                 >
                                     <div>
@@ -1018,18 +1018,18 @@ export default function PartnerFormModal({
                                                 {item.isVisible ? "노출중" : "숨김"}
                                             </span>
                                         </div>
-                                        <strong className="text-xs text-[#263d36] block">
+                                        <strong className="text-xs text-[#162438] block">
                                             {item.name}
                                         </strong>
-                                        <small className="text-[10.5px] font-mono text-[#86918a] block truncate mt-0.5">
+                                        <small className="text-[10.5px] font-mono text-[#788699] block truncate mt-0.5">
                                             {item.path}
                                         </small>
                                     </div>
-                                    <div className="mt-2.5 pt-2 border-t border-[#edf0e7] flex items-center justify-between">
-                                        <span className="text-[11px] font-bold text-[#295e52]">
+                                    <div className="mt-2.5 pt-2 border-t border-[#eaeff7] flex items-center justify-between">
+                                        <span className="text-[11px] font-bold text-[#163a6b]">
                                             {item.price}
                                         </span>
-                                        <span className="text-[10.5px] font-semibold text-[#5d6c5d]">
+                                        <span className="text-[10.5px] font-semibold text-[#475870]">
                                             {item.isVisible ? "✓ 선택됨" : "클릭하여 켜기"}
                                         </span>
                                     </div>
@@ -1048,7 +1048,7 @@ export default function PartnerFormModal({
                     <div className="adm-field">
                         <div className="flex items-center justify-between">
                             <span>소노접수 웹 인증코드 (authCd)</span>
-                            <span className="text-[11px] text-[#295e52] font-mono">
+                            <span className="text-[11px] text-[#163a6b] font-mono">
                                 기본값: BIZI0011
                             </span>
                         </div>

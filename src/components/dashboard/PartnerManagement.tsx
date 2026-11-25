@@ -89,7 +89,7 @@ function PartnerRow({
                                     e.stopPropagation();
                                     setIsExpanded(!isExpanded);
                                 }}
-                                className="w-5 h-5 grid place-items-center rounded-[5px] hover:bg-[#edf2e7] text-[#6b7768]"
+                                className="w-5 h-5 grid place-items-center rounded-[5px] hover:bg-[#edf2e7] text-[#5a6b82]"
                                 aria-label={isExpanded ? "하위 접기" : "하위 펼치기"}
                             >
                                 <AdminIcon
@@ -129,22 +129,22 @@ function PartnerRow({
                     </div>
                 </td>
                 <td>
-                    <div className="text-xs font-semibold text-[#263d36]">
+                    <div className="text-xs font-semibold text-[#162438]">
                         {partner.shopType || "제휴 파트너"}
                     </div>
-                    <div className="text-[11px] text-[#86918a] mt-0.5 truncate max-w-[200px]">
+                    <div className="text-[11px] text-[#788699] mt-0.5 truncate max-w-[200px]">
                         {partner.partnerGroup || "전체 상품 판매"}
                     </div>
                 </td>
                 <td>
-                    <div className="text-xs font-semibold text-[#263d36]">
+                    <div className="text-xs font-semibold text-[#162438]">
                         {partner.managerName || "-"}
                     </div>
-                    <div className="text-[11px] text-[#86918a] mt-0.5 tabular-nums">
+                    <div className="text-[11px] text-[#788699] mt-0.5 tabular-nums">
                         {partner.managerPhone || "-"}
                     </div>
                     {(partner.affiliation || partner.employeeNumber || partner.departmentName) && (
-                        <div className="text-[10.5px] text-[#295e52] mt-0.5 font-medium">
+                        <div className="text-[10.5px] text-[#163a6b] mt-0.5 font-medium">
                             {[partner.affiliation, partner.departmentName, partner.employeeNumber]
                                 .filter(Boolean)
                                 .join(" · ")}
@@ -395,7 +395,7 @@ export default function PartnerManagement({
             <div className="grid grid-cols-1 lg:grid-cols-[230px_minmax(0,1fr)] gap-5 items-start">
                 {/* 좌측 파트너 조직 트리 선택 패널 */}
                 <section className="adm-panel p-4">
-                    <h2 className="text-sm font-bold text-[#263d36] mb-3 px-2">
+                    <h2 className="text-sm font-bold text-[#162438] mb-3 px-2">
                         파트너 조직도
                     </h2>
                     <div className="space-y-1 max-h-[520px] overflow-y-auto">
@@ -404,13 +404,13 @@ export default function PartnerManagement({
                             onClick={() => setSelectedOrgId("all")}
                             className={`w-full flex items-center gap-2 text-xs px-2.5 py-2.5 rounded-[7px] transition-colors cursor-pointer border-0 ${
                                 selectedOrgId === "all"
-                                    ? "bg-[#edf3e8] text-[#295e52] font-bold"
-                                    : "bg-transparent text-[#6d7c6b] hover:bg-[#f6f8f3]"
+                                    ? "bg-[#edf3e8] text-[#163a6b] font-bold"
+                                    : "bg-transparent text-[#6d7c6b] hover:bg-[#f4f6fa]"
                             }`}
                         >
                             <AdminIcon name="network" className="!w-4 !h-4" />
                             <span className="truncate">전체 조직</span>
-                            <b className="ml-auto text-[10px] text-[#86918a]">
+                            <b className="ml-auto text-[10px] text-[#788699]">
                                 {partners.length}
                             </b>
                         </button>
@@ -425,8 +425,8 @@ export default function PartnerManagement({
                                     onClick={() => setSelectedOrgId(rp.partnerId)}
                                     className={`w-full flex items-center gap-2 text-xs px-2.5 py-2 rounded-[7px] transition-colors cursor-pointer border-0 ${
                                         selectedOrgId === rp.partnerId
-                                            ? "bg-[#edf3e8] text-[#295e52] font-bold"
-                                            : "bg-transparent text-[#6d7c6b] hover:bg-[#f6f8f3]"
+                                            ? "bg-[#edf3e8] text-[#163a6b] font-bold"
+                                            : "bg-transparent text-[#6d7c6b] hover:bg-[#f4f6fa]"
                                     }`}
                                 >
                                     <AdminIcon
@@ -435,7 +435,7 @@ export default function PartnerManagement({
                                     />
                                     <span className="truncate">{rp.companyName}</span>
                                     {subCount > 0 && (
-                                        <b className="ml-auto text-[10px] text-[#86918a]">
+                                        <b className="ml-auto text-[10px] text-[#788699]">
                                             +{subCount}
                                         </b>
                                     )}
@@ -443,7 +443,7 @@ export default function PartnerManagement({
                             );
                         })}
                     </div>
-                    <p className="text-[10.5px] text-[#8e9988] mt-4 px-2 leading-relaxed border-t border-[#edf0e7] pt-3">
+                    <p className="text-[10.5px] text-[#788699] mt-4 px-2 leading-relaxed border-t border-[#eaeff7] pt-3">
                         조직을 선택하면 해당 파트너 및 산하 파트너 목록을 필터링합니다.
                     </p>
                 </section>
@@ -475,7 +475,7 @@ export default function PartnerManagement({
                         <div className="adm-filter-end">
                             <span>
                                 전체{" "}
-                                <strong className="text-[#295e52]">
+                                <strong className="text-[#163a6b]">
                                     {partners.length}
                                 </strong>
                                 개사
@@ -521,7 +521,7 @@ export default function PartnerManagement({
                                     <tr>
                                         <td
                                             colSpan={5}
-                                            className="py-16 text-center text-xs text-[#86918a]"
+                                            className="py-16 text-center text-xs text-[#788699]"
                                         >
                                             검색 조건에 맞는 파트너가 없습니다.
                                         </td>

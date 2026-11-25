@@ -939,7 +939,7 @@ export default function RetentionManagementPostAug({
 
         const groupColors: Record<string, string> = {};
         let colorIdx = 0;
-        const colorList = ["bg-[#fafbf8]", "bg-white"];
+        const colorList = ["bg-[#f8fafd]", "bg-white"];
 
         filteredRecords.forEach((r: any) => {
             const key = `${r.displayCustomerName}_${
@@ -1041,7 +1041,7 @@ export default function RetentionManagementPostAug({
 
     if (!records) {
         return (
-            <div className="adm-panel p-14 text-center text-xs font-semibold text-[#86918a]">
+            <div className="adm-panel p-14 text-center text-xs font-semibold text-[#788699]">
                 데이터를 불러오는 중...
             </div>
         );
@@ -1090,7 +1090,7 @@ export default function RetentionManagementPostAug({
                     <h1>연체 관리 · 8월 이후 가입</h1>
                     <p>
                         8월 이후 신규 가입 고객의 납입 회차·연체 해결·환수 및 부활 진행 상태를 관리합니다. (조회 고객{" "}
-                        <strong className="text-[#295e52]">
+                        <strong className="text-[#163a6b]">
                             {filteredUniqueCount.toLocaleString()}
                         </strong>
                         명 / {filteredRecords.length.toLocaleString()}건)
@@ -1135,7 +1135,7 @@ export default function RetentionManagementPostAug({
                     onClick={() => setActiveStatFilter("all")}
                     className={`adm-metric !py-4 cursor-pointer ${
                         activeStatFilter === "all"
-                            ? "!border-[#295e52] ring-2 ring-[#295e52]/15"
+                            ? "!border-[#163a6b] ring-2 ring-[#163a6b]/15"
                             : ""
                     }`}
                 >
@@ -1163,7 +1163,7 @@ export default function RetentionManagementPostAug({
                     onClick={() => setActiveStatFilter("normal")}
                     className={`adm-metric !py-4 cursor-pointer ${
                         activeStatFilter === "normal"
-                            ? "!border-[#295e52] ring-2 ring-[#295e52]/15"
+                            ? "!border-[#163a6b] ring-2 ring-[#163a6b]/15"
                             : ""
                     }`}
                 >
@@ -1189,7 +1189,7 @@ export default function RetentionManagementPostAug({
                     onClick={() => setActiveStatFilter("delinquent")}
                     className={`adm-metric !py-4 cursor-pointer ${
                         activeStatFilter === "delinquent"
-                            ? "!border-[#295e52] ring-2 ring-[#295e52]/15"
+                            ? "!border-[#163a6b] ring-2 ring-[#163a6b]/15"
                             : ""
                     }`}
                 >
@@ -1215,7 +1215,7 @@ export default function RetentionManagementPostAug({
                     onClick={() => setActiveStatFilter("cancel")}
                     className={`adm-metric !py-4 cursor-pointer ${
                         activeStatFilter === "cancel"
-                            ? "!border-[#295e52] ring-2 ring-[#295e52]/15"
+                            ? "!border-[#163a6b] ring-2 ring-[#163a6b]/15"
                             : ""
                     }`}
                 >
@@ -1462,7 +1462,7 @@ export default function RetentionManagementPostAug({
                     <div className="adm-filter-end">
                         <span>
                             조회 고객{" "}
-                            <strong className="text-[#295e52]">
+                            <strong className="text-[#163a6b]">
                                 {filteredUniqueCount.toLocaleString()}
                             </strong>
                             명 ({filteredRecords.length.toLocaleString()}건)
@@ -1476,7 +1476,7 @@ export default function RetentionManagementPostAug({
                         <thead className="sticky top-0 z-20">
                             <tr>
                                 <th
-                                    className="cursor-pointer hover:text-[#295e52]"
+                                    className="cursor-pointer hover:text-[#163a6b]"
                                     onClick={() => {
                                         if (sortField === "joinDate") {
                                             setSortOrder((prev) =>
@@ -1497,7 +1497,7 @@ export default function RetentionManagementPostAug({
                                 </th>
                                 <th>파트너사</th>
                                 <th
-                                    className="cursor-pointer hover:text-[#295e52]"
+                                    className="cursor-pointer hover:text-[#163a6b]"
                                     onClick={() => {
                                         if (sortField === "customerName") {
                                             setSortOrder((prev) =>
@@ -1535,7 +1535,7 @@ export default function RetentionManagementPostAug({
                                 <tr>
                                     <td
                                         colSpan={15}
-                                        className="py-16 text-center text-xs text-[#86918a]"
+                                        className="py-16 text-center text-xs text-[#788699]"
                                     >
                                         조회된 데이터가 없습니다.
                                     </td>
@@ -1594,11 +1594,11 @@ export default function RetentionManagementPostAug({
                                             key={r._id || i}
                                             className={groupBg}
                                         >
-                                            <td className="relative tabular-nums text-xs text-[#6b7768]">
+                                            <td className="relative tabular-nums text-xs text-[#5a6b82]">
                                                 {isDuplicate && (
                                                     <div className="absolute left-1 top-0 bottom-0 w-3 flex items-center justify-center">
                                                         <div
-                                                            className={`w-[2px] bg-[#295e52]/40 h-full relative ${
+                                                            className={`w-[2px] bg-[#163a6b]/40 h-full relative ${
                                                                 isFirstInGroup
                                                                     ? "mt-3 h-[calc(100%-0.75rem)]"
                                                                     : ""
@@ -1624,7 +1624,7 @@ export default function RetentionManagementPostAug({
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="font-bold text-[#295e52] text-xs">
+                                            <td className="font-bold text-[#163a6b] text-xs">
                                                 {r.partnerName}
                                             </td>
                                             <td>
@@ -1640,15 +1640,15 @@ export default function RetentionManagementPostAug({
                                                     </strong>
                                                 </div>
                                             </td>
-                                            <td className="text-xs text-[#86918a] tabular-nums">
+                                            <td className="text-xs text-[#788699] tabular-nums">
                                                 {r.displayBirth ||
                                                     r.birth ||
                                                     "-"}
                                             </td>
-                                            <td className="text-xs text-[#45554e] tabular-nums">
+                                            <td className="text-xs text-[#3b495c] tabular-nums">
                                                 {r.displayPhone}
                                             </td>
-                                            <td className="text-xs font-semibold text-[#263d36]">
+                                            <td className="text-xs font-semibold text-[#162438]">
                                                 {r.productName}
                                             </td>
                                             <td className="text-center">
@@ -1724,7 +1724,7 @@ export default function RetentionManagementPostAug({
                                                                     (r.delinquencyResolveStatus ||
                                                                         "미해결") ===
                                                                     "해결함"
-                                                                        ? "!bg-[#eaf3e8] !text-[#295e52] !border-[#cfe0c7]"
+                                                                        ? "!bg-[#e8effa] !text-[#163a6b] !border-[#d4e1f4]"
                                                                         : "!bg-[#faf0df] !text-[#9e7029] !border-[#ead7b7]"
                                                                 }`}
                                                             >
@@ -1736,7 +1736,7 @@ export default function RetentionManagementPostAug({
                                                                 </option>
                                                             </select>
                                                             {r.delinquencyResolveUpdatedAt && (
-                                                                <span className="text-[9px] text-[#86918a] mt-0.5 tabular-nums">
+                                                                <span className="text-[9px] text-[#788699] mt-0.5 tabular-nums">
                                                                     {
                                                                         r.delinquencyResolveUpdatedAt
                                                                     }
@@ -1745,21 +1745,21 @@ export default function RetentionManagementPostAug({
                                                         </div>
                                                     )
                                                 ) : (
-                                                    <span className="text-xs text-[#a3ad99]">
+                                                    <span className="text-xs text-[#8b9cb3]">
                                                         -
                                                     </span>
                                                 )}
                                             </td>
-                                            <td className="text-center text-xs text-[#6b7768]">
+                                            <td className="text-center text-xs text-[#5a6b82]">
                                                 {r.paymentMethod}
                                             </td>
                                             <td className="text-center text-xs text-[#ad6654]">
                                                 {r.cancelStatus || "-"}
                                             </td>
-                                            <td className="text-center font-bold text-[#263d36] tabular-nums">
+                                            <td className="text-center font-bold text-[#162438] tabular-nums">
                                                 {r.actualPaymentCount}회
                                             </td>
-                                            <td className="text-center text-xs text-[#6b7768] tabular-nums">
+                                            <td className="text-center text-xs text-[#5a6b82] tabular-nums">
                                                 {formatTransferDateForDisplay(
                                                     r.transferDate
                                                 )}
@@ -1790,7 +1790,7 @@ export default function RetentionManagementPostAug({
                                                                 r.refundStatus &&
                                                                 r.refundStatus !==
                                                                     "선택없음"
-                                                                    ? "!bg-[#e6f1ed] !text-[#295e52] !border-[#c2dad0] font-bold"
+                                                                    ? "!bg-[#e4ecf8] !text-[#163a6b] !border-[#c2dad0] font-bold"
                                                                     : ""
                                                             }`}
                                                         >
@@ -1810,7 +1810,7 @@ export default function RetentionManagementPostAug({
                                                             )}
                                                         </select>
                                                         {r.refundUpdatedAt && (
-                                                            <span className="text-[9px] text-[#86918a] mt-0.5 tabular-nums">
+                                                            <span className="text-[9px] text-[#788699] mt-0.5 tabular-nums">
                                                                 {
                                                                     r.refundUpdatedAt
                                                                 }
@@ -1844,7 +1844,7 @@ export default function RetentionManagementPostAug({
                                                             className={`adm-select !min-h-[28px] !py-0.5 !px-2 !text-[11px] font-semibold ${
                                                                 r.revivalStatus ===
                                                                 "부활완료"
-                                                                    ? "!bg-[#eaf3e8] !text-[#295e52] !border-[#cfe0c7] font-bold"
+                                                                    ? "!bg-[#e8effa] !text-[#163a6b] !border-[#d4e1f4] font-bold"
                                                                     : r.revivalStatus ===
                                                                       "부활예정"
                                                                     ? "!bg-[#eaf1f7] !text-[#446b88] !border-[#c6d8e8] font-bold"
@@ -1870,7 +1870,7 @@ export default function RetentionManagementPostAug({
                                                             )}
                                                         </select>
                                                         {r.revivalUpdatedAt && (
-                                                            <span className="text-[9px] text-[#86918a] mt-0.5 tabular-nums">
+                                                            <span className="text-[9px] text-[#788699] mt-0.5 tabular-nums">
                                                                 {
                                                                     r.revivalUpdatedAt
                                                                 }

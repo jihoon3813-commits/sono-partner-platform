@@ -152,7 +152,7 @@ export default function PartnerRequests({
                                         onClick={() => onSelectRequest?.(req)}
                                     >
                                         <td>{getStatusBadge(req.status)}</td>
-                                        <td className="text-xs text-[#6b7768] font-mono whitespace-nowrap">
+                                        <td className="text-xs text-[#5a6b82] font-mono whitespace-nowrap">
                                             {new Date(req.createdAt).toLocaleDateString()}
                                         </td>
                                         <td>
@@ -168,10 +168,10 @@ export default function PartnerRequests({
                                         </td>
                                         <td>
                                             <div>
-                                                <div className="text-xs font-bold text-[#263d36]">
+                                                <div className="text-xs font-bold text-[#162438]">
                                                     {req.managerName}
                                                 </div>
-                                                <div className="text-[11px] text-[#86918a] font-mono mt-0.5">
+                                                <div className="text-[11px] text-[#788699] font-mono mt-0.5">
                                                     {req.managerPhone}
                                                 </div>
                                             </div>
@@ -200,7 +200,7 @@ export default function PartnerRequests({
                                 <tr>
                                     <td
                                         colSpan={6}
-                                        className="py-16 text-center text-xs text-[#86918a]"
+                                        className="py-16 text-center text-xs text-[#788699]"
                                     >
                                         {filterTab === "pending"
                                             ? "새로운 신청 대기 내역이 없습니다."

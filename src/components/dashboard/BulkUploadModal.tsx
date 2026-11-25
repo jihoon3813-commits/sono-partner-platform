@@ -169,7 +169,7 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
                 {typeof window !== "undefined" && (
                     <div className={`p-3 rounded-[10px] border flex items-center justify-between text-xs font-semibold ${
                         (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.endsWith(".local"))
-                            ? "bg-[#eaf3e8] border-[#cfe0c7] text-[#3a6144]"
+                            ? "bg-[#e8effa] border-[#d4e1f4] text-[#3a6144]"
                             : "bg-[#faf0df] border-[#ead7b7] text-[#946b31]"
                     }`}>
                         <div className="flex items-center gap-2">
@@ -192,8 +192,8 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
                     </div>
                 )}
 
-                <div className="bg-[#f8f9f5] p-4 rounded-[11px] border border-[#e6eae3] text-xs text-[#5d6c5d] space-y-1.5 leading-relaxed">
-                    <p className="font-bold text-[#295e52] flex items-center gap-1.5 mb-1">
+                <div className="bg-[#f6f8fc] p-4 rounded-[11px] border border-[#e1e7f0] text-xs text-[#475870] space-y-1.5 leading-relaxed">
+                    <p className="font-bold text-[#163a6b] flex items-center gap-1.5 mb-1">
                         <AdminIcon name="info" className="!w-4 !h-4" />
                         업로드 기준 안내
                     </p>
@@ -203,7 +203,7 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
                 </div>
 
                 {!result ? (
-                    <div className="border border-dashed border-[#cbd8c0] rounded-[12px] p-10 text-center hover:bg-[#f9fbf7] transition-colors">
+                    <div className="border border-dashed border-[#cfdcf0] rounded-[12px] p-10 text-center hover:bg-[#f9fbf7] transition-colors">
                         <input
                             type="file"
                             accept=".xlsx, .xls"
@@ -213,34 +213,34 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
                             disabled={isLoading}
                         />
                         <label htmlFor="excel-upload" className="cursor-pointer flex flex-col items-center gap-2.5">
-                            <div className="w-12 h-12 bg-[#edf2e7] text-[#295e52] rounded-xl flex items-center justify-center mb-1">
+                            <div className="w-12 h-12 bg-[#edf2e7] text-[#163a6b] rounded-xl flex items-center justify-center mb-1">
                                 <AdminIcon name="upload" className="!w-6 !h-6" />
                             </div>
-                            <span className="font-bold text-[#263d36] text-sm">엑셀 파일 선택하기</span>
-                            <span className="text-xs text-[#86918a]">.xlsx, .xls 형식의 파일을 지원합니다</span>
+                            <span className="font-bold text-[#162438] text-sm">엑셀 파일 선택하기</span>
+                            <span className="text-xs text-[#788699]">.xlsx, .xls 형식의 파일을 지원합니다</span>
                         </label>
                     </div>
                 ) : (
-                    <div className="bg-[#f8f9f5] p-6 rounded-[12px] border border-[#e6eae3] text-center space-y-4">
-                        <div className="w-11 h-11 bg-[#eaf3e8] text-[#295e52] rounded-full flex items-center justify-center mx-auto">
+                    <div className="bg-[#f6f8fc] p-6 rounded-[12px] border border-[#e1e7f0] text-center space-y-4">
+                        <div className="w-11 h-11 bg-[#e8effa] text-[#163a6b] rounded-full flex items-center justify-center mx-auto">
                             <AdminIcon name="check" />
                         </div>
-                        <h3 className="font-bold text-[#263d36]">동기화 완료</h3>
+                        <h3 className="font-bold text-[#162438]">동기화 완료</h3>
                         <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-white p-3.5 rounded-[10px] border border-[#e6eae3]">
-                                <p className="text-[11px] font-semibold text-[#86918a] mb-1">신규 등록</p>
-                                <p className="text-xl font-bold text-[#295e52]">{result.created}건</p>
+                            <div className="bg-white p-3.5 rounded-[10px] border border-[#e1e7f0]">
+                                <p className="text-[11px] font-semibold text-[#788699] mb-1">신규 등록</p>
+                                <p className="text-xl font-bold text-[#163a6b]">{result.created}건</p>
                             </div>
-                            <div className="bg-white p-3.5 rounded-[10px] border border-[#e6eae3]">
-                                <p className="text-[11px] font-semibold text-[#86918a] mb-1">기존 업데이트</p>
-                                <p className="text-xl font-bold text-[#263d36]">{result.updated}건</p>
+                            <div className="bg-white p-3.5 rounded-[10px] border border-[#e1e7f0]">
+                                <p className="text-[11px] font-semibold text-[#788699] mb-1">기존 업데이트</p>
+                                <p className="text-xl font-bold text-[#162438]">{result.updated}건</p>
                             </div>
                         </div>
 
                         {result.updatedNames && result.updatedNames.length > 0 && (
-                            <div className="text-left bg-white p-4 rounded-[10px] border border-[#e6eae3] max-h-[140px] overflow-y-auto">
-                                <p className="text-[11px] font-bold text-[#86918a] mb-1.5">업데이트된 고객 명단:</p>
-                                <p className="text-xs text-[#263d36] leading-relaxed">
+                            <div className="text-left bg-white p-4 rounded-[10px] border border-[#e1e7f0] max-h-[140px] overflow-y-auto">
+                                <p className="text-[11px] font-bold text-[#788699] mb-1.5">업데이트된 고객 명단:</p>
+                                <p className="text-xs text-[#162438] leading-relaxed">
                                     {[...new Set(result.updatedNames)].join(", ")}
                                 </p>
                             </div>
@@ -250,8 +250,8 @@ export default function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalP
 
                 {isLoading && (
                     <div className="text-center space-y-2.5 py-2">
-                        <div className="animate-spin w-7 h-7 border-[3px] border-[#295e52] border-t-transparent rounded-full mx-auto" />
-                        <p className="text-xs font-bold text-[#295e52]">{progress}</p>
+                        <div className="animate-spin w-7 h-7 border-[3px] border-[#163a6b] border-t-transparent rounded-full mx-auto" />
+                        <p className="text-xs font-bold text-[#163a6b]">{progress}</p>
                     </div>
                 )}
             </div>

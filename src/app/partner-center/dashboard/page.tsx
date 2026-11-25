@@ -483,10 +483,10 @@ export default function PartnerDashboard() {
 
     if (!partner || !dashboardData) {
         return (
-            <div className="min-h-screen bg-[#f5f6f3] flex items-center justify-center">
+            <div className="min-h-screen bg-[#f4f6fa] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3.5">
-                    <div className="animate-spin rounded-full h-10 w-10 border-[3px] border-[#295e52] border-t-transparent" />
-                    <p className="text-[#45554e] text-xs font-semibold">
+                    <div className="animate-spin rounded-full h-10 w-10 border-[3px] border-[#163a6b] border-t-transparent" />
+                    <p className="text-[#3b495c] text-xs font-semibold">
                         워크스페이스 데이터를 불러오는 중...
                     </p>
                 </div>
@@ -789,7 +789,7 @@ export default function PartnerDashboard() {
                         cy={pt[1]}
                         r={idx === mainPts.length - 1 ? 4 : 2.5}
                         fill="#fff"
-                        stroke="#295e52"
+                        stroke="#163a6b"
                         strokeWidth="2"
                     >
                         <title>{`${labels[idx]} 접수 ${totalCounts[idx]}건 · 가입 ${joinedCounts[idx]}건`}</title>
@@ -801,7 +801,7 @@ export default function PartnerDashboard() {
                     width="40"
                     height="20"
                     rx="5"
-                    fill="#295e52"
+                    fill="#163a6b"
                 />
                 <text
                     x={lastPt[0]}
@@ -859,12 +859,12 @@ export default function PartnerDashboard() {
     );
 
     return (
-        <div className="min-h-screen bg-[#f5f6f3]">
+        <div className="min-h-screen bg-[#f4f6fa]">
             {/* 본사 어드민 파트너 대리 접속 배너 */}
             {hasImpersonationBanner && (
-                <div className="h-10 bg-[#122e29] text-[#edf3ec] px-4 md:px-6 flex items-center justify-between text-xs font-semibold sticky top-0 z-50 border-b border-[#295e52]">
+                <div className="h-10 bg-[#122e29] text-[#edf3ec] px-4 md:px-6 flex items-center justify-between text-xs font-semibold sticky top-0 z-50 border-b border-[#163a6b]">
                     <div className="flex items-center gap-2 min-w-0">
-                        <span className="bg-[#b99a61] text-[#193f39] px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-extrabold shrink-0">
+                        <span className="bg-[#b99a61] text-[#0c2340] px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-extrabold shrink-0">
                             HQ ADMIN MODE
                         </span>
                         <span className="truncate text-[#d5e2db]">
@@ -875,7 +875,7 @@ export default function PartnerDashboard() {
                     <button
                         type="button"
                         onClick={handleReturnToHqAdmin}
-                        className="bg-[#e4ecdd] hover:bg-white text-[#193f39] px-3 py-1 rounded-md text-[11px] font-bold transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
+                        className="bg-[#dce7f7] hover:bg-white text-[#0c2340] px-3 py-1 rounded-md text-[11px] font-bold transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
                     >
                         <span>본사 어드민 복귀</span>
                         <AdminIcon name="arrow-right" className="!w-3.5 !h-3.5" />
@@ -1062,7 +1062,7 @@ export default function PartnerDashboard() {
                         <button
                             type="button"
                             onClick={handleLogout}
-                            className="p-1.5 rounded-lg text-[#9ab2a6] hover:text-white hover:bg-white/10 transition-colors"
+                            className="p-1.5 rounded-lg text-[#9bb0cc] hover:text-white hover:bg-white/10 transition-colors"
                             title="로그아웃"
                         >
                             <AdminIcon name="logout" className="!w-4 !h-4" />
@@ -1093,7 +1093,7 @@ export default function PartnerDashboard() {
                             <AdminIcon name="home" />
                         </button>
                         <span className="adm-breadcrumb-divider">/</span>
-                        <span className="text-[#263d36] font-bold">
+                        <span className="text-[#162438] font-bold">
                             {TAB_TITLES[activeTab] || "대시보드"}
                         </span>
                     </div>
@@ -1114,7 +1114,7 @@ export default function PartnerDashboard() {
                         >
                             <AdminIcon
                                 name="refresh"
-                                className={isRefreshing ? "animate-spin text-[#295e52]" : ""}
+                                className={isRefreshing ? "animate-spin text-[#163a6b]" : ""}
                             />
                         </button>
 
@@ -1162,7 +1162,7 @@ export default function PartnerDashboard() {
                 {notifOpen && (
                     <div className="adm-notif-popover">
                         <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-bold text-[#263d36]">실시간 알림</h3>
+                            <h3 className="text-sm font-bold text-[#162438]">실시간 알림</h3>
                             <span className="adm-pill green">LIVE</span>
                         </div>
                         <div className="divide-y divide-[#edf0e8]">
@@ -1275,8 +1275,8 @@ export default function PartnerDashboard() {
                                             onClick={() => setDateFilter(opt.value)}
                                             className={`px-3 py-1.5 rounded-[7px] text-xs font-semibold transition-all shrink-0 cursor-pointer ${
                                                 dateFilter === opt.value
-                                                    ? "bg-[#295e52] text-white font-bold"
-                                                    : "bg-[#f5f6f3] text-[#5d6c61] hover:bg-[#e9eee5]"
+                                                    ? "bg-[#163a6b] text-white font-bold"
+                                                    : "bg-[#f4f6fa] text-[#5d6c61] hover:bg-[#e9eee5]"
                                             }`}
                                         >
                                             {opt.label}
@@ -1294,9 +1294,9 @@ export default function PartnerDashboard() {
                                                         e.currentTarget.showPicker?.();
                                                     } catch {}
                                                 }}
-                                                className="border border-[#dfe5d9] rounded-[7px] px-2.5 py-1 text-xs outline-none focus:border-[#295e52] bg-white font-semibold text-[#263d36] cursor-pointer"
+                                                className="border border-[#dce4f0] rounded-[7px] px-2.5 py-1 text-xs outline-none focus:border-[#163a6b] bg-white font-semibold text-[#162438] cursor-pointer"
                                             />
-                                            <span className="text-[#86918a] text-xs">~</span>
+                                            <span className="text-[#788699] text-xs">~</span>
                                             <input
                                                 type="date"
                                                 value={customEndDate}
@@ -1306,12 +1306,12 @@ export default function PartnerDashboard() {
                                                         e.currentTarget.showPicker?.();
                                                     } catch {}
                                                 }}
-                                                className="border border-[#dfe5d9] rounded-[7px] px-2.5 py-1 text-xs outline-none focus:border-[#295e52] bg-white font-semibold text-[#263d36] cursor-pointer"
+                                                className="border border-[#dce4f0] rounded-[7px] px-2.5 py-1 text-xs outline-none focus:border-[#163a6b] bg-white font-semibold text-[#162438] cursor-pointer"
                                             />
                                         </div>
                                     )}
                                 </div>
-                                <div className="text-[11px] text-[#86918a] font-medium shrink-0">
+                                <div className="text-[11px] text-[#788699] font-medium shrink-0">
                                     선택 기간 기준 실시간 집계
                                 </div>
                             </div>
@@ -1453,7 +1453,7 @@ export default function PartnerDashboard() {
                                                 <small>신규 접수 · 상담 대기 고객</small>
                                             </span>
                                             <b>{waitingCount}</b>
-                                            <AdminIcon name="chevron-right" className="!w-4 !h-4 text-[#a9b1a0]" />
+                                            <AdminIcon name="chevron-right" className="!w-4 !h-4 text-[#8da4c4]" />
                                         </button>
 
                                         <button
@@ -1471,7 +1471,7 @@ export default function PartnerDashboard() {
                                                 <small>녹취완료(출금확인중) 고객</small>
                                             </span>
                                             <b>{recordingWaitCount}</b>
-                                            <AdminIcon name="chevron-right" className="!w-4 !h-4 text-[#a9b1a0]" />
+                                            <AdminIcon name="chevron-right" className="!w-4 !h-4 text-[#8da4c4]" />
                                         </button>
 
                                         <button
@@ -1486,7 +1486,7 @@ export default function PartnerDashboard() {
                                                 <strong>납입 · 연체 현황 확인</strong>
                                                 <small>연체 관리 및 후속 안내</small>
                                             </span>
-                                            <AdminIcon name="chevron-right" className="!w-4 !h-4 text-[#a9b1a0] ml-auto" />
+                                            <AdminIcon name="chevron-right" className="!w-4 !h-4 text-[#8da4c4] ml-auto" />
                                         </button>
 
                                         {isAdmin && (
@@ -1503,7 +1503,7 @@ export default function PartnerDashboard() {
                                                     <small>신규 파트너 신청 검토</small>
                                                 </span>
                                                 <b>{dashboardData.pendingRequests.length}</b>
-                                                <AdminIcon name="chevron-right" className="!w-4 !h-4 text-[#a9b1a0]" />
+                                                <AdminIcon name="chevron-right" className="!w-4 !h-4 text-[#8da4c4]" />
                                             </button>
                                         )}
                                     </div>
@@ -1520,11 +1520,11 @@ export default function PartnerDashboard() {
                                     <>
                                         <div className="flex items-center justify-between px-0.5">
                                             <div>
-                                                <h2 className="text-base font-bold text-[#263d36] flex items-center gap-2">
-                                                    <span className="w-2 h-2 bg-[#295e52] inline-block rounded-full" />
+                                                <h2 className="text-base font-bold text-[#162438] flex items-center gap-2">
+                                                    <span className="w-2 h-2 bg-[#163a6b] inline-block rounded-full" />
                                                     공식 상품 대표 랜딩 URL 바로가기
                                                 </h2>
-                                                <p className="text-xs text-[#86918a] mt-0.5">
+                                                <p className="text-xs text-[#788699] mt-0.5">
                                                     고객 및 파트너사 안내 시 활용할 수 있는 소노아임레디 공식 상품별 대표 주소입니다.
                                                 </p>
                                             </div>
@@ -1532,7 +1532,7 @@ export default function PartnerDashboard() {
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                             {/* 스마트케어 */}
-                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#adc0ad] transition-all">
+                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
                                                 <div>
                                                     <div className="flex items-center gap-1.5 mb-3">
                                                         <span className="adm-pill orange">BEST POPULAR</span>
@@ -1542,30 +1542,30 @@ export default function PartnerDashboard() {
                                                         <img
                                                             src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785825079/2024112600085_0_vbmtin.jpg"
                                                             alt="스마트케어"
-                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e6eae3]"
+                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
                                                         />
                                                         <div>
-                                                            <h3 className="text-base font-bold text-[#263d36] mb-1">
+                                                            <h3 className="text-base font-bold text-[#162438] mb-1">
                                                                 스마트케어 (SmartCare)
                                                             </h3>
-                                                            <p className="text-xs text-[#7c877b] line-clamp-2 leading-relaxed">
+                                                            <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
                                                                 삼성/LG 최신 가전 렌탈 지원금 전액 제공, 만기 100% 환급 결합 플랜
                                                             </p>
-                                                            <p className="text-xs font-bold text-[#295e52] mt-1.5">
+                                                            <p className="text-xs font-bold text-[#163a6b] mt-1.5">
                                                                 월 33,000원부터
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <div className="bg-[#f8f9f5] border border-[#e6eae3] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
-                                                        <span className="text-[#8e978a] font-sans block text-[10px] font-semibold mb-0.5">
+                                                    <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                        <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
                                                             스마트케어 공식 대표 URL
                                                         </span>
-                                                        <span className="font-semibold text-[#295e52] truncate block">
+                                                        <span className="font-semibold text-[#163a6b] truncate block">
                                                             {baseUrl.replace(/^https?:\/\//, "")}/products/smartcare
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#edf0e7]">
+                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
                                                     <button
                                                         type="button"
                                                         onClick={() => {
@@ -1593,7 +1593,7 @@ export default function PartnerDashboard() {
                                             </div>
 
                                             {/* 더 해피 450 ONE */}
-                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#adc0ad] transition-all">
+                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
                                                 <div>
                                                     <div className="flex items-center gap-1.5 mb-3">
                                                         <span className="adm-pill orange">일반 상조 플랜</span>
@@ -1603,13 +1603,13 @@ export default function PartnerDashboard() {
                                                         <img
                                                             src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785308928/ChatGPT_Image_2026%EB%85%84_7%EC%9B%94_29%EC%9D%BC_%EC%98%A4%ED%9B%84_03_38_13_1_1_mpokg4.png"
                                                             alt="더 해피 450 ONE"
-                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e6eae3]"
+                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
                                                         />
                                                         <div>
-                                                            <h3 className="text-base font-bold text-[#263d36] mb-1">
+                                                            <h3 className="text-base font-bold text-[#162438] mb-1">
                                                                 더 해피 450 ONE
                                                             </h3>
-                                                            <p className="text-xs text-[#7c877b] line-clamp-2 leading-relaxed">
+                                                            <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
                                                                 기본 상조 서비스, 레디캐시, 만기 100% 전액 환급 스탠다드 플랜
                                                             </p>
                                                             <p className="text-xs font-bold text-[#9a7840] mt-1.5">
@@ -1617,16 +1617,16 @@ export default function PartnerDashboard() {
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <div className="bg-[#f8f9f5] border border-[#e6eae3] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
-                                                        <span className="text-[#8e978a] font-sans block text-[10px] font-semibold mb-0.5">
+                                                    <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                        <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
                                                             더 해피 450 공식 대표 URL
                                                         </span>
-                                                        <span className="font-semibold text-[#263d36] truncate block">
+                                                        <span className="font-semibold text-[#162438] truncate block">
                                                             {baseUrl.replace(/^https?:\/\//, "")}/products/happy450
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#edf0e7]">
+                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
                                                     <button
                                                         type="button"
                                                         onClick={() => {
@@ -1654,7 +1654,7 @@ export default function PartnerDashboard() {
                                             </div>
 
                                             {/* 마음든든 */}
-                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#adc0ad] transition-all">
+                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
                                                 <div>
                                                     <div className="flex items-center gap-1.5 mb-3">
                                                         <span className="adm-pill green">NEW 안심 플랜</span>
@@ -1664,30 +1664,30 @@ export default function PartnerDashboard() {
                                                         <img
                                                             src="/images/maeum/family-moment.png"
                                                             alt="마음든든"
-                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e6eae3]"
+                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
                                                         />
                                                         <div>
-                                                            <h3 className="text-base font-bold text-[#263d36] mb-1">
+                                                            <h3 className="text-base font-bold text-[#162438] mb-1">
                                                                 마음든든
                                                             </h3>
-                                                            <p className="text-xs text-[#7c877b] line-clamp-2 leading-relaxed">
+                                                            <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
                                                                 2·5·1 구조 잔금 보장 혜택, 약정 의전서비스 및 소노 멤버십 제공
                                                             </p>
-                                                            <p className="text-xs font-bold text-[#295e52] mt-1.5">
+                                                            <p className="text-xs font-bold text-[#163a6b] mt-1.5">
                                                                 월 32,000원부터
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <div className="bg-[#f8f9f5] border border-[#e6eae3] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
-                                                        <span className="text-[#8e978a] font-sans block text-[10px] font-semibold mb-0.5">
+                                                    <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                        <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
                                                             마음든든 공식 대표 URL
                                                         </span>
-                                                        <span className="font-semibold text-[#295e52] truncate block">
+                                                        <span className="font-semibold text-[#163a6b] truncate block">
                                                             {baseUrl.replace(/^https?:\/\//, "")}/products/maeum
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#edf0e7]">
+                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
                                                     <button
                                                         type="button"
                                                         onClick={() => {
@@ -1715,7 +1715,7 @@ export default function PartnerDashboard() {
                                             </div>
 
                                             {/* 마음든든(광고) - 총괄 어드민 전용 */}
-                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#adc0ad] transition-all">
+                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
                                                 <div>
                                                     <div className="flex items-center gap-1.5 mb-3">
                                                         <span className="adm-pill orange">광고 전용</span>
@@ -1725,13 +1725,13 @@ export default function PartnerDashboard() {
                                                         <img
                                                             src="/images/maeum/family-moment.png"
                                                             alt="마음든든(광고)"
-                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e6eae3]"
+                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
                                                         />
                                                         <div>
-                                                            <h3 className="text-base font-bold text-[#263d36] mb-1">
+                                                            <h3 className="text-base font-bold text-[#162438] mb-1">
                                                                 마음든든(광고)
                                                             </h3>
-                                                            <p className="text-xs text-[#7c877b] line-clamp-2 leading-relaxed">
+                                                            <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
                                                                 마음든든 3·4·5 상세 랜딩 (고객관리 마음든든 연동 · 별도 상품 구분)
                                                             </p>
                                                             <p className="text-xs font-bold text-[#9a7840] mt-1.5">
@@ -1739,16 +1739,16 @@ export default function PartnerDashboard() {
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <div className="bg-[#f8f9f5] border border-[#e6eae3] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
-                                                        <span className="text-[#8e978a] font-sans block text-[10px] font-semibold mb-0.5">
+                                                    <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                        <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
                                                             마음든든(광고) 공식 대표 URL
                                                         </span>
-                                                        <span className="font-semibold text-[#295e52] truncate block">
+                                                        <span className="font-semibold text-[#163a6b] truncate block">
                                                             {baseUrl.replace(/^https?:\/\//, "")}/products/maeum-ad
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#edf0e7]">
+                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
                                                     <button
                                                         type="button"
                                                         onClick={() => {
@@ -1776,7 +1776,7 @@ export default function PartnerDashboard() {
                                             </div>
 
                                             {/* 스마트케어(광고) - 총괄 어드민 전용 */}
-                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#adc0ad] transition-all">
+                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
                                                 <div>
                                                     <div className="flex items-center gap-1.5 mb-3">
                                                         <span className="adm-pill orange">광고 전용</span>
@@ -1786,30 +1786,30 @@ export default function PartnerDashboard() {
                                                         <img
                                                             src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785825079/2024112600085_0_vbmtin.jpg"
                                                             alt="스마트케어(광고)"
-                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e6eae3]"
+                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
                                                         />
                                                         <div>
-                                                            <h3 className="text-base font-bold text-[#263d36] mb-1">
+                                                            <h3 className="text-base font-bold text-[#162438] mb-1">
                                                                 스마트케어(광고)
                                                             </h3>
-                                                            <p className="text-xs text-[#7c877b] line-clamp-2 leading-relaxed">
+                                                            <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
                                                                 스마트케어 가전 렌탈·상조 결합 상세 랜딩 (고객관리 연동 · 별도 상품 구분)
                                                             </p>
-                                                            <p className="text-xs font-bold text-[#295e52] mt-1.5">
+                                                            <p className="text-xs font-bold text-[#163a6b] mt-1.5">
                                                                 월 33,000원부터
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <div className="bg-[#f8f9f5] border border-[#e6eae3] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
-                                                        <span className="text-[#8e978a] font-sans block text-[10px] font-semibold mb-0.5">
+                                                    <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                        <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
                                                             스마트케어(광고) 공식 대표 URL
                                                         </span>
-                                                        <span className="font-semibold text-[#295e52] truncate block">
+                                                        <span className="font-semibold text-[#163a6b] truncate block">
                                                             {baseUrl.replace(/^https?:\/\//, "")}/products/smartcare-ad
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#edf0e7]">
+                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
                                                     <button
                                                         type="button"
                                                         onClick={() => {
@@ -1843,11 +1843,11 @@ export default function PartnerDashboard() {
                                             <>
                                                 <div className="flex items-center justify-between px-0.5">
                                                     <div>
-                                                        <h2 className="text-base font-bold text-[#263d36] flex items-center gap-2">
-                                                            <span className="w-2 h-2 bg-[#295e52] inline-block rounded-full" />
+                                                        <h2 className="text-base font-bold text-[#162438] flex items-center gap-2">
+                                                            <span className="w-2 h-2 bg-[#163a6b] inline-block rounded-full" />
                                                             파트너 전용 상품 연결 URL 관리
                                                         </h2>
-                                                        <p className="text-xs text-[#86918a] mt-0.5">
+                                                        <p className="text-xs text-[#788699] mt-0.5">
                                                             고객에게 공유할 상품별 전용 주소와 상담 신청 링크를 복사해 활용하세요. (경로: /{partner.customUrl}/...)
                                                         </p>
                                                     </div>
@@ -1855,7 +1855,7 @@ export default function PartnerDashboard() {
 
                                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                                     {isSmartCareVisible && (
-                                                        <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#adc0ad] transition-all">
+                                                        <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
                                                             <div>
                                                                 <div className="flex items-center gap-1.5 mb-3">
                                                                     <span className="adm-pill orange">BEST POPULAR</span>
@@ -1865,30 +1865,30 @@ export default function PartnerDashboard() {
                                                                     <img
                                                                         src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785825079/2024112600085_0_vbmtin.jpg"
                                                                         alt="스마트케어"
-                                                                        className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e6eae3]"
+                                                                        className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
                                                                     />
                                                                     <div>
-                                                                        <h3 className="text-base font-bold text-[#263d36] mb-1">
+                                                                        <h3 className="text-base font-bold text-[#162438] mb-1">
                                                                             스마트케어 (SmartCare)
                                                                         </h3>
-                                                                        <p className="text-xs text-[#7c877b] line-clamp-2 leading-relaxed">
+                                                                        <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
                                                                             삼성/LG 최신 가전 렌탈 지원금 전액 제공, 만기 100% 환급 결합 플랜
                                                                         </p>
-                                                                        <p className="text-xs font-bold text-[#295e52] mt-1.5">
+                                                                        <p className="text-xs font-bold text-[#163a6b] mt-1.5">
                                                                             월 33,000원부터
                                                                         </p>
                                                                     </div>
                                                                 </div>
-                                                                <div className="bg-[#f8f9f5] border border-[#e6eae3] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
-                                                                    <span className="text-[#8e978a] font-sans block text-[10px] font-semibold mb-0.5">
+                                                                <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                                    <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
                                                                         스마트케어 파트너 전용 URL
                                                                     </span>
-                                                                    <span className="font-semibold text-[#295e52] truncate block">
+                                                                    <span className="font-semibold text-[#163a6b] truncate block">
                                                                         {baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/smartcare
                                                                     </span>
                                                                 </div>
                                                             </div>
-                                                            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#edf0e7]">
+                                                            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => {
@@ -1917,7 +1917,7 @@ export default function PartnerDashboard() {
                                                     )}
 
                                                     {isHappy450Visible && (
-                                                        <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#adc0ad] transition-all">
+                                                        <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
                                                             <div>
                                                                 <div className="flex items-center gap-1.5 mb-3">
                                                                     <span className="adm-pill orange">일반 상조 플랜</span>
@@ -1927,13 +1927,13 @@ export default function PartnerDashboard() {
                                                                     <img
                                                                         src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785308928/ChatGPT_Image_2026%EB%85%84_7%EC%9B%94_29%EC%9D%BC_%EC%98%A4%ED%9B%84_03_38_13_1_1_mpokg4.png"
                                                                         alt="더 해피 450 ONE"
-                                                                        className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e6eae3]"
+                                                                        className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
                                                                     />
                                                                     <div>
-                                                                        <h3 className="text-base font-bold text-[#263d36] mb-1">
+                                                                        <h3 className="text-base font-bold text-[#162438] mb-1">
                                                                             더 해피 450 ONE
                                                                         </h3>
-                                                                        <p className="text-xs text-[#7c877b] line-clamp-2 leading-relaxed">
+                                                                        <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
                                                                             기본 상조 서비스, 레디캐시, 만기 100% 전액 환급 스탠다드 플랜
                                                                         </p>
                                                                         <p className="text-xs font-bold text-[#9a7840] mt-1.5">
@@ -1941,16 +1941,16 @@ export default function PartnerDashboard() {
                                                                         </p>
                                                                     </div>
                                                                 </div>
-                                                                <div className="bg-[#f8f9f5] border border-[#e6eae3] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
-                                                                    <span className="text-[#8e978a] font-sans block text-[10px] font-semibold mb-0.5">
+                                                                <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                                    <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
                                                                         더 해피 450 파트너 전용 URL
                                                                     </span>
-                                                                    <span className="font-semibold text-[#263d36] truncate block">
+                                                                    <span className="font-semibold text-[#162438] truncate block">
                                                                         {baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/happy450
                                                                     </span>
                                                                 </div>
                                                             </div>
-                                                            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#edf0e7]">
+                                                            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => {
@@ -1979,7 +1979,7 @@ export default function PartnerDashboard() {
                                                     )}
 
                                                     {isMaeumVisible && (
-                                                        <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#adc0ad] transition-all">
+                                                        <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
                                                             <div>
                                                                 <div className="flex items-center gap-1.5 mb-3">
                                                                     <span className="adm-pill green">NEW 안심 플랜</span>
@@ -1989,30 +1989,30 @@ export default function PartnerDashboard() {
                                                                     <img
                                                                         src="/images/maeum/family-moment.png"
                                                                         alt="마음든든"
-                                                                        className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e6eae3]"
+                                                                        className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
                                                                     />
                                                                     <div>
-                                                                        <h3 className="text-base font-bold text-[#263d36] mb-1">
+                                                                        <h3 className="text-base font-bold text-[#162438] mb-1">
                                                                             마음든든
                                                                         </h3>
-                                                                        <p className="text-xs text-[#7c877b] line-clamp-2 leading-relaxed">
+                                                                        <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
                                                                             2·5·1 구조 잔금 보장 혜택, 약정 의전서비스 및 소노 멤버십 제공
                                                                         </p>
-                                                                        <p className="text-xs font-bold text-[#295e52] mt-1.5">
+                                                                        <p className="text-xs font-bold text-[#163a6b] mt-1.5">
                                                                             월 32,000원부터
                                                                         </p>
                                                                     </div>
                                                                 </div>
-                                                                <div className="bg-[#f8f9f5] border border-[#e6eae3] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
-                                                                    <span className="text-[#8e978a] font-sans block text-[10px] font-semibold mb-0.5">
+                                                                <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                                    <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
                                                                         마음든든 파트너 전용 URL
                                                                     </span>
-                                                                    <span className="font-semibold text-[#295e52] truncate block">
+                                                                    <span className="font-semibold text-[#163a6b] truncate block">
                                                                         {baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/maeum
                                                                     </span>
                                                                 </div>
                                                             </div>
-                                                            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#edf0e7]">
+                                                            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => {
@@ -2044,13 +2044,13 @@ export default function PartnerDashboard() {
                                         )}
 
                                         {/* 상담신청 전용 URL 카드 */}
-                                        <div className="bg-[#193f39] text-white rounded-[14px] p-5 flex flex-col md:flex-row items-center justify-between gap-4 border border-[#2d584e]">
+                                        <div className="bg-[#0c2340] text-white rounded-[14px] p-5 flex flex-col md:flex-row items-center justify-between gap-4 border border-[#2d584e]">
                                             <div className="flex items-center gap-3.5 w-full md:w-auto min-w-0">
                                                 <div className="w-11 h-11 rounded-[10px] bg-white/10 flex items-center justify-center shrink-0 border border-white/15">
                                                     <AdminIcon name="phone" className="text-[#d6e5cb]" />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <span className="bg-[#e4ecdd]/20 text-[#dbe8cd] text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider mb-0.5 inline-block">
+                                                    <span className="bg-[#dce7f7]/20 text-[#dbe8cd] text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider mb-0.5 inline-block">
                                                         INQUIRY ONLY
                                                     </span>
                                                     <h4 className="text-sm sm:text-base font-bold text-white">
@@ -2072,7 +2072,7 @@ export default function PartnerDashboard() {
                                                             setTimeout(() => setCopySuccessInquiry(false), 2000);
                                                         });
                                                     }}
-                                                    className="flex-1 md:flex-none adm-btn !bg-[#e4ecdd] !border-[#e4ecdd] !text-[#193f39] hover:!bg-white"
+                                                    className="flex-1 md:flex-none adm-btn !bg-[#dce7f7] !border-[#dce7f7] !text-[#0c2340] hover:!bg-white"
                                                 >
                                                     <AdminIcon name={copySuccessInquiry ? "check" : "copy"} />
                                                     <span>
@@ -2098,11 +2098,11 @@ export default function PartnerDashboard() {
                             <div className="mb-6">
                                 <div className="flex items-center justify-between mb-3 px-0.5">
                                     <div className="flex items-center gap-2">
-                                        <h2 className="text-sm font-bold text-[#263d36]">
+                                        <h2 className="text-sm font-bold text-[#162438]">
                                             진행 상태별 고객 현황
                                         </h2>
                                         {isAdmin && (
-                                            <span className="text-[11px] text-[#86918a] font-medium">
+                                            <span className="text-[11px] text-[#788699] font-medium">
                                                 · 드래그하여 상태 순서 변경 가능
                                             </span>
                                         )}
@@ -2170,10 +2170,10 @@ export default function PartnerDashboard() {
                                                 }
                                                 className={`adm-panel p-3.5 cursor-pointer transition-all hover:border-[#9eb49e] ${
                                                     isSelected
-                                                        ? "!border-[#295e52] ring-2 ring-[#295e52]/20 !bg-[#f6faf4]"
+                                                        ? "!border-[#163a6b] ring-2 ring-[#163a6b]/20 !bg-[#f6faf4]"
                                                         : ""
                                                 } ${isDraggingThis ? "opacity-35" : ""} ${
-                                                    isDragOverThis ? "!border-[#295e52] !bg-[#eef5eb]" : ""
+                                                    isDragOverThis ? "!border-[#163a6b] !bg-[#edf2fa]" : ""
                                                 }`}
                                             >
                                                 <div className="flex justify-between items-start mb-2">
@@ -2197,10 +2197,10 @@ export default function PartnerDashboard() {
                                                     )}
                                                 </div>
                                                 <div className="flex items-baseline gap-1">
-                                                    <span className="text-xl font-bold text-[#263d36] tracking-tight tabular-nums">
+                                                    <span className="text-xl font-bold text-[#162438] tracking-tight tabular-nums">
                                                         {statusCounts[status] || 0}
                                                     </span>
-                                                    <span className="text-[#86918a] font-semibold text-[11px]">
+                                                    <span className="text-[#788699] font-semibold text-[11px]">
                                                         건
                                                     </span>
                                                 </div>
@@ -2212,14 +2212,14 @@ export default function PartnerDashboard() {
 
                             {/* 대시보드 하단 최근/필터링 고객 목록 패널 */}
                             <section className="adm-panel p-5 md:p-6">
-                                <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#edf0e7]">
+                                <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#eaeff7]">
                                     <div>
-                                        <h2 className="text-base font-bold text-[#263d36]">
+                                        <h2 className="text-base font-bold text-[#162438]">
                                             {selectedOverviewStatus === "all"
                                                 ? "전체 접수 고객 목록"
                                                 : `'${selectedOverviewStatus}' 상태 고객 목록`}
                                         </h2>
-                                        <p className="text-xs text-[#86918a] mt-0.5">
+                                        <p className="text-xs text-[#788699] mt-0.5">
                                             고객 행을 클릭하면 우측 상세 패널에서 정보·상담이력·녹취를 확인하고 수정할 수 있습니다.
                                         </p>
                                     </div>

@@ -97,36 +97,36 @@ export default function PromotionManagement() {
             </section>
 
             {!promotions ? (
-                <div className="adm-panel p-14 text-center text-xs text-[#86918a]">
+                <div className="adm-panel p-14 text-center text-xs text-[#788699]">
                     프로모션 목록을 불러오는 중...
                 </div>
             ) : promotions.length === 0 ? (
                 <div className="adm-panel p-16 text-center">
-                    <AdminIcon name="gift" className="mx-auto mb-3 !w-8 !h-8 text-[#a6b6a1]" />
-                    <strong className="block text-sm text-[#263d36] mb-1">등록된 프로모션이 없습니다</strong>
-                    <p className="text-xs text-[#86918a]">우측 상단 버튼을 눌러 새로운 프로모션을 등록하세요.</p>
+                    <AdminIcon name="gift" className="mx-auto mb-3 !w-8 !h-8 text-[#8da4c4]" />
+                    <strong className="block text-sm text-[#162438] mb-1">등록된 프로모션이 없습니다</strong>
+                    <p className="text-xs text-[#788699]">우측 상단 버튼을 눌러 새로운 프로모션을 등록하세요.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     {promotions.map((p, idx) => (
                         <article
                             key={p._id}
-                            className="adm-panel flex flex-col overflow-hidden hover:border-[#adc0ad] transition-all"
+                            className="adm-panel flex flex-col overflow-hidden hover:border-[#9cb2cf] transition-all"
                         >
                             {p.imageUrl ? (
                                 <img
                                     src={p.imageUrl}
                                     alt={p.title}
-                                    className="w-full h-40 object-cover border-b border-[#e6eae3]"
+                                    className="w-full h-40 object-cover border-b border-[#e1e7f0]"
                                 />
                             ) : (
                                 <div
                                     className={`h-36 p-6 flex flex-col justify-center relative overflow-hidden ${
                                         idx % 3 === 1
-                                            ? "bg-[#193f39] text-[#f2f0dc]"
+                                            ? "bg-[#0c2340] text-[#f2f0dc]"
                                             : idx % 3 === 2
                                             ? "bg-[#eee8d7] text-[#5e5a3f]"
-                                            : "bg-[#e5ecdc] text-[#263d36]"
+                                            : "bg-[#e3ebf7] text-[#162438]"
                                     }`}
                                 >
                                     <small className="text-[9px] tracking-[1.8px] uppercase opacity-75 mb-2 font-semibold">
@@ -142,11 +142,11 @@ export default function PromotionManagement() {
                                     <span className={`adm-pill ${p.isActive ? "green" : "gray"}`}>
                                         {p.isActive ? "운영중 (활성)" : "비활성"}
                                     </span>
-                                    <span className="text-[11px] text-[#86918a] font-medium">
+                                    <span className="text-[11px] text-[#788699] font-medium">
                                         {p.period}
                                     </span>
                                 </div>
-                                <h3 className="font-bold text-base text-[#263d36] mb-1.5">
+                                <h3 className="font-bold text-base text-[#162438] mb-1.5">
                                     {p.title}
                                 </h3>
                                 <p className="text-xs text-[#7d887b] line-clamp-2 leading-relaxed mb-5 flex-1">
@@ -203,69 +203,69 @@ export default function PromotionManagement() {
                 >
                     <form id="promotion-form-drawer" onSubmit={handleSave} className="space-y-4">
                         <div>
-                            <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                            <label className="block text-xs font-bold text-[#475870] mb-1.5">
                                 프로모션 제목
                             </label>
                             <input
                                 type="text"
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                className="w-full bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#295e52] outline-none"
+                                className="w-full bg-[#f7f9fc] border border-[#dce4f0] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#163a6b] outline-none"
                                 required
                                 placeholder="예: 네이버포인트 즉시지급 이벤트"
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                            <label className="block text-xs font-bold text-[#475870] mb-1.5">
                                 진행 기간
                             </label>
                             <input
                                 type="text"
                                 value={formData.period}
                                 onChange={(e) => setFormData({ ...formData, period: e.target.value })}
-                                className="w-full bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#295e52] outline-none"
+                                className="w-full bg-[#f7f9fc] border border-[#dce4f0] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#163a6b] outline-none"
                                 required
                                 placeholder="예: 2026.11.01 ~ 2026.11.30"
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                            <label className="block text-xs font-bold text-[#475870] mb-1.5">
                                 혜택 안내 (텍스트)
                             </label>
                             <textarea
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#295e52] outline-none h-28"
+                                className="w-full bg-[#f7f9fc] border border-[#dce4f0] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#163a6b] outline-none h-28"
                                 placeholder="프로모션 혜택에 대해 설명해주세요."
                             />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                                <label className="block text-xs font-bold text-[#475870] mb-1.5">
                                     혜택 이미지 URL
                                 </label>
                                 <input
                                     type="text"
                                     value={formData.imageUrl}
                                     onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                                    className="w-full bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#295e52] outline-none"
+                                    className="w-full bg-[#f7f9fc] border border-[#dce4f0] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#163a6b] outline-none"
                                     placeholder="https://..."
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-[#5d6e5c] mb-1.5">
+                                <label className="block text-xs font-bold text-[#475870] mb-1.5">
                                     외부 링크 (선택)
                                 </label>
                                 <input
                                     type="text"
                                     value={formData.externalUrl}
                                     onChange={(e) => setFormData({ ...formData, externalUrl: e.target.value })}
-                                    className="w-full bg-[#f9faf7] border border-[#dfe5d9] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#295e52] outline-none"
+                                    className="w-full bg-[#f7f9fc] border border-[#dce4f0] rounded-[9px] px-3.5 py-2.5 text-sm focus:bg-white focus:border-[#163a6b] outline-none"
                                     placeholder="https://..."
                                 />
                             </div>
                         </div>
-                        <div className="flex items-center gap-2.5 pt-2 bg-[#f8f9f5] p-3.5 rounded-[10px] border border-[#e6eae3]">
+                        <div className="flex items-center gap-2.5 pt-2 bg-[#f6f8fc] p-3.5 rounded-[10px] border border-[#e1e7f0]">
                             <input
                                 type="checkbox"
                                 id="isActive"
@@ -273,7 +273,7 @@ export default function PromotionManagement() {
                                 onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
                                 className="w-4 h-4 rounded cursor-pointer"
                             />
-                            <label htmlFor="isActive" className="text-xs font-bold text-[#263d36] cursor-pointer">
+                            <label htmlFor="isActive" className="text-xs font-bold text-[#162438] cursor-pointer">
                                 활성 상태로 노출
                             </label>
                         </div>

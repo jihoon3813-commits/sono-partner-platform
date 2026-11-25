@@ -582,7 +582,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                         <div className="flex items-start gap-2.5">
                             <AdminIcon name="info" className="mt-0.5" />
                             <div className="space-y-1 text-xs">
-                                <strong className="block text-[#263d36]">엑셀 일괄 등록 가이드</strong>
+                                <strong className="block text-[#162438]">엑셀 일괄 등록 가이드</strong>
                                 <ol className="list-decimal list-inside space-y-0.5 text-[#5a6659]">
                                     <li>[양식 다운로드] 버튼을 눌러 엑셀 파일을 다운로드합니다.</li>
                                     <li>다운로드한 파일에 고객 정보를 입력합니다. (헤더 삭제 금지)</li>
@@ -905,13 +905,13 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                         {stagedCustomers.length > 0 ? stagedCustomers.map((c) => (
                                             <tr key={c.id}>
                                                 {showPartnerSelect && (
-                                                    <td className="font-semibold text-xs text-[#263d36] truncate max-w-[140px]">
+                                                    <td className="font-semibold text-xs text-[#162438] truncate max-w-[140px]">
                                                         {c.selectedPartnerName || c.selectedPartnerLoginId || "-"}
                                                     </td>
                                                 )}
-                                                <td className="font-bold text-[#263d36]">{c.customerName}</td>
-                                                <td className="font-mono text-xs text-[#6b7768]">{c.customerPhone}</td>
-                                                <td className="text-xs text-[#6b7768]">{c.preferredContactTime || "-"}</td>
+                                                <td className="font-bold text-[#162438]">{c.customerName}</td>
+                                                <td className="font-mono text-xs text-[#5a6b82]">{c.customerPhone}</td>
+                                                <td className="text-xs text-[#5a6b82]">{c.preferredContactTime || "-"}</td>
                                                 <td>
                                                     <span className={`adm-pill ${c.productType.includes('스마트') ? 'teal' : 'green'}`}>
                                                         {c.productType}
@@ -930,7 +930,7 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                                             </tr>
                                         )) : (
                                             <tr>
-                                                <td colSpan={showPartnerSelect ? 7 : 6} className="py-10 text-center text-xs text-[#86918a]">
+                                                <td colSpan={showPartnerSelect ? 7 : 6} className="py-10 text-center text-xs text-[#788699]">
                                                     등록 대기 중인 고객이 없습니다. 위에서 고객을 추가하거나 엑셀을 업로드해 주세요.
                                                 </td>
                                             </tr>
@@ -943,9 +943,9 @@ export default function CustomerRegistrationModal({ onClose, onSuccess, partner,
                     {/* Postcode Modal */}
                     {isOpenPostcode && (
                         <div className="fixed inset-0 z-[210] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setIsOpenPostcode(false)}>
-                            <div className="bg-white rounded-[14px] shadow-2xl w-full max-w-lg overflow-hidden relative border border-[#e6eae3]" onClick={(e) => e.stopPropagation()}>
-                                <div className="flex justify-between items-center px-5 py-3.5 border-b border-[#e6eae3] bg-[#f8f9f5]">
-                                    <h3 className="font-bold text-[#263d36] text-sm">주소 검색</h3>
+                            <div className="bg-white rounded-[14px] shadow-2xl w-full max-w-lg overflow-hidden relative border border-[#e1e7f0]" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex justify-between items-center px-5 py-3.5 border-b border-[#e1e7f0] bg-[#f6f8fc]">
+                                    <h3 className="font-bold text-[#162438] text-sm">주소 검색</h3>
                                     <button type="button" onClick={() => setIsOpenPostcode(false)} className="adm-icon-btn">
                                         <AdminIcon name="close" />
                                     </button>

@@ -71,7 +71,7 @@ export default function AnalyticsDashboard() {
 
     if (!stats) {
         return (
-            <div className="adm-panel p-14 text-center text-xs font-semibold text-[#86918a]">
+            <div className="adm-panel p-14 text-center text-xs font-semibold text-[#788699]">
                 통계 데이터를 불러오는 중...
             </div>
         );
@@ -117,7 +117,7 @@ export default function AnalyticsDashboard() {
                 </div>
                 <div className="adm-heading-buttons">
                     <span className="adm-pill green !py-1.5 !px-2.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#295e52] animate-pulse" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#163a6b] animate-pulse" />
                         LIVE 실시간 집계
                     </span>
                     <button
@@ -136,8 +136,8 @@ export default function AnalyticsDashboard() {
             {/* 조회 기간 및 파트너 필터 바 */}
             <section className="adm-panel px-5 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
                 <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="text-xs font-bold text-[#5d6c5d] inline-flex items-center gap-1.5 mr-1">
-                        <AdminIcon name="calendar" className="!w-4 !h-4 text-[#295e52]" />
+                    <span className="text-xs font-bold text-[#475870] inline-flex items-center gap-1.5 mr-1">
+                        <AdminIcon name="calendar" className="!w-4 !h-4 text-[#163a6b]" />
                         조회 기간 (KST)
                     </span>
                     <div className="adm-segmented">
@@ -208,7 +208,7 @@ export default function AnalyticsDashboard() {
                             }}
                             className="adm-input !min-h-[34px] !py-1 !px-2.5 text-xs font-semibold cursor-pointer"
                         />
-                        <span className="text-[#86918a] text-xs">~</span>
+                        <span className="text-[#788699] text-xs">~</span>
                         <input
                             type="date"
                             value={endDate}
@@ -334,7 +334,7 @@ export default function AnalyticsDashboard() {
                         <select
                             value={selectedDate}
                             onChange={(e) => setSelectedDate(e.target.value)}
-                            className="adm-select !min-h-[34px] font-bold text-[#295e52]"
+                            className="adm-select !min-h-[34px] font-bold text-[#163a6b]"
                         >
                             {stats.daily.map((d: any) => (
                                 <option key={d.date} value={d.date}>
@@ -347,7 +347,7 @@ export default function AnalyticsDashboard() {
 
                 <div className="adm-chart-summary">
                     <span className="adm-legend-item">
-                        <i className="adm-legend-dot" style={{ background: "#295e52" }} />
+                        <i className="adm-legend-dot" style={{ background: "#163a6b" }} />
                         PV (페이지뷰)
                     </span>
                     <span className="adm-legend-item">
@@ -363,7 +363,7 @@ export default function AnalyticsDashboard() {
 
                 {stats.daily.length > 0 ? (
                     <div className="px-5 pt-4 pb-5">
-                        <div className="relative border border-[#edf0e8] rounded-[11px] bg-[#fafbf8] px-4 pt-6 pb-3 overflow-x-auto">
+                        <div className="relative border border-[#edf0e8] rounded-[11px] bg-[#f8fafd] px-4 pt-6 pb-3 overflow-x-auto">
                             {/* 배경 가이드 그리드 라인 */}
                             <div className="pointer-events-none absolute inset-x-4 top-6 h-[168px] flex flex-col justify-between">
                                 {[0, 1, 2, 3].map((i) => (
@@ -401,20 +401,20 @@ export default function AnalyticsDashboard() {
                                             onClick={() => setSelectedDate(d.date)}
                                             className={`group flex flex-col items-center w-[72px] sm:w-[82px] px-2 pt-2 pb-2 rounded-[10px] border transition-all cursor-pointer ${
                                                 isSelected
-                                                    ? "bg-white border-[#295e52] shadow-xs"
-                                                    : "bg-transparent border-transparent hover:bg-white/80 hover:border-[#dfe5d9]"
+                                                    ? "bg-white border-[#163a6b] shadow-xs"
+                                                    : "bg-transparent border-transparent hover:bg-white/80 hover:border-[#dce4f0]"
                                             }`}
                                         >
                                             <div className="w-full h-[168px] flex justify-center items-end gap-1.5 pb-1">
                                                 {/* PV Bar */}
                                                 <div className="flex flex-col items-center justify-end h-full">
                                                     {d.pv > 0 && (
-                                                        <span className="text-[9px] font-bold text-[#295e52] mb-1 tabular-nums">
+                                                        <span className="text-[9px] font-bold text-[#163a6b] mb-1 tabular-nums">
                                                             {d.pv}
                                                         </span>
                                                     )}
                                                     <div
-                                                        className="w-2.5 rounded-t-[3px] bg-[#295e52] transition-all group-hover:opacity-90"
+                                                        className="w-2.5 rounded-t-[3px] bg-[#163a6b] transition-all group-hover:opacity-90"
                                                         style={{ height: `${pvH}px` }}
                                                         title={`PV: ${d.pv}건`}
                                                     />
@@ -449,12 +449,12 @@ export default function AnalyticsDashboard() {
                                                 </div>
                                             </div>
 
-                                            <div className="w-full pt-2 mt-1 border-t border-[#edf0e7] flex flex-col items-center">
+                                            <div className="w-full pt-2 mt-1 border-t border-[#eaeff7] flex flex-col items-center">
                                                 <span
                                                     className={`text-[11px] font-bold tabular-nums ${
                                                         isSelected
-                                                            ? "text-[#295e52]"
-                                                            : "text-[#45554e]"
+                                                            ? "text-[#163a6b]"
+                                                            : "text-[#3b495c]"
                                                     }`}
                                                 >
                                                     {d.date.slice(5).replace("-", ".")}
@@ -462,7 +462,7 @@ export default function AnalyticsDashboard() {
                                                 <span
                                                     className={`mt-1 h-1 rounded-full transition-all ${
                                                         isSelected
-                                                            ? "w-5 bg-[#295e52]"
+                                                            ? "w-5 bg-[#163a6b]"
                                                             : "w-1 bg-transparent"
                                                     }`}
                                                 />
@@ -474,7 +474,7 @@ export default function AnalyticsDashboard() {
                         </div>
                     </div>
                 ) : (
-                    <div className="py-14 text-center text-xs text-[#86918a]">
+                    <div className="py-14 text-center text-xs text-[#788699]">
                         조회 기간 내 집계된 일별 데이터가 없습니다.
                     </div>
                 )}
@@ -482,37 +482,37 @@ export default function AnalyticsDashboard() {
 
             {/* 선택 일자 상세 유입 사이트 & IP 분석 패널 */}
             <section className="adm-panel">
-                <div className="px-5 pt-5 pb-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-[#edf0e7]">
+                <div className="px-5 pt-5 pb-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-[#eaeff7]">
                     <div>
                         <div className="flex items-center gap-2.5 flex-wrap">
                             <span className="adm-pill green !text-xs !px-2.5 !py-1 font-mono">
                                 {selectedDate}
                             </span>
-                            <h2 className="text-base font-bold text-[#263d36]">
+                            <h2 className="text-base font-bold text-[#162438]">
                                 일자별 상세 유입 사이트 &amp; IP 분석
                             </h2>
                         </div>
-                        <p className="text-xs text-[#86918a] mt-1">
+                        <p className="text-xs text-[#788699] mt-1">
                             선택한 날짜({selectedDate})에 접속한 유입 출처(네이버, 구글, 카카오 등)와 방문자 IP 현황입니다.
                         </p>
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
-                        <div className="px-3 py-1.5 rounded-[8px] bg-[#f8f9f5] border border-[#e6eae3] text-xs flex items-center gap-2">
-                            <span className="text-[#86918a] font-medium">일자 PV</span>
-                            <strong className="text-[#263d36] tabular-nums">
+                        <div className="px-3 py-1.5 rounded-[8px] bg-[#f6f8fc] border border-[#e1e7f0] text-xs flex items-center gap-2">
+                            <span className="text-[#788699] font-medium">일자 PV</span>
+                            <strong className="text-[#162438] tabular-nums">
                                 {dailyDetails?.totalPv.toLocaleString() || 0}건
                             </strong>
                         </div>
-                        <div className="px-3 py-1.5 rounded-[8px] bg-[#f8f9f5] border border-[#e6eae3] text-xs flex items-center gap-2">
-                            <span className="text-[#86918a] font-medium">일자 UV</span>
-                            <strong className="text-[#295e52] tabular-nums">
+                        <div className="px-3 py-1.5 rounded-[8px] bg-[#f6f8fc] border border-[#e1e7f0] text-xs flex items-center gap-2">
+                            <span className="text-[#788699] font-medium">일자 UV</span>
+                            <strong className="text-[#163a6b] tabular-nums">
                                 {dailyDetails?.totalUv.toLocaleString() || 0}명
                             </strong>
                         </div>
-                        <div className="px-3 py-1.5 rounded-[8px] bg-[#f8f9f5] border border-[#e6eae3] text-xs flex items-center gap-2">
-                            <span className="text-[#86918a] font-medium">접속 IP</span>
-                            <strong className="text-[#295e52] tabular-nums">
+                        <div className="px-3 py-1.5 rounded-[8px] bg-[#f6f8fc] border border-[#e1e7f0] text-xs flex items-center gap-2">
+                            <span className="text-[#788699] font-medium">접속 IP</span>
+                            <strong className="text-[#163a6b] tabular-nums">
                                 {dailyDetails?.totalUniqueIps.toLocaleString() || 0}개
                             </strong>
                         </div>
@@ -520,7 +520,7 @@ export default function AnalyticsDashboard() {
                 </div>
 
                 {/* 언더라인 탭 네비게이션 */}
-                <div className="flex flex-wrap items-center justify-between border-b border-[#e6eae3] pr-4">
+                <div className="flex flex-wrap items-center justify-between border-b border-[#e1e7f0] pr-4">
                     <div className="adm-tabs !border-b-0">
                         <button
                             type="button"
@@ -586,7 +586,7 @@ export default function AnalyticsDashboard() {
                                     <tbody>
                                         {dailyDetails.referrers.map((ref: any, idx: number) => (
                                             <tr key={ref.domain + idx}>
-                                                <td className="text-center font-mono text-xs text-[#86918a]">
+                                                <td className="text-center font-mono text-xs text-[#788699]">
                                                     #{idx + 1}
                                                 </td>
                                                 <td>
@@ -598,19 +598,19 @@ export default function AnalyticsDashboard() {
                                                         {ref.siteName}
                                                     </span>
                                                 </td>
-                                                <td className="font-mono text-xs text-[#6b7768] max-w-xs truncate">
+                                                <td className="font-mono text-xs text-[#5a6b82] max-w-xs truncate">
                                                     {ref.rawUrls && ref.rawUrls.length > 0 ? (
                                                         <a
                                                             href={ref.rawUrls[0]}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="hover:underline hover:text-[#295e52] truncate block"
+                                                            className="hover:underline hover:text-[#163a6b] truncate block"
                                                             title={ref.rawUrls[0]}
                                                         >
                                                             {ref.rawUrls[0]}
                                                         </a>
                                                     ) : ref.domain === "direct" ? (
-                                                        <span className="font-sans text-[#86918a]">
+                                                        <span className="font-sans text-[#788699]">
                                                             직접 접속 / 문자 / 북마크
                                                         </span>
                                                     ) : ref.domain === "kakaotalk" ? (
@@ -621,15 +621,15 @@ export default function AnalyticsDashboard() {
                                                         ref.domain
                                                     )}
                                                 </td>
-                                                <td className="text-right font-bold text-[#263d36] tabular-nums">
+                                                <td className="text-right font-bold text-[#162438] tabular-nums">
                                                     {ref.pv.toLocaleString()}건
                                                 </td>
-                                                <td className="text-right font-bold text-[#295e52] tabular-nums">
+                                                <td className="text-right font-bold text-[#163a6b] tabular-nums">
                                                     {ref.uv.toLocaleString()}명
                                                 </td>
                                                 <td>
                                                     <div className="flex items-center justify-end gap-2.5">
-                                                        <span className="text-xs font-semibold text-[#45554e] tabular-nums w-10 text-right">
+                                                        <span className="text-xs font-semibold text-[#3b495c] tabular-nums w-10 text-right">
                                                             {ref.percentage}%
                                                         </span>
                                                         <div className="adm-bar-track w-24">
@@ -650,7 +650,7 @@ export default function AnalyticsDashboard() {
                                 </table>
                             </div>
                         ) : (
-                            <div className="py-14 text-center text-xs text-[#86918a]">
+                            <div className="py-14 text-center text-xs text-[#788699]">
                                 [{selectedDate}] 일자에 기록된 유입 사이트 데이터가 없습니다.
                             </div>
                         )}
@@ -676,10 +676,10 @@ export default function AnalyticsDashboard() {
                                     <tbody>
                                         {dailyDetails.ips.map((ipItem: any, idx: number) => (
                                             <tr key={ipItem.ip + idx}>
-                                                <td className="text-center font-mono text-xs text-[#86918a]">
+                                                <td className="text-center font-mono text-xs text-[#788699]">
                                                     #{idx + 1}
                                                 </td>
-                                                <td className="font-mono font-semibold text-[#263d36]">
+                                                <td className="font-mono font-semibold text-[#162438]">
                                                     <span className="adm-pill blue font-mono">
                                                         {ipItem.ip}
                                                     </span>
@@ -689,13 +689,13 @@ export default function AnalyticsDashboard() {
                                                         {ipItem.lastPath}
                                                     </span>
                                                 </td>
-                                                <td className="text-right font-bold text-[#263d36] tabular-nums">
+                                                <td className="text-right font-bold text-[#162438] tabular-nums">
                                                     {ipItem.pv.toLocaleString()}건
                                                 </td>
-                                                <td className="text-right font-bold text-[#295e52] tabular-nums">
+                                                <td className="text-right font-bold text-[#163a6b] tabular-nums">
                                                     {ipItem.uv.toLocaleString()}명
                                                 </td>
-                                                <td className="text-right font-mono text-xs text-[#86918a]">
+                                                <td className="text-right font-mono text-xs text-[#788699]">
                                                     {ipItem.lastTime
                                                         ? new Date(
                                                               ipItem.lastTime
@@ -713,7 +713,7 @@ export default function AnalyticsDashboard() {
                                 </table>
                             </div>
                         ) : (
-                            <div className="py-14 text-center text-xs text-[#86918a]">
+                            <div className="py-14 text-center text-xs text-[#788699]">
                                 [{selectedDate}] 일자에 기록된 IP 주소 데이터가 없습니다.
                             </div>
                         )}
@@ -739,7 +739,7 @@ export default function AnalyticsDashboard() {
                                     <tbody>
                                         {filteredLogs.map((log: any) => (
                                             <tr key={log._id}>
-                                                <td className="font-mono text-xs text-[#6b7768]">
+                                                <td className="font-mono text-xs text-[#5a6b82]">
                                                     {log.createdAt
                                                         ? new Date(
                                                               log.createdAt
@@ -751,7 +751,7 @@ export default function AnalyticsDashboard() {
                                                           })
                                                         : "-"}
                                                 </td>
-                                                <td className="font-semibold text-[#263d36]">
+                                                <td className="font-semibold text-[#162438]">
                                                     {log.partnerName}
                                                 </td>
                                                 <td>
@@ -763,14 +763,14 @@ export default function AnalyticsDashboard() {
                                                         {log.siteName || "직접 유입"}
                                                     </span>
                                                 </td>
-                                                <td className="font-mono font-semibold text-[#295e52]">
+                                                <td className="font-mono font-semibold text-[#163a6b]">
                                                     {log.ip || "미수집"}
                                                 </td>
-                                                <td className="font-mono text-xs text-[#6b7768]">
+                                                <td className="font-mono text-xs text-[#5a6b82]">
                                                     {log.path}
                                                 </td>
                                                 <td
-                                                    className="text-xs text-[#86918a] max-w-xs truncate"
+                                                    className="text-xs text-[#788699] max-w-xs truncate"
                                                     title={log.userAgent}
                                                 >
                                                     {log.userAgent || "Standard Browser"}
@@ -781,7 +781,7 @@ export default function AnalyticsDashboard() {
                                 </table>
                             </div>
                         ) : (
-                            <div className="py-14 text-center text-xs text-[#86918a]">
+                            <div className="py-14 text-center text-xs text-[#788699]">
                                 검색 조건에 해당하는 접속 로그가 없습니다.
                             </div>
                         )}
@@ -793,7 +793,7 @@ export default function AnalyticsDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {/* 주요 페이지 유입 경로 */}
                 <section className="adm-panel flex flex-col">
-                    <div className="adm-panel-top pb-4 border-b border-[#edf0e7]">
+                    <div className="adm-panel-top pb-4 border-b border-[#eaeff7]">
                         <div>
                             <h2>주요 페이지 유입 경로</h2>
                             <p className="adm-panel-subtitle">
@@ -817,10 +817,10 @@ export default function AnalyticsDashboard() {
                                 <tbody>
                                     {stats.paths.slice(0, 8).map((p: any, idx: number) => (
                                         <tr key={p.path}>
-                                            <td className="text-center font-mono text-xs text-[#86918a]">
+                                            <td className="text-center font-mono text-xs text-[#788699]">
                                                 {idx + 1}
                                             </td>
-                                            <td className="font-mono text-xs font-semibold text-[#263d36] max-w-[180px] truncate">
+                                            <td className="font-mono text-xs font-semibold text-[#162438] max-w-[180px] truncate">
                                                 {p.path}
                                             </td>
                                             <td>
@@ -832,10 +832,10 @@ export default function AnalyticsDashboard() {
                                                         : "상품페이지"}
                                                 </span>
                                             </td>
-                                            <td className="text-right font-bold text-[#263d36] tabular-nums">
+                                            <td className="text-right font-bold text-[#162438] tabular-nums">
                                                 {p.pv.toLocaleString()}
                                             </td>
-                                            <td className="text-right font-semibold text-[#295e52] tabular-nums">
+                                            <td className="text-right font-semibold text-[#163a6b] tabular-nums">
                                                 {p.uv.toLocaleString()}
                                             </td>
                                             <td>
@@ -856,7 +856,7 @@ export default function AnalyticsDashboard() {
                             </table>
                         </div>
                     ) : (
-                        <div className="py-12 text-center text-xs text-[#86918a]">
+                        <div className="py-12 text-center text-xs text-[#788699]">
                             집계된 페이지 유입 데이터가 없습니다.
                         </div>
                     )}
@@ -864,7 +864,7 @@ export default function AnalyticsDashboard() {
 
                 {/* 파트너별 성과 비교 */}
                 <section className="adm-panel flex flex-col">
-                    <div className="adm-panel-top pb-4 border-b border-[#edf0e7]">
+                    <div className="adm-panel-top pb-4 border-b border-[#eaeff7]">
                         <div>
                             <h2>파트너별 성과 비교</h2>
                             <p className="adm-panel-subtitle">
@@ -896,21 +896,21 @@ export default function AnalyticsDashboard() {
                                                 : "0.0";
                                         return (
                                             <tr key={p.partnerId}>
-                                                <td className="text-center font-mono text-xs text-[#86918a]">
+                                                <td className="text-center font-mono text-xs text-[#788699]">
                                                     {idx + 1}
                                                 </td>
-                                                <td className="font-bold text-[#263d36]">
+                                                <td className="font-bold text-[#162438]">
                                                     {pInfo?.companyName || p.partnerId}
                                                 </td>
                                                 <td className="text-right tabular-nums text-xs">
-                                                    <strong className="text-[#263d36]">
+                                                    <strong className="text-[#162438]">
                                                         {p.pv.toLocaleString()}
                                                     </strong>{" "}
-                                                    <span className="text-[#86918a]">
+                                                    <span className="text-[#788699]">
                                                         / {p.uv.toLocaleString()}명
                                                     </span>
                                                 </td>
-                                                <td className="text-right font-bold text-[#295e52] tabular-nums">
+                                                <td className="text-right font-bold text-[#163a6b] tabular-nums">
                                                     {p.apps.toLocaleString()}건
                                                 </td>
                                                 <td className="text-right">
@@ -939,7 +939,7 @@ export default function AnalyticsDashboard() {
                             </table>
                         </div>
                     ) : (
-                        <div className="py-12 text-center text-xs text-[#86918a]">
+                        <div className="py-12 text-center text-xs text-[#788699]">
                             집계된 파트너 성과 데이터가 없습니다.
                         </div>
                     )}

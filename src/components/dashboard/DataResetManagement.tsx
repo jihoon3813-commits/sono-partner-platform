@@ -91,7 +91,7 @@ export default function DataResetManagement() {
             </div>
 
             {resultMessage && (
-                <div className="adm-note-card !bg-[#eef5eb] !border-[#cbe0c4] text-[#295e52] flex items-center gap-2.5 text-xs font-bold">
+                <div className="adm-note-card !bg-[#edf2fa] !border-[#cfdcf0] text-[#163a6b] flex items-center gap-2.5 text-xs font-bold">
                     <AdminIcon name="check-circle" />
                     <span>{resultMessage}</span>
                 </div>
@@ -113,101 +113,101 @@ export default function DataResetManagement() {
 
                 <div className="p-5">
                     {!tableCounts ? (
-                        <div className="py-10 text-center text-[#86918a] text-xs font-semibold">
+                        <div className="py-10 text-center text-[#788699] text-xs font-semibold">
                             Convex 실시간 데이터 건수를 집계하고 있습니다...
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                             <div className="adm-note-card flex flex-col justify-between">
-                                <span className="text-xs font-semibold text-[#6f7c6c]">고객 신청 내역 (applications)</span>
+                                <span className="text-xs font-semibold text-[#5a6b82]">고객 신청 내역 (applications)</span>
                                 <div className="mt-2 flex items-baseline justify-between">
-                                    <span className="text-xl font-bold text-[#263d36] tabular-nums">
+                                    <span className="text-xl font-bold text-[#162438] tabular-nums">
                                         {tableCounts.applications.toLocaleString()}
                                     </span>
-                                    <span className="text-xs text-[#86918a] font-semibold">건</span>
+                                    <span className="text-xs text-[#788699] font-semibold">건</span>
                                 </div>
                             </div>
 
                             <div className="adm-note-card flex flex-col justify-between">
-                                <span className="text-xs font-semibold text-[#6f7c6c]">유지율 현황 (retentionRecords)</span>
+                                <span className="text-xs font-semibold text-[#5a6b82]">유지율 현황 (retentionRecords)</span>
                                 <div className="mt-2 flex items-baseline justify-between">
-                                    <span className="text-xl font-bold text-[#263d36] tabular-nums">
+                                    <span className="text-xl font-bold text-[#162438] tabular-nums">
                                         {tableCounts.retentionRecords.toLocaleString()}
                                     </span>
-                                    <span className="text-xs text-[#86918a] font-semibold">건</span>
+                                    <span className="text-xs text-[#788699] font-semibold">건</span>
                                 </div>
                             </div>
 
                             <div className="adm-note-card flex flex-col justify-between">
-                                <span className="text-xs font-semibold text-[#6f7c6c]">연체/환수 현황 (retentionRecords2)</span>
+                                <span className="text-xs font-semibold text-[#5a6b82]">연체/환수 현황 (retentionRecords2)</span>
                                 <div className="mt-2 flex items-baseline justify-between">
-                                    <span className="text-xl font-bold text-[#263d36] tabular-nums">
+                                    <span className="text-xl font-bold text-[#162438] tabular-nums">
                                         {tableCounts.retentionRecords2.toLocaleString()}
                                     </span>
-                                    <span className="text-xs text-[#86918a] font-semibold">건</span>
+                                    <span className="text-xs text-[#788699] font-semibold">건</span>
                                 </div>
                             </div>
 
                             <div className="adm-note-card flex flex-col justify-between">
-                                <span className="text-xs font-semibold text-[#6f7c6c]">연체(8월 이후 가입)</span>
+                                <span className="text-xs font-semibold text-[#5a6b82]">연체(8월 이후 가입)</span>
                                 <div className="mt-2 flex items-baseline justify-between">
-                                    <span className="text-xl font-bold text-[#263d36] tabular-nums">
+                                    <span className="text-xl font-bold text-[#162438] tabular-nums">
                                         {((tableCounts as any).retentionRecords3 || 0).toLocaleString()}
                                     </span>
-                                    <span className="text-xs text-[#86918a] font-semibold">건</span>
+                                    <span className="text-xs text-[#788699] font-semibold">건</span>
                                 </div>
                             </div>
 
                             <div className="adm-note-card flex flex-col justify-between">
-                                <span className="text-xs font-semibold text-[#6f7c6c]">상태 변경 이력 (statusHistory)</span>
+                                <span className="text-xs font-semibold text-[#5a6b82]">상태 변경 이력 (statusHistory)</span>
                                 <div className="mt-2 flex items-baseline justify-between">
-                                    <span className="text-xl font-bold text-[#263d36] tabular-nums">
+                                    <span className="text-xl font-bold text-[#162438] tabular-nums">
                                         {tableCounts.statusHistory.toLocaleString()}
                                     </span>
-                                    <span className="text-xs text-[#86918a] font-semibold">건</span>
+                                    <span className="text-xs text-[#788699] font-semibold">건</span>
                                 </div>
                             </div>
 
                             <div className="adm-note-card flex flex-col justify-between">
-                                <span className="text-xs font-semibold text-[#6f7c6c]">유지율 메모/이력 (retentionMemos)</span>
+                                <span className="text-xs font-semibold text-[#5a6b82]">유지율 메모/이력 (retentionMemos)</span>
                                 <div className="mt-2 flex items-baseline justify-between">
-                                    <span className="text-xl font-bold text-[#263d36] tabular-nums">
+                                    <span className="text-xl font-bold text-[#162438] tabular-nums">
                                         {(tableCounts.retentionMemos + tableCounts.retentionMemos2).toLocaleString()}
                                     </span>
-                                    <span className="text-xs text-[#86918a] font-semibold">건</span>
+                                    <span className="text-xs text-[#788699] font-semibold">건</span>
                                 </div>
                             </div>
 
                             <div className="adm-note-card flex flex-col justify-between">
-                                <span className="text-xs font-semibold text-[#6f7c6c]">방문자 접속 통계 (analytics)</span>
+                                <span className="text-xs font-semibold text-[#5a6b82]">방문자 접속 통계 (analytics)</span>
                                 <div className="mt-2 flex items-baseline justify-between">
-                                    <span className="text-xl font-bold text-[#263d36] tabular-nums">
+                                    <span className="text-xl font-bold text-[#162438] tabular-nums">
                                         {tableCounts.analytics.toLocaleString()}
                                     </span>
-                                    <span className="text-xs text-[#86918a] font-semibold">건</span>
+                                    <span className="text-xs text-[#788699] font-semibold">건</span>
                                 </div>
                             </div>
 
                             <div className="adm-note-card flex flex-col justify-between">
-                                <span className="text-xs font-semibold text-[#6f7c6c]">등록 파트너사 (partners)</span>
+                                <span className="text-xs font-semibold text-[#5a6b82]">등록 파트너사 (partners)</span>
                                 <div className="mt-2 flex items-baseline justify-between">
                                     <span className="text-xl font-bold text-[#9a7840] tabular-nums">
                                         {tableCounts.partners.toLocaleString()}
                                     </span>
-                                    <span className="text-xs text-[#86918a] font-semibold">개사</span>
+                                    <span className="text-xs text-[#788699] font-semibold">개사</span>
                                 </div>
                             </div>
 
-                            <div className="adm-note-card !bg-[#eef5eb] !border-[#cbe0c4] flex flex-col justify-between">
+                            <div className="adm-note-card !bg-[#edf2fa] !border-[#cfdcf0] flex flex-col justify-between">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs font-bold text-[#295e52]">관리자 계정 (admins)</span>
+                                    <span className="text-xs font-bold text-[#163a6b]">관리자 계정 (admins)</span>
                                     <span className="adm-pill green">보존됨</span>
                                 </div>
                                 <div className="mt-2 flex items-baseline justify-between">
-                                    <span className="text-xl font-bold text-[#295e52] tabular-nums">
+                                    <span className="text-xl font-bold text-[#163a6b] tabular-nums">
                                         {tableCounts.admins.toLocaleString()}
                                     </span>
-                                    <span className="text-xs text-[#295e52] font-semibold">계정 (보호)</span>
+                                    <span className="text-xs text-[#163a6b] font-semibold">계정 (보호)</span>
                                 </div>
                             </div>
                         </div>
@@ -220,17 +220,17 @@ export default function DataResetManagement() {
                 <section className="adm-panel p-5 flex flex-col justify-between">
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-sm font-bold text-[#263d36]">고객 &amp; 유지율 데이터 전체 초기화</h3>
+                            <h3 className="text-sm font-bold text-[#162438]">고객 &amp; 유지율 데이터 전체 초기화</h3>
                             <span className="adm-pill red">추천</span>
                         </div>
-                        <p className="text-xs text-[#6b7768] leading-relaxed">
+                        <p className="text-xs text-[#5a6b82] leading-relaxed">
                             등록된 <strong>파트너사 계정과 관리자 계정은 그대로 보존</strong>하며, 가입 신청 내역(고객), 상태 이력, 유지율/연체 엑셀 레코드만 깨끗하게 0건으로 비웁니다.
                         </p>
-                        <div className="mt-3 text-[11px] text-[#86918a] font-mono">
+                        <div className="mt-3 text-[11px] text-[#788699] font-mono">
                             대상: applications, statusHistory, retentionRecords, retentionRecords2, retentionRecords3, retentionMemos, analytics
                         </div>
                     </div>
-                    <div className="pt-4 mt-4 border-t border-[#edf0e7] flex justify-end">
+                    <div className="pt-4 mt-4 border-t border-[#eaeff7] flex justify-end">
                         <button
                             type="button"
                             onClick={() => handleOpenModal("customers_and_retention")}
@@ -246,17 +246,17 @@ export default function DataResetManagement() {
                 <section className="adm-panel p-5 flex flex-col justify-between">
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-sm font-bold text-[#263d36]">완전 초기화 (관리자 계정 제외)</h3>
+                            <h3 className="text-sm font-bold text-[#162438]">완전 초기화 (관리자 계정 제외)</h3>
                             <span className="adm-pill gray">전체 리셋</span>
                         </div>
-                        <p className="text-xs text-[#6b7768] leading-relaxed">
+                        <p className="text-xs text-[#5a6b82] leading-relaxed">
                             <strong>총괄 관리자 계정을 제외한 모든 데이터(파트너사 계정, 파트너 신청 포함)를 전면 삭제</strong>하여 완전히 새로운 사이트 상태로 만듭니다.
                         </p>
-                        <div className="mt-3 text-[11px] text-[#86918a] font-mono">
+                        <div className="mt-3 text-[11px] text-[#788699] font-mono">
                             대상: 파트너사 전체 + 고객/유지율/통계 데이터 전체 (admins만 보존)
                         </div>
                     </div>
-                    <div className="pt-4 mt-4 border-t border-[#edf0e7] flex justify-end">
+                    <div className="pt-4 mt-4 border-t border-[#eaeff7] flex justify-end">
                         <button
                             type="button"
                             onClick={() => handleOpenModal("all_except_admin")}
@@ -276,11 +276,11 @@ export default function DataResetManagement() {
                     <div className="adm-panel max-w-md w-full p-6 shadow-2xl">
                         <div className="flex items-center gap-2.5 mb-2">
                             <span className="adm-pill red">주의</span>
-                            <h3 className="text-base font-bold text-[#263d36]">
+                            <h3 className="text-base font-bold text-[#162438]">
                                 정말 데이터를 초기화하시겠습니까?
                             </h3>
                         </div>
-                        <p className="text-xs text-[#6b7768] leading-relaxed">
+                        <p className="text-xs text-[#5a6b82] leading-relaxed">
                             {selectedScope === "customers_and_retention" ? (
                                 <>
                                     고객 신청 및 유지율/연체 데이터 전체가 삭제됩니다. (파트너 계정 및 <strong>관리자 계정은 보존</strong>됩니다)
