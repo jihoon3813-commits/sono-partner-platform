@@ -326,6 +326,16 @@ export default function InquiryModal({
             return;
         }
 
+        // Validation for name & phone
+        if (!formData.name.trim()) {
+            alert("성함을 입력해주세요.");
+            return;
+        }
+        if (!formData.phone.trim()) {
+            alert("연락처를 입력해주세요.");
+            return;
+        }
+
         // Validation for Birthdate (only for 스마트케어)
         if (isSmartCare && formData.birthdate.length !== 8) {
             alert("생년월일은 8자리 숫자로 입력해주세요 (예: 19800101)");
@@ -361,13 +371,19 @@ export default function InquiryModal({
                 calculatedPlanType = `${selectedUnit}구좌`;
             }
 
+            const resolvedPartnerId = (partnerId || "").trim() || "ADMIN";
+            const resolvedPartnerName =
+                (partnerName || "").trim() ||
+                (resolvedPartnerId === "ADMIN" ? "본사 직접 신청" : "");
+            const resolvedProductType = (productName || "").trim() || "스마트케어";
+
             const response = await fetch("/api/applications", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    partnerId,
-                    partnerName,
-                    productType: productName,
+                    partnerId: resolvedPartnerId,
+                    partnerName: resolvedPartnerName,
+                    productType: resolvedProductType,
                     planType: calculatedPlanType,
                     products: productsInfo,
                     name: formData.name,

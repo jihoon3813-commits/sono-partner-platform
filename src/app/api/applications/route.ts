@@ -16,7 +16,7 @@ export async function POST(request: Request) {
         const body = await request.json();
 
         const {
-            partnerId, // This might be the system ID or customUrl
+            partnerId: rawPartnerId, // This might be the system ID or customUrl
             partnerName,
             productType,
             planType,
@@ -36,8 +36,10 @@ export async function POST(request: Request) {
             selectedGiftId,
         } = body;
 
+        const partnerId = (rawPartnerId || "").trim() || "ADMIN";
+
         // 필수 필드 검증
-        if (!partnerId || !productType || !name || !phone) {
+        if (!productType || !name || !phone) {
             console.error('[API] Missing required fields:', { partnerId, productType, name, phone });
             return NextResponse.json(
                 { success: false, message: '필수 정보가 누락되었습니다.' },
