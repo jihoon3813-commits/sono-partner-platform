@@ -100,6 +100,7 @@ export default defineSchema({
         // 마음든든 사은품 선택 필드
         selectedGift: v.optional(v.string()), // 선택한 사은품 제품명
         selectedGiftId: v.optional(v.string()), // 선택한 사은품 ID
+        googleContactsSyncedAt: v.optional(v.number()), // 구글 주소록 동기화 일시
     })
         .index("by_applicationNo", ["applicationNo"])
         .index("by_partnerId", ["partnerId"])
@@ -605,5 +606,49 @@ export default defineSchema({
     })
         .index("by_landingKey", ["landingKey"])
         .index("by_order", ["order"]),
+
+    // 문자(SMS/LMS) 발송 및 수신 내역 테이블
+    sms_logs: defineTable({
+        applicationId: v.optional(v.id("applications")),
+        applicationNo: v.optional(v.string()),
+        customerName: v.optional(v.string()),
+        customerPhone: v.string(),
+        smsType: v.string(), // "자유문자", "상품안내", "접수안내", "자동안내", "일괄발송", "고객답장", "휴대폰발신", "테스트"
+        title: v.optional(v.string()),
+        message: v.string(),
+        status: v.string(), // "성공", "실패", "수신", "발송대기"
+        errorMessage: v.optional(v.string()),
+        senderName: v.optional(v.string()),
+        direction: v.optional(v.union(v.literal("outbound"), v.literal("inbound"))),
+        isRead: v.optional(v.boolean()),
+        receiverNumber: v.optional(v.string()),
+        createdAt: v.number(),
+    })
+        .index("by_applicationId_and_createdAt", ["applicationId", "createdAt"])
+        .index("by_customerPhone_and_createdAt", ["customerPhone", "createdAt"])
+        .index("by_direction_and_isRead", ["direction", "isRead"])
+        .index("by_createdAt", ["createdAt"]),
+
+    // 회사폰 브릿지 발송 대기열 테이블
+    sms_outbox: defineTable({
+        smsLogId: v.optional(v.id("sms_logs")),
+        applicationId: v.optional(v.id("applications")),
+        receiverPhone: v.string(),
+        title: v.optional(v.string()),
+        message: v.string(),
+        status: v.union(
+            v.literal("pending"),
+            v.literal("processing"),
+            v.literal("fallback_sending"),
+            v.literal("sent"),
+            v.literal("failed")
+        ),
+        errorMessage: v.optional(v.string()),
+        createdAt: v.number(),
+        updatedAt: v.number(),
+    })
+        .index("by_status_and_createdAt", ["status", "createdAt"])
+        .index("by_smsLogId", ["smsLogId"])
+        .index("by_createdAt", ["createdAt"]),
 });
 

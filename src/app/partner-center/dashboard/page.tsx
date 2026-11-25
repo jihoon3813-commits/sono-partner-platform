@@ -23,6 +23,7 @@ import TMManagement from "@/components/dashboard/TMManagement";
 import AccountManagement from "@/components/dashboard/AccountManagement";
 import ChannelMappingManagement from "@/components/dashboard/ChannelMappingManagement";
 import DataResetManagement from "@/components/dashboard/DataResetManagement";
+import SmsManagement from "@/components/dashboard/SmsManagement";
 import { AdminIcon, AdminIconName } from "@/components/dashboard/AdminIcons";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
@@ -135,7 +136,7 @@ export default function PartnerDashboard() {
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
     const [selectedRequest, setSelectedRequest] = useState<PartnerRequest | null>(null);
     const [settingsSubTab, setSettingsSubTab] = useState<
-        "status" | "individual" | "account" | "channel" | "reset"
+        "status" | "individual" | "account" | "channel" | "sms" | "reset"
     >("status");
     const [hqAdminSession, setHqAdminSession] = useState<any>(null);
 
@@ -694,9 +695,16 @@ export default function PartnerDashboard() {
         ? "관"
         : String(workspaceTitle).trim().charAt(0) || "파";
 
+    const unreadSmsCounts = useQuery(api.sms.getUnreadInboundCounts, isAdmin ? {} : "skip") ?? {};
+    const totalUnreadSms = isAdmin
+        ? (Object.values(unreadSmsCounts) as number[]).reduce((sum, n) => sum + (n || 0), 0)
+        : 0;
+
     const hasImpersonationBanner = Boolean(hqAdminSession && !isAdmin);
     const hasNotificationAlert =
-        newCustomerCount > 0 || (isAdmin && dashboardData.pendingRequests.length > 0);
+        newCustomerCount > 0 ||
+        totalUnreadSms > 0 ||
+        (isAdmin && dashboardData.pendingRequests.length > 0);
 
     // KST 날짜 표기
     const formattedTodayLabel = (() => {
@@ -927,10 +935,10 @@ export default function PartnerDashboard() {
                     <div className="adm-nav-group">영업 관리</div>
                     <SidebarNavButton
                         id="customers"
-                        label="고객 관리"
+                        label={isAdmin && totalUnreadSms > 0 ? `고객 관리 (답장 ${totalUnreadSms})` : "고객 관리"}
                         icon="users"
-                        count={newCustomerCount}
-                        isAlert={newCustomerCount > 0}
+                        count={isAdmin && totalUnreadSms > 0 ? totalUnreadSms : newCustomerCount}
+                        isAlert={newCustomerCount > 0 || (isAdmin && totalUnreadSms > 0)}
                     />
                     {isParentPartner && (
                         <SidebarNavButton
@@ -2349,6 +2357,14 @@ export default function PartnerDashboard() {
                                         </button>
                                         <button
                                             type="button"
+                                            onClick={() => setSettingsSubTab("sms")}
+                                            className={settingsSubTab === "sms" ? "active" : ""}
+                                        >
+                                            <AdminIcon name="phone" />
+                                            <span>문자(SMS) 관리</span>
+                                        </button>
+                                        <button
+                                            type="button"
                                             onClick={() => setSettingsSubTab("reset")}
                                             className={`danger ${
                                                 settingsSubTab === "reset" ? "active" : ""
@@ -2367,6 +2383,7 @@ export default function PartnerDashboard() {
                                         {settingsSubTab === "channel" && (
                                             <ChannelMappingManagement />
                                         )}
+                                        {settingsSubTab === "sms" && <SmsManagement />}
                                         {settingsSubTab === "reset" && <DataResetManagement />}
                                         {settingsSubTab === "account" && (
                                             <AccountManagement

@@ -1,7 +1,15 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 import { Application, Partner } from "@/lib/types";
+import { RecentSmsCell, LatestSmsSummary } from "./RecentSmsCell";
+import {
+    syncCustomersToGoogleContacts,
+    getCachedGoogleContactPhones,
+    normalizeKoreanPhone,
+} from "@/utils/googleContacts";
+import { DEFAULT_SMS_TEMPLATES, SmsTemplate } from "@/constants/smsTemplates";
 import CustomerDetailModal from "./CustomerDetailModal";
 import CustomerRegistrationModal from "./CustomerRegistrationModal";
 import BulkUploadModal from "./BulkUploadModal";
@@ -118,6 +126,41 @@ export default function CustomerManagement({
     const updateMultipleApplicationStatuses = useMutation(
         api.applications.updateMultipleApplicationStatuses
     );
+
+    // 문자(SMS) & 구글 주소록 (총괄어드민 전용)
+    const smsSettingsData = useQuery(api.sms.getSmsSettings, isAdmin ? {} : "skip");
+    const unreadSmsCounts = (useQuery(api.sms.getUnreadInboundCounts, isAdmin ? {} : "skip") ??
+        {}) as Record<string, number>;
+    const latestSmsMap = (useQuery(api.sms.getLatestSmsByApplication, isAdmin ? {} : "skip") ??
+        {}) as Record<string, LatestSmsSummary>;
+    const markGoogleContactsSynced = useMutation(api.sms.markGoogleContactsSynced);
+    const sendBulkSmsAction = useAction(api.sms.sendBulkSms);
+
+    const [unreadSmsOnly, setUnreadSmsOnly] = useState(false);
+    const [isSyncingGoogleContacts, setIsSyncingGoogleContacts] = useState(false);
+    const [googleContactsProgress, setGoogleContactsProgress] = useState("");
+    const [isBulkSmsModalOpen, setIsBulkSmsModalOpen] = useState(false);
+    const [bulkSmsTitle, setBulkSmsTitle] = useState("[소노아임레디] 안내");
+    const [bulkSmsMessage, setBulkSmsMessage] = useState(DEFAULT_SMS_TEMPLATES[0].content);
+    const [isSendingBulkSms, setIsSendingBulkSms] = useState(false);
+
+    const totalUnreadSms = useMemo(
+        () =>
+            isAdmin
+                ? Object.values(unreadSmsCounts).reduce((sum, n) => sum + (n || 0), 0)
+                : 0,
+        [isAdmin, unreadSmsCounts]
+    );
+
+    const cachedContactPhones = useMemo(
+        () => (isAdmin ? getCachedGoogleContactPhones() : new Set<string>()),
+        [isAdmin, isSyncingGoogleContacts]
+    );
+
+    const smsTemplates: SmsTemplate[] =
+        Array.isArray(smsSettingsData?.templates) && smsSettingsData.templates.length > 0
+            ? smsSettingsData.templates
+            : DEFAULT_SMS_TEMPLATES;
 
     const [bulkStatus, setBulkStatus] = useState("");
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
@@ -476,6 +519,10 @@ export default function CustomerManagement({
 
     // 2. Status & Product Filter
     const filteredApplications = initialFiltered.filter((app) => {
+        if (isAdmin && unreadSmsOnly) {
+            const unread = app._id ? unreadSmsCounts[String(app._id)] || 0 : 0;
+            if (unread === 0) return false;
+        }
         const displayStatus = getDisplayStatus(app.status || "접수대기");
         const statusMatch = statusFilter === "all" || displayStatus === statusFilter;
         if (!statusMatch) return false;
@@ -763,6 +810,7 @@ export default function CustomerManagement({
                             </span>
                         </th>
                         <th className="text-center">녹취</th>
+                        {isAdmin && <th className="w-[190px]">최근 문자</th>}
                         {isAdmin && <th className="text-center">소노 접수</th>}
                     </tr>
                 </thead>
@@ -1026,6 +1074,22 @@ export default function CustomerManagement({
                                         </div>
                                     </td>
                                     {isAdmin && (
+                                        <td>
+                                            <RecentSmsCell
+                                                latestSms={
+                                                    app._id
+                                                        ? latestSmsMap[String(app._id)]
+                                                        : undefined
+                                                }
+                                                unreadCount={
+                                                    app._id
+                                                        ? unreadSmsCounts[String(app._id)] || 0
+                                                        : 0
+                                                }
+                                            />
+                                        </td>
+                                    )}
+                                    {isAdmin && (
                                         <td
                                             className="text-center"
                                             onClick={(e) => e.stopPropagation()}
@@ -1093,7 +1157,7 @@ export default function CustomerManagement({
                     ) : (
                         <tr>
                             <td
-                                colSpan={isAdmin ? 13 : 12}
+                                colSpan={isAdmin ? 14 : 12}
                                 className="py-16 text-center text-xs text-[#788699]"
                             >
                                 검색 조건에 해당하는 고객 내역이 없습니다.
@@ -1171,6 +1235,101 @@ export default function CustomerManagement({
                                 >
                                     <AdminIcon name="file" />
                                     <span>가입요청 엑셀 업데이트</span>
+                                </button>
+                            )}
+
+                            {isAdmin && (
+                                <button
+                                    type="button"
+                                    disabled={isSyncingGoogleContacts}
+                                    onClick={async () => {
+                                        const clientId =
+                                            smsSettingsData?.googleContacts?.clientId || "";
+                                        if (!clientId) {
+                                            alert(
+                                                "Google OAuth 클라이언트 ID가 설정되지 않았습니다.\n환경설정 > 문자(SMS) 관리 > [구글 주소록 자동등록]에서 클라이언트 ID를 먼저 저장해주세요."
+                                            );
+                                            return;
+                                        }
+                                        const targets =
+                                            selectedAppIds.length > 0
+                                                ? applications.filter((a) =>
+                                                      selectedAppIds.includes(a.applicationNo)
+                                                  )
+                                                : sortedApplications;
+                                        const unsynced = targets.filter((a) => {
+                                            const norm = normalizeKoreanPhone(
+                                                a.customerPhone || ""
+                                            );
+                                            return (
+                                                norm.length >= 9 &&
+                                                !a.googleContactsSyncedAt &&
+                                                !cachedContactPhones.has(norm)
+                                            );
+                                        });
+                                        const listToSync = unsynced.length > 0 ? unsynced : targets;
+                                        if (listToSync.length === 0) {
+                                            alert("구글 주소록에 등록할 고객이 없습니다.");
+                                            return;
+                                        }
+                                        if (
+                                            !confirm(
+                                                `${listToSync.length}명의 고객을 구글 주소록에 등록하시겠습니까?\n(이미 등록된 전화번호는 자동으로 건너뜁니다)`
+                                            )
+                                        ) {
+                                            return;
+                                        }
+                                        setIsSyncingGoogleContacts(true);
+                                        setGoogleContactsProgress("준비 중...");
+                                        try {
+                                            const res = await syncCustomersToGoogleContacts(
+                                                listToSync.map((a) => ({
+                                                    _id: a._id,
+                                                    customerName: a.customerName,
+                                                    customerPhone: a.customerPhone,
+                                                    productType: a.productType,
+                                                    products: a.products,
+                                                    selectedGift: a.selectedGift,
+                                                    status: a.status,
+                                                })),
+                                                clientId,
+                                                {
+                                                    onProgress: (msg) =>
+                                                        setGoogleContactsProgress(msg),
+                                                }
+                                            );
+                                            if (res.syncedCustomerIds.length > 0) {
+                                                await markGoogleContactsSynced({
+                                                    applicationIds:
+                                                        res.syncedCustomerIds as Id<"applications">[],
+                                                });
+                                            }
+                                            alert(
+                                                `구글 주소록 등록 완료!\n• 신규 등록: ${res.createdCount}명\n• 기존 중복 건너뜀: ${res.skippedDuplicateCount}명` +
+                                                    (res.failedCount > 0
+                                                        ? `\n• 실패: ${res.failedCount}명`
+                                                        : "")
+                                            );
+                                        } catch (err: any) {
+                                            alert(
+                                                `구글 주소록 등록 실패: ${err?.message || "알 수 없는 오류"}`
+                                            );
+                                        } finally {
+                                            setIsSyncingGoogleContacts(false);
+                                            setGoogleContactsProgress("");
+                                        }
+                                    }}
+                                    className="adm-btn"
+                                    title="고객 연락처를 구글 주소록에 일괄 등록합니다 (회사폰 자동 동기화)"
+                                >
+                                    <AdminIcon name="phone" />
+                                    <span>
+                                        {isSyncingGoogleContacts
+                                            ? googleContactsProgress || "주소록 등록 중..."
+                                            : selectedAppIds.length > 0
+                                              ? `주소록 등록 (${selectedAppIds.length})`
+                                              : "구글 주소록 등록"}
+                                    </span>
                                 </button>
                             )}
 
@@ -1272,6 +1431,15 @@ export default function CustomerManagement({
                                             </span>
                                         </button>
                                     </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsBulkSmsModalOpen(true)}
+                                        className="adm-btn small !bg-[#e6f4ea] !border-[#cce8d5] !text-[#137333]"
+                                    >
+                                        <AdminIcon name="phone" />
+                                        <span>문자 일괄 발송 ({selectedAppIds.length})</span>
+                                    </button>
 
                                     <button
                                         type="button"
@@ -1546,10 +1714,21 @@ export default function CustomerManagement({
                                 </button>
                             )}
 
-                            <div className="adm-filter-end">
+                            <div className="adm-filter-end flex items-center gap-2">
+                                {isAdmin && totalUnreadSms > 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setUnreadSmsOnly((prev) => !prev)}
+                                        className={`adm-btn small ${
+                                            unreadSmsOnly ? "primary" : "!bg-[#faeae5] !border-[#ead5cf] !text-[#a85042]"
+                                        }`}
+                                    >
+                                        <span>미확인 답장 ({totalUnreadSms})</span>
+                                    </button>
+                                )}
                                 <span className="adm-pill green !py-1 !px-2.5">
                                     <AdminIcon name="phone" className="!w-3 !h-3" />
-                                    <span>가입센터 발신번호 1833-8434</span>
+                                    <span>상담 발신번호 010-2666-0883</span>
                                 </span>
                             </div>
                         </div>
@@ -1736,6 +1915,152 @@ export default function CustomerManagement({
                     }
                     isAdmin={isAdmin}
                 />
+            )}
+
+            {/* 일괄 문자 발송 모달 (총괄어드민 전용) */}
+            {isAdmin && isBulkSmsModalOpen && (
+                <div
+                    className="fixed inset-0 bg-[#19312b]/35 backdrop-blur-[2px] z-[70] flex items-center justify-center p-4"
+                    onClick={() => !isSendingBulkSms && setIsBulkSmsModalOpen(false)}
+                >
+                    <div
+                        className="adm-panel w-full max-w-lg shadow-xl overflow-hidden"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="px-5 py-4 border-b border-[#eaeff7] flex justify-between items-center bg-[#f6f8fc]">
+                            <div>
+                                <h3 className="font-bold text-[#162438] text-sm">
+                                    선택 고객 일괄 문자 발송 ({selectedAppIds.length}명)
+                                </h3>
+                                <p className="text-[11px] text-[#788292] mt-0.5">
+                                    {"{고객명}"}, {"{상품명}"}, {"{사은품}"}, {"{구좌}"} 치환자가 고객별로 자동 적용됩니다.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                disabled={isSendingBulkSms}
+                                onClick={() => setIsBulkSmsModalOpen(false)}
+                                className="adm-icon-btn"
+                            >
+                                <AdminIcon name="close" />
+                            </button>
+                        </div>
+
+                        <div className="p-5 space-y-4">
+                            <div className="flex flex-wrap gap-1.5">
+                                {smsTemplates.map((tpl) => (
+                                    <button
+                                        key={tpl.id}
+                                        type="button"
+                                        onClick={() => setBulkSmsMessage(tpl.content)}
+                                        className="adm-btn small"
+                                    >
+                                        {tpl.title}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="adm-field">
+                                <label>문자 제목 (LMS)</label>
+                                <input
+                                    type="text"
+                                    value={bulkSmsTitle}
+                                    onChange={(e) => setBulkSmsTitle(e.target.value)}
+                                    className="adm-input"
+                                    placeholder="[소노아임레디] 안내"
+                                />
+                            </div>
+
+                            <div className="adm-field">
+                                <div className="flex items-center justify-between mb-1">
+                                    <label>발송 본문</label>
+                                    <span className="text-[11px] text-[#788292]">
+                                        {bulkSmsMessage.length}자 (LMS)
+                                    </span>
+                                </div>
+                                <textarea
+                                    rows={7}
+                                    value={bulkSmsMessage}
+                                    onChange={(e) => setBulkSmsMessage(e.target.value)}
+                                    className="adm-textarea w-full"
+                                    placeholder="발송할 문자 내용을 입력하세요..."
+                                />
+                            </div>
+
+                            <div className="flex justify-end gap-2 pt-2 border-t border-[#eaeff7]">
+                                <button
+                                    type="button"
+                                    disabled={isSendingBulkSms}
+                                    onClick={() => setIsBulkSmsModalOpen(false)}
+                                    className="adm-btn"
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    type="button"
+                                    disabled={isSendingBulkSms || !bulkSmsMessage.trim()}
+                                    onClick={async () => {
+                                        const targets = applications.filter(
+                                            (a) =>
+                                                selectedAppIds.includes(a.applicationNo) &&
+                                                a._id &&
+                                                a.customerPhone
+                                        );
+                                        if (targets.length === 0) {
+                                            alert("발송 가능한 연락처가 있는 고객이 없습니다.");
+                                            return;
+                                        }
+                                        if (
+                                            !confirm(
+                                                `선택한 ${targets.length}명의 고객에게 일괄 문자를 발송하시겠습니까?`
+                                            )
+                                        ) {
+                                            return;
+                                        }
+                                        setIsSendingBulkSms(true);
+                                        try {
+                                            const res = await sendBulkSmsAction({
+                                                recipients: targets.map((t) => ({
+                                                    applicationId: t._id as Id<"applications">,
+                                                    applicationNo: t.applicationNo,
+                                                    customerName: t.customerName || "고객",
+                                                    customerPhone: t.customerPhone || "",
+                                                    productType: t.productType,
+                                                    products: t.products,
+                                                    selectedGift: t.selectedGift,
+                                                    planType: t.planType,
+                                                })),
+                                                title: bulkSmsTitle.trim() || "[소노아임레디] 안내",
+                                                messageTemplate: bulkSmsMessage,
+                                                senderName: "총괄관리자(일괄)",
+                                            });
+                                            alert(
+                                                `일괄 문자 발송 완료!\n• 대상: ${res.total}명\n• 성공(대기열): ${res.successCount}명` +
+                                                    (res.failCount > 0
+                                                        ? `\n• 실패: ${res.failCount}명`
+                                                        : "")
+                                            );
+                                            setIsBulkSmsModalOpen(false);
+                                        } catch (err: any) {
+                                            alert(
+                                                err?.message || "일괄 문자 발송 중 오류가 발생했습니다."
+                                            );
+                                        } finally {
+                                            setIsSendingBulkSms(false);
+                                        }
+                                    }}
+                                    className="adm-btn primary"
+                                >
+                                    <span>
+                                        {isSendingBulkSms
+                                            ? "발송 중..."
+                                            : `${selectedAppIds.length}명에게 발송`}
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
 
             {/* 상태 용어 설명 모달 */}

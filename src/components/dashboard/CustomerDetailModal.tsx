@@ -1,8 +1,15 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
+import {
+    DEFAULT_SMS_TEMPLATES,
+    SmsTemplate,
+    resolveSmsTemplateText,
+} from "@/constants/smsTemplates";
+import { syncSingleCustomerWithPrompt } from "@/utils/googleContacts";
 import { Application, ApplicationStatus } from "@/lib/types";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
 import { formatDateTime } from "@/lib/dateUtils";
@@ -64,7 +71,57 @@ export default function CustomerDetailModal({
         applicationNo: application.applicationNo,
     });
     const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false);
-    const [drawerTab, setDrawerTab] = useState<"info" | "history" | "files">("info");
+    const [drawerTab, setDrawerTab] = useState<"sms" | "info" | "history" | "files">(
+        isAdmin ? "sms" : "info"
+    );
+
+    // 문자(SMS) & 구글 주소록 (총괄어드민 전용)
+    const smsSettingsData = useQuery(api.sms.getSmsSettings, isAdmin ? {} : "skip");
+    const smsLogs = useQuery(
+        api.sms.listByApplication,
+        isAdmin && application._id
+            ? { applicationId: application._id as Id<"applications"> }
+            : "skip"
+    );
+    const sendCustomGuideSms = useAction(api.sms.sendCustomGuideSms);
+    const retrySmsLog = useAction(api.sms.retrySmsLog);
+    const markInboundRead = useMutation(api.sms.markInboundRead);
+    const markGoogleContactsSynced = useMutation(api.sms.markGoogleContactsSynced);
+
+    const smsTemplates: SmsTemplate[] =
+        Array.isArray(smsSettingsData?.templates) && smsSettingsData.templates.length > 0
+            ? smsSettingsData.templates
+            : DEFAULT_SMS_TEMPLATES;
+    const [selectedTemplateIdx, setSelectedTemplateIdx] = useState<number>(0);
+    const [guideDraft, setGuideDraft] = useState("");
+    const [customSmsTitle, setCustomSmsTitle] = useState("[소노아임레디] 안내");
+    const [customSmsDraft, setCustomSmsDraft] = useState("");
+    const [quickReplyDraft, setQuickReplyDraft] = useState("");
+    const [isSendingSms, setIsSendingSms] = useState(false);
+    const [isSendingQuickReply, setIsSendingQuickReply] = useState(false);
+    const [guideCopied, setGuideCopied] = useState(false);
+    const [expandedSmsLogId, setExpandedSmsLogId] = useState<string | null>(null);
+    const [retryingSmsLogId, setRetryingSmsLogId] = useState<string | null>(null);
+    const [isSyncingContact, setIsSyncingContact] = useState(false);
+    const chatScrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!isAdmin || !application._id || drawerTab !== "sms") return;
+        const hasUnread = Boolean(
+            smsLogs?.some((log: any) => log.direction === "inbound" && log.isRead !== true)
+        );
+        if (hasUnread) {
+            markInboundRead({ applicationId: application._id as Id<"applications"> }).catch(
+                (err) => console.error("Failed to mark inbound SMS as read:", err)
+            );
+        }
+    }, [isAdmin, application._id, drawerTab, smsLogs, markInboundRead]);
+
+    useEffect(() => {
+        if (drawerTab === "sms" && chatScrollRef.current) {
+            chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+        }
+    }, [smsLogs?.length, application._id, drawerTab]);
 
     const careProductsData = useQuery(api.careProducts.get);
     const productsData = useQuery(api.products.get);
@@ -299,6 +356,31 @@ export default function CustomerDetailModal({
         application.preferredContactTime || ""
     );
 
+    useEffect(() => {
+        if (selectedTemplateIdx >= 0 && smsTemplates[selectedTemplateIdx]) {
+            setGuideDraft(
+                resolveSmsTemplateText(smsTemplates[selectedTemplateIdx].content, {
+                    customerName: customerName || application.customerName,
+                    productType,
+                    products,
+                    selectedGift,
+                    planType,
+                    applicationNo: application.applicationNo,
+                })
+            );
+        }
+    }, [
+        selectedTemplateIdx,
+        smsTemplates,
+        customerName,
+        application.customerName,
+        productType,
+        products,
+        selectedGift,
+        planType,
+        application.applicationNo,
+    ]);
+
     const currentCareProduct = useMemo(() => {
         if (!careProductsData) return null;
         return careProductsData.find(
@@ -490,6 +572,15 @@ export default function CustomerDetailModal({
                 zIndex={65}
                 onClose={onClose}
                 tabs={[
+                    ...(isAdmin
+                        ? [
+                              {
+                                  id: "sms",
+                                  label: "카톡 · 문자 & 대화창",
+                                  badge: smsLogs?.length || 0,
+                              },
+                          ]
+                        : []),
                     { id: "info", label: "고객 · 상담 정보" },
                     {
                         id: "history",
@@ -556,6 +647,42 @@ export default function CustomerDetailModal({
                     >
                         {currentDisplayStatus}
                     </span>
+                    {isAdmin && (
+                        <button
+                            type="button"
+                            disabled={isSyncingContact}
+                            onClick={async () => {
+                                const clientId = smsSettingsData?.googleContacts?.clientId || "";
+                                setIsSyncingContact(true);
+                                try {
+                                    const ok = await syncSingleCustomerWithPrompt(
+                                        {
+                                            _id: application._id,
+                                            customerName: customerName || application.customerName,
+                                            customerPhone: customerPhone || application.customerPhone,
+                                            productType,
+                                            products,
+                                            selectedGift,
+                                            status,
+                                        },
+                                        clientId
+                                    );
+                                    if (ok && application._id) {
+                                        await markGoogleContactsSynced({
+                                            applicationIds: [application._id as Id<"applications">],
+                                        });
+                                    }
+                                } finally {
+                                    setIsSyncingContact(false);
+                                }
+                            }}
+                            className="adm-btn small sage shrink-0"
+                            title="이 고객을 구글 주소록에 저장 (회사폰 연동)"
+                        >
+                            <AdminIcon name="phone" className="!w-3.5 !h-3.5" />
+                            <span>{isSyncingContact ? "저장 중..." : "주소록 저장"}</span>
+                        </button>
+                    )}
                 </div>
 
                 {/* 단계 진행 플로우 바 */}
@@ -577,6 +704,405 @@ export default function CustomerDetailModal({
                         정상 가입
                     </span>
                 </div>
+
+                {isAdmin && drawerTab === "sms" && (
+                    <div className="space-y-5">
+                        {/* 템플릿 & 자유문자 발송 */}
+                        <div className="adm-note-card space-y-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#e2e8f0]">
+                                <div>
+                                    <h3 className="text-[14px] font-bold text-[#142033]">
+                                        카톡 · 문자 안내 발송
+                                    </h3>
+                                    <p className="text-[11.5px] text-[#788292]">
+                                        문자 발송 예시를 선택해 카카오톡용으로 복사하거나 LMS 문자로 즉시 발송합니다.
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <button
+                                        type="button"
+                                        onClick={async () => {
+                                            const textToCopy =
+                                                selectedTemplateIdx === -1
+                                                    ? customSmsDraft
+                                                    : guideDraft;
+                                            if (!textToCopy.trim()) {
+                                                alert("복사할 내용이 없습니다.");
+                                                return;
+                                            }
+                                            try {
+                                                await navigator.clipboard.writeText(textToCopy);
+                                                setGuideCopied(true);
+                                                setTimeout(() => setGuideCopied(false), 2000);
+                                            } catch {
+                                                alert("복사에 실패했습니다. 직접 복사해 주세요.");
+                                            }
+                                        }}
+                                        className="adm-btn small"
+                                    >
+                                        <AdminIcon name="copy" />
+                                        <span>{guideCopied ? "복사됨!" : "문구 복사"}</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        disabled={isSendingSms}
+                                        onClick={async () => {
+                                            const targetPhone =
+                                                customerPhone || application.customerPhone;
+                                            if (!targetPhone) {
+                                                alert("고객 연락처가 없습니다.");
+                                                return;
+                                            }
+                                            const isCustomMode = selectedTemplateIdx === -1;
+                                            const activeMessage = isCustomMode
+                                                ? customSmsDraft
+                                                : guideDraft;
+                                            if (!activeMessage.trim()) {
+                                                alert("발송할 문자 내용을 입력해주세요.");
+                                                return;
+                                            }
+                                            if (
+                                                !confirm(
+                                                    `${customerName || application.customerName}님(${targetPhone})에게 ${
+                                                        isCustomMode ? "자유문자" : "안내 문자"
+                                                    }를 발송하시겠습니까?`
+                                                )
+                                            ) {
+                                                return;
+                                            }
+                                            setIsSendingSms(true);
+                                            try {
+                                                const res = await sendCustomGuideSms({
+                                                    applicationId: application._id as
+                                                        | Id<"applications">
+                                                        | undefined,
+                                                    applicationNo: application.applicationNo,
+                                                    customerName:
+                                                        customerName || application.customerName,
+                                                    customerPhone: targetPhone,
+                                                    smsType: isCustomMode ? "자유문자" : "상품안내",
+                                                    senderName: "총괄관리자",
+                                                    title: isCustomMode
+                                                        ? customSmsTitle.trim() ||
+                                                          "[소노아임레디] 안내"
+                                                        : "[소노아임레디] 상품 안내",
+                                                    message: activeMessage,
+                                                });
+                                                if (isCustomMode) setCustomSmsDraft("");
+                                                alert(res?.message || "문자 발송이 완료되었습니다.");
+                                            } catch (err: any) {
+                                                alert(err?.message || "문자 발송에 실패했습니다.");
+                                            } finally {
+                                                setIsSendingSms(false);
+                                            }
+                                        }}
+                                        className="adm-btn primary small"
+                                    >
+                                        <AdminIcon name="phone" />
+                                        <span>{isSendingSms ? "발송중..." : "LMS 문자 발송"}</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="adm-segmented flex-wrap">
+                                {smsTemplates.map((tpl, idx) => (
+                                    <button
+                                        key={tpl.id || idx}
+                                        type="button"
+                                        onClick={() => setSelectedTemplateIdx(idx)}
+                                        className={selectedTemplateIdx === idx ? "active" : ""}
+                                    >
+                                        {tpl.title}
+                                    </button>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedTemplateIdx(-1)}
+                                    className={selectedTemplateIdx === -1 ? "active" : ""}
+                                >
+                                    ✏️ 자유문자 직접 작성
+                                </button>
+                            </div>
+
+                            {selectedTemplateIdx === -1 ? (
+                                <div className="space-y-3">
+                                    <div className="adm-field">
+                                        <label>문자 제목 (LMS)</label>
+                                        <input
+                                            type="text"
+                                            value={customSmsTitle}
+                                            onChange={(e) => setCustomSmsTitle(e.target.value)}
+                                            placeholder="[소노아임레디] 안내"
+                                            className="adm-input"
+                                        />
+                                    </div>
+                                    <div className="adm-field">
+                                        <div className="flex items-center justify-between">
+                                            <label>자유문자 본문</label>
+                                            <span className="text-[11px] text-[#788292]">
+                                                {customSmsDraft.length}자 (LMS)
+                                            </span>
+                                        </div>
+                                        <textarea
+                                            rows={5}
+                                            value={customSmsDraft}
+                                            onChange={(e) => setCustomSmsDraft(e.target.value)}
+                                            placeholder="고객님께 발송할 자유 문자 내용을 입력하세요..."
+                                            className="adm-textarea w-full"
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="adm-field">
+                                    <div className="flex justify-end mb-1">
+                                        <span className="text-[11px] text-[#788292]">
+                                            {guideDraft.length}자 (LMS)
+                                        </span>
+                                    </div>
+                                    <textarea
+                                        rows={7}
+                                        value={guideDraft}
+                                        onChange={(e) => setGuideDraft(e.target.value)}
+                                        className="adm-textarea w-full"
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 양방향 문자 대화 내역 */}
+                        <div className="adm-note-card space-y-3">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <strong className="text-[13.5px] font-bold text-[#142033]">
+                                        양방향 문자 대화 내역
+                                    </strong>
+                                    <span className="adm-pill green">
+                                        {smsLogs ? `${smsLogs.length}건` : "조회중..."}
+                                    </span>
+                                </div>
+                                <span className="text-[11px] text-[#788292]">
+                                    좌측: 고객 답장 · 우측: 발신 문자
+                                </span>
+                            </div>
+
+                            {smsLogs && smsLogs.length > 0 ? (
+                                <div
+                                    ref={chatScrollRef}
+                                    className="space-y-2.5 max-h-[300px] overflow-y-auto p-3.5 rounded-[10px] bg-[#f5f6f8] border border-[#e2e8f0]"
+                                >
+                                    {[...smsLogs].reverse().map((log: any) => {
+                                        const isInbound = log.direction === "inbound";
+                                        const isExpanded = expandedSmsLogId === log._id;
+                                        const isLongMessage =
+                                            (log.message?.length || 0) > 160 ||
+                                            (log.message?.split("\n").length || 0) > 4;
+                                        const kst = new Date(log.createdAt + 9 * 60 * 60 * 1000);
+                                        const formattedDate = `${String(
+                                            kst.getUTCMonth() + 1
+                                        ).padStart(2, "0")}.${String(
+                                            kst.getUTCDate()
+                                        ).padStart(2, "0")} ${String(
+                                            kst.getUTCHours()
+                                        ).padStart(2, "0")}:${String(
+                                            kst.getUTCMinutes()
+                                        ).padStart(2, "0")}`;
+
+                                        return (
+                                            <div
+                                                key={log._id}
+                                                className={`flex flex-col ${
+                                                    isInbound ? "items-start" : "items-end"
+                                                }`}
+                                            >
+                                                <div
+                                                    className={`max-w-[85%] rounded-[11px] px-3.5 py-2.5 text-[12px] border ${
+                                                        isInbound
+                                                            ? "bg-white border-[#e2e8f0] text-[#142033] rounded-tl-[3px]"
+                                                            : log.status === "실패"
+                                                              ? "bg-[#faeae5] border-[#ead5cf] text-[#142033] rounded-tr-[3px]"
+                                                              : "bg-[#edf3f8] border-[#c7d6ea] text-[#142033] rounded-tr-[3px]"
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                                            <span
+                                                                className={`adm-pill ${
+                                                                    isInbound
+                                                                        ? "teal"
+                                                                        : log.status === "발송대기"
+                                                                          ? "orange"
+                                                                          : log.status === "성공"
+                                                                            ? log.smsType ===
+                                                                              "휴대폰발신"
+                                                                                ? "blue"
+                                                                                : "green"
+                                                                            : "red"
+                                                                }`}
+                                                            >
+                                                                {isInbound
+                                                                    ? "고객 답장"
+                                                                    : log.status === "발송대기"
+                                                                      ? `${log.smsType || "발신"} (회사폰 전송중)`
+                                                                      : log.smsType || "발신"}
+                                                            </span>
+                                                            {!isInbound && log.senderName && (
+                                                                <span className="text-[10.5px] text-[#5a6b82] font-semibold">
+                                                                    {log.senderName}
+                                                                </span>
+                                                            )}
+                                                            {!isInbound &&
+                                                                (log.status === "발송대기" ||
+                                                                    log.status === "실패") && (
+                                                                    <button
+                                                                        type="button"
+                                                                        disabled={
+                                                                            retryingSmsLogId ===
+                                                                            log._id
+                                                                        }
+                                                                        onClick={async () => {
+                                                                            setRetryingSmsLogId(
+                                                                                log._id
+                                                                            );
+                                                                            try {
+                                                                                const res =
+                                                                                    await retrySmsLog(
+                                                                                        {
+                                                                                            smsLogId:
+                                                                                                log._id,
+                                                                                        }
+                                                                                    );
+                                                                                alert(res.message);
+                                                                            } catch (err: any) {
+                                                                                alert(
+                                                                                    err?.message ||
+                                                                                        "재발송 중 오류가 발생했습니다."
+                                                                                );
+                                                                            } finally {
+                                                                                setRetryingSmsLogId(
+                                                                                    null
+                                                                                );
+                                                                            }
+                                                                        }}
+                                                                        className="px-2 py-0.5 rounded bg-[#163a6b] hover:bg-[#0f294d] text-white text-[10.5px] font-bold transition-colors disabled:opacity-50"
+                                                                    >
+                                                                        {retryingSmsLogId ===
+                                                                        log._id
+                                                                            ? "전송중..."
+                                                                            : log.status ===
+                                                                                "발송대기"
+                                                                              ? "즉시 클라우드 발송"
+                                                                              : "즉시 재발송"}
+                                                                    </button>
+                                                                )}
+                                                        </div>
+                                                        <span className="text-[10px] font-mono text-[#788292] shrink-0">
+                                                            {formattedDate}
+                                                        </span>
+                                                    </div>
+                                                    {log.title && !isInbound && (
+                                                        <div className="text-[11px] font-bold text-[#142033] mb-1 truncate">
+                                                            {log.title}
+                                                        </div>
+                                                    )}
+                                                    <p
+                                                        className={`text-[#334155] whitespace-pre-wrap break-words leading-relaxed ${
+                                                            isLongMessage && !isExpanded
+                                                                ? "line-clamp-4"
+                                                                : ""
+                                                        }`}
+                                                    >
+                                                        {log.message}
+                                                    </p>
+                                                    {isLongMessage && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                setExpandedSmsLogId(
+                                                                    isExpanded ? null : log._id
+                                                                )
+                                                            }
+                                                            className="mt-1 text-[11px] font-bold text-[#163a6b] hover:underline"
+                                                        >
+                                                            {isExpanded ? "접기" : "전체보기"}
+                                                        </button>
+                                                    )}
+                                                    {log.status === "실패" && log.errorMessage && (
+                                                        <div className="mt-1.5 text-[11px] text-[#a85042] bg-white/70 px-2 py-1 rounded">
+                                                            실패 사유: {log.errorMessage}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="text-center py-8 text-[#788292] text-xs bg-white rounded-[10px] border border-[#e2e8f0]">
+                                    {smsLogs
+                                        ? "아직 주고받은 문자 내역이 없습니다."
+                                        : "문자 내역을 불러오는 중입니다..."}
+                                </div>
+                            )}
+
+                            {/* 빠른 답장 입력 */}
+                            <div className="flex items-end gap-2 pt-1">
+                                <textarea
+                                    rows={2}
+                                    value={quickReplyDraft}
+                                    onChange={(e) => setQuickReplyDraft(e.target.value)}
+                                    placeholder="고객에게 바로 보낼 빠른 답장 내용을 입력하세요..."
+                                    className="adm-textarea !min-h-[54px] flex-1"
+                                />
+                                <button
+                                    type="button"
+                                    disabled={isSendingQuickReply || !quickReplyDraft.trim()}
+                                    onClick={async () => {
+                                        const targetPhone =
+                                            customerPhone || application.customerPhone;
+                                        if (!targetPhone) {
+                                            alert("고객 연락처가 없습니다.");
+                                            return;
+                                        }
+                                        if (!quickReplyDraft.trim()) return;
+                                        if (
+                                            !confirm(
+                                                `${customerName || application.customerName}님(${targetPhone})에게 문자를 발송하시겠습니까?`
+                                            )
+                                        ) {
+                                            return;
+                                        }
+                                        setIsSendingQuickReply(true);
+                                        try {
+                                            await sendCustomGuideSms({
+                                                applicationId: application._id as
+                                                    | Id<"applications">
+                                                    | undefined,
+                                                applicationNo: application.applicationNo,
+                                                customerName:
+                                                    customerName || application.customerName,
+                                                customerPhone: targetPhone,
+                                                smsType: "자유문자",
+                                                senderName: "총괄관리자",
+                                                title: "[소노아임레디] 안내",
+                                                message: quickReplyDraft.trim(),
+                                            });
+                                            setQuickReplyDraft("");
+                                        } catch (err: any) {
+                                            alert(err?.message || "문자 발송에 실패했습니다.");
+                                        } finally {
+                                            setIsSendingQuickReply(false);
+                                        }
+                                    }}
+                                    className="adm-btn primary !h-[54px] shrink-0"
+                                >
+                                    <span>
+                                        {isSendingQuickReply ? "전송중..." : "답장 전송"}
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {drawerTab === "info" && (
                     <div>

@@ -94,7 +94,7 @@ export default function SmartCareAdContent() {
     }, [bindIframeHandlers]);
 
     return (
-        <div className="min-h-screen bg-[#e9dfd1] pb-24">
+        <div className="min-h-screen bg-[#dfe5ee] pb-24">
             <LandingGiftTop
                 state={giftState}
                 onApplyWithGift={(gift) => {
@@ -133,11 +133,11 @@ export default function SmartCareAdContent() {
                 <button
                     type="button"
                     onClick={() => setIsConsultOpen(true)}
-                    className="pointer-events-auto shadow-2xl flex items-center justify-center gap-3 px-7 py-3.5 rounded-full bg-[#2b2119] text-[#faf5ef] hover:bg-[#3e3025] active:scale-[0.98] transition-all border border-[#c98b5a]/50 font-bold text-sm sm:text-base"
+                    className="pointer-events-auto shadow-2xl flex items-center justify-center gap-3 px-7 py-3.5 rounded-full bg-[#111c33] text-[#f3f6fb] hover:bg-[#1a2b4d] active:scale-[0.98] transition-all border border-[#6899de]/50 font-bold text-sm sm:text-base"
                 >
-                    <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#c98b5a] animate-pulse" />
+                    <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#6899de] animate-pulse" />
                     <span>스마트케어 지금 상담받기</span>
-                    <span className="text-[#c98b5a] font-black">→</span>
+                    <span className="text-[#6899de] font-black">→</span>
                 </button>
             </div>
 

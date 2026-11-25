@@ -1,6 +1,6 @@
-// 타입 정의
+﻿// ????뺤쓽
 
-// 파트너 정보
+// ?뚰듃???뺣낫
 
 export interface Partner {
     partnerId: string;
@@ -33,18 +33,19 @@ export interface Partner {
     parentPartnerId?: string;
     parentPartnerName?: string;
     role?: string; // 'master' | 'tm'
-    sonoAuthCode?: string; // 소노접수 인증코드 (예: BIZI0011)
-    affiliation?: string; // 소속
-    employeeNumber?: string; // 사원번호
-    departmentName?: string; // 부서(팀)명
+    sonoAuthCode?: string; // ?뚮끂?묒닔 ?몄쬆肄붾뱶 (?? BIZI0011)
+    affiliation?: string; // ?뚯냽
+    employeeNumber?: string; // ?ъ썝踰덊샇
+    departmentName?: string; // 遺???)紐?
     createdAt: string;
     approvedAt: string;
     approvedBy: string;
 }
 
-// 고객 신청 정보
+// 怨좉컼 ?좎껌 ?뺣낫
 export interface Application {
     applicationNo: string;
+    _id?: string;
     partnerId: string;
     partnerName: string;
     productType: 'happy450' | 'smartcare' | 'maeum' | string;
@@ -89,27 +90,28 @@ export interface Application {
     contractSignedAt?: string;
     selectedGift?: string;
     selectedGiftId?: string;
+    googleContactsSyncedAt?: number;
 }
 
-// 계약 상태 (진행상태 설정에서 동적으로 관리됨)
+// 怨꾩빟 ?곹깭 (吏꾪뻾?곹깭 ?ㅼ젙?먯꽌 ?숈쟻?쇰줈 愿由щ맖)
 export type ApplicationStatus = string;
-/* 이전 하드코딩된 값들:
-    | '접수대기'
-    | '접수완료'
-    | '부재'
-    | '보류'
-    | '거부'
-    | '접수취소'
-    | '정상가입'
-    | '배송완료'
-    | '청약철회'
-    | '해약'
-    | '불가'
-    | '녹취완료(출금확인중)'
-    | '정산완료';
+/* ?댁쟾 ?섎뱶肄붾뵫??媛믩뱾:
+    | '?묒닔?湲?
+    | '?묒닔?꾨즺'
+    | '遺??
+    | '蹂대쪟'
+    | '嫄곕?'
+    | '?묒닔痍⑥냼'
+    | '?뺤긽媛??
+    | '諛곗넚?꾨즺'
+    | '泥?빟泥좏쉶'
+    | '?댁빟'
+    | '遺덇?'
+    | '?뱀랬?꾨즺(異쒓툑?뺤씤以?'
+    | '?뺤궛?꾨즺';
 */
 
-// 상태 변경 이력
+// ?곹깭 蹂寃??대젰
 export interface StatusHistory {
     historyId: string;
     applicationNo: string;
@@ -120,7 +122,7 @@ export interface StatusHistory {
     memo: string;
 }
 
-// 정산 내역
+// ?뺤궛 ?댁뿭
 export interface Settlement {
     settlementId: string;
     partnerId: string;
@@ -135,7 +137,7 @@ export interface Settlement {
     createdAt: string;
 }
 
-// 관리자 계정
+// 愿由ъ옄 怨꾩젙
 export interface Admin {
     adminId: string;
     adminName: string;
@@ -146,7 +148,7 @@ export interface Admin {
     lastLogin: string;
 }
 
-// 파트너 신청 대기
+// ?뚰듃???좎껌 ?湲?
 export interface PartnerRequest {
     requestId: string;
     companyName: string;
@@ -181,7 +183,7 @@ export interface PartnerRequest {
     reviewedAt?: string;
 }
 
-// API 응답 타입
+// API ?묐떟 ???
 export interface ApiResponse<T = unknown> {
     success: boolean;
     data?: T;
@@ -189,7 +191,7 @@ export interface ApiResponse<T = unknown> {
     error?: string;
 }
 
-// 파트너 신청 폼 데이터
+// ?뚰듃???좎껌 ???곗씠??
 export interface PartnerApplyFormData {
     companyName: string;
     businessNumber: string;
@@ -216,7 +218,7 @@ export interface PartnerApplyFormData {
     privacyAgreed: boolean;
 }
 
-// 고객 신청 폼 데이터
+// 怨좉컼 ?좎껌 ???곗씠??
 export interface CustomerApplyFormData {
     partnerId: string;
     partnerName: string;
@@ -237,7 +239,7 @@ export interface CustomerApplyFormData {
     privacyAgreed: boolean;
 }
 
-// 고객 상담 녹취 음성파일 정보
+// 怨좉컼 ?곷떞 ?뱀랬 ?뚯꽦?뚯씪 ?뺣낫
 export interface Recording {
     _id: string;
     applicationNo: string;

@@ -3,10 +3,10 @@
 <title>소노아임레디 스마트케어 | 가전 렌탈·상조 결합상품</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
-:root{--bg:#f6efe4;--bg2:#eee3d3;--panel:#fbf6ee;--line:#dccfbc;--fg:#2b2119;--muted:#76675a;--note:#9a8a7a;--shade:246,239,228;--sw-border:rgba(0,0,0,.18);--star:#f5b70b;
-  --acc:#c98b5a;--acc-text:#755134;--acc-rgb:201,139,90;--acc-soft:rgba(201,139,90,.35);--ink:#0c0d0c;
+:root{--bg:#f3f6fa;--bg2:#e7edf5;--panel:#f9fbfe;--line:#cfd8e6;--fg:#111c33;--muted:#526077;--note:#7a889e;--shade:243,246,250;--sw-border:rgba(0,0,0,.18);--star:#f5b70b;
+  --acc:#6899de;--acc-text:#1e3a6d;--acc-rgb:104,153,222;--acc-soft:rgba(104,153,222,.35);--ink:#0b1220;
   --head:"Pretendard","Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;--head-w:800;color-scheme:light}
-body{margin:0;background:#e9dfd1;color:var(--fg);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;padding:0 max(16px,env(safe-area-inset-left,0px))}
+body{margin:0;background:#dfe5ee;color:var(--fg);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;padding:0 max(16px,env(safe-area-inset-left,0px))}
 .render body{padding:0}.render .fit{overflow:visible;height:auto!important}
 .fit{max-width:860px;margin:0 auto;overflow:hidden}.stage{width:860px;transform-origin:top left}
 h1,h2,h3,p{margin:0}
@@ -21,7 +21,7 @@ h1,h2,h3,p{margin:0}
 .g2>*:last-child:nth-child(odd){grid-column:1/-1}
 h1,.h2{font-family:var(--head);font-weight:var(--head-w)!important}
 .photo{position:absolute;left:0;top:0;display:block;object-fit:cover}
-.ph{background:linear-gradient(135deg,#ece1d1,#e2d5c2);display:flex;align-items:center;justify-content:center;color:#a8977f;font-size:26px;font-weight:700}
+.ph{background:linear-gradient(135deg,#e4ebf4,#d5e0ee);display:flex;align-items:center;justify-content:center;color:#7b8da6;font-size:26px;font-weight:700}
 .ph span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
 .ph .spin{position:absolute;top:50%;left:50%;width:64px;height:64px;margin:-52px 0 0 -32px;border-radius:50%;border:6px solid currentColor;border-top-color:transparent;opacity:.8;animation:v3spin .9s linear infinite}
 .ph span.ld{transform:translate(-50%,28px);font-size:24px;white-space:nowrap}
@@ -37,13 +37,13 @@ canvas{position:absolute;left:0;top:0;pointer-events:none}
 /* 직접 디자인 조각 — 크기를 안 적은 글이 브라우저 기본 16px 로 나왔다(2026-11-19 QA U-03). <small> 도 24px 밑으로 줄지 않게 */
 .v3free{font-size:27px;line-height:1.6}.v3free small{font-size:max(24px,.83em)}
 .star{color:var(--star);display:inline-block}
-.shimmer{background:linear-gradient(90deg,#755134 0,#755134 380px,#b39f8f 470px,#755134 560px,#755134 1200px);background-size:1200px 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+.shimmer{background:linear-gradient(90deg,#1e3a6d 0,#1e3a6d 380px,#7aa2d8 470px,#1e3a6d 560px,#1e3a6d 1200px);background-size:1200px 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
 .step{transition:none}
 .rv{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.1em;margin-bottom:-.1em}.rv>span{display:inline-block}
 .sweep{position:absolute;inset:0;pointer-events:none;mix-blend-mode:soft-light}
 [data-ani]{transform-box:fill-box;transform-origin:50% 50%}
 /* 에디토리얼(v1 × v3 합친 모습) — 두 무게 제목 · 넓은 자간 라벨 · 넓은 여백 · 반전 4장 · 어두운 구매 장 */
-.ed{--ed-ink:43,33,25}
+.ed{--ed-ink:17,28,51}
 .ed .sec{padding-top:140px;padding-bottom:140px}
 .ed .ed-full .lab{color:var(--acc)}
 .ed .lab{font-size:17px;font-weight:800;letter-spacing:.3em}
@@ -51,8 +51,8 @@ canvas{position:absolute;left:0;top:0;pointer-events:none}
 .ed h1,.ed .h2{font-weight:300!important}
 .ed .h2>.rv:last-of-type,.ed h1 #accent{font-weight:900}
 .ed .desc{font-size:25px;line-height:1.75}
-.ed .inv{--bg:#2b2119;--bg2:#362c25;--panel:#3e352e;--line:#514942;--fg:#faf5ef;--muted:#aeaba8;--note:#847e7a;--shade:43,33,25;--acc-text:#c98b5a;color:var(--fg)}
-.ed #s18{background:var(--bg)!important;color:var(--fg)!important;--ink:#0c0d0c}
+.ed .inv{--bg:#111c33;--bg2:#182642;--panel:#1f3052;--line:#2e4268;--fg:#f3f6fb;--muted:#a8b5c9;--note:#7e8da6;--shade:17,28,51;--acc-text:#7aa7e8;color:var(--fg)}
+.ed #s18{background:var(--bg)!important;color:var(--fg)!important;--ink:#0b1220}
 .ed #s18 .lab{color:var(--acc-text)!important}
 .ed #s18 span[data-in]{border-color:var(--fg)!important}
 .ed #s18 i[data-wipe]{background:var(--fg)!important}
@@ -340,9 +340,9 @@ const eo=p=>1-Math.pow(1-p,3),eio=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
 const spr=p=>p<=0?0:p>=1?1:1-Math.exp(-5.5*p)*Math.cos(9.5*p);
 const fade=t=>1-eio(prog(t,3.62,.38));
 const rnd=i=>{const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)};
-const ACC=getComputedStyle(document.documentElement).getPropertyValue('--acc-rgb').trim()||'185,217,138';
+const ACC=getComputedStyle(document.documentElement).getPropertyValue('--acc-rgb').trim()||'104,153,222';
 // 색상 조명 바깥을 바탕 톤으로 흐리게 — 밝은 톤에서 검게 눌리지 않게
-const SHADE=getComputedStyle(document.documentElement).getPropertyValue('--shade').trim()||'12,13,12';
+const SHADE=getComputedStyle(document.documentElement).getPropertyValue('--shade').trim()||'11,18,32';
 function blob(c,x,y,r,a,col){const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,'rgba('+col+','+a+')');g.addColorStop(1,'rgba('+col+',0)');c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,TAU);c.fill();}
 const gen={in:Q('[data-in]'),pop:Q('[data-pop]'),draw:Q('[data-draw]'),count:Q('[data-count]'),wipe:Q('[data-wipe]'),bob:Q('[data-bob]')};
 gen.draw.forEach(e=>{e.style.strokeDasharray='1';});
@@ -366,7 +366,7 @@ function drawFx(o,ph){const c=o.c,w=o.w,h=o.h,s=o.s;c.clearRect(0,0,w,h);
     c.save();c.translate(w*(.2+.6*rnd(i+s+30)),h*(.2+.55*rnd(i+s+40)));c.globalAlpha=a;c.fillStyle='#fff';c.beginPath();for(let k=0;k<4;k++){c.rotate(Math.PI/2);c.moveTo(0,0);c.lineTo(2.2,2.2);c.lineTo(0,15);c.lineTo(-2.2,2.2);}c.fill();c.restore();}}
   else if(o.k==='steam'){for(let i=0;i<9;i++){const p=(ph+i/9)%1;blob(c,w*.5+Math.sin(TAU*(p*1.3+rnd(i+s)))*24*p+(rnd(i+s+5)-.5)*30,h*.42-p*h*.3,20+p*50,.18*Math.sin(Math.PI*p),'240,240,236');}}
   else if(o.k==='bubbles'){for(let i=0;i<22;i++){const p=(ph+rnd(i+s+60))%1,x=w*(.25+.5*rnd(i+s+70)),y=h*(.75-.45*rnd(i+s+80))-p*30,a=Math.sin(Math.PI*p);
-    c.strokeStyle='rgba(255,250,240,'+(.5*a)+')';c.lineWidth=1.3;c.beginPath();c.arc(x,y,1.5+rnd(i+s+90)*3,0,TAU);c.stroke();}}}
+    c.strokeStyle='rgba(235,243,255,'+(.5*a)+')';c.lineWidth=1.3;c.beginPath();c.arc(x,y,1.5+rnd(i+s+90)*3,0,TAU);c.stroke();}}}
 function R(t){
   t=((t%L)+L)%L;const ph=t/L,f=fade(t);
   gen.in.forEach(e=>{const d=+e.dataset.in,s=spr(prog(t,d,.9));e.style.opacity=cl(prog(t,d,.2))*f;e.style.transform='translateY('+((1-s)*44)+'px)';});

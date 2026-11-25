@@ -16,6 +16,7 @@ import type * as careProducts from "../careProducts.js";
 import type * as crons from "../crons.js";
 import type * as dashboard from "../dashboard.js";
 import type * as dataManagement from "../dataManagement.js";
+import type * as http from "../http.js";
 import type * as maeumContracts from "../maeumContracts.js";
 import type * as maeumGifts from "../maeumGifts.js";
 import type * as maeumRetention from "../maeumRetention.js";
@@ -30,6 +31,7 @@ import type * as retention2 from "../retention2.js";
 import type * as retention3 from "../retention3.js";
 import type * as retentionMatcher from "../retentionMatcher.js";
 import type * as settings from "../settings.js";
+import type * as sms from "../sms.js";
 import type * as telegram from "../telegram.js";
 import type * as utils from "../utils.js";
 
@@ -48,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   dashboard: typeof dashboard;
   dataManagement: typeof dataManagement;
+  http: typeof http;
   maeumContracts: typeof maeumContracts;
   maeumGifts: typeof maeumGifts;
   maeumRetention: typeof maeumRetention;
@@ -62,6 +65,7 @@ declare const fullApi: ApiFromModules<{
   retention3: typeof retention3;
   retentionMatcher: typeof retentionMatcher;
   settings: typeof settings;
+  sms: typeof sms;
   telegram: typeof telegram;
   utils: typeof utils;
 }>;

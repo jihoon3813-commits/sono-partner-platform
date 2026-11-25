@@ -1,4 +1,5 @@
 import { mutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { nowKST, todayKSTStr } from "./utils";
 
@@ -207,6 +208,15 @@ export const submitMaeumContract = mutation({
             changedBy: "전자계약",
             changedAt: now,
             memo: "마음든든 전자계약 신청 완료",
+        });
+
+        await ctx.scheduler.runAfter(0, internal.sms.sendAutoApplicationSms, {
+            applicationId: id,
+            applicationNo,
+            customerName: args.customerName.trim(),
+            customerPhone: args.customerPhone.trim(),
+            productType: args.productType,
+            planType: args.planType || "1",
         });
 
         return { id, applicationNo };
