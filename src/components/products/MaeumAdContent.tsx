@@ -334,6 +334,7 @@ export default function MaeumAdContent() {
             @media (max-width: 767px){
               #maeum-gift-mid .mg-cols-3,#maeum-gift-mid .mg-cols-4{grid-template-columns:repeat(2,minmax(0,1fr))}
               #maeum-gift-mid .mg-single{grid-template-columns:1fr}
+              #maeum-gift-mid .mg-actions{flex-direction:column}
             }
             #maeum-gift-mid .mg-card{background:#fbf6ee;color:#2b2119;border-radius:18px;overflow:hidden;border:2px solid transparent;display:flex;flex-direction:column;cursor:pointer}
             #maeum-gift-mid .mg-card.is-sel{border-color:#e3b08b;box-shadow:0 0 0 3px rgba(185,138,106,.5)}
@@ -373,7 +374,7 @@ export default function MaeumAdContent() {
           ${cardsHtml}
           ${
               config.commonNotice
-                  ? `<div class="mg-common"><strong style="color:#f3dcc9">[이벤트 유의사항]</strong> ${escapeHtml(config.commonNotice).replace(/\n/g, "<br>")}</div>`
+                  ? `<div class="mg-common"><strong style="color:#f3dcc9;display:block;margin-bottom:4px">[이벤트 유의사항]</strong>${escapeHtml(config.commonNotice).replace(/\n/g, "<br>")}</div>`
                   : ""
           }
         `;

@@ -243,21 +243,70 @@ export function MaeumGiftEventSection({
                 {/* 헤더 */}
                 <div className="relative text-center mb-3 sm:mb-7">
                     <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-[#b98a6a] text-[#1a130e] font-extrabold text-[10px] sm:text-xs tracking-wider uppercase shadow leading-tight break-keep">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1 rounded-full bg-[#b98a6a] text-[#1a130e] font-extrabold text-[10px] sm:text-xs tracking-wider uppercase shadow leading-tight break-keep">
                             <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#1a130e] animate-ping shrink-0" />
-                            <span>{config.badgeText || "SPECIAL GIFT EVENT · 사은품 증정 이벤트 진행중"}</span>
+                            <span>
+                                {(() => {
+                                    const rawBadge =
+                                        config.badgeText ||
+                                        "SPECIAL GIFT EVENT · 사은품 증정 이벤트 진행중";
+                                    const parts = rawBadge.split(/\s*·\s*/);
+                                    if (parts.length >= 2) {
+                                        return (
+                                            <>
+                                                {parts[0]}
+                                                <span className="hidden sm:inline"> · </span>
+                                                <br className="sm:hidden" />
+                                                {parts.slice(1).join(" · ")}
+                                            </>
+                                        );
+                                    }
+                                    return rawBadge;
+                                })()}
+                            </span>
                         </span>
                         <span className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/10 border border-[#b98a6a]/40 text-[#f3dcc9] font-bold text-[10px] sm:text-xs whitespace-nowrap">
                             📅 {periodLabel}
                         </span>
                     </div>
 
-                    <h2 className="text-[17px] sm:text-3xl font-extrabold tracking-tight text-[#fff9f2] leading-[1.3] sm:leading-snug break-keep">
-                        {config.title || "지금 마음든든 상담·가입 시 특별 사은품 증정!"}
+                    <h2 className="text-[17px] sm:text-3xl font-extrabold tracking-tight text-[#fff9f2] leading-[1.3] sm:leading-snug break-keep whitespace-pre-line">
+                        {(() => {
+                            const rawTitle =
+                                config.title || "지금 마음든든 상담·가입 시 특별 사은품 증정!";
+                            if (rawTitle.includes("\n")) return rawTitle;
+                            const match = rawTitle.match(/^(.*?시)\s+(.+)$/);
+                            if (match) {
+                                return (
+                                    <>
+                                        {match[1]}
+                                        <span className="hidden sm:inline"> </span>
+                                        <br className="sm:hidden" />
+                                        {match[2]}
+                                    </>
+                                );
+                            }
+                            return rawTitle;
+                        })()}
                     </h2>
                     {config.subtitle && (
-                        <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-sm text-[#d9cbbd] leading-snug break-keep">
-                            {config.subtitle}
+                        <p className="mt-1 sm:mt-1.5 text-[10.5px] sm:text-sm text-[#d9cbbd] leading-snug break-keep whitespace-pre-line">
+                            {(() => {
+                                const rawSub = config.subtitle;
+                                if (rawSub.includes("\n")) return rawSub;
+                                const match = rawSub.match(/^([^,]+,)\s*(.+)$/);
+                                if (match) {
+                                    return (
+                                        <>
+                                            {match[1]}
+                                            <span className="hidden sm:inline"> </span>
+                                            <br className="sm:hidden" />
+                                            {match[2]}
+                                        </>
+                                    );
+                                }
+                                return rawSub;
+                            })()}
                         </p>
                     )}
                 </div>
@@ -321,7 +370,7 @@ export function MaeumGiftEventSection({
                                         )}
                                     </div>
 
-                                    <div className="flex items-center gap-2 sm:gap-2.5 pt-1 sm:pt-2">
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5 pt-1 sm:pt-2">
                                         {detail && (
                                             <button
                                                 type="button"
@@ -329,7 +378,7 @@ export function MaeumGiftEventSection({
                                                     e.stopPropagation();
                                                     onOpenDetail(gift);
                                                 }}
-                                                className="shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-[#cbb9a4] bg-white text-[#2b2119] font-bold text-[11px] sm:text-sm hover:bg-[#f6efe4] transition whitespace-nowrap"
+                                                className="w-full sm:w-auto shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-[#cbb9a4] bg-white text-[#2b2119] font-bold text-[11px] sm:text-sm hover:bg-[#f6efe4] transition whitespace-nowrap"
                                             >
                                                 상세이미지 보기
                                             </button>
@@ -340,7 +389,7 @@ export function MaeumGiftEventSection({
                                                 e.stopPropagation();
                                                 onApplyWithGift(gift);
                                             }}
-                                            className="flex-1 min-w-0 px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-[#2b2119] text-[#faf5ef] font-extrabold text-[11px] sm:text-sm hover:bg-[#3f3126] transition shadow-md whitespace-nowrap"
+                                            className="w-full sm:flex-1 min-w-0 px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-[#2b2119] text-[#faf5ef] font-extrabold text-[11px] sm:text-sm hover:bg-[#3f3126] transition shadow-md whitespace-nowrap"
                                         >
                                             이 사은품으로 상담 신청하기 →
                                         </button>
@@ -442,7 +491,7 @@ export function MaeumGiftEventSection({
                 {/* 공통 유의사항 */}
                 {config.commonNotice && (
                     <div className="relative mt-3 sm:mt-5 rounded-xl bg-black/25 border border-[#b98a6a]/30 px-3 py-2 sm:px-4 sm:py-3 text-[10px] sm:text-xs text-[#dfd2c3] whitespace-pre-line leading-snug sm:leading-relaxed break-keep">
-                        <strong className="text-[#f3dcc9] font-bold mr-1.5">[이벤트 유의사항]</strong>
+                        <strong className="block text-[#f3dcc9] font-bold mb-0.5 sm:mb-1">[이벤트 유의사항]</strong>
                         {config.commonNotice}
                     </div>
                 )}
