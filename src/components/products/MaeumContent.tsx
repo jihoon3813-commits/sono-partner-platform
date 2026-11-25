@@ -1517,8 +1517,6 @@ export default function MaeumContent({
                                     </small>
                                 </div>
                             )}
-
-                            <p className="demo">현재는 디자인 검토용 페이지입니다. 개인정보를 수집하거나 실제 상담을 접수하지 않습니다. 정식 상담 연결은 운영 정보 확정 후 제공됩니다.</p>
                         </div>
                     </div>
                 </section>
