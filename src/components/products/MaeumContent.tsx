@@ -5,6 +5,12 @@ import Link from "next/link";
 import "./maeum.css";
 import MaeumEcontractDrawer from "./MaeumEcontractDrawer";
 import MaeumConsultDrawer from "./MaeumConsultDrawer";
+import {
+    LandingGiftBottom,
+    LandingGiftOverlays,
+    LandingGiftTop,
+    useLandingGiftEvent,
+} from "./LandingGiftWidgets";
 
 interface MaeumContentProps {
     partnerMode?: boolean;
@@ -71,6 +77,7 @@ export default function MaeumContent({
     // 6. 우측 전자계약 & 빠른 상담 신청 슬라이드 드로어
     const [isEcontractOpen, setIsEcontractOpen] = useState(false);
     const [isConsultOpen, setIsConsultOpen] = useState(false);
+    const giftState = useLandingGiftEvent("maeum");
 
     const openConsultDrawer = (plan?: "3" | "4" | "5") => {
         if (plan) setChosenPlan(plan);
@@ -145,6 +152,14 @@ export default function MaeumContent({
                     </nav>
                 </div>
             </header>
+
+            <LandingGiftTop
+                state={giftState}
+                onApplyWithGift={(gift) => {
+                    giftState.setSelectedGiftId(gift._id);
+                    openConsultDrawer();
+                }}
+            />
 
             <main>
                 {/* Hero Section */}
@@ -1537,6 +1552,22 @@ export default function MaeumContent({
                 </div>
             </footer>
 
+            <LandingGiftBottom
+                state={giftState}
+                onApplyWithGift={(gift) => {
+                    giftState.setSelectedGiftId(gift._id);
+                    openConsultDrawer();
+                }}
+            />
+
+            <LandingGiftOverlays
+                state={giftState}
+                onApplyWithGift={(gift) => {
+                    giftState.setSelectedGiftId(gift._id);
+                    openConsultDrawer();
+                }}
+            />
+
             {/* Floating Mobile Bar */}
             <div className="mobilebar">
                 <span>가족을 위한 2·5·1<strong>마음든든</strong></span>
@@ -1561,6 +1592,9 @@ export default function MaeumContent({
             partnerUrl={partnerUrl}
             partnerName={partnerName}
             partnerPhone={partnerPhone}
+            gifts={giftState.gifts}
+            selectedGiftId={giftState.selectedGiftId}
+            onSelectGiftId={giftState.setSelectedGiftId}
             onOpenEcontract={(plan) => {
                 setChosenPlan(plan);
                 setIsEcontractOpen(true);

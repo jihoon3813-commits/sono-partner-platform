@@ -17,6 +17,8 @@ interface ThumbnailItem {
 interface GiftItem {
     _id: Id<"maeumGifts">;
     landingKey: string;
+    landingKeys?: string[];
+    resolvedLandingKeys?: string[];
     name: string;
     thumbnailUrl: string;
     thumbnailStorageId?: Id<"_storage">;
@@ -44,9 +46,30 @@ function getPeriodStatus(today: string, isActive: boolean, startDate?: string, e
     return { label: "진행중", pill: "green" };
 }
 
+const LANDING_OPTIONS = [
+    { key: "maeum-ad", label: "마음든든 (광고)", url: "/products/maeum-ad" },
+    { key: "maeum", label: "마음든든 (기본/파트너)", url: "/products/maeum" },
+    { key: "smartcare-ad", label: "스마트케어 (광고)", url: "/products/smartcare-ad" },
+    { key: "smartcare", label: "스마트케어 (기본/파트너)", url: "/products/smartcare" },
+    { key: "happy450", label: "더해피450 ONE", url: "/products/happy450" },
+] as const;
+
+type LandingKey = (typeof LANDING_OPTIONS)[number]["key"];
+
+function getLandingLabel(key: string): string {
+    return LANDING_OPTIONS.find((l) => l.key === key)?.label || key;
+}
+
 export default function MaeumGiftManagement() {
-    const config = useQuery(api.maeumGifts.getEventConfig, { landingKey: "maeum-ad" });
-    const gifts = useQuery(api.maeumGifts.listAdminGifts, { landingKey: "maeum-ad" });
+    const [selectedLanding, setSelectedLanding] = useState<LandingKey>("maeum-ad");
+    const [giftListFilter, setGiftListFilter] = useState<"selected" | "ALL">("selected");
+
+    const config = useQuery(api.maeumGifts.getEventConfig, {
+        landingKey: selectedLanding,
+    });
+    const gifts = useQuery(api.maeumGifts.listAdminGifts, {
+        landingKey: giftListFilter === "ALL" ? "ALL" : selectedLanding,
+    });
 
     const saveEventConfig = useMutation(api.maeumGifts.saveEventConfig);
     const createGift = useMutation(api.maeumGifts.createGift);
@@ -101,7 +124,7 @@ export default function MaeumGiftManagement() {
         setSavingConfig(true);
         try {
             await saveEventConfig({
-                landingKey: "maeum-ad",
+                landingKey: selectedLanding,
                 isEnabled: eventForm.isEnabled,
                 badgeText: eventForm.badgeText,
                 title: eventForm.title,
@@ -111,7 +134,7 @@ export default function MaeumGiftManagement() {
                 commonNotice: eventForm.commonNotice,
                 slideIntervalMs,
             });
-            alert("사은품 이벤트 설정이 저장되었습니다.");
+            alert(`${getLandingLabel(selectedLanding)} 사은품 이벤트 설정이 저장되었습니다.`);
         } catch (err) {
             console.error(err);
             alert("저장 중 오류가 발생했습니다.");
@@ -125,6 +148,7 @@ export default function MaeumGiftManagement() {
     const [editingGift, setEditingGift] = useState<GiftItem | null>(null);
     const [giftForm, setGiftForm] = useState({
         name: "",
+        landingKeys: ["maeum-ad"] as string[],
         thumbnailImages: [] as ThumbnailItem[],
         newThumbUrlInput: "",
         detailImageUrl: "",
@@ -164,6 +188,12 @@ export default function MaeumGiftManagement() {
 
             setGiftForm({
                 name: gift.name,
+                landingKeys:
+                    gift.resolvedLandingKeys && gift.resolvedLandingKeys.length > 0
+                        ? gift.resolvedLandingKeys
+                        : gift.landingKeys && gift.landingKeys.length > 0
+                        ? gift.landingKeys
+                        : [gift.landingKey || selectedLanding],
                 thumbnailImages: existingThumbs,
                 newThumbUrlInput: "",
                 detailImageUrl: gift.detailImageUrl || "",
@@ -183,6 +213,7 @@ export default function MaeumGiftManagement() {
             setEditingGift(null);
             setGiftForm({
                 name: "",
+                landingKeys: [selectedLanding],
                 thumbnailImages: [],
                 newThumbUrlInput: "",
                 detailImageUrl: "",
@@ -301,6 +332,10 @@ export default function MaeumGiftManagement() {
             alert("사은품 제품명을 입력해 주세요.");
             return;
         }
+        if (giftForm.landingKeys.length === 0) {
+            alert("연결할 랜딩페이지를 최소 1개 이상 선택해 주세요.");
+            return;
+        }
         if (giftForm.thumbnailImages.length === 0) {
             alert("사은품 섬네일 이미지를 최소 1장 이상 등록해 주세요.");
             return;
@@ -317,6 +352,8 @@ export default function MaeumGiftManagement() {
             if (editingGift) {
                 await updateGift({
                     id: editingGift._id,
+                    landingKey: giftForm.landingKeys[0],
+                    landingKeys: giftForm.landingKeys,
                     name: giftForm.name.trim(),
                     thumbnailUrl: firstThumb.url || "",
                     thumbnailStorageId: firstThumb.storageId ?? null,
@@ -332,7 +369,8 @@ export default function MaeumGiftManagement() {
                 alert("사은품 정보가 수정되었습니다.");
             } else {
                 await createGift({
-                    landingKey: "maeum-ad",
+                    landingKey: giftForm.landingKeys[0],
+                    landingKeys: giftForm.landingKeys,
                     name: giftForm.name.trim(),
                     thumbnailUrl: firstThumb.url || "",
                     thumbnailStorageId: firstThumb.storageId,
@@ -384,24 +422,28 @@ export default function MaeumGiftManagement() {
         eventForm.endDate
     );
 
+    const currentLandingMeta =
+        LANDING_OPTIONS.find((l) => l.key === selectedLanding) ||
+        LANDING_OPTIONS[0];
+
     return (
         <div className="space-y-6">
             <section className="adm-page-heading">
                 <div>
-                    <div className="adm-eyebrow">MAEUM-AD · GIFT EVENT</div>
+                    <div className="adm-eyebrow">LANDING · GIFT EVENT</div>
                     <h1>사은품 이벤트 관리</h1>
                     <p>
-                        마음든든 광고 랜딩페이지(<code>/products/maeum-ad</code>) 상단·중간·하단에 노출되는 사은품 증정 이벤트와 사은품 목록을 실시간으로 관리합니다.
+                        원하는 랜딩페이지별로 사은품 증정 이벤트를 설정하고, 각 사은품을 연결할 랜딩페이지를 자유롭게 선택·관리합니다.
                     </p>
                 </div>
                 <div className="adm-heading-buttons">
                     <a
-                        href="/products/maeum-ad"
+                        href={currentLandingMeta.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="adm-btn"
                     >
-                        <span>랜딩페이지 미리보기 ↗</span>
+                        <span>{currentLandingMeta.label} 미리보기 ↗</span>
                     </a>
                     <button
                         type="button"
@@ -413,6 +455,30 @@ export default function MaeumGiftManagement() {
                     </button>
                 </div>
             </section>
+
+            {/* 랜딩페이지 선택 탭 */}
+            <div className="adm-panel p-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-bold text-[#45554e] mr-1">
+                        랜딩 선택:
+                    </span>
+                    {LANDING_OPTIONS.map((opt) => (
+                        <button
+                            key={opt.key}
+                            type="button"
+                            onClick={() => setSelectedLanding(opt.key)}
+                            className={`adm-btn small ${
+                                selectedLanding === opt.key ? "primary" : ""
+                            }`}
+                        >
+                            {opt.label}
+                        </button>
+                    ))}
+                </div>
+                <span className="text-[11px] text-[#6b7768]">
+                    경로: <code className="font-mono">{currentLandingMeta.url}</code>
+                </span>
+            </div>
 
             {/* 1. 이벤트 진행 설정 패널 */}
             <form onSubmit={handleSaveConfig} className="adm-panel p-6 space-y-5">
@@ -620,10 +686,36 @@ export default function MaeumGiftManagement() {
 
             {/* 2. 사은품 목록 */}
             <section className="space-y-3">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-sm font-bold text-[#263d36]">
-                        등록된 사은품 목록 ({gifts ? gifts.length : 0}개)
-                    </h2>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                        <h2 className="text-sm font-bold text-[#263d36]">
+                            등록된 사은품 목록 ({gifts ? gifts.length : 0}개)
+                        </h2>
+                        <div className="inline-flex rounded-lg border border-[#dce3d8] bg-white p-0.5">
+                            <button
+                                type="button"
+                                onClick={() => setGiftListFilter("selected")}
+                                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
+                                    giftListFilter === "selected"
+                                        ? "bg-[#295e52] text-white"
+                                        : "text-[#6b7768] hover:text-[#263d36]"
+                                }`}
+                            >
+                                {currentLandingMeta.label}만
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setGiftListFilter("ALL")}
+                                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
+                                    giftListFilter === "ALL"
+                                        ? "bg-[#295e52] text-white"
+                                        : "text-[#6b7768] hover:text-[#263d36]"
+                                }`}
+                            >
+                                전체 랜딩 보기
+                            </button>
+                        </div>
+                    </div>
                     <p className="text-xs text-[#6b7768]">
                         1개 등록 시 단독 강조 카드 / 2개 이상 등록 시 모바일 2열 · PC 최대 4열 자동 배치됩니다.
                     </p>
@@ -701,6 +793,16 @@ export default function MaeumGiftManagement() {
                                     </div>
 
                                     <div className="p-4 flex-1 flex flex-col gap-2">
+                                        <div className="flex flex-wrap gap-1">
+                                            {(gift.resolvedLandingKeys || [gift.landingKey]).map((lk: string) => (
+                                                <span
+                                                    key={lk}
+                                                    className="px-1.5 py-0.5 rounded bg-[#edf3ee] text-[#295e52] border border-[#d0dfd3] text-[10px] font-bold"
+                                                >
+                                                    {getLandingLabel(lk)}
+                                                </span>
+                                            ))}
+                                        </div>
                                         <h3 className="font-bold text-sm text-[#263d36] line-clamp-2">
                                             {gift.name}
                                         </h3>
@@ -777,6 +879,44 @@ export default function MaeumGiftManagement() {
                     subtitle="제품명, 섬네일, 상세이미지, 유의사항 및 진행 기간을 설정합니다."
                 >
                 <form onSubmit={handleSaveGift} className="space-y-4">
+                    <div>
+                        <label className="block text-xs font-bold text-[#263d36] mb-1.5">
+                            연결할 랜딩페이지 * (다중 선택 가능)
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-lg border border-[#e6eae3] bg-[#fafbf9]">
+                            {LANDING_OPTIONS.map((opt) => {
+                                const checked = giftForm.landingKeys.includes(opt.key);
+                                return (
+                                    <label
+                                        key={opt.key}
+                                        className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md border text-xs font-semibold cursor-pointer transition ${
+                                            checked
+                                                ? "bg-[#edf3ee] border-[#295e52] text-[#1f493f]"
+                                                : "bg-white border-[#dce3d8] text-[#45554e]"
+                                        }`}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={checked}
+                                            onChange={(e) => {
+                                                setGiftForm((prev) => {
+                                                    const next = e.target.checked
+                                                        ? [...prev.landingKeys, opt.key]
+                                                        : prev.landingKeys.filter(
+                                                              (k) => k !== opt.key
+                                                          );
+                                                    return { ...prev, landingKeys: next };
+                                                });
+                                            }}
+                                            className="w-3.5 h-3.5 accent-[#295e52]"
+                                        />
+                                        <span>{opt.label}</span>
+                                    </label>
+                                );
+                            })}
+                        </div>
+                    </div>
+
                     <div>
                         <label className="block text-xs font-bold text-[#263d36] mb-1.5">
                             사은품 제품명 *

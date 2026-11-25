@@ -157,14 +157,31 @@ async function resolveGiftImages(ctx: any, g: any) {
 export const listAdminGifts = query({
     args: { landingKey: v.optional(v.string()) },
     handler: async (ctx, args) => {
-        const key = args.landingKey || DEFAULT_LANDING_KEY;
-        const gifts = await ctx.db
-            .query("maeumGifts")
-            .withIndex("by_landingKey", (q) => q.eq("landingKey", key))
-            .collect();
+        const gifts = await ctx.db.query("maeumGifts").collect();
+        const filtered =
+            args.landingKey && args.landingKey !== "ALL"
+                ? gifts.filter((g) => {
+                      const keys =
+                          Array.isArray(g.landingKeys) && g.landingKeys.length > 0
+                              ? g.landingKeys
+                              : [g.landingKey];
+                      return keys.includes(args.landingKey!);
+                  })
+                : gifts;
 
-        const sorted = gifts.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        return await Promise.all(sorted.map((g) => resolveGiftImages(ctx, g)));
+        const sorted = filtered.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        return await Promise.all(
+            sorted.map(async (g) => {
+                const resolved = await resolveGiftImages(ctx, g);
+                return {
+                    ...resolved,
+                    resolvedLandingKeys:
+                        Array.isArray(g.landingKeys) && g.landingKeys.length > 0
+                            ? g.landingKeys
+                            : [g.landingKey],
+                };
+            })
+        );
     },
 });
 
@@ -195,17 +212,20 @@ export const getPublicGiftEvent = query({
             };
         }
 
-        const gifts = await ctx.db
-            .query("maeumGifts")
-            .withIndex("by_landingKey", (q) => q.eq("landingKey", key))
-            .collect();
+        const gifts = await ctx.db.query("maeumGifts").collect();
 
         const activeGifts = gifts
-            .filter(
-                (g) =>
+            .filter((g) => {
+                const keys =
+                    Array.isArray(g.landingKeys) && g.landingKeys.length > 0
+                        ? g.landingKeys
+                        : [g.landingKey];
+                return (
+                    keys.includes(key) &&
                     g.isActive &&
                     isWithinDateRange(today, g.startDate, g.endDate)
-            )
+                );
+            })
             .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
         const resolvedGifts = await Promise.all(
@@ -242,6 +262,7 @@ export const getPublicGiftEvent = query({
 export const createGift = mutation({
     args: {
         landingKey: v.optional(v.string()),
+        landingKeys: v.optional(v.array(v.string())),
         name: v.string(),
         thumbnailUrl: v.string(),
         thumbnailStorageId: v.optional(v.id("_storage")),
@@ -255,14 +276,15 @@ export const createGift = mutation({
         order: v.optional(v.number()),
     },
     handler: async (ctx, args) => {
-        const key = args.landingKey || DEFAULT_LANDING_KEY;
+        const landingKeys =
+            args.landingKeys && args.landingKeys.length > 0
+                ? args.landingKeys
+                : [args.landingKey || DEFAULT_LANDING_KEY];
+        const key = landingKeys[0];
         const now = nowKST();
         let nextOrder = args.order;
         if (nextOrder === undefined) {
-            const existing = await ctx.db
-                .query("maeumGifts")
-                .withIndex("by_landingKey", (q) => q.eq("landingKey", key))
-                .collect();
+            const existing = await ctx.db.query("maeumGifts").collect();
             nextOrder =
                 existing.length > 0
                     ? Math.max(...existing.map((g) => g.order ?? 0)) + 1
@@ -273,6 +295,7 @@ export const createGift = mutation({
 
         return await ctx.db.insert("maeumGifts", {
             landingKey: key,
+            landingKeys,
             name: args.name.trim(),
             thumbnailUrl: args.thumbnailUrl.trim() || firstThumb?.url?.trim() || "",
             thumbnailStorageId: args.thumbnailStorageId ?? firstThumb?.storageId,
@@ -293,6 +316,8 @@ export const createGift = mutation({
 export const updateGift = mutation({
     args: {
         id: v.id("maeumGifts"),
+        landingKey: v.optional(v.string()),
+        landingKeys: v.optional(v.array(v.string())),
         name: v.optional(v.string()),
         thumbnailUrl: v.optional(v.string()),
         thumbnailStorageId: v.optional(v.union(v.id("_storage"), v.null())),
@@ -314,6 +339,10 @@ export const updateGift = mutation({
             ...rest,
             updatedAt: nowKST(),
         };
+
+        if (args.landingKeys && args.landingKeys.length > 0) {
+            patchData.landingKey = args.landingKeys[0];
+        }
 
         if (thumbnailStorageId !== undefined) {
             const stillInList = args.thumbnailImages?.some(

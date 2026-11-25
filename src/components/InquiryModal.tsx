@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import type { MaeumGiftItem } from "./products/MaeumGiftEventSection";
 
 interface DaumPostcodeData {
     address: string;
@@ -24,7 +25,12 @@ interface InquiryModalProps {
     initialUnit?: string;
     initialPlanId?: string;
     isPremiumMallMode?: boolean;
+    gifts?: MaeumGiftItem[];
+    selectedGiftId?: string;
+    onSelectGiftId?: (id: string) => void;
 }
+
+const SMARTCARE_PRODUCT_TYPES = ["smartcare", "스마트케어", "스마트 케어", "스마트케어(광고)"];
 
 export default function InquiryModal({
     isOpen,
@@ -37,7 +43,10 @@ export default function InquiryModal({
     initialAppliance = "",
     initialUnit = "4",
     initialPlanId = "",
-    isPremiumMallMode = false
+    isPremiumMallMode = false,
+    gifts = [],
+    selectedGiftId = "",
+    onSelectGiftId,
 }: InquiryModalProps) {
     // Convex 실시간 제품 정보 쿼리
     const rawProductsData = useQuery(api.products.get);
@@ -65,12 +74,29 @@ export default function InquiryModal({
     const [selectedUnit, setSelectedUnit] = useState<string>(initialUnit);
     const [selectedPlanId, setSelectedPlanId] = useState<string>(initialPlanId);
     const [selectedAppliance, setSelectedAppliance] = useState<string>(initialAppliance || "상담 시 결정");
+    const [internalGiftId, setInternalGiftId] = useState<string>(selectedGiftId);
+
+    useEffect(() => {
+        if (isOpen && gifts.length > 0) {
+            const matched = gifts.find((g) => g._id === selectedGiftId);
+            const nextId = matched ? matched._id : gifts[0]._id;
+            setInternalGiftId(nextId);
+            onSelectGiftId?.(nextId);
+        } else if (!gifts.length) {
+            setInternalGiftId("");
+        }
+    }, [isOpen, gifts, selectedGiftId, onSelectGiftId]);
+
+    const activeGift =
+        gifts.length > 0
+            ? gifts.find((g) => g._id === internalGiftId) || gifts[0]
+            : null;
 
     const productListRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (isOpen) {
-            const isSmartCare = ["smartcare", "스마트케어"].includes(productType);
+            const isSmartCare = SMARTCARE_PRODUCT_TYPES.includes(productType);
             const filteredCareProducts = isSmartCare 
                 ? ((careProducts && careProducts.length > 0)
                     ? careProducts.filter(c => c.productType !== "standard" && !c.name.includes("더해피450"))
@@ -207,7 +233,7 @@ export default function InquiryModal({
         e.preventDefault();
 
         const currentProduct = formData.selectedProduct || productType;
-        const isSmartCare = ["smartcare", "스마트케어", "스마트 케어"].includes(currentProduct);
+        const isSmartCare = SMARTCARE_PRODUCT_TYPES.includes(currentProduct);
         const isHappy450 = ["happy450", "더 해피 450", "더 해피 450 ONE"].includes(currentProduct);
 
         if (isPremiumMallMode) {
@@ -312,7 +338,7 @@ export default function InquiryModal({
 
             let calculatedPlanType = planType || "-";
             let productsInfo = "";
-            const isSmartCareProduct = ["smartcare", "스마트케어", "스마트 케어"].includes(selectedProd);
+            const isSmartCareProduct = SMARTCARE_PRODUCT_TYPES.includes(selectedProd);
             const isHappy450Product = ["happy450", "더 해피 450", "더 해피 450 ONE"].includes(selectedProd);
 
             if (isSmartCareProduct) {
@@ -345,6 +371,8 @@ export default function InquiryModal({
                     preferredTime: formData.preferredTime,
                     inquiry: formData.inquiry,
                     accessPath: "H",
+                    selectedGift: activeGift?.name || "",
+                    selectedGiftId: activeGift?._id || "",
                 }),
             });
 
@@ -507,7 +535,7 @@ export default function InquiryModal({
                                     <label className="input-label !text-[#4e5968] !font-bold mb-2 block">연락처 <span className="text-sono-primary">*</span></label>
                                     <input type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} inputMode="numeric" className="input-field !bg-[#f9fafb] !border-none !rounded-none !py-3 sm:!py-4" placeholder="010-1234-5678" required />
                                 </div>
-                                {["smartcare", "스마트케어", "스마트 케어"].includes(formData.selectedProduct || productType) && (
+                                {SMARTCARE_PRODUCT_TYPES.includes(formData.selectedProduct || productType) && (
                                     <>
                                         <div>
                                             <label className="input-label !text-[#4e5968] !font-bold mb-2 block">생년월일 (8자리) <span className="text-sono-primary">*</span></label>
@@ -551,7 +579,7 @@ export default function InquiryModal({
                             </div>
                         )}
 
-                        {["smartcare", "스마트케어"].includes(formData.selectedProduct || productType) && (
+                        {SMARTCARE_PRODUCT_TYPES.includes(formData.selectedProduct || productType) && (
                             <div className="space-y-4 animate-fade-in">
                                 <div>
                                     <label className="input-label !text-[#4e5968] !font-bold mb-3 block">가입 상품 선택</label>
@@ -586,7 +614,7 @@ export default function InquiryModal({
                                     </div>
                                 </div>
 
-                                {!isPremiumMallMode && (
+                        {!isPremiumMallMode && (
                                     <div>
                                         <label className="input-label !text-[#4e5968] !font-bold mb-3 block">가전제품 선택</label>
                                         <div
@@ -669,7 +697,7 @@ export default function InquiryModal({
                             </div>
                         )}
 
-                        {["smartcare", "스마트케어", "스마트 케어"].includes(formData.selectedProduct || productType) && !isPremiumMallMode && (
+                        {SMARTCARE_PRODUCT_TYPES.includes(formData.selectedProduct || productType) && !isPremiumMallMode && (
                             <div>
                                 <label className="input-label !text-[#4e5968] !font-bold mb-2 block">주소</label>
                                 <div className="flex gap-2 mb-2">
@@ -681,12 +709,71 @@ export default function InquiryModal({
                             </div>
                         )}
 
+                        {gifts.length > 0 && (
+                            <div className="space-y-2">
+                                <label className="input-label !text-[#4e5968] !font-bold block">
+                                    🎁 사은품 선택{" "}
+                                    <span className="text-xs font-medium text-[#8a5d3b]">
+                                        ({gifts.length === 1 ? "자동 선택됨" : "원하시는 사은품을 선택하세요"})
+                                    </span>
+                                </label>
+                                <div
+                                    className={`grid gap-2 ${
+                                        gifts.length === 1 ? "grid-cols-1" : "grid-cols-2"
+                                    }`}
+                                >
+                                    {gifts.map((g) => {
+                                        const isSel = activeGift?._id === g._id;
+                                        const thumb = g.resolvedThumbnailUrl || g.thumbnailUrl;
+                                        return (
+                                            <button
+                                                key={g._id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setInternalGiftId(g._id);
+                                                    onSelectGiftId?.(g._id);
+                                                }}
+                                                className={`flex items-center gap-2.5 p-2 rounded-lg border text-left transition ${
+                                                    isSel
+                                                        ? "border-[#b98a6a] bg-[#fdf7ef] ring-1 ring-[#b98a6a]"
+                                                        : "border-gray-200 bg-white hover:border-gray-300"
+                                                }`}
+                                            >
+                                                {thumb && (
+                                                    <img
+                                                        src={thumb}
+                                                        alt={g.name}
+                                                        className="w-11 h-11 rounded object-cover shrink-0 bg-gray-100"
+                                                    />
+                                                )}
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="text-xs font-bold text-[#2b2119] line-clamp-2">
+                                                        {g.name}
+                                                    </div>
+                                                    {isSel && (
+                                                        <span className="text-[10px] font-bold text-[#8a5d3b]">
+                                                            ✓ 선택됨
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                {activeGift?.notice && (
+                                    <p className="text-[11px] text-[#6b503d] bg-[#fdf7ef] border border-[#e5d7c4] rounded p-2 whitespace-pre-line">
+                                        ※ {activeGift.notice}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+
                         {!isPremiumMallMode && (
                             <div className="space-y-4">
                                 <div className="bg-[#f9fafb] border border-gray-100 rounded-none p-4 text-[11px] text-[#8b95a1] leading-relaxed max-h-[160px] overflow-y-auto no-scrollbar">
                                     {(() => {
                                         const currentProd = formData.selectedProduct || productType;
-                                        const isSmartCare = ["smartcare", "스마트케어", "스마트 케어"].includes(currentProd);
+                                        const isSmartCare = SMARTCARE_PRODUCT_TYPES.includes(currentProd);
                                         const displayProductName = isSmartCare ? "스마트케어" : "더해피450 one";
                                         const displayPurpose = isSmartCare ? "스마트케어 상품 소개, 계약상담, 계약체결" : "더해피450 one 상품 소개, 계약상담, 계약체결";
                                         const displayWorkContent = isSmartCare ? "스마트케어" : "더해피450 one";

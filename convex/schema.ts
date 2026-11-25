@@ -580,7 +580,8 @@ export default defineSchema({
 
     // 마음든든(광고) 사은품 목록 테이블
     maeumGifts: defineTable({
-        landingKey: v.string(), // 'maeum-ad'
+        landingKey: v.string(), // 기본 랜딩 키 ('maeum-ad' 등)
+        landingKeys: v.optional(v.array(v.string())), // 연결된 랜딩 키 목록 (다중 연결 지원)
         name: v.string(), // 제품명
         thumbnailUrl: v.string(), // 섬네일 이미지 URL (외부 URL 또는 fallback)
         thumbnailStorageId: v.optional(v.id("_storage")), // 섬네일 업로드 파일 ID

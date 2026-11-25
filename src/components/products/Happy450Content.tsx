@@ -7,6 +7,12 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import InquiryModal from "@/components/InquiryModal";
 import ImportantNotice from "@/components/common/ImportantNotice";
+import {
+    LandingGiftBottom,
+    LandingGiftOverlays,
+    LandingGiftTop,
+    useLandingGiftEvent,
+} from "./LandingGiftWidgets";
 import { formatPhoneNumber, getRawPhoneNumber } from "@/lib/phoneUtils";
 
 interface HybridItem {
@@ -262,6 +268,7 @@ export default function Happy450Content({
     isPremiumMallMode = false
 }: Happy450ContentProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const giftState = useLandingGiftEvent("happy450");
     const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
 
     // 파트너 상담 대표번호 조회 (props 미전달 시 Convex 쿼리 자동 fallback)
@@ -330,6 +337,13 @@ export default function Happy450Content({
         <>
             <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} productType="happy450" isPremiumMallMode={isPremiumMallMode} />
             <main>
+                <LandingGiftTop
+                    state={giftState}
+                    onApplyWithGift={(gift) => {
+                        giftState.setSelectedGiftId(gift._id);
+                        setIsModalOpen(true);
+                    }}
+                />
                 {/* 히어로 섹션 */}
                 <section
                     className="relative min-h-[50vh] sm:min-h-[65vh] md:min-h-[75vh] flex items-center bg-sono-dark overflow-hidden pt-6 sm:pt-12 bg-cover bg-center bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785937204/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_5%EC%9D%BC_%EC%98%A4%ED%9B%84_10_39_37_pzb3ym.png')] md:bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785308928/ChatGPT_Image_2026%EB%85%84_7%EC%9B%94_29%EC%9D%BC_%EC%98%A4%ED%9B%84_03_38_13_1_1_mpokg4.png')]"
@@ -2374,6 +2388,22 @@ export default function Happy450Content({
                 );
             })()}
 
+            <LandingGiftBottom
+                state={giftState}
+                onApplyWithGift={(gift) => {
+                    giftState.setSelectedGiftId(gift._id);
+                    setIsModalOpen(true);
+                }}
+            />
+
+            <LandingGiftOverlays
+                state={giftState}
+                onApplyWithGift={(gift) => {
+                    giftState.setSelectedGiftId(gift._id);
+                    setIsModalOpen(true);
+                }}
+            />
+
             <Footer partnerMode={partnerMode} productType="happy450" />
 
             <InquiryModal
@@ -2384,6 +2414,9 @@ export default function Happy450Content({
                 productType="happy450"
                 showProductSelect={false}
                 isPremiumMallMode={isPremiumMallMode}
+                gifts={giftState.gifts}
+                selectedGiftId={giftState.selectedGiftId}
+                onSelectGiftId={giftState.setSelectedGiftId}
             />
 
             {/* 자동이체 변경 안내 모달 (샤프한 직각 사각형 스타일) */}

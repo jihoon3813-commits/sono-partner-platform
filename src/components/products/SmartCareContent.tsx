@@ -7,6 +7,12 @@ import Link from "next/link";
 import { useState, useEffect, useMemo, useRef } from "react";
 import InquiryModal from "@/components/InquiryModal";
 import ProductDetailModal from "@/components/ProductDetailModal";
+import {
+    LandingGiftBottom,
+    LandingGiftOverlays,
+    LandingGiftTop,
+    useLandingGiftEvent,
+} from "./LandingGiftWidgets";
 import ImportantNotice from "@/components/common/ImportantNotice";
 import { cleanProductName } from "@/lib/productUtils";
 import AffiliateCardBenefit from "@/components/products/AffiliateCardBenefit";
@@ -302,6 +308,7 @@ export default function SmartCareContent({
     isPremiumMallMode = false
 }: SmartCareContentProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const giftState = useLandingGiftEvent("smartcare");
     const [pickedAppliance, setPickedAppliance] = useState<Appliance | null>(null);
 
     // 파트너 상담 대표번호 조회 (props 미전달 시 Convex 쿼리 자동 fallback)
@@ -649,7 +656,14 @@ export default function SmartCareContent({
     return (
         <>
             <Header partnerMode={partnerMode} partnerUrl={partnerUrl} partnerName={partnerName} partnerId={partnerId} productType="smartcare" isPremiumMallMode={isPremiumMallMode} />
-            <main className="pb-32"> {/* Add padding for fixed bottom bar */}
+            <main className="pb-32">
+                <LandingGiftTop
+                    state={giftState}
+                    onApplyWithGift={(gift) => {
+                        giftState.setSelectedGiftId(gift._id);
+                        setIsModalOpen(true);
+                    }}
+                />
                 {/* 히어로 섹션 */}
                 <section
                     className="relative min-h-[50vh] sm:min-h-[65vh] md:min-h-[75vh] flex items-center bg-sono-dark overflow-hidden pt-6 sm:pt-12 bg-cover bg-center bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785980602/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_6%EC%9D%BC_%EC%98%A4%EC%A0%84_10_12_51_fvzqk5.png')] md:bg-[url('https://res.cloudinary.com/lyjyvy54/image/upload/v1785975702/ChatGPT_Image_2026%EB%85%84_8%EC%9B%94_6%EC%9D%BC_%EC%98%A4%EC%A0%84_01_26_52_nl5poy.png')]"
@@ -2920,6 +2934,22 @@ export default function SmartCareContent({
                 );
             })()}
 
+            <LandingGiftBottom
+                state={giftState}
+                onApplyWithGift={(gift) => {
+                    giftState.setSelectedGiftId(gift._id);
+                    setIsModalOpen(true);
+                }}
+            />
+
+            <LandingGiftOverlays
+                state={giftState}
+                onApplyWithGift={(gift) => {
+                    giftState.setSelectedGiftId(gift._id);
+                    setIsModalOpen(true);
+                }}
+            />
+
             <Footer partnerMode={partnerMode} productType="smartcare" />
 
             <InquiryModal
@@ -2929,6 +2959,9 @@ export default function SmartCareContent({
                 partnerId={partnerId}
                 productType="smartcare"
                 showProductSelect={false}
+                gifts={giftState.gifts}
+                selectedGiftId={giftState.selectedGiftId}
+                onSelectGiftId={giftState.setSelectedGiftId}
                 initialAppliance={pickedAppliance ? (() => {
                     const cleanBrand = (pickedAppliance.brand || "").trim();
                     let cleanName = (pickedAppliance.name || "").trim();
