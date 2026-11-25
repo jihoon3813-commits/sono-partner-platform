@@ -1041,6 +1041,9 @@ export const syncBridgeMessages = internalMutation({
                 });
                 syncedCount += 1;
             } else {
+                // 타사(효원상조) 브릿지 앱이 같은 폰에서 발신한 문자는 소노 내역으로 중복 기록하지 않음
+                if (trimmedMessage.startsWith("[효원")) continue;
+
                 const recentLogs = await ctx.db
                     .query("sms_logs")
                     .withIndex("by_customerPhone_and_createdAt", (q) =>
@@ -1151,13 +1154,33 @@ export const listByApplication = query({
         applicationId: v.id("applications"),
     },
     handler: async (ctx, args) => {
-        return await ctx.db
+        const app = await ctx.db.get(args.applicationId);
+        const byApp = await ctx.db
             .query("sms_logs")
             .withIndex("by_applicationId_and_createdAt", (q) =>
                 q.eq("applicationId", args.applicationId)
             )
             .order("desc")
             .take(100);
+
+        const normPhone = normalizeKoreanPhone(app?.customerPhone || "");
+        if (normPhone.length < 9) return byApp;
+
+        const byPhone = await ctx.db
+            .query("sms_logs")
+            .withIndex("by_customerPhone_and_createdAt", (q) =>
+                q.eq("customerPhone", normPhone)
+            )
+            .order("desc")
+            .take(100);
+
+        const merged = new Map<string, any>();
+        for (const item of [...byApp, ...byPhone]) {
+            merged.set(String(item._id), item);
+        }
+        return Array.from(merged.values())
+            .sort((a, b) => b.createdAt - a.createdAt)
+            .slice(0, 100);
     },
 });
 
@@ -1240,15 +1263,31 @@ export const markInboundRead = mutation({
         applicationId: v.id("applications"),
     },
     handler: async (ctx, args) => {
-        const logs = await ctx.db
+        const app = await ctx.db.get(args.applicationId);
+        const byApp = await ctx.db
             .query("sms_logs")
             .withIndex("by_applicationId_and_createdAt", (q) =>
                 q.eq("applicationId", args.applicationId)
             )
             .collect();
 
+        const normPhone = normalizeKoreanPhone(app?.customerPhone || "");
+        const byPhone =
+            normPhone.length >= 9
+                ? await ctx.db
+                      .query("sms_logs")
+                      .withIndex("by_customerPhone_and_createdAt", (q) =>
+                          q.eq("customerPhone", normPhone)
+                      )
+                      .collect()
+                : [];
+
+        const seen = new Set<string>();
         let updated = 0;
-        for (const log of logs) {
+        for (const log of [...byApp, ...byPhone]) {
+            const key = String(log._id);
+            if (seen.has(key)) continue;
+            seen.add(key);
             if (log.direction === "inbound" && log.isRead !== true) {
                 await ctx.db.patch(log._id, { isRead: true });
                 updated += 1;

@@ -328,6 +328,15 @@ export default function SmsManagement() {
                                             </div>
                                         </div>
                                     </div>
+                                    <a
+                                        href="https://github.com/jihoon3813-commits/sono-partner-platform/releases/latest/download/sono-sms-bridge.apk"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[8px] bg-[#163a6b] hover:bg-[#0f294d] text-white text-[12px] font-bold transition-colors shrink-0"
+                                    >
+                                        <AdminIcon name="download" className="!w-3.5 !h-3.5" />
+                                        <span>소노 문자연동 앱(v1.1.0) 다운로드</span>
+                                    </a>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
