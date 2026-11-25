@@ -9,7 +9,11 @@ import {
     SmsTemplate,
     resolveSmsTemplateText,
 } from "@/constants/smsTemplates";
-import { syncSingleCustomerWithPrompt } from "@/utils/googleContacts";
+import {
+    syncSingleCustomerWithPrompt,
+    getCachedGoogleContactPhones,
+} from "@/utils/googleContacts";
+import { GoogleSyncBadge, isCustomerGoogleSynced } from "./GoogleSyncBadge";
 import { Application, ApplicationStatus } from "@/lib/types";
 import { getStatusBadgeProps } from "@/lib/statusUtils";
 import { formatDateTime } from "@/lib/dateUtils";
@@ -30,6 +34,8 @@ interface CustomerDetailModalProps {
     partnerLoginId?: string;
     currentUserRole?: string;
     mode?: "default" | "maeum";
+    syncedGooglePhones?: Set<string>;
+    onGoogleSynced?: () => void;
 }
 
 const MAEUM_PRODUCT_OPTIONS = [
@@ -61,6 +67,8 @@ export default function CustomerDetailModal({
     partnerLoginId,
     currentUserRole = "master",
     mode = "default",
+    syncedGooglePhones,
+    onGoogleSynced,
 }: CustomerDetailModalProps) {
     const updateDetails = useMutation(api.applications.updateApplicationDetails);
     const dbStatuses = useQuery(api.applicationStatuses.getStatuses);
@@ -103,7 +111,14 @@ export default function CustomerDetailModal({
     const [expandedSmsLogId, setExpandedSmsLogId] = useState<string | null>(null);
     const [retryingSmsLogId, setRetryingSmsLogId] = useState<string | null>(null);
     const [isSyncingContact, setIsSyncingContact] = useState(false);
+    const [localGoogleSyncedAt, setLocalGoogleSyncedAt] = useState<number | undefined>(
+        application.googleContactsSyncedAt
+    );
     const chatScrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setLocalGoogleSyncedAt(application.googleContactsSyncedAt);
+    }, [application._id, application.googleContactsSyncedAt]);
 
     useEffect(() => {
         if (!isAdmin || !application._id || drawerTab !== "sms") return;
@@ -558,6 +573,20 @@ export default function CustomerDetailModal({
         "정산완료",
     ].includes(currentDisplayStatus);
 
+    const cachedGooglePhones = useMemo(
+        () => (isAdmin ? getCachedGoogleContactPhones() : new Set<string>()),
+        [isAdmin, isSyncingContact]
+    );
+    const effectiveGoogleSyncedAt =
+        localGoogleSyncedAt || application.googleContactsSyncedAt;
+    const isGoogleSynced = isCustomerGoogleSynced({
+        isAdmin,
+        customerPhone: customerPhone || application.customerPhone,
+        googleContactsSyncedAt: effectiveGoogleSyncedAt,
+        cachedContactPhones: cachedGooglePhones,
+        syncedDbPhones: syncedGooglePhones,
+    });
+
     return (
         <>
             <AdminDrawer
@@ -640,6 +669,11 @@ export default function CustomerDetailModal({
                             {customerPhone || application.customerPhone} ·{" "}
                             {getProductTypeLabel(productType)} ({planType})
                         </small>
+                        {isGoogleSynced && (
+                            <div className="mt-1 flex">
+                                <GoogleSyncBadge syncedAt={effectiveGoogleSyncedAt} />
+                            </div>
+                        )}
                     </div>
                     <span
                         className={`px-2.5 py-1 rounded-[6px] text-xs font-bold shrink-0 ${headerStatusBadge.className}`}
@@ -669,10 +703,14 @@ export default function CustomerDetailModal({
                                         smsSettingsData?.googleContacts?.targetEmail ||
                                             "jihoon3813@livon.care"
                                     );
-                                    if (ok && application._id) {
-                                        await markGoogleContactsSynced({
-                                            applicationIds: [application._id as Id<"applications">],
-                                        });
+                                    if (ok) {
+                                        if (application._id) {
+                                            await markGoogleContactsSynced({
+                                                applicationIds: [application._id as Id<"applications">],
+                                            });
+                                        }
+                                        setLocalGoogleSyncedAt(Date.now());
+                                        onGoogleSynced?.();
                                     }
                                 } finally {
                                     setIsSyncingContact(false);

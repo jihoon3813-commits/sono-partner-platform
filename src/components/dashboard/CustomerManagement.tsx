@@ -4,6 +4,7 @@ import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 import { Application, Partner } from "@/lib/types";
 import { RecentSmsCell, LatestSmsSummary } from "./RecentSmsCell";
+import { GoogleSyncBadge, isCustomerGoogleSynced } from "./GoogleSyncBadge";
 import {
     syncCustomersToGoogleContacts,
     getCachedGoogleContactPhones,
@@ -152,10 +153,34 @@ export default function CustomerManagement({
         [isAdmin, unreadSmsCounts]
     );
 
+    const [googleCacheVersion, setGoogleCacheVersion] = useState(0);
     const cachedContactPhones = useMemo(
         () => (isAdmin ? getCachedGoogleContactPhones() : new Set<string>()),
-        [isAdmin, isSyncingGoogleContacts]
+        [isAdmin, isSyncingGoogleContacts, googleCacheVersion]
     );
+
+    const syncedDbPhones = useMemo(() => {
+        const phones = new Set<string>();
+        if (!isAdmin) return phones;
+        for (const a of applications) {
+            if (a.googleContactsSyncedAt) {
+                const norm = normalizeKoreanPhone(a.customerPhone || "");
+                if (norm.length >= 9) phones.add(norm);
+            }
+        }
+        return phones;
+    }, [isAdmin, applications]);
+
+    const activeSelectedApp = useMemo(() => {
+        if (!selectedApp) return null;
+        return (
+            applications.find(
+                (a) =>
+                    (selectedApp._id && a._id === selectedApp._id) ||
+                    a.applicationNo === selectedApp.applicationNo
+            ) || selectedApp
+        );
+    }, [selectedApp, applications]);
 
     const smsTemplates: SmsTemplate[] =
         Array.isArray(smsSettingsData?.templates) && smsSettingsData.templates.length > 0
@@ -843,6 +868,13 @@ export default function CustomerManagement({
                                     : "";
                             const unreadCount =
                                 isAdmin && app._id ? unreadSmsCounts[String(app._id)] || 0 : 0;
+                            const isGoogleSynced = isCustomerGoogleSynced({
+                                isAdmin,
+                                customerPhone: app.customerPhone,
+                                googleContactsSyncedAt: app.googleContactsSyncedAt,
+                                cachedContactPhones,
+                                syncedDbPhones,
+                            });
 
                             return (
                                 <tr
@@ -966,6 +998,15 @@ export default function CustomerManagement({
                                                     <small className="tabular-nums">
                                                         {app.customerPhone}
                                                     </small>
+                                                    {isGoogleSynced && (
+                                                        <div className="mt-1 flex">
+                                                            <GoogleSyncBadge
+                                                                syncedAt={
+                                                                    app.googleContactsSyncedAt
+                                                                }
+                                                            />
+                                                        </div>
+                                                    )}
                                                 </span>
                                             </div>
                                             {app.hasDuplicate && (
@@ -1318,10 +1359,32 @@ export default function CustomerManagement({
                                                         "jihoon3813@livon.care",
                                                 }
                                             );
-                                            if (res.syncedCustomerIds.length > 0) {
+                                            const latestCachedPhones = getCachedGoogleContactPhones();
+                                            const idsToMark = Array.from(
+                                                new Set([
+                                                    ...res.syncedCustomerIds,
+                                                    ...targets
+                                                        .filter((a) => {
+                                                            if (!a._id || a.googleContactsSyncedAt) {
+                                                                return false;
+                                                            }
+                                                            const norm = normalizeKoreanPhone(
+                                                                a.customerPhone || ""
+                                                            );
+                                                            return (
+                                                                norm.length >= 9 &&
+                                                                latestCachedPhones.has(norm)
+                                                            );
+                                                        })
+                                                        .map((a) => String(a._id)),
+                                                ])
+                                            );
+                                            for (let i = 0; i < idsToMark.length; i += 400) {
                                                 await markGoogleContactsSynced({
-                                                    applicationIds:
-                                                        res.syncedCustomerIds as Id<"applications">[],
+                                                    applicationIds: idsToMark.slice(
+                                                        i,
+                                                        i + 400
+                                                    ) as Id<"applications">[],
                                                 });
                                             }
                                             alert(
@@ -1859,18 +1922,20 @@ export default function CustomerManagement({
 
             {isWidget && renderTable()}
 
-            {selectedApp && (
+            {activeSelectedApp && (
                 <CustomerDetailModal
-                    application={selectedApp}
+                    application={activeSelectedApp}
                     onClose={() => setSelectedApp(null)}
                     onUpdate={onRefresh}
                     isAdmin={isAdmin}
                     partnerLoginId={getPartnerLoginId(
-                        selectedApp.partnerId,
-                        selectedApp.partnerName
+                        activeSelectedApp.partnerId,
+                        activeSelectedApp.partnerName
                     )}
                     currentUserRole={currentUser?.role || "master"}
                     mode={mode}
+                    syncedGooglePhones={syncedDbPhones}
+                    onGoogleSynced={() => setGoogleCacheVersion((v) => v + 1)}
                 />
             )}
 
