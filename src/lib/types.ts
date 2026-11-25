@@ -87,6 +87,8 @@ export interface Application {
     contractSignatureDataUrl?: string;
     contractPdfStorageId?: string;
     contractSignedAt?: string;
+    selectedGift?: string;
+    selectedGiftId?: string;
 }
 
 // 계약 상태 (진행상태 설정에서 동적으로 관리됨)

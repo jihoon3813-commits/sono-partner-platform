@@ -75,6 +75,9 @@ export default function CustomerManagement({
         if (type === "happy450" || type.includes("해피") || type.includes("happy")) {
             return "더 해피 450 ONE";
         }
+        if (type.includes("스마트케어(광고)")) {
+            return productType;
+        }
         if (
             type.includes("스마트케어4") ||
             type.includes("smartcare4") ||
@@ -616,7 +619,10 @@ export default function CustomerManagement({
                     customerName: app.customerName || "-",
                     customerPhone: formatPhoneNumber(app.customerPhone) || "-",
                     productName: getProductTypeLabel(app.productType),
-                    combinedProduct: app.products || "-",
+                    combinedProduct:
+                        mode === "maeum"
+                            ? app.selectedGift || "-"
+                            : app.products || app.selectedGift || "-",
                     planType: planDisplay,
                     address: app.customerAddress || "-",
                     zipcode: app.customerZipcode || "-",
@@ -739,7 +745,7 @@ export default function CustomerManagement({
                         <th>고객 정보</th>
                         <th>가입 상품</th>
                         <th className="text-center">구좌</th>
-                        <th>결합제품</th>
+                        <th>{mode === "maeum" ? "사은품" : "결합제품"}</th>
                         <th className="text-center">
                             <span className="inline-flex items-center gap-1">
                                 진행 상태
@@ -934,14 +940,28 @@ export default function CustomerManagement({
                                     </td>
                                     <td
                                         className="text-xs text-[#6b7768] max-w-[180px] truncate"
-                                        title={app.products}
+                                        title={mode === "maeum" ? app.selectedGift : app.products || app.selectedGift}
                                     >
-                                        {(app.productType || "")
-                                            .toLowerCase()
-                                            .includes("smart") ||
-                                        (app.productType || "").includes("스마트")
-                                            ? app.products || "-"
-                                            : "-"}
+                                        {mode === "maeum" ? (
+                                            app.selectedGift ? (
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#fef6e7] text-[#8a5318] border border-[#f2dec0] font-semibold text-[11px]">
+                                                    🎁 {app.selectedGift}
+                                                </span>
+                                            ) : (
+                                                "-"
+                                            )
+                                        ) : (app.productType || "")
+                                              .toLowerCase()
+                                              .includes("smart") ||
+                                          (app.productType || "").includes("스마트") ? (
+                                            app.products || "-"
+                                        ) : app.selectedGift ? (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#fef6e7] text-[#8a5318] border border-[#f2dec0] font-semibold text-[11px]">
+                                                🎁 {app.selectedGift}
+                                            </span>
+                                        ) : (
+                                            "-"
+                                        )}
                                     </td>
                                     <td className="text-center">
                                         <span

@@ -17,6 +17,7 @@ import type * as crons from "../crons.js";
 import type * as dashboard from "../dashboard.js";
 import type * as dataManagement from "../dataManagement.js";
 import type * as maeumContracts from "../maeumContracts.js";
+import type * as maeumGifts from "../maeumGifts.js";
 import type * as maeumRetention from "../maeumRetention.js";
 import type * as partners from "../partners.js";
 import type * as products from "../products.js";
@@ -48,6 +49,7 @@ declare const fullApi: ApiFromModules<{
   dashboard: typeof dashboard;
   dataManagement: typeof dataManagement;
   maeumContracts: typeof maeumContracts;
+  maeumGifts: typeof maeumGifts;
   maeumRetention: typeof maeumRetention;
   partners: typeof partners;
   products: typeof products;

@@ -97,6 +97,9 @@ export default defineSchema({
         contractSignatureDataUrl: v.optional(v.string()), // 전자서명 이미지 데이터 URL
         contractPdfStorageId: v.optional(v.id("_storage")), // 생성된 전자계약 PDF 파일 ID
         contractSignedAt: v.optional(v.string()), // 전자서명 일시
+        // 마음든든 사은품 선택 필드
+        selectedGift: v.optional(v.string()), // 선택한 사은품 제품명
+        selectedGiftId: v.optional(v.string()), // 선택한 사은품 ID
     })
         .index("by_applicationNo", ["applicationNo"])
         .index("by_partnerId", ["partnerId"])
@@ -560,5 +563,46 @@ export default defineSchema({
         createdBy: v.string(),
         createdAt: v.string(),
     }).index("by_customerKey", ["customerKey"]),
+
+    // 마음든든(광고) 사은품 증정 이벤트 설정 테이블
+    maeumGiftEventConfig: defineTable({
+        landingKey: v.string(), // 'maeum-ad'
+        isEnabled: v.boolean(),
+        badgeText: v.optional(v.string()),
+        title: v.string(),
+        subtitle: v.optional(v.string()),
+        startDate: v.optional(v.string()), // YYYY-MM-DD
+        endDate: v.optional(v.string()), // YYYY-MM-DD
+        commonNotice: v.optional(v.string()),
+        slideIntervalMs: v.optional(v.number()), // 자동 슬라이드 속도 (ms, 기본 1500)
+        updatedAt: v.string(),
+    }).index("by_landingKey", ["landingKey"]),
+
+    // 마음든든(광고) 사은품 목록 테이블
+    maeumGifts: defineTable({
+        landingKey: v.string(), // 'maeum-ad'
+        name: v.string(), // 제품명
+        thumbnailUrl: v.string(), // 섬네일 이미지 URL (외부 URL 또는 fallback)
+        thumbnailStorageId: v.optional(v.id("_storage")), // 섬네일 업로드 파일 ID
+        thumbnailImages: v.optional(
+            v.array(
+                v.object({
+                    url: v.optional(v.string()),
+                    storageId: v.optional(v.id("_storage")),
+                })
+            )
+        ), // 다중 섬네일 이미지 목록 (좌우 슬라이드용)
+        detailImageUrl: v.optional(v.string()), // 상세 이미지 URL
+        detailImageStorageId: v.optional(v.id("_storage")), // 상세 이미지 업로드 파일 ID
+        notice: v.optional(v.string()), // 사은품 유의사항
+        startDate: v.optional(v.string()), // 개별 진행 시작일 (YYYY-MM-DD)
+        endDate: v.optional(v.string()), // 개별 진행 종료일 (YYYY-MM-DD)
+        isActive: v.boolean(), // 노출 여부
+        order: v.number(), // 정렬 순서
+        createdAt: v.string(),
+        updatedAt: v.string(),
+    })
+        .index("by_landingKey", ["landingKey"])
+        .index("by_order", ["order"]),
 });
 

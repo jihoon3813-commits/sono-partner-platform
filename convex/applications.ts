@@ -100,6 +100,8 @@ export const createApplication = mutation({
         status: v.optional(v.string()),
         assignedTo: v.optional(v.string()),
         accessPath: v.optional(v.string()),
+        selectedGift: v.optional(v.string()),
+        selectedGiftId: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         console.log(`[Convex] createApplication called with: ${JSON.stringify(args)}`);
@@ -133,10 +135,12 @@ export const createApplication = mutation({
         const phoneInfo = rest.customerPhone || "미입력";
         const productInfo = rest.productType || "미입력";
         const partnerInfo = rest.partnerName || "미입력";
+        const giftLine = rest.selectedGift ? `🎁 사은품: ${rest.selectedGift}\n` : "";
         const message = `🔔 <b>신규 고객 등록</b>\n\n` +
             `👤 고객명: ${customerInfo}\n` +
             `📱 연락처: ${phoneInfo}\n` +
             `📦 상품: ${productInfo}\n` +
+            giftLine +
             `🏢 파트너: ${partnerInfo}\n` +
             `📋 접수번호: ${applicationNo}\n` +
             `🕐 시간: ${now}`;

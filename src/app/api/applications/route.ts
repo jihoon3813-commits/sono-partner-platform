@@ -32,6 +32,8 @@ export async function POST(request: Request) {
             inquiry,
             products,
             accessPath,
+            selectedGift,
+            selectedGiftId,
         } = body;
 
         // 필수 필드 검증
@@ -105,6 +107,8 @@ export async function POST(request: Request) {
             preferredContactTime: preferredTime || '',
             inquiry,
             accessPath,
+            selectedGift: selectedGift || '',
+            selectedGiftId: selectedGiftId || '',
             status: '접수대기',
             assignedTo: '',
         };

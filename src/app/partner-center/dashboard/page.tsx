@@ -18,6 +18,7 @@ import RetentionManagement2 from "@/components/dashboard/RetentionManagement2";
 import RetentionManagementPostAug from "@/components/dashboard/RetentionManagementPostAug";
 import MaeumRetentionManagement from "@/components/dashboard/MaeumRetentionManagement";
 import MaeumContractTemplateEditor from "@/components/dashboard/MaeumContractTemplateEditor";
+import MaeumGiftManagement from "@/components/dashboard/MaeumGiftManagement";
 import TMManagement from "@/components/dashboard/TMManagement";
 import AccountManagement from "@/components/dashboard/AccountManagement";
 import ChannelMappingManagement from "@/components/dashboard/ChannelMappingManagement";
@@ -47,6 +48,7 @@ type Tab =
     | "maeumPartners"
     | "maeumRetention"
     | "maeumContractTemplate"
+    | "maeumGifts"
     | "tms"
     | "reset";
 
@@ -63,6 +65,7 @@ const TAB_TITLES: Record<Tab, string> = {
     maeumPartners: "파트너 관리 · 마음든든",
     maeumRetention: "연체 관리 · 마음든든",
     maeumContractTemplate: "전자계약 양식 관리 · 마음든든",
+    maeumGifts: "사은품 이벤트 관리 · 마음든든",
     products: "상품관리",
     promotions: "프로모션",
     stats: "통계",
@@ -124,6 +127,7 @@ export default function PartnerDashboard() {
 
     const [baseUrl, setBaseUrl] = useState("");
     const [copySuccessSmartCare, setCopySuccessSmartCare] = useState(false);
+    const [copySuccessSmartCareAd, setCopySuccessSmartCareAd] = useState(false);
     const [copySuccessHappy450, setCopySuccessHappy450] = useState(false);
     const [copySuccessMaeum, setCopySuccessMaeum] = useState(false);
     const [copySuccessMaeumAd, setCopySuccessMaeumAd] = useState(false);
@@ -978,11 +982,18 @@ export default function PartnerDashboard() {
                                 icon="clock"
                             />
                             {isAdmin && (
-                                <SidebarNavButton
-                                    id="maeumContractTemplate"
-                                    label="전자계약 양식 관리"
-                                    icon="file"
-                                />
+                                <>
+                                    <SidebarNavButton
+                                        id="maeumContractTemplate"
+                                        label="전자계약 양식 관리"
+                                        icon="file"
+                                    />
+                                    <SidebarNavButton
+                                        id="maeumGifts"
+                                        label="사은품 이벤트 관리"
+                                        icon="gift"
+                                    />
+                                </>
                             )}
                         </>
                     )}
@@ -1763,6 +1774,67 @@ export default function PartnerDashboard() {
                                                     </a>
                                                 </div>
                                             </div>
+
+                                            {/* 스마트케어(광고) - 총괄 어드민 전용 */}
+                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#adc0ad] transition-all">
+                                                <div>
+                                                    <div className="flex items-center gap-1.5 mb-3">
+                                                        <span className="adm-pill orange">광고 전용</span>
+                                                        <span className="adm-pill gray">총괄 어드민 전용</span>
+                                                    </div>
+                                                    <div className="flex gap-3.5 items-start mb-4">
+                                                        <img
+                                                            src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785825079/2024112600085_0_vbmtin.jpg"
+                                                            alt="스마트케어(광고)"
+                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e6eae3]"
+                                                        />
+                                                        <div>
+                                                            <h3 className="text-base font-bold text-[#263d36] mb-1">
+                                                                스마트케어(광고)
+                                                            </h3>
+                                                            <p className="text-xs text-[#7c877b] line-clamp-2 leading-relaxed">
+                                                                스마트케어 가전 렌탈·상조 결합 상세 랜딩 (고객관리 연동 · 별도 상품 구분)
+                                                            </p>
+                                                            <p className="text-xs font-bold text-[#295e52] mt-1.5">
+                                                                월 33,000원부터
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="bg-[#f8f9f5] border border-[#e6eae3] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                        <span className="text-[#8e978a] font-sans block text-[10px] font-semibold mb-0.5">
+                                                            스마트케어(광고) 공식 대표 URL
+                                                        </span>
+                                                        <span className="font-semibold text-[#295e52] truncate block">
+                                                            {baseUrl.replace(/^https?:\/\//, "")}/products/smartcare-ad
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#edf0e7]">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const url = `${baseUrl}/products/smartcare-ad`;
+                                                            navigator.clipboard.writeText(url).then(() => {
+                                                                setCopySuccessSmartCareAd(true);
+                                                                setTimeout(() => setCopySuccessSmartCareAd(false), 2000);
+                                                            });
+                                                        }}
+                                                        className={`adm-btn ${copySuccessSmartCareAd ? "primary" : "sage"}`}
+                                                    >
+                                                        <AdminIcon name={copySuccessSmartCareAd ? "check" : "copy"} />
+                                                        <span>{copySuccessSmartCareAd ? "복사 완료!" : "URL 복사"}</span>
+                                                    </button>
+                                                    <a
+                                                        href="/products/smartcare-ad"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="adm-btn primary"
+                                                    >
+                                                        <span>페이지 이동</span>
+                                                        <AdminIcon name="external" />
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </>
                                 ) : isLandingUrlVisible && partner?.customUrl ? (
@@ -2379,6 +2451,10 @@ export default function PartnerDashboard() {
 
                     {activeTab === "maeumContractTemplate" && isAdmin && (
                         <MaeumContractTemplateEditor />
+                    )}
+
+                    {activeTab === "maeumGifts" && isAdmin && (
+                        <MaeumGiftManagement />
                     )}
                 </main>
 

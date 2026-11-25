@@ -205,6 +205,9 @@ export default function CustomerDetailModal({
         if (type === "happy450" || type.includes("해피") || type.includes("happy")) {
             return "더 해피 450 ONE";
         }
+        if (type.includes("스마트케어(광고)")) {
+            return productType;
+        }
         if (
             type.includes("스마트케어4") ||
             type.includes("smartcare4") ||
@@ -283,6 +286,7 @@ export default function CustomerDetailModal({
         normalizeInitialProductType(application.productType)
     );
     const [products, setProducts] = useState(application.products || "");
+    const [selectedGift, setSelectedGift] = useState(application.selectedGift || "");
     const rawPlanType = application.planType || "1구좌";
     const initialPlanType = rawPlanType.includes("구좌")
         ? rawPlanType
@@ -395,6 +399,7 @@ export default function CustomerDetailModal({
                     customerZipcode: "",
                     productType,
                     products,
+                    selectedGift,
                     planType,
                     inquiry,
                     preferredContactTime,
@@ -887,6 +892,25 @@ export default function CustomerDetailModal({
                                     />
                                 )}
                             </div>
+                            {(mode === "maeum" || selectedGift) && (
+                                <div className="adm-field full">
+                                    <div className="flex items-center justify-between">
+                                        <span>선택 사은품 🎁</span>
+                                        {selectedGift && (
+                                            <span className="text-[10.5px] font-bold text-[#8a5318] bg-[#fef6e7] px-2 py-0.5 rounded border border-[#f2dec0]">
+                                                사은품 이벤트 선택됨
+                                            </span>
+                                        )}
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={selectedGift}
+                                        onChange={(e) => setSelectedGift(e.target.value)}
+                                        placeholder="선택된 사은품이 없습니다"
+                                        className="adm-input w-full"
+                                    />
+                                </div>
+                            )}
 
                             <label className="adm-field">
                                 <span>선호 통화시간</span>

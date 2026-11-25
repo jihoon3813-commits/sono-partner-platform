@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import "./maeum-econtract.css";
+import type { MaeumGiftItem } from "./MaeumGiftEventSection";
 
 interface MaeumConsultDrawerProps {
     isOpen: boolean;
@@ -14,6 +15,9 @@ interface MaeumConsultDrawerProps {
     partnerPhone?: string;
     productNamePrefix?: string;
     onOpenEcontract?: (plan: "3" | "4" | "5") => void;
+    gifts?: MaeumGiftItem[];
+    selectedGiftId?: string;
+    onSelectGiftId?: (id: string) => void;
 }
 
 const PLAN_OPTIONS: { key: "3" | "4" | "5"; label: string; price: number }[] = [
@@ -47,9 +51,13 @@ export default function MaeumConsultDrawer({
     partnerPhone = "",
     productNamePrefix = "마음든든",
     onOpenEcontract,
+    gifts = [],
+    selectedGiftId = "",
+    onSelectGiftId,
 }: MaeumConsultDrawerProps) {
     const [target, setTarget] = useState<"부모님" | "본인">(initialTarget);
     const [plan, setPlan] = useState<"3" | "4" | "5">(initialPlan);
+    const [internalGiftId, setInternalGiftId] = useState<string>(selectedGiftId);
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
     const [preferredTime, setPreferredTime] = useState("상시 가능");
@@ -65,8 +73,16 @@ export default function MaeumConsultDrawer({
             setPlan(initialPlan);
             setTarget(initialTarget);
             setErrorMsg("");
+            if (gifts.length > 0) {
+                const matched = gifts.find((g) => g._id === selectedGiftId);
+                const nextId = matched ? matched._id : gifts[0]._id;
+                setInternalGiftId(nextId);
+                onSelectGiftId?.(nextId);
+            } else {
+                setInternalGiftId("");
+            }
         }
-    }, [isOpen, initialPlan, initialTarget]);
+    }, [isOpen, initialPlan, initialTarget, gifts, selectedGiftId, onSelectGiftId]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -85,6 +101,10 @@ export default function MaeumConsultDrawer({
     if (!isOpen) return null;
 
     const selectedPlanInfo = PLAN_OPTIONS.find((p) => p.key === plan) || PLAN_OPTIONS[1];
+    const activeGift =
+        gifts.length > 0
+            ? gifts.find((g) => g._id === internalGiftId) || gifts[0]
+            : null;
 
     const handleClose = () => {
         if (submittedNo) {
@@ -140,6 +160,8 @@ export default function MaeumConsultDrawer({
                     preferredTime,
                     inquiry: inquiry.trim() || `${productNamePrefix} ${plan} 빠른 상담 신청 (${target})`,
                     accessPath: "H",
+                    selectedGift: activeGift?.name || "",
+                    selectedGiftId: activeGift?._id || "",
                 }),
             });
 
@@ -211,6 +233,9 @@ export default function MaeumConsultDrawer({
                                 <div className="mc-done-summary">
                                     <div><strong>접수번호:</strong> {submittedNo}</div>
                                     <div><strong>신청상품:</strong> {productNamePrefix} {selectedPlanInfo.key} (월 {selectedPlanInfo.price.toLocaleString("ko-KR")}원)</div>
+                                    {activeGift && (
+                                        <div><strong>선택 사은품:</strong> 🎁 {activeGift.name}</div>
+                                    )}
                                     <div><strong>준비대상:</strong> {target}</div>
                                     <div><strong>연락처:</strong> {phone}</div>
                                     <div><strong>희망시간:</strong> {preferredTime}</div>
@@ -271,6 +296,113 @@ export default function MaeumConsultDrawer({
                                         ))}
                                     </div>
                                 </div>
+
+                                {gifts.length > 0 && (
+                                    <div className="mc-field">
+                                        <span className="mc-label">
+                                            🎁 사은품 선택{" "}
+                                            <span style={{ fontWeight: 500, color: "#8a5d3b", fontSize: "12px" }}>
+                                                ({gifts.length === 1 ? "자동 선택됨" : "원하시는 사은품을 선택하세요"})
+                                            </span>
+                                        </span>
+                                        <div
+                                            style={{
+                                                display: "grid",
+                                                gridTemplateColumns:
+                                                    gifts.length === 1 ? "1fr" : "repeat(2, minmax(0, 1fr))",
+                                                gap: "8px",
+                                            }}
+                                        >
+                                            {gifts.map((g) => {
+                                                const isSel = activeGift?._id === g._id;
+                                                const thumb = g.resolvedThumbnailUrl || g.thumbnailUrl;
+                                                return (
+                                                    <button
+                                                        key={g._id}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setInternalGiftId(g._id);
+                                                            onSelectGiftId?.(g._id);
+                                                        }}
+                                                        style={{
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            gap: "10px",
+                                                            padding: "8px 10px",
+                                                            borderRadius: "12px",
+                                                            border: isSel
+                                                                ? "2px solid #b98a6a"
+                                                                : "1px solid #e2d5c4",
+                                                            background: isSel ? "#fdf7ef" : "#fff",
+                                                            textAlign: "left",
+                                                            cursor: "pointer",
+                                                        }}
+                                                    >
+                                                        <img
+                                                            src={thumb}
+                                                            alt={g.name}
+                                                            style={{
+                                                                width: "44px",
+                                                                height: "44px",
+                                                                borderRadius: "8px",
+                                                                objectFit: "cover",
+                                                                flexShrink: 0,
+                                                                background: "#f3eadc",
+                                                            }}
+                                                        />
+                                                        <div style={{ minWidth: 0, flex: 1 }}>
+                                                            <div
+                                                                style={{
+                                                                    fontSize: "12.5px",
+                                                                    fontWeight: 800,
+                                                                    color: "#2b2119",
+                                                                    lineHeight: 1.3,
+                                                                    overflow: "hidden",
+                                                                    textOverflow: "ellipsis",
+                                                                    display: "-webkit-box",
+                                                                    WebkitLineClamp: 2,
+                                                                    WebkitBoxOrient: "vertical",
+                                                                }}
+                                                            >
+                                                                {g.name}
+                                                            </div>
+                                                            {isSel && (
+                                                                <span
+                                                                    style={{
+                                                                        display: "inline-block",
+                                                                        marginTop: "2px",
+                                                                        fontSize: "10.5px",
+                                                                        fontWeight: 800,
+                                                                        color: "#8a5d3b",
+                                                                    }}
+                                                                >
+                                                                    ✓ 선택됨
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        {activeGift?.notice && (
+                                            <div
+                                                style={{
+                                                    marginTop: "6px",
+                                                    padding: "8px 10px",
+                                                    borderRadius: "8px",
+                                                    background: "#f7efe4",
+                                                    border: "1px solid #e5d7c4",
+                                                    fontSize: "11.5px",
+                                                    color: "#6b503d",
+                                                    whiteSpace: "pre-line",
+                                                    lineHeight: 1.45,
+                                                }}
+                                            >
+                                                ※ {activeGift.notice}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 <div className="mc-field">
                                     <label className="mc-label" htmlFor="mc-name">
