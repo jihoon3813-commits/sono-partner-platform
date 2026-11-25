@@ -254,6 +254,16 @@ export default function PartnerDashboard() {
         allRequests: realTimeData?.allRequests || [],
     };
 
+    const isAdminForSms = Boolean(
+        dashboardData.isAdmin ||
+            partner?.level === "admin" ||
+            partner?.partnerId === "admin" ||
+            partner?.customUrl === "admin" ||
+            partner?.role === "admin"
+    );
+    const unreadSmsCounts =
+        useQuery(api.sms.getUnreadInboundCounts, isAdminForSms ? {} : "skip") ?? {};
+
     const isMaeumCustomer = (c: any) => {
         const pt = (c.productType || "").toLowerCase();
         return pt.includes("maeum") || pt.includes("마음든든");
@@ -695,7 +705,6 @@ export default function PartnerDashboard() {
         ? "관"
         : String(workspaceTitle).trim().charAt(0) || "파";
 
-    const unreadSmsCounts = useQuery(api.sms.getUnreadInboundCounts, isAdmin ? {} : "skip") ?? {};
     const totalUnreadSms = isAdmin
         ? (Object.values(unreadSmsCounts) as number[]).reduce((sum, n) => sum + (n || 0), 0)
         : 0;
