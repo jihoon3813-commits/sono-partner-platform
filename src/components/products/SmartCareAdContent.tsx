@@ -149,6 +149,7 @@ export default function SmartCareAdContent() {
                 productType="스마트케어(광고)"
                 showProductSelect={false}
                 initialUnit="4"
+                variant="drawer"
                 gifts={giftState.gifts}
                 selectedGiftId={giftState.selectedGiftId}
                 onSelectGiftId={giftState.setSelectedGiftId}

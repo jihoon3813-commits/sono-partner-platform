@@ -324,3 +324,22 @@
     animation: flash-smooth 2s ease-in-out infinite;
   }
 }
+
+
+@keyframes drawer-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes drawer-slide-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-drawer-fade {
+  animation: drawer-fade-in 0.16s ease;
+}
+
+.animate-drawer-slide {
+  animation: drawer-slide-in 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}

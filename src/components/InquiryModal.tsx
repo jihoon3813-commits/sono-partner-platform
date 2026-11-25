@@ -25,12 +25,21 @@ interface InquiryModalProps {
     initialUnit?: string;
     initialPlanId?: string;
     isPremiumMallMode?: boolean;
+    variant?: "modal" | "drawer";
     gifts?: MaeumGiftItem[];
     selectedGiftId?: string;
     onSelectGiftId?: (id: string) => void;
 }
 
 const SMARTCARE_PRODUCT_TYPES = ["smartcare", "스마트케어", "스마트 케어", "스마트케어(광고)"];
+const TIME_SLOTS = [
+    "10:00~11:00",
+    "11:00~12:00",
+    "14:00~15:00",
+    "15:00~16:00",
+    "16:00~17:00",
+    "17:00~18:00",
+];
 
 export default function InquiryModal({
     isOpen,
@@ -44,6 +53,7 @@ export default function InquiryModal({
     initialUnit = "4",
     initialPlanId = "",
     isPremiumMallMode = false,
+    variant = "modal",
     gifts = [],
     selectedGiftId = "",
     onSelectGiftId,
@@ -409,7 +419,438 @@ export default function InquiryModal({
         onClose();
     };
 
+    useEffect(() => {
+        if (!isOpen || variant !== "drawer") return;
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") onClose();
+        };
+        window.addEventListener("keydown", onKeyDown);
+        return () => {
+            document.body.style.overflow = prevOverflow;
+            window.removeEventListener("keydown", onKeyDown);
+        };
+    }, [isOpen, variant, onClose]);
+
     if (!isOpen) return null;
+
+    const currentProd = formData.selectedProduct || productType;
+    const isSmartCareCurrent = SMARTCARE_PRODUCT_TYPES.includes(currentProd);
+    const activeCareProducts = (careProducts && careProducts.length > 0)
+        ? careProducts.filter(cp => cp.productType !== "standard" && !cp.name.includes("더해피450"))
+        : [
+            { _id: "sc4_2", name: "스마트케어 4더블", slotCount: 2 },
+            { _id: "sc5_1", name: "스마트케어 5", slotCount: 1 },
+            { _id: "sc5_2", name: "스마트케어 5더블", slotCount: 2 },
+            { _id: "sc5_3", name: "스마트케어 5트리플", slotCount: 3 },
+            { _id: "sc5_4", name: "스마트케어 5쿼드", slotCount: 4 },
+        ];
+    const selectedPlanObj = activeCareProducts.find(cp => cp._id === selectedPlanId);
+
+    if (variant === "drawer") {
+        return (
+            <div
+                className="fixed inset-0 z-[9999] bg-[#0b1220]/50 backdrop-blur-[3px] flex justify-end animate-drawer-fade"
+                role="dialog"
+                aria-modal="true"
+                aria-label="스마트케어 빠른 상담 신청"
+                onClick={handleClose}
+            >
+                <aside
+                    className="relative h-full w-full max-w-[min(540px,100%)] bg-[#f3f6fa] shadow-[-12px_0_60px_rgba(17,28,51,0.24)] border-l border-[#111c33]/10 flex flex-col overflow-hidden animate-drawer-slide text-[#111c33]"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {/* Topbar */}
+                    <div className="h-[62px] px-5 flex items-center justify-between bg-[#f9fbfe]/95 backdrop-blur-md border-b border-[#111c33]/10 shrink-0 z-10">
+                        <div className="flex items-center gap-2.5 font-extrabold text-[15px] text-[#111c33]">
+                            <span className="w-7 h-7 rounded-lg bg-[#111c33] text-white grid place-items-center text-xs font-black shrink-0">
+                                S
+                            </span>
+                            <span>{isPremiumMallMode ? "프리미엄몰 접수" : "스마트케어 빠른 상담 신청"}</span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleClose}
+                            className="inline-flex items-center gap-1.5 border border-[#111c33]/15 bg-white text-[#111c33] rounded-full px-3.5 py-1.5 text-xs font-bold hover:bg-[#e7edf5] hover:border-[#1e3a6d] transition-colors cursor-pointer"
+                        >
+                            닫기 ✕
+                        </button>
+                    </div>
+
+                    {/* Scrollable Body */}
+                    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 space-y-3.5 no-scrollbar">
+                        {/* Hero Card */}
+                        <div className="rounded-[18px] bg-gradient-to-br from-[#111c33] via-[#182642] to-[#1e3a6d] text-white p-5 shadow-lg">
+                            <span className="inline-block px-2.5 py-1 rounded-full bg-[#6899de]/20 border border-[#6899de]/40 text-[#9bc0f5] text-[11px] font-extrabold tracking-tight mb-2.5">
+                                1분 간편 접수 · 전문 플래너 안내
+                            </span>
+                            <h2 className="text-[19px] sm:text-[21px] font-extrabold leading-snug tracking-tight mb-1.5">
+                                원하는 가전과 상조 혜택을<br />한 번에 상담받아 보세요.
+                            </h2>
+                            <p className="text-xs sm:text-[13px] text-[#c7d5ea] leading-relaxed">
+                                간단한 정보만 남겨주시면, 원하시는 가전제품 지원 조건과
+                                구좌별 납입 혜택을 친절하게 안내해 드립니다.
+                            </p>
+                        </div>
+
+                        {isSubmitted ? (
+                            <div className="rounded-[18px] bg-[#f9fbfe] border border-[#cfd8e6] p-7 text-center space-y-4 shadow-sm" role="status">
+                                <div className="w-14 h-14 rounded-full bg-[#e7edf5] text-[#1e3a6d] mx-auto grid place-items-center text-2xl font-black">
+                                    ✓
+                                </div>
+                                <h3 className="text-lg font-extrabold text-[#111c33]">상담 신청이 완료되었습니다!</h3>
+                                <p className="text-xs sm:text-[13px] text-[#526077] leading-relaxed">
+                                    남겨주신 연락처로 전문 플래너가 순차적으로 연락드리겠습니다.
+                                </p>
+                                <div className="rounded-xl bg-[#f3f6fa] border border-[#cfd8e6] p-3.5 text-left text-xs leading-7 text-[#111c33]">
+                                    <div><strong>신청상품:</strong> {selectedPlanObj ? `${selectedPlanObj.name} (${selectedPlanObj.slotCount}구좌)` : `${selectedUnit}구좌`}</div>
+                                    {selectedAppliance && <div><strong>선택가전:</strong> {selectedAppliance}</div>}
+                                    {activeGift && <div><strong>선택 사은품:</strong> 🎁 {activeGift.name}</div>}
+                                    <div><strong>연락처:</strong> {formData.phone}</div>
+                                    <div><strong>통화가능 시간:</strong> {formData.preferredTime}</div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handleClose}
+                                    className="w-full h-11 rounded-xl bg-[#111c33] hover:bg-[#1e3a6d] text-white text-sm font-extrabold transition-colors cursor-pointer"
+                                >
+                                    확인
+                                </button>
+                            </div>
+                        ) : (
+                            <form id="inquiry-drawer-form" onSubmit={handleSubmit} className="rounded-[18px] bg-[#f9fbfe] border border-[#cfd8e6] p-4 sm:p-5 space-y-4 shadow-sm break-keep">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-xs font-bold text-[#111c33] mb-1.5">
+                                            성함 <span className="text-[#2563eb] font-extrabold">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            className="w-full rounded-[11px] border-[1.5px] border-[#cfd8e6] bg-white px-3.5 py-2.5 text-sm font-medium text-[#111c33] placeholder:text-[#8f9db3] focus:border-[#1e3a6d] focus:ring-2 focus:ring-[#6899de]/20 outline-none transition-all"
+                                            placeholder="홍길동"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-[#111c33] mb-1.5">
+                                            연락처 <span className="text-[#2563eb] font-extrabold">*</span>
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            name="phone"
+                                            value={formData.phone}
+                                            onChange={handlePhoneChange}
+                                            inputMode="numeric"
+                                            className="w-full rounded-[11px] border-[1.5px] border-[#cfd8e6] bg-white px-3.5 py-2.5 text-sm font-medium text-[#111c33] placeholder:text-[#8f9db3] focus:border-[#1e3a6d] focus:ring-2 focus:ring-[#6899de]/20 outline-none transition-all"
+                                            placeholder="010-1234-5678"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                {isSmartCareCurrent && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-xs font-bold text-[#111c33] mb-1.5">
+                                                생년월일 (8자리) <span className="text-[#2563eb] font-extrabold">*</span>
+                                            </label>
+                                            <input
+                                                type="tel"
+                                                name="birthdate"
+                                                value={formData.birthdate}
+                                                onChange={handleBirthdateChange}
+                                                inputMode="numeric"
+                                                maxLength={8}
+                                                className="w-full rounded-[11px] border-[1.5px] border-[#cfd8e6] bg-white px-3.5 py-2.5 text-sm font-medium text-[#111c33] placeholder:text-[#8f9db3] focus:border-[#1e3a6d] focus:ring-2 focus:ring-[#6899de]/20 outline-none transition-all"
+                                                placeholder="19800101"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-[#111c33] mb-1.5">
+                                                성별 <span className="text-[#2563eb] font-extrabold">*</span>
+                                            </label>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {["남", "여"].map((g) => {
+                                                    const active = formData.gender === (g === "남" ? "남성" : "여성");
+                                                    return (
+                                                        <button
+                                                            key={g}
+                                                            type="button"
+                                                            onClick={() => setFormData(prev => ({ ...prev, gender: g === "남" ? "남성" : "여성" }))}
+                                                            className={`py-2.5 rounded-[11px] border-[1.5px] text-sm font-bold transition-all cursor-pointer ${
+                                                                active
+                                                                    ? "bg-[#e7edf5] border-[#1e3a6d] text-[#111c33] shadow-[0_0_0_1px_#1e3a6d_inset]"
+                                                                    : "bg-white border-[#cfd8e6] text-[#526077] hover:border-[#6899de]"
+                                                            }`}
+                                                        >
+                                                            {g}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div>
+                                    <span className="block text-xs font-bold text-[#111c33] mb-1.5">
+                                        통화가능 시간 <span className="text-[#2563eb] font-extrabold">*</span>
+                                    </span>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                                        {TIME_SLOTS.map((slot) => {
+                                            const active = formData.preferredTime === slot;
+                                            return (
+                                                <button
+                                                    key={slot}
+                                                    type="button"
+                                                    onClick={() => setFormData(prev => ({ ...prev, preferredTime: slot }))}
+                                                    className={`py-2 px-2.5 rounded-[9px] border text-xs font-bold transition-all cursor-pointer ${
+                                                        active
+                                                            ? "bg-[#111c33] border-[#111c33] text-white shadow-sm"
+                                                            : "bg-white border-[#cfd8e6] text-[#111c33] hover:border-[#6899de]"
+                                                    }`}
+                                                >
+                                                    {slot}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {isSmartCareCurrent && (
+                                    <div className="space-y-3.5">
+                                        <div>
+                                            <span className="block text-xs font-bold text-[#111c33] mb-1.5">가입 상품 선택</span>
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                                                {activeCareProducts.map((cp) => {
+                                                    const active = selectedPlanId === cp._id;
+                                                    return (
+                                                        <button
+                                                            key={cp._id}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setSelectedPlanId(cp._id);
+                                                                setSelectedUnit(cp.slotCount.toString());
+                                                                setSelectedAppliance(isPremiumMallMode ? "" : "상담 시 결정");
+                                                                if (productListRef.current) {
+                                                                    productListRef.current.scrollTop = 0;
+                                                                }
+                                                            }}
+                                                            className={`py-2.5 px-2 rounded-[11px] border-[1.5px] transition-all flex flex-col items-center justify-center cursor-pointer ${
+                                                                active
+                                                                    ? "bg-[#e7edf5] border-[#1e3a6d] text-[#111c33] shadow-[0_0_0_1px_#1e3a6d_inset]"
+                                                                    : "bg-white border-[#cfd8e6] text-[#526077] hover:border-[#6899de]"
+                                                            }`}
+                                                        >
+                                                            <span className={`text-[10px] font-bold mb-0.5 ${active ? "text-[#1e3a6d]" : "text-[#7a889e]"}`}>{cp.name}</span>
+                                                            <span className="text-xs font-black text-[#111c33]">{cp.slotCount}구좌</span>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+
+                                        {!isPremiumMallMode && (
+                                            <div>
+                                                <span className="block text-xs font-bold text-[#111c33] mb-1.5">가전제품 선택</span>
+                                                <div
+                                                    ref={productListRef}
+                                                    className="flex flex-col h-[200px] sm:h-[240px] overflow-y-auto border-[1.5px] border-[#cfd8e6] bg-white rounded-[12px] divide-y divide-[#e7edf5] no-scrollbar"
+                                                >
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setSelectedAppliance("상담 시 결정")}
+                                                        className={`w-full py-2.5 px-3.5 text-xs font-bold transition-all text-left flex items-center justify-between cursor-pointer ${
+                                                            selectedAppliance === "상담 시 결정"
+                                                                ? "bg-[#e7edf5] text-[#111c33] font-extrabold"
+                                                                : "bg-white text-[#334155] hover:bg-[#f3f6fa]"
+                                                        }`}
+                                                    >
+                                                        <span>상담 시 결정</span>
+                                                        {selectedAppliance === "상담 시 결정" && (
+                                                            <span className="text-[#1e3a6d] text-xs shrink-0 font-extrabold ml-2">✓ 선택됨</span>
+                                                        )}
+                                                    </button>
+                                                    {allAppliances
+                                                        .filter(item => {
+                                                            return selectedPlanId
+                                                                ? (item.careProductId === selectedPlanId ||
+                                                                   (!item.careProductId && (item.slotCount || 4).toString() === selectedUnit))
+                                                                : (item.slotCount || 4).toString() === selectedUnit;
+                                                        })
+                                                        .map((item, idx) => {
+                                                            const displayLabel = formatApplianceText(item.brand, item.name, item.model);
+                                                            const applianceValue = formatApplianceText(item.brand, item.name, item.model);
+                                                            const active = selectedAppliance === applianceValue;
+                                                            return (
+                                                                <button
+                                                                    key={idx}
+                                                                    type="button"
+                                                                    onClick={() => setSelectedAppliance(applianceValue)}
+                                                                    className={`w-full py-2.5 px-3.5 text-xs font-bold transition-all text-left flex items-center justify-between cursor-pointer ${
+                                                                        active
+                                                                            ? "bg-[#e7edf5] text-[#111c33] font-extrabold"
+                                                                            : "bg-white text-[#334155] hover:bg-[#f3f6fa]"
+                                                                    }`}
+                                                                >
+                                                                    <span className="truncate">{displayLabel}</span>
+                                                                    {active && (
+                                                                        <span className="text-[#1e3a6d] text-xs shrink-0 font-extrabold ml-2">✓ 선택됨</span>
+                                                                    )}
+                                                                </button>
+                                                            );
+                                                        })}
+                                                </div>
+                                                {selectedAppliance && selectedAppliance !== "상담 시 결정" && (
+                                                    <div className="mt-2 p-3 bg-[#e7edf5] border border-[#6899de]/50 rounded-[11px]">
+                                                        <span className="text-[11px] font-bold text-[#1e3a6d] block mb-0.5">선택하신 제품</span>
+                                                        <div className="font-bold text-[#111c33] text-xs break-keep leading-snug">{selectedAppliance}</div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {!isPremiumMallMode && (
+                                            <div>
+                                                <label className="block text-xs font-bold text-[#111c33] mb-1.5">주소</label>
+                                                <div className="flex gap-2 mb-2">
+                                                    <input
+                                                        type="text"
+                                                        value={formData.zonecode}
+                                                        readOnly
+                                                        inputMode="numeric"
+                                                        className="flex-1 rounded-[11px] border-[1.5px] border-[#cfd8e6] bg-white px-3.5 py-2.5 text-sm text-[#111c33] placeholder:text-[#8f9db3] outline-none"
+                                                        placeholder="우편번호"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={openAddressSearch}
+                                                        className="bg-[#111c33] hover:bg-[#1e3a6d] text-white text-xs font-bold px-4 rounded-[11px] transition-colors shrink-0 cursor-pointer"
+                                                    >
+                                                        주소 검색
+                                                    </button>
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    value={formData.address}
+                                                    readOnly
+                                                    className="w-full rounded-[11px] border-[1.5px] border-[#cfd8e6] bg-white px-3.5 py-2.5 text-sm text-[#111c33] placeholder:text-[#8f9db3] outline-none mb-2"
+                                                    placeholder="기본 주소"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    name="addressDetail"
+                                                    value={formData.addressDetail}
+                                                    onChange={handleChange}
+                                                    className="w-full rounded-[11px] border-[1.5px] border-[#cfd8e6] bg-white px-3.5 py-2.5 text-sm text-[#111c33] placeholder:text-[#8f9db3] focus:border-[#1e3a6d] focus:ring-2 focus:ring-[#6899de]/20 outline-none transition-all"
+                                                    placeholder="상세 주소"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {gifts.length > 0 && (
+                                    <div className="space-y-2">
+                                        <span className="block text-xs font-bold text-[#111c33]">
+                                            🎁 사은품 선택{" "}
+                                            <span className="font-medium text-[#1e3a6d]">
+                                                ({gifts.length === 1 ? "자동 선택됨" : "원하시는 사은품을 선택하세요"})
+                                            </span>
+                                        </span>
+                                        <div className={`grid gap-2 ${gifts.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
+                                            {gifts.map((g) => {
+                                                const isSel = activeGift?._id === g._id;
+                                                const thumb = g.resolvedThumbnailUrl || g.thumbnailUrl;
+                                                return (
+                                                    <button
+                                                        key={g._id}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setInternalGiftId(g._id);
+                                                            onSelectGiftId?.(g._id);
+                                                        }}
+                                                        className={`flex items-center gap-2.5 p-2 rounded-xl border text-left transition cursor-pointer ${
+                                                            isSel
+                                                                ? "border-[#6899de] bg-[#eef4fc] ring-1 ring-[#6899de]"
+                                                                : "border-[#cfd8e6] bg-white hover:border-[#6899de]"
+                                                        }`}
+                                                    >
+                                                        {thumb && (
+                                                            <img
+                                                                src={thumb}
+                                                                alt={g.name}
+                                                                className="w-11 h-11 rounded-lg object-cover shrink-0 bg-[#e7edf5]"
+                                                            />
+                                                        )}
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="text-xs font-bold text-[#111c33] line-clamp-2">
+                                                                {g.name}
+                                                            </div>
+                                                            {isSel && (
+                                                                <span className="text-[10px] font-extrabold text-[#1e3a6d]">
+                                                                    ✓ 선택됨
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        {activeGift?.notice && (
+                                            <p className="text-[11px] text-[#334155] bg-[#eef4fc] border border-[#cfd8e6] rounded-lg p-2 whitespace-pre-line">
+                                                ※ {activeGift.notice}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+
+                                {!isPremiumMallMode && (
+                                    <div className="rounded-xl bg-[#f3f6fa] border border-[#cfd8e6] p-3.5 space-y-2.5">
+                                        <label className="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#111c33]">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.privacyAgreed}
+                                                onChange={handleChange}
+                                                name="privacyAgreed"
+                                                className="w-4 h-4 rounded accent-[#1e3a6d] cursor-pointer"
+                                                required
+                                            />
+                                            <span>개인정보 수집 및 이용 동의 <span className="text-[#2563eb]">(필수)</span></span>
+                                        </label>
+                                        <div className="text-[11px] text-[#526077] leading-relaxed max-h-[110px] overflow-y-auto pr-1 space-y-1">
+                                            <p className="font-bold text-[#111c33]">[스마트케어 상품 가입을 위한 개인정보 수집, 이용 및 위탁 안내]</p>
+                                            <p>㈜소노스테이션은 스마트케어 상품 가입을 위하여 성명, 연락처(이동전화/유선전화)를 수집·이용하며, 수집일로부터 30일 또는 목적 달성 시까지 보관합니다.</p>
+                                            <p>취급 위탁업체: 라이프앤조이, {partnerName || "파트너사"}, (주)효성ITX (상품 소개, 상담접수, 계약체결)</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </form>
+                        )}
+                    </div>
+
+                    {/* Sticky Footbar */}
+                    {!isSubmitted && (
+                        <div className="px-5 py-3 bg-[#f9fbfe]/95 backdrop-blur-md border-t border-[#111c33]/10 shrink-0">
+                            <button
+                                type="submit"
+                                form="inquiry-drawer-form"
+                                disabled={isSubmitting}
+                                className="w-full h-12 rounded-xl bg-[#111c33] hover:bg-[#1e3a6d] text-white text-[15px] font-extrabold shadow-lg transition-all disabled:opacity-50 cursor-pointer"
+                            >
+                                {isSubmitting ? "신청 접수 중..." : (isPremiumMallMode ? "프리미엄몰 접수 바로가기" : "상담 신청하기")}
+                            </button>
+                        </div>
+                    )}
+                </aside>
+            </div>
+        );
+    }
 
     return (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
