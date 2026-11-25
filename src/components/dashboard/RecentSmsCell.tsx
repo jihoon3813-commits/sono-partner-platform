@@ -49,7 +49,11 @@ export const RecentSmsCell: React.FC<RecentSmsCellProps> = ({ latestSms, unreadC
     return (
         <div className="min-w-0 max-w-[200px] space-y-0.5" title={latestSms.message}>
             <div className="flex items-center justify-between gap-1.5">
-                <span className={`adm-pill ${badgeClass} !py-0 !px-1.5 !text-[10px]`}>
+                <span
+                    className={`adm-pill ${badgeClass} !py-0 !px-1.5 !text-[10px] ${
+                        isUnread ? "!bg-[#e11d48] !text-white !border-[#e11d48] font-bold" : ""
+                    }`}
+                >
                     {badgeLabel}
                 </span>
                 <span className="text-[10px] font-mono text-[#86918a] shrink-0">

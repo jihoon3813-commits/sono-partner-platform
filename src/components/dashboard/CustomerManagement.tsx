@@ -841,12 +841,18 @@ export default function CustomerManagement({
                                 stat && stat.totalSize > 0
                                     ? formatBytes(stat.totalSize)
                                     : "";
+                            const unreadCount =
+                                isAdmin && app._id ? unreadSmsCounts[String(app._id)] || 0 : 0;
 
                             return (
                                 <tr
                                     key={app.applicationNo}
                                     onClick={() => setSelectedApp(app)}
-                                    className="adm-clickable-row"
+                                    className={`adm-clickable-row ${
+                                        unreadCount > 0
+                                            ? "!bg-[#fff1ef] hover:!bg-[#ffe4e0] [&>td:first-child]:shadow-[inset_3px_0_0_#e11d48]"
+                                            : ""
+                                    }`}
                                 >
                                     <td
                                         className="text-center relative"
@@ -946,7 +952,17 @@ export default function CustomerManagement({
                                                     {(app.customerName || "고").charAt(0)}
                                                 </span>
                                                 <span>
-                                                    <strong>{app.customerName}</strong>
+                                                    <strong className="inline-flex items-center gap-1.5">
+                                                        <span>{app.customerName}</span>
+                                                        {unreadCount > 0 && (
+                                                            <span
+                                                                className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-[#e11d48] text-white leading-none shadow-sm animate-pulse"
+                                                                title={`미확인 고객 답장 ${unreadCount}건`}
+                                                            >
+                                                                {unreadCount}
+                                                            </span>
+                                                        )}
+                                                    </strong>
                                                     <small className="tabular-nums">
                                                         {app.customerPhone}
                                                     </small>
