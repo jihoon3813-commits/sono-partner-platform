@@ -1312,6 +1312,10 @@ export default function CustomerManagement({
                                                 {
                                                     onProgress: (msg) =>
                                                         setGoogleContactsProgress(msg),
+                                                    loginHint:
+                                                        smsSettingsData?.googleContacts
+                                                            ?.targetEmail ||
+                                                        "jihoon3813@livon.care",
                                                 }
                                             );
                                             if (res.syncedCustomerIds.length > 0) {

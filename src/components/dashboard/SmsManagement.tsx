@@ -10,6 +10,7 @@ import {
     DEFAULT_SMS_TEMPLATES,
     SmsTemplate,
 } from "@/constants/smsTemplates";
+import { clearGoogleContactsToken } from "@/utils/googleContacts";
 
 export default function SmsManagement() {
     const smsSettingsData = useQuery(api.sms.getSmsSettings);
@@ -37,6 +38,7 @@ export default function SmsManagement() {
         autoApplyMessage: DEFAULT_AUTO_APPLY_MESSAGE,
     });
     const [localGoogleClientId, setLocalGoogleClientId] = useState("");
+    const [localGoogleTargetEmail, setLocalGoogleTargetEmail] = useState("jihoon3813@livon.care");
     const [localTemplates, setLocalTemplates] = useState<SmsTemplate[]>(DEFAULT_SMS_TEMPLATES);
 
     const [isSaving, setIsSaving] = useState(false);
@@ -68,6 +70,9 @@ export default function SmsManagement() {
         });
         if (smsSettingsData.googleContacts?.clientId) {
             setLocalGoogleClientId(smsSettingsData.googleContacts.clientId);
+        }
+        if (smsSettingsData.googleContacts?.targetEmail) {
+            setLocalGoogleTargetEmail(smsSettingsData.googleContacts.targetEmail);
         }
         if (Array.isArray(smsSettingsData.templates) && smsSettingsData.templates.length > 0) {
             setLocalTemplates(smsSettingsData.templates);
@@ -119,6 +124,7 @@ export default function SmsManagement() {
                 templates: localTemplates,
                 googleContacts: {
                     clientId: localGoogleClientId.trim(),
+                    targetEmail: localGoogleTargetEmail.trim(),
                 },
             });
             setSavedToast(true);
@@ -733,33 +739,95 @@ export default function SmsManagement() {
                 )}
 
                 {/* 4. 구글 주소록 자동 등록 연동 */}
-                {subSection === "contacts" && (
-                    <div className="space-y-4">
-                        <div className="p-4 rounded-[12px] bg-[#f4f7fc] border border-[#dce4f0] space-y-2">
-                            <div className="text-[14px] font-bold text-[#142033]">
-                                👤 구글 주소록(Google Contacts) 자동 등록 연동
+                {subSection === "contacts" && (() => {
+                    const currentOrigin =
+                        typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+                    return (
+                        <div className="space-y-4">
+                            <div className="p-4 rounded-[12px] bg-[#f4f7fc] border border-[#dce4f0] space-y-2">
+                                <div className="text-[14px] font-bold text-[#142033]">
+                                    👤 구글 주소록(Google Contacts) 자동 등록 연동
+                                </div>
+                                <p className="text-[12px] text-[#5a6b82] leading-relaxed">
+                                    고객관리에서 [구글 주소록 등록] 또는 고객 상세창 [주소록 저장]을 누르면 지정된 Google 계정의 주소록에{" "}
+                                    <strong>홍길동(소노)</strong> 형식으로 자동 저장됩니다. 회사폰에 같은 Google 계정이 로그인되어 있으면 고객 전화가 올 때 휴대폰 화면에 고객명이 바로 표시됩니다.
+                                </p>
                             </div>
-                            <p className="text-[12px] text-[#5a6b82] leading-relaxed">
-                                고객관리에서 [구글 주소록 일괄 등록] 또는 고객 상세창 [주소록 저장]을 누르면 Google 계정의 주소록에{" "}
-                                <strong>홍길동(소노)</strong> 형식으로 자동 저장됩니다. 회사폰에 같은 Google 계정이 로그인되어 있으면 고객 전화가 올 때 휴대폰 화면에 고객명이 바로 표시됩니다.
-                            </p>
-                        </div>
 
-                        <div className="adm-field">
-                            <label>Google OAuth 클라이언트 ID (Web Application)</label>
-                            <input
-                                type="text"
-                                value={localGoogleClientId}
-                                onChange={(e) => setLocalGoogleClientId(e.target.value)}
-                                placeholder="예: 1234567890-abcdefg.apps.googleusercontent.com"
-                                className="adm-input font-mono"
-                            />
-                            <p className="text-[11.5px] text-[#788292] mt-1.5">
-                                Google Cloud Console &gt; API 및 서비스 &gt; 사용자 인증 정보에서 OAuth 2.0 클라이언트 ID(웹 애플리케이션)를 생성하고 승인된 자바스크립트 원본에 현재 어드민 도메인을 추가해주세요. (People API 사용 설정 필요)
-                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="adm-field">
+                                    <label>저장할 구글 계정 이메일 (권장)</label>
+                                    <input
+                                        type="email"
+                                        value={localGoogleTargetEmail}
+                                        onChange={(e) => setLocalGoogleTargetEmail(e.target.value)}
+                                        placeholder="예: jihoon3813@livon.care"
+                                        className="adm-input font-mono"
+                                    />
+                                    <p className="text-[11px] text-[#788292] mt-1">
+                                        구글 로그인 팝업 시 이 계정을 우선 선택하도록 안내합니다.
+                                    </p>
+                                </div>
+
+                                <div className="adm-field">
+                                    <label>현재 어드민 접속 출처 (Google Cloud Console 등록용)</label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            readOnly
+                                            value={currentOrigin}
+                                            className="adm-input font-mono bg-[#f9fafb]"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(currentOrigin);
+                                                alert(`출저 주소가 복사되었습니다: ${currentOrigin}`);
+                                            }}
+                                            className="adm-btn shrink-0"
+                                        >
+                                            <AdminIcon name="copy" />
+                                            <span>복사</span>
+                                        </button>
+                                    </div>
+                                    <p className="text-[11px] text-[#788292] mt-1">
+                                        <code>400: origin_mismatch</code> 방지: 위 주소를 Google Cloud Console &gt; 승인된 자바스크립트 원본에 추가하세요.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="adm-field">
+                                <div className="flex items-center justify-between mb-1">
+                                    <label>Google OAuth 클라이언트 ID (Web Application)</label>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            clearGoogleContactsToken();
+                                            alert("브라우저에 캐시된 구글 로그인 세션을 초기화했습니다. 다음 주소록 저장 시 계정을 다시 선택할 수 있습니다.");
+                                        }}
+                                        className="text-[11.5px] font-bold text-[#163a6b] hover:underline"
+                                    >
+                                        구글 계정 로그인 초기화
+                                    </button>
+                                </div>
+                                <input
+                                    type="text"
+                                    value={localGoogleClientId}
+                                    onChange={(e) => setLocalGoogleClientId(e.target.value)}
+                                    placeholder="예: 1234567890-abcdefg.apps.googleusercontent.com"
+                                    className="adm-input font-mono"
+                                />
+                                <div className="mt-2 p-3 rounded-[8px] bg-amber-50/70 border border-amber-200 text-[11.5px] text-[#5a461c] space-y-1">
+                                    <div className="font-bold">Google Cloud Console 체크사항 (400 origin_mismatch 해결):</div>
+                                    <div>1. <strong>API 및 서비스 &gt; 사용자 인증 정보</strong>에서 해당 OAuth 클라이언트 ID 클릭</div>
+                                    <div>2. <strong>승인된 자바스크립트 원본</strong>에 현재 접속 주소(<code>{currentOrigin}</code> 및 실제 배포 도메인 <code>https://...</code>) 추가 후 저장</div>
+                                    <div>3. <strong>OAuth 동의 화면 &gt; 테스트 사용자</strong> 목록에 <code>{localGoogleTargetEmail || "jihoon3813@livon.care"}</code> 추가 (게시 상태가 &apos;테스트 중&apos;일 경우 필수)</div>
+                                    <div>4. 라이브러리에서 <strong>Google People API</strong> 사용 설정</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    );
+                })()}
 
                 {/* 5. 전체 수발신 내역 */}
                 {subSection === "logs" && (

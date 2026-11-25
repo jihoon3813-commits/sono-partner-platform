@@ -18,6 +18,8 @@ export interface GoogleContactsSyncResult {
 
 export interface GoogleContactsSyncOptions {
     onProgress?: (message: string) => void;
+    loginHint?: string;
+    forceAccountSelect?: boolean;
 }
 
 const GIS_SCRIPT_URL = "https://accounts.google.com/gsi/client";
@@ -29,6 +31,7 @@ interface CachedTokenData {
     token: string;
     expiresAt: number;
     clientId: string;
+    loginHint?: string;
     accountKey?: string;
 }
 
@@ -43,10 +46,12 @@ let cachedToken: CachedTokenData | null = null;
 let gisLoadPromise: Promise<void> | null = null;
 const memoryContactsCache = new Map<string, ContactsSyncCache>();
 
-function loadStoredToken(clientId: string): CachedTokenData | null {
+function loadStoredToken(clientId: string, loginHint?: string): CachedTokenData | null {
+    const normHint = (loginHint || "").trim().toLowerCase();
     if (
         cachedToken &&
         cachedToken.clientId === clientId &&
+        (cachedToken.loginHint || "").trim().toLowerCase() === normHint &&
         cachedToken.expiresAt > Date.now() + 60_000
     ) {
         return cachedToken;
@@ -57,6 +62,7 @@ function loadStoredToken(clientId: string): CachedTokenData | null {
         const parsed = JSON.parse(raw) as CachedTokenData;
         if (
             parsed?.clientId === clientId &&
+            (parsed.loginHint || "").trim().toLowerCase() === normHint &&
             parsed?.token &&
             parsed?.expiresAt > Date.now() + 60_000
         ) {
@@ -67,6 +73,10 @@ function loadStoredToken(clientId: string): CachedTokenData | null {
         // ignore storage errors
     }
     return null;
+}
+
+export function clearGoogleContactsToken(): void {
+    saveStoredToken(null);
 }
 
 function saveStoredToken(data: CachedTokenData | null): void {
@@ -204,10 +214,16 @@ function formatKoreanPhone(raw: string): string {
     return raw.trim();
 }
 
-async function requestGoogleContactsToken(clientId: string): Promise<CachedTokenData> {
-    const stored = loadStoredToken(clientId);
-    if (stored) {
-        return stored;
+async function requestGoogleContactsToken(
+    clientId: string,
+    loginHint?: string,
+    forceAccountSelect?: boolean
+): Promise<CachedTokenData> {
+    if (!forceAccountSelect) {
+        const stored = loadStoredToken(clientId, loginHint);
+        if (stored) {
+            return stored;
+        }
     }
 
     await loadGoogleIdentityScript();
@@ -216,10 +232,13 @@ async function requestGoogleContactsToken(clientId: string): Promise<CachedToken
         throw new Error("Google OAuth 모듈을 초기화할 수 없습니다.");
     }
 
+    const trimmedHint = (loginHint || "").trim();
+
     return new Promise<CachedTokenData>((resolve, reject) => {
         const tokenClient = oauth2.initTokenClient({
             client_id: clientId,
             scope: CONTACTS_SCOPE,
+            ...(trimmedHint ? { hint: trimmedHint } : {}),
             callback: (resp: any) => {
                 if (resp?.error) {
                     reject(
@@ -238,6 +257,7 @@ async function requestGoogleContactsToken(clientId: string): Promise<CachedToken
                     token: resp.access_token,
                     expiresAt: Date.now() + expiresInSec * 1000,
                     clientId,
+                    loginHint: trimmedHint || undefined,
                 };
                 saveStoredToken(tokenData);
                 resolve(tokenData);
@@ -248,7 +268,10 @@ async function requestGoogleContactsToken(clientId: string): Promise<CachedToken
                 );
             },
         });
-        tokenClient.requestAccessToken({ prompt: "" });
+        tokenClient.requestAccessToken({
+            prompt: "select_account",
+            ...(trimmedHint ? { hint: trimmedHint } : {}),
+        });
     });
 }
 
@@ -440,7 +463,11 @@ export async function syncCustomersToGoogleContacts(
     }
 
     onProgress?.("구글 로그인 확인 중...");
-    const tokenData = await requestGoogleContactsToken(trimmedClientId);
+    const tokenData = await requestGoogleContactsToken(
+        trimmedClientId,
+        options?.loginHint,
+        options?.forceAccountSelect
+    );
     const { accountKey, cache, phoneSet: existingPhones } = await fetchExistingPhoneCache(
         tokenData,
         onProgress
@@ -555,7 +582,8 @@ export async function syncCustomersToGoogleContacts(
 
 export async function syncSingleCustomerWithPrompt(
     customer: GoogleContactCustomer,
-    clientId: string
+    clientId: string,
+    loginHint?: string
 ): Promise<boolean> {
     if (!clientId) {
         alert(
@@ -582,7 +610,7 @@ export async function syncSingleCustomerWithPrompt(
     }
 
     try {
-        const res = await syncCustomersToGoogleContacts([customer], clientId);
+        const res = await syncCustomersToGoogleContacts([customer], clientId, { loginHint });
         if (res.createdCount > 0) {
             alert(
                 `${displayName}님이 구글 주소록에 등록되었습니다!\n잠시 후 회사폰 연락처에 자동으로 반영됩니다.`

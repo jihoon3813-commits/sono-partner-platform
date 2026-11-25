@@ -281,12 +281,19 @@ export const getSmsSettings = query({
             .query("settings")
             .withIndex("by_key", (q) => q.eq("key", "google_contacts_config"))
             .unique();
-        let googleContacts = { clientId: "" };
+        let googleContacts: { clientId: string; targetEmail?: string } = {
+            clientId: "",
+            targetEmail: "jihoon3813@livon.care",
+        };
         if (googleSetting?.value) {
             try {
-                googleContacts = JSON.parse(googleSetting.value);
+                const parsed = JSON.parse(googleSetting.value);
+                googleContacts = {
+                    clientId: parsed?.clientId || "",
+                    targetEmail: parsed?.targetEmail ?? "jihoon3813@livon.care",
+                };
             } catch {
-                googleContacts = { clientId: "" };
+                googleContacts = { clientId: "", targetEmail: "jihoon3813@livon.care" };
             }
         }
 
@@ -313,6 +320,7 @@ export const saveSmsSettings = mutation({
         googleContacts: v.optional(
             v.object({
                 clientId: v.string(),
+                targetEmail: v.optional(v.string()),
             })
         ),
     },

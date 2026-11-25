@@ -665,7 +665,9 @@ export default function CustomerDetailModal({
                                             selectedGift,
                                             status,
                                         },
-                                        clientId
+                                        clientId,
+                                        smsSettingsData?.googleContacts?.targetEmail ||
+                                            "jihoon3813@livon.care"
                                     );
                                     if (ok && application._id) {
                                         await markGoogleContactsSynced({
