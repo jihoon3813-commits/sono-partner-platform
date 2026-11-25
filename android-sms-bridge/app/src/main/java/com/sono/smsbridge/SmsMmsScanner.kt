@@ -15,6 +15,7 @@ data class ScanBatch(
 object SmsMmsScanner {
 
     private data class DispatchedRecord(
+        val serverUrl: String,
         val normalizedPhone: String,
         val body: String,
         val atMillis: Long
@@ -32,11 +33,21 @@ object SmsMmsScanner {
         }
     }
 
-    fun recordBridgeDispatch(phone: String, message: String) {
+    fun isHyowonMessage(body: String?): Boolean {
+        val trimmed = (body ?: "").trim()
+        if (trimmed.isEmpty()) return false
+        return trimmed.startsWith("[효원") ||
+            trimmed.contains("[효원") ||
+            trimmed.contains("효원상조") ||
+            trimmed.contains("효원라이프")
+    }
+
+    fun recordBridgeDispatch(serverUrl: String, phone: String, message: String) {
         val now = System.currentTimeMillis()
         recentDispatches.removeIf { now - it.atMillis > 180_000L }
         recentDispatches.add(
             DispatchedRecord(
+                serverUrl = serverUrl,
                 normalizedPhone = normalizePhone(phone),
                 body = message.trim(),
                 atMillis = now
@@ -44,7 +55,7 @@ object SmsMmsScanner {
         )
     }
 
-    private fun wasDispatchedByBridge(phone: String, candidateBody: String): Boolean {
+    fun wasDispatchedByBridge(phone: String, candidateBody: String): Boolean {
         val now = System.currentTimeMillis()
         val normPhone = normalizePhone(phone)
         val trimmed = candidateBody.trim()
@@ -55,6 +66,72 @@ object SmsMmsScanner {
             rec.normalizedPhone == normPhone &&
                 (rec.body == trimmed || (trimmed.length >= 8 && rec.body.contains(trimmed)))
         }
+    }
+
+    fun findLatestHyowonOutboundAt(
+        context: Context,
+        normalizedPhone: String,
+        maxTimestampMs: Long
+    ): Long {
+        if (normalizedPhone.length < 9) return 0L
+        var latest = 0L
+        val since = System.currentTimeMillis() - 7L * 24L * 60L * 60L * 1000L
+        try {
+            context.contentResolver.query(
+                Uri.parse("content://sms"),
+                arrayOf("address", "body", "date", "type"),
+                "type = 2 AND date >= ? AND date <= ?",
+                arrayOf(since.toString(), maxTimestampMs.toString()),
+                "date DESC"
+            )?.use { cursor ->
+                val addrIdx = cursor.getColumnIndexOrThrow("address")
+                val bodyIdx = cursor.getColumnIndexOrThrow("body")
+                val dateIdx = cursor.getColumnIndexOrThrow("date")
+                var checked = 0
+                while (cursor.moveToNext() && checked < 60) {
+                    checked++
+                    val addr = normalizePhone(cursor.getString(addrIdx))
+                    if (addr != normalizedPhone) continue
+                    val body = cursor.getString(bodyIdx) ?: ""
+                    if (isHyowonMessage(body)) {
+                        val ts = cursor.getLong(dateIdx)
+                        if (ts > latest) latest = ts
+                        break
+                    }
+                }
+            }
+        } catch (_: Exception) {
+        }
+        try {
+            val sinceSec = since / 1000L
+            val maxSec = (maxTimestampMs / 1000L) + 1L
+            context.contentResolver.query(
+                Uri.parse("content://mms"),
+                arrayOf("_id", "date", "msg_box"),
+                "msg_box = 2 AND date >= ? AND date <= ?",
+                arrayOf(sinceSec.toString(), maxSec.toString()),
+                "date DESC"
+            )?.use { cursor ->
+                val idIdx = cursor.getColumnIndexOrThrow("_id")
+                val dateIdx = cursor.getColumnIndexOrThrow("date")
+                var checked = 0
+                while (cursor.moveToNext() && checked < 25) {
+                    checked++
+                    val mmsId = cursor.getLong(idIdx)
+                    val phone = readMmsAddress(context, mmsId, isInbound = false)
+                    if (normalizePhone(phone) != normalizedPhone) continue
+                    val body = readMmsText(context, mmsId)
+                    if (isHyowonMessage(body)) {
+                        val dateSec = cursor.getLong(dateIdx)
+                        val ts = if (dateSec in 1..9_999_999_999L) dateSec * 1000L else dateSec
+                        if (ts > latest) latest = ts
+                        break
+                    }
+                }
+            }
+        } catch (_: Exception) {
+        }
+        return latest
     }
 
     fun ensureBaselineInitialized(context: Context) {
@@ -122,6 +199,7 @@ object SmsMmsScanner {
                     val address = cursor.getString(addrIdx) ?: ""
                     val body = (cursor.getString(bodyIdx) ?: "").trim()
                     if (address.isBlank() || body.isBlank()) continue
+                    val ts = if (dateMs > 0) dateMs else now
 
                     if (type == 1) {
                         collected.add(
@@ -129,17 +207,24 @@ object SmsMmsScanner {
                                 direction = "inbound",
                                 phone = address,
                                 message = body,
-                                timestamp = if (dateMs > 0) dateMs else now
+                                timestamp = ts
                             )
                         )
                     } else if (type == 2) {
-                        if (!wasDispatchedByBridge(address, body)) {
+                        if (isHyowonMessage(body)) {
+                            BridgePrefs.recordOutboundTimestamp(
+                                context,
+                                BridgePrefs.EXTERNAL_OWNER,
+                                address,
+                                ts
+                            )
+                        } else if (!wasDispatchedByBridge(address, body)) {
                             collected.add(
                                 SyncItem(
                                     direction = "outbound",
                                     phone = address,
                                     message = body,
-                                    timestamp = if (dateMs > 0) dateMs else now
+                                    timestamp = ts
                                 )
                             )
                         }
@@ -181,6 +266,7 @@ object SmsMmsScanner {
 
                     nextMmsId = mmsId
                     if (textBody.isBlank() || phone.isBlank()) continue
+                    val ts = if (dateMs > 0) dateMs else now
 
                     if (msgBox == 1) {
                         collected.add(
@@ -188,17 +274,24 @@ object SmsMmsScanner {
                                 direction = "inbound",
                                 phone = phone,
                                 message = textBody,
-                                timestamp = if (dateMs > 0) dateMs else now
+                                timestamp = ts
                             )
                         )
                     } else if (msgBox == 2) {
-                        if (!wasDispatchedByBridge(phone, textBody)) {
+                        if (isHyowonMessage(textBody)) {
+                            BridgePrefs.recordOutboundTimestamp(
+                                context,
+                                BridgePrefs.EXTERNAL_OWNER,
+                                phone,
+                                ts
+                            )
+                        } else if (!wasDispatchedByBridge(phone, textBody)) {
                             collected.add(
                                 SyncItem(
                                     direction = "outbound",
                                     phone = phone,
                                     message = textBody,
-                                    timestamp = if (dateMs > 0) dateMs else now
+                                    timestamp = ts
                                 )
                             )
                         }

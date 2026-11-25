@@ -245,11 +245,47 @@ async function sendViaAligoApi(params: {
     };
 }
 
+function isHyowonSmsText(text: string): boolean {
+    const trimmed = (text || "").trim();
+    return (
+        trimmed.startsWith("[효원") ||
+        trimmed.includes("[효원") ||
+        trimmed.includes("효원상조") ||
+        trimmed.includes("효원라이프")
+    );
+}
+
 async function findMatchingApplication(ctx: any, normalizedPhone: string) {
     const allApps = await ctx.db.query("applications").order("desc").collect();
-    return allApps.find(
+    const matchingApps = allApps.filter(
         (app: any) => normalizeKoreanPhone(app.customerPhone || "") === normalizedPhone
     );
+    if (matchingApps.length === 0) return undefined;
+    if (matchingApps.length === 1) return matchingApps[0];
+
+    // 동일 번호로 여러 접수 건이 있는 경우, 가장 최근에 문자를 발송한 접수 건에 답장을 연결
+    const matchingById = new Map<string, any>();
+    for (const app of matchingApps) {
+        matchingById.set(String(app._id), app);
+    }
+
+    const recentPhoneLogs = await ctx.db
+        .query("sms_logs")
+        .withIndex("by_customerPhone_and_createdAt", (q: any) =>
+            q.eq("customerPhone", normalizedPhone)
+        )
+        .order("desc")
+        .take(30);
+
+    for (const log of recentPhoneLogs) {
+        if (log.direction !== "outbound") continue;
+        if (log.status === "실패") continue;
+        if (log.applicationId && matchingById.has(String(log.applicationId))) {
+            return matchingById.get(String(log.applicationId));
+        }
+    }
+
+    return matchingApps[0];
 }
 
 // ==========================================
@@ -533,7 +569,30 @@ export const pollBridgeOutbox = internalMutation({
             });
         }
 
-        return { ok: true, jobs };
+        const since = now - 7 * 24 * 60 * 60 * 1000;
+        const recentOutboundLogs = await ctx.db
+            .query("sms_logs")
+            .withIndex("by_createdAt", (q) => q.gte("createdAt", since))
+            .order("desc")
+            .take(300);
+
+        const latestByPhone = new Map<string, number>();
+        for (const log of recentOutboundLogs) {
+            if (log.direction === "inbound") continue;
+            if (log.status === "실패") continue;
+            if (log.smsType === "휴대폰발신") continue;
+            const norm = normalizeKoreanPhone(log.customerPhone || "");
+            if (norm.length < 9) continue;
+            if (!latestByPhone.has(norm)) {
+                latestByPhone.set(norm, log.createdAt);
+            }
+        }
+        const recentOutbounds = Array.from(latestByPhone.entries()).map(([phone, sentAt]) => ({
+            phone,
+            sentAt,
+        }));
+
+        return { ok: true, jobs, serverNow: now, recentOutbounds };
     },
 });
 
@@ -1008,11 +1067,18 @@ export const syncBridgeMessages = internalMutation({
                 continue;
             }
 
+            const msgTime =
+                typeof item.timestamp === "number" && item.timestamp > 0
+                    ? Math.min(now, Math.max(now - 7 * 24 * 60 * 60 * 1000, item.timestamp))
+                    : now;
+
             if (item.direction === "inbound") {
                 const recentLogs = await ctx.db
                     .query("sms_logs")
                     .withIndex("by_customerPhone_and_createdAt", (q) =>
-                        q.eq("customerPhone", normalizedPhone).gte("createdAt", now - 90_000)
+                        q
+                            .eq("customerPhone", normalizedPhone)
+                            .gte("createdAt", Math.min(now, msgTime) - 90_000)
                     )
                     .collect();
 
@@ -1031,7 +1097,7 @@ export const syncBridgeMessages = internalMutation({
                     status: "수신",
                     direction: "inbound",
                     isRead: false,
-                    createdAt: now,
+                    createdAt: msgTime,
                 });
 
                 const productDisplay = formatProductDisplayName(
@@ -1050,12 +1116,14 @@ export const syncBridgeMessages = internalMutation({
                 syncedCount += 1;
             } else {
                 // 타사(효원상조) 브릿지 앱이 같은 폰에서 발신한 문자는 소노 내역으로 중복 기록하지 않음
-                if (trimmedMessage.startsWith("[효원")) continue;
+                if (isHyowonSmsText(trimmedMessage)) continue;
 
                 const recentLogs = await ctx.db
                     .query("sms_logs")
                     .withIndex("by_customerPhone_and_createdAt", (q) =>
-                        q.eq("customerPhone", normalizedPhone).gte("createdAt", now - 900_000)
+                        q
+                            .eq("customerPhone", normalizedPhone)
+                            .gte("createdAt", Math.min(now, msgTime) - 900_000)
                     )
                     .collect();
 
@@ -1079,7 +1147,7 @@ export const syncBridgeMessages = internalMutation({
                     status: "성공",
                     senderName: "회사폰 직접발송",
                     direction: "outbound",
-                    createdAt: now,
+                    createdAt: msgTime,
                 });
                 syncedCount += 1;
             }
@@ -1183,8 +1251,13 @@ export const listByApplication = query({
             .take(100);
 
         const merged = new Map<string, any>();
-        for (const item of [...byApp, ...byPhone]) {
+        for (const item of byApp) {
             merged.set(String(item._id), item);
+        }
+        for (const item of byPhone) {
+            if (!item.applicationId || String(item.applicationId) === String(args.applicationId)) {
+                merged.set(String(item._id), item);
+            }
         }
         return Array.from(merged.values())
             .sort((a, b) => b.createdAt - a.createdAt)
@@ -1293,6 +1366,12 @@ export const markInboundRead = mutation({
         const seen = new Set<string>();
         let updated = 0;
         for (const log of [...byApp, ...byPhone]) {
+            if (
+                log.applicationId &&
+                String(log.applicationId) !== String(args.applicationId)
+            ) {
+                continue;
+            }
             const key = String(log._id);
             if (seen.has(key)) continue;
             seen.add(key);

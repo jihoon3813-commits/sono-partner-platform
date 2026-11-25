@@ -15,10 +15,17 @@ data class OutboxJob(
     val message: String
 )
 
+data class RecentOutbound(
+    val phone: String,
+    val sentAt: Long
+)
+
 data class PollResponse(
     val ok: Boolean,
     val error: String?,
-    val jobs: List<OutboxJob>
+    val jobs: List<OutboxJob>,
+    val serverNow: Long = 0L,
+    val recentOutbounds: List<RecentOutbound> = emptyList()
 )
 
 data class SyncItem(
@@ -94,7 +101,26 @@ object BridgeApiClient {
                 )
             }
         }
-        return PollResponse(ok = true, error = null, jobs = jobs)
+
+        val serverNow = json.optLong("serverNow", 0L)
+        val outboundsArr = json.optJSONArray("recentOutbounds") ?: JSONArray()
+        val recentOutbounds = mutableListOf<RecentOutbound>()
+        for (i in 0 until outboundsArr.length()) {
+            val item = outboundsArr.optJSONObject(i) ?: continue
+            val phone = item.optString("phone", "")
+            val sentAt = item.optLong("sentAt", 0L)
+            if (phone.isNotBlank() && sentAt > 0L) {
+                recentOutbounds.add(RecentOutbound(phone = phone, sentAt = sentAt))
+            }
+        }
+
+        return PollResponse(
+            ok = true,
+            error = null,
+            jobs = jobs,
+            serverNow = serverNow,
+            recentOutbounds = recentOutbounds
+        )
     }
 
     fun ack(serverUrl: String, secret: String, outboxId: String, success: Boolean, errorMessage: String?): Boolean {
