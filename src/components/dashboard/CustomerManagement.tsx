@@ -1862,12 +1862,14 @@ export default function CustomerManagement({
                                         <span>미확인 답장 ({totalUnreadSms})</span>
                                     </button>
                                 )}
-                                {mode !== "maeum" && (
-                                    <span className="adm-pill green !py-1 !px-2.5">
-                                        <AdminIcon name="phone" className="!w-3 !h-3" />
-                                        <span>가입센터 발신번호 1833-8434</span>
+                                <span className="adm-pill green !py-1 !px-2.5">
+                                    <AdminIcon name="phone" className="!w-3 !h-3" />
+                                    <span>
+                                        {mode === "maeum"
+                                            ? "해피콜 발신번호 : 1644-8399"
+                                            : "가입센터 발신번호 1833-8434"}
                                     </span>
-                                )}
+                                </span>
                             </div>
                         </div>
 

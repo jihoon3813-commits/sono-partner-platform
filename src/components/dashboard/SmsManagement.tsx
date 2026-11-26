@@ -689,7 +689,7 @@ export default function SmsManagement() {
                                         1. 전자계약 서명 안내 문자 (고객관리 &gt; 전자계약발송 클릭 시)
                                     </div>
                                     <p className="text-[12px] text-[#5a6b82] mt-0.5">
-                                        마음든든 고객관리에서 [전자계약발송] 버튼을 클릭하면 고객에게 모바일 전자계약 링크와 1833-8434 해피콜 안내가 발송됩니다.
+                                        마음든든 고객관리에서 [전자계약발송] 버튼을 클릭하면 고객에게 모바일 전자계약 링크와 1644-8399 해피콜 안내가 발송됩니다.
                                     </p>
                                 </div>
                                 <button
@@ -753,7 +753,7 @@ export default function SmsManagement() {
                                         2. 전자서명 완료 시 자동 발송 문자
                                     </div>
                                     <p className="text-[12px] text-[#5a6b82] mt-0.5">
-                                        고객이 모바일/웹에서 전자계약 서명을 완료하면 자동으로 정상 완료 및 1833-8434 해피콜 안내 문자가 발송됩니다.
+                                        고객이 모바일/웹에서 전자계약 서명을 완료하면 자동으로 정상 완료 및 1644-8399 해피콜 안내 문자가 발송됩니다.
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-4 shrink-0">
