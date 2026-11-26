@@ -1725,3 +1725,56 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Mobile-dedicated standalone page shell */
+.ec-page-shell {
+  min-height: 100dvh;
+  width: 100%;
+  background: #e8e5d8;
+  display: flex;
+  justify-content: center;
+  font-family: 'Noto Sans KR', ui-sans-serif, system-ui, -apple-system, "Malgun Gothic", sans-serif;
+  letter-spacing: -0.025em;
+  color: #173c37;
+}
+
+.ec-page-shell * {
+  box-sizing: border-box;
+}
+
+.ec-page-container {
+  max-width: 540px;
+  width: 100%;
+  min-height: 100dvh;
+  height: auto;
+  box-shadow: 0 0 48px rgba(23, 60, 55, 0.12);
+  border-left: none;
+  animation: none;
+  overflow: visible;
+}
+
+.ec-page-container .ec-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.ec-page-container .ec-scroll {
+  overflow-y: visible;
+  flex: 1 1 auto;
+}
+
+.ec-page-container .ec-footbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+}
+
+@media (max-width: 560px) {
+  .ec-page-shell {
+    background: #f4f2e7;
+  }
+  .ec-page-container {
+    box-shadow: none;
+  }
+}

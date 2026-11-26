@@ -11,13 +11,25 @@ import {
 import "./maeum-econtract.css";
 
 interface MaeumEcontractDrawerProps {
-    isOpen: boolean;
-    onClose: () => void;
+    variant?: "drawer" | "page";
+    isOpen?: boolean;
+    onClose?: () => void;
     initialPlan?: "3" | "4" | "5";
     partnerId?: string;
     partnerUrl?: string;
     partnerName?: string;
     partnerPhone?: string;
+    applicationId?: string;
+    prefill?: {
+        customerName?: string;
+        customerPhone?: string;
+        customerBirth?: string;
+        customerGender?: string;
+        customerEmail?: string;
+        customerAddress?: string;
+        customerZipcode?: string;
+        productType?: string;
+    };
 }
 
 const PRODUCTS = [
@@ -172,14 +184,19 @@ function loadKakaoPostcode(): Promise<void> {
 }
 
 export default function MaeumEcontractDrawer({
-    isOpen,
+    variant = "drawer",
+    isOpen = false,
     onClose,
     initialPlan = "4",
     partnerId = "",
     partnerUrl = "",
     partnerName = "",
     partnerPhone = "",
+    applicationId,
+    prefill,
 }: MaeumEcontractDrawerProps) {
+    const isPage = variant === "page";
+    const effectiveOpen = isPage ? true : Boolean(isOpen);
     const partnerLookupKey =
         partnerId && partnerId !== "ADMIN" && !partnerId.startsWith("P-TEMP-")
             ? partnerId
@@ -247,6 +264,7 @@ export default function MaeumEcontractDrawer({
     const [addrStatus, setAddrStatus] = useState("");
 
     const scrollRef = useRef<HTMLDivElement>(null);
+    const prefillAppliedRef = useRef(false);
     const addrMountRef = useRef<HTMLDivElement>(null);
     const addrDetailRef = useRef<HTMLInputElement>(null);
     const addrInputRef = useRef<HTMLInputElement>(null);
@@ -256,11 +274,34 @@ export default function MaeumEcontractDrawer({
 
     // Sync initialPlan when drawer opens
     useEffect(() => {
-        if (isOpen) {
+        if (effectiveOpen) {
             const idx = PRODUCTS.findIndex((p) => p.key === initialPlan);
             if (idx >= 0) setChosenIdx(idx);
         }
-    }, [isOpen, initialPlan]);
+    }, [effectiveOpen, initialPlan]);
+
+    // Apply prefill values from existing customer application once
+    useEffect(() => {
+        if (!prefill || prefillAppliedRef.current) return;
+        prefillAppliedRef.current = true;
+        if (prefill.customerName) setName(prefill.customerName);
+        if (prefill.customerPhone) setPhone(formatPhoneInput(prefill.customerPhone));
+        if (prefill.customerBirth) {
+            const digits = prefill.customerBirth.replace(/\D/g, "").slice(0, 8);
+            if (digits) setBirth(digits);
+        }
+        if (prefill.customerGender === "남" || prefill.customerGender === "여") {
+            setGender(prefill.customerGender);
+        }
+        if (prefill.customerEmail) setEmail(prefill.customerEmail);
+        if (prefill.customerZipcode) setPostcode(prefill.customerZipcode);
+        if (prefill.customerAddress) setAddress(prefill.customerAddress);
+        if (prefill.productType) {
+            if (prefill.productType.includes("3")) setChosenIdx(0);
+            else if (prefill.productType.includes("5")) setChosenIdx(2);
+            else if (prefill.productType.includes("4")) setChosenIdx(1);
+        }
+    }, [prefill]);
 
     // Sync partner info from partnerRecord or fallback props (소속은 공통 "티유디지털" 유지)
     useEffect(() => {
@@ -276,30 +317,35 @@ export default function MaeumEcontractDrawer({
         if (nextPhone) setAgentPhone((prev) => prev || nextPhone);
     }, [partnerRecord, partnerPhone]);
 
-    // Lock body scroll & handle Escape key
+    // Lock body scroll & handle Escape key (drawer mode only)
     useEffect(() => {
-        if (!isOpen) return;
+        if (!effectiveOpen) return;
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
                 if (addrModalOpen) {
                     setAddrModalOpen(false);
-                } else {
+                } else if (!isPage && onClose) {
                     onClose();
                 }
             }
         };
         document.addEventListener("keydown", handleKeyDown);
+        if (isPage) {
+            return () => {
+                document.removeEventListener("keydown", handleKeyDown);
+            };
+        }
         const prevOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
             document.body.style.overflow = prevOverflow;
         };
-    }, [isOpen, addrModalOpen, onClose]);
+    }, [effectiveOpen, isPage, addrModalOpen, onClose]);
 
     // Initialize signature canvas when entering Step 4
     useEffect(() => {
-        if (!isOpen || step !== 4) return;
+        if (!effectiveOpen || step !== 4) return;
         const canvas = sigCanvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
@@ -318,7 +364,7 @@ export default function MaeumEcontractDrawer({
             };
             img.src = signatureDataUrl;
         }
-    }, [isOpen, step]);
+    }, [effectiveOpen, step]);
 
     // Load Kakao Postcode inside address modal
     useEffect(() => {
@@ -373,14 +419,18 @@ export default function MaeumEcontractDrawer({
         };
     }, [addrModalOpen]);
 
-    if (!isOpen) return null;
+    if (!effectiveOpen) return null;
 
     const currentProduct = PRODUCTS[chosenIdx];
     const birthCheck = validateBirthField(birth, false);
     const beneficiaryCheck = validateBirthField(beneficiaryBirth, true);
 
     const scrollTop = () => {
-        if (scrollRef.current) scrollRef.current.scrollTop = 0;
+        if (isPage) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        } else if (scrollRef.current) {
+            scrollRef.current.scrollTop = 0;
+        }
     };
 
     const getCanvasPoint = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -683,6 +733,7 @@ export default function MaeumEcontractDrawer({
             }
 
             const res = await submitMaeumContract({
+                ...(applicationId ? { applicationId: applicationId as any } : {}),
                 partnerId: partnerId || "ADMIN",
                 partnerName: partnerRecord?.companyName || partnerName || "본사 직접 신청",
                 productType: `마음든든${currentProduct.key}`,
@@ -764,26 +815,22 @@ export default function MaeumEcontractDrawer({
 
     const nextDisabled = (step === 2 && beneficiaryCheck.tooOld) || (step === 5 && isSubmittingPdf);
 
-    return (
-        <div
-            className="ec-drawer-overlay"
-            role="dialog"
-            aria-modal="true"
-            aria-label="마음든든 전자계약"
-        >
-            <aside className="ec-drawer" onClick={(e) => e.stopPropagation()}>
-                {/* Top Header */}
-                <header className="ec-topbar">
-                    <div className="ec-brand">
-                        <span className="ec-brand-mark">im</span>
-                        <span>
-                            소노아임레디 <span style={{ color: "#c5c9bd", margin: "0 4px" }}>|</span> 마음든든
-                        </span>
-                    </div>
+    const containerContent = (
+        <>
+            {/* Top Header */}
+            <header className="ec-topbar">
+                <div className="ec-brand">
+                    <span className="ec-brand-mark">im</span>
+                    <span>
+                        소노아임레디 <span style={{ color: "#c5c9bd", margin: "0 4px" }}>|</span> 마음든든
+                    </span>
+                </div>
+                {!isPage && onClose && (
                     <button type="button" className="ec-close-btn" onClick={onClose} aria-label="전자계약 창 닫기">
                         닫기 ✕
                     </button>
-                </header>
+                )}
+            </header>
 
                 {/* Scrollable Body */}
                 <div className="ec-scroll" ref={scrollRef}>
@@ -1785,6 +1832,22 @@ export default function MaeumEcontractDrawer({
                         </div>
                     </div>
                 )}
+        </>
+    );
+
+    if (isPage) {
+        return <div className="ec-page-shell"><div className="ec-drawer ec-page-container">{containerContent}</div></div>;
+    }
+
+    return (
+        <div
+            className="ec-drawer-overlay"
+            role="dialog"
+            aria-modal="true"
+            aria-label="마음든든 전자계약"
+        >
+            <aside className="ec-drawer" onClick={(e) => e.stopPropagation()}>
+                {containerContent}
             </aside>
         </div>
     );

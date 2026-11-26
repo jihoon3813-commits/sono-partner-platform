@@ -128,14 +128,17 @@ export default function CustomerManagement({
         api.applications.updateMultipleApplicationStatuses
     );
 
-    // 문자(SMS) & 구글 주소록 (총괄어드민 전용)
-    const smsSettingsData = useQuery(api.sms.getSmsSettings, isAdmin ? {} : "skip");
-    const unreadSmsCounts = (useQuery(api.sms.getUnreadInboundCounts, isAdmin ? {} : "skip") ??
+    // 문자(SMS) & 구글 주소록 (총괄어드민 · 마음든든 고객관리 전용)
+    const isSmsEnabled = isAdmin && mode === "maeum";
+    const smsSettingsData = useQuery(api.sms.getSmsSettings, isSmsEnabled ? {} : "skip");
+    const unreadSmsCounts = (useQuery(api.sms.getUnreadInboundCounts, isSmsEnabled ? {} : "skip") ??
         {}) as Record<string, number>;
-    const latestSmsMap = (useQuery(api.sms.getLatestSmsByApplication, isAdmin ? {} : "skip") ??
+    const latestSmsMap = (useQuery(api.sms.getLatestSmsByApplication, isSmsEnabled ? {} : "skip") ??
         {}) as Record<string, LatestSmsSummary>;
     const markGoogleContactsSynced = useMutation(api.sms.markGoogleContactsSynced);
     const sendBulkSmsAction = useAction(api.sms.sendBulkSms);
+    const sendMaeumEcontractRequestSmsAction = useAction(api.sms.sendMaeumEcontractRequestSms);
+    const [sendingEcontractAppId, setSendingEcontractAppId] = useState<string | null>(null);
 
     const [unreadSmsOnly, setUnreadSmsOnly] = useState(false);
     const [isSyncingGoogleContacts, setIsSyncingGoogleContacts] = useState(false);
@@ -145,23 +148,49 @@ export default function CustomerManagement({
     const [bulkSmsMessage, setBulkSmsMessage] = useState(DEFAULT_SMS_TEMPLATES[0].content);
     const [isSendingBulkSms, setIsSendingBulkSms] = useState(false);
 
+    const handleSendEcontractSms = async (app: Application) => {
+        if (!app?._id) return;
+        if (!app.customerPhone) {
+            alert("고객 휴대폰 번호가 등록되어 있지 않습니다.");
+            return;
+        }
+        const ok = window.confirm(
+            `${app.customerName || "고객"} (${app.customerPhone})님께 마음든든 전자계약 서명 안내 문자를 발송하시겠습니까?`
+        );
+        if (!ok) return;
+
+        setSendingEcontractAppId(String(app._id));
+        try {
+            const res = await sendMaeumEcontractRequestSmsAction({
+                applicationId: app._id as any,
+                originUrl: window.location.origin,
+                senderName: currentUser?.managerName || currentUser?.companyName || "어드민",
+            });
+            alert(res?.message || "전자계약 서명 안내 문자를 발송했습니다.");
+        } catch (err: any) {
+            alert(`전자계약 안내 문자 발송 실패: ${err?.message || "알 수 없는 오류"}`);
+        } finally {
+            setSendingEcontractAppId(null);
+        }
+    };
+
     const totalUnreadSms = useMemo(
         () =>
-            isAdmin
+            isSmsEnabled
                 ? Object.values(unreadSmsCounts).reduce((sum, n) => sum + (n || 0), 0)
                 : 0,
-        [isAdmin, unreadSmsCounts]
+        [isSmsEnabled, unreadSmsCounts]
     );
 
     const [googleCacheVersion, setGoogleCacheVersion] = useState(0);
     const cachedContactPhones = useMemo(
-        () => (isAdmin ? getCachedGoogleContactPhones() : new Set<string>()),
-        [isAdmin, isSyncingGoogleContacts, googleCacheVersion]
+        () => (isSmsEnabled ? getCachedGoogleContactPhones() : new Set<string>()),
+        [isSmsEnabled, isSyncingGoogleContacts, googleCacheVersion]
     );
 
     const syncedDbPhones = useMemo(() => {
         const phones = new Set<string>();
-        if (!isAdmin) return phones;
+        if (!isSmsEnabled) return phones;
         for (const a of applications) {
             if (a.googleContactsSyncedAt) {
                 const norm = normalizeKoreanPhone(a.customerPhone || "");
@@ -169,7 +198,7 @@ export default function CustomerManagement({
             }
         }
         return phones;
-    }, [isAdmin, applications]);
+    }, [isSmsEnabled, applications]);
 
     const activeSelectedApp = useMemo(() => {
         if (!selectedApp) return null;
@@ -544,7 +573,7 @@ export default function CustomerManagement({
 
     // 2. Status & Product Filter
     const filteredApplications = initialFiltered.filter((app) => {
-        if (isAdmin && unreadSmsOnly) {
+        if (isSmsEnabled && unreadSmsOnly) {
             const unread = app._id ? unreadSmsCounts[String(app._id)] || 0 : 0;
             if (unread === 0) return false;
         }
@@ -835,7 +864,7 @@ export default function CustomerManagement({
                             </span>
                         </th>
                         <th className="text-center">녹취</th>
-                        {isAdmin && <th className="w-[190px]">최근 문자</th>}
+                        {isSmsEnabled && <th className="w-[190px]">최근 문자</th>}
                         {isAdmin && <th className="text-center">소노 접수</th>}
                     </tr>
                 </thead>
@@ -867,9 +896,9 @@ export default function CustomerManagement({
                                     ? formatBytes(stat.totalSize)
                                     : "";
                             const unreadCount =
-                                isAdmin && app._id ? unreadSmsCounts[String(app._id)] || 0 : 0;
+                                isSmsEnabled && app._id ? unreadSmsCounts[String(app._id)] || 0 : 0;
                             const isGoogleSynced = isCustomerGoogleSynced({
-                                isAdmin,
+                                isAdmin: isSmsEnabled,
                                 customerPhone: app.customerPhone,
                                 googleContactsSyncedAt: app.googleContactsSyncedAt,
                                 cachedContactPhones,
@@ -1109,6 +1138,28 @@ export default function CustomerManagement({
                                                     </span>
                                                 )}
                                             </button>
+                                            {isAdmin && mode === "maeum" && (
+                                                <button
+                                                    type="button"
+                                                    disabled={sendingEcontractAppId === String(app._id)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        void handleSendEcontractSms(app);
+                                                    }}
+                                                    className="adm-btn small !py-1 !px-2 !min-h-[27px] !bg-[#e8f1eb] !border-[#b7d6c3] !text-[#173c37] hover:!bg-[#d8ebdf]"
+                                                    title="고객 휴대폰으로 전자계약 서명 안내 문자 발송"
+                                                >
+                                                    <AdminIcon
+                                                        name="file"
+                                                        className="!w-3.5 !h-3.5"
+                                                    />
+                                                    <span>
+                                                        {sendingEcontractAppId === String(app._id)
+                                                            ? "발송중..."
+                                                            : "전자계약발송"}
+                                                    </span>
+                                                </button>
+                                            )}
                                             {mode === "maeum" &&
                                                 (contractPdfMap[app.applicationNo]?.pdfUrl ||
                                                     contractPdfMap[app.applicationNo]?.hasContractData) && (
@@ -1130,7 +1181,7 @@ export default function CustomerManagement({
                                                 )}
                                         </div>
                                     </td>
-                                    {isAdmin && (
+                                    {isSmsEnabled && (
                                         <td>
                                             <RecentSmsCell
                                                 latestSms={
@@ -1214,7 +1265,7 @@ export default function CustomerManagement({
                     ) : (
                         <tr>
                             <td
-                                colSpan={isAdmin ? 14 : 12}
+                                colSpan={isAdmin ? (isSmsEnabled ? 14 : 13) : 12}
                                 className="py-16 text-center text-xs text-[#788699]"
                             >
                                 검색 조건에 해당하는 고객 내역이 없습니다.
@@ -1295,7 +1346,7 @@ export default function CustomerManagement({
                                 </button>
                             )}
 
-                            {isAdmin && (
+                            {isSmsEnabled && (
                                 <button
                                     type="button"
                                     disabled={isSyncingGoogleContacts}
@@ -1515,14 +1566,16 @@ export default function CustomerManagement({
                                         </button>
                                     </div>
 
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsBulkSmsModalOpen(true)}
-                                        className="adm-btn small !bg-[#e6f4ea] !border-[#cce8d5] !text-[#137333]"
-                                    >
-                                        <AdminIcon name="phone" />
-                                        <span>문자 일괄 발송 ({selectedAppIds.length})</span>
-                                    </button>
+                                    {isSmsEnabled && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsBulkSmsModalOpen(true)}
+                                            className="adm-btn small !bg-[#e6f4ea] !border-[#cce8d5] !text-[#137333]"
+                                        >
+                                            <AdminIcon name="phone" />
+                                            <span>문자 일괄 발송 ({selectedAppIds.length})</span>
+                                        </button>
+                                    )}
 
                                     <button
                                         type="button"
@@ -1798,7 +1851,7 @@ export default function CustomerManagement({
                             )}
 
                             <div className="adm-filter-end flex items-center gap-2">
-                                {isAdmin && totalUnreadSms > 0 && (
+                                {isSmsEnabled && totalUnreadSms > 0 && (
                                     <button
                                         type="button"
                                         onClick={() => setUnreadSmsOnly((prev) => !prev)}
@@ -1809,10 +1862,12 @@ export default function CustomerManagement({
                                         <span>미확인 답장 ({totalUnreadSms})</span>
                                     </button>
                                 )}
-                                <span className="adm-pill green !py-1 !px-2.5">
-                                    <AdminIcon name="phone" className="!w-3 !h-3" />
-                                    <span>상담 발신번호 010-2666-0883</span>
-                                </span>
+                                {mode !== "maeum" && (
+                                    <span className="adm-pill green !py-1 !px-2.5">
+                                        <AdminIcon name="phone" className="!w-3 !h-3" />
+                                        <span>가입센터 발신번호 1833-8434</span>
+                                    </span>
+                                )}
                             </div>
                         </div>
 
@@ -2002,8 +2057,8 @@ export default function CustomerManagement({
                 />
             )}
 
-            {/* 일괄 문자 발송 모달 (총괄어드민 전용) */}
-            {isAdmin && isBulkSmsModalOpen && (
+            {/* 일괄 문자 발송 모달 (총괄어드민 · 마음든든 고객관리 전용) */}
+            {isSmsEnabled && isBulkSmsModalOpen && (
                 <div
                     className="fixed inset-0 bg-[#19312b]/35 backdrop-blur-[2px] z-[70] flex items-center justify-center p-4"
                     onClick={() => !isSendingBulkSms && setIsBulkSmsModalOpen(false)}

@@ -7,6 +7,10 @@ import { AdminIcon } from "./AdminIcons";
 import {
     DEFAULT_AUTO_APPLY_MESSAGE,
     DEFAULT_AUTO_APPLY_TITLE,
+    DEFAULT_ECONTRACT_COMPLETE_MESSAGE,
+    DEFAULT_ECONTRACT_COMPLETE_TITLE,
+    DEFAULT_ECONTRACT_REQUEST_MESSAGE,
+    DEFAULT_ECONTRACT_REQUEST_TITLE,
     DEFAULT_SMS_TEMPLATES,
     SmsTemplate,
 } from "@/constants/smsTemplates";
@@ -22,7 +26,7 @@ export default function SmsManagement() {
 
     const initializedRef = useRef(false);
     const [subSection, setSubSection] = useState<
-        "connection" | "auto" | "templates" | "contacts" | "logs"
+        "connection" | "auto" | "econtract" | "templates" | "contacts" | "logs"
     >("connection");
 
     const [localSms, setLocalSms] = useState<any>({
@@ -36,6 +40,11 @@ export default function SmsManagement() {
         autoSendOnApply: true,
         autoApplyTitle: DEFAULT_AUTO_APPLY_TITLE,
         autoApplyMessage: DEFAULT_AUTO_APPLY_MESSAGE,
+        econtractRequestTitle: DEFAULT_ECONTRACT_REQUEST_TITLE,
+        econtractRequestMessage: DEFAULT_ECONTRACT_REQUEST_MESSAGE,
+        autoSendOnEcontractComplete: true,
+        econtractCompleteTitle: DEFAULT_ECONTRACT_COMPLETE_TITLE,
+        econtractCompleteMessage: DEFAULT_ECONTRACT_COMPLETE_MESSAGE,
     });
     const [localGoogleClientId, setLocalGoogleClientId] = useState("");
     const [localGoogleTargetEmail, setLocalGoogleTargetEmail] = useState("jihoon3813@livon.care");
@@ -67,6 +76,11 @@ export default function SmsManagement() {
             autoSendOnApply: remoteSms.autoSendOnApply !== false,
             autoApplyTitle: remoteSms.autoApplyTitle || DEFAULT_AUTO_APPLY_TITLE,
             autoApplyMessage: remoteSms.autoApplyMessage || DEFAULT_AUTO_APPLY_MESSAGE,
+            econtractRequestTitle: remoteSms.econtractRequestTitle || DEFAULT_ECONTRACT_REQUEST_TITLE,
+            econtractRequestMessage: remoteSms.econtractRequestMessage || DEFAULT_ECONTRACT_REQUEST_MESSAGE,
+            autoSendOnEcontractComplete: remoteSms.autoSendOnEcontractComplete !== false,
+            econtractCompleteTitle: remoteSms.econtractCompleteTitle || DEFAULT_ECONTRACT_COMPLETE_TITLE,
+            econtractCompleteMessage: remoteSms.econtractCompleteMessage || DEFAULT_ECONTRACT_COMPLETE_MESSAGE,
         });
         if (smsSettingsData.googleContacts?.clientId) {
             setLocalGoogleClientId(smsSettingsData.googleContacts.clientId);
@@ -120,6 +134,15 @@ export default function SmsManagement() {
                     autoSendOnApply: localSms.autoSendOnApply !== false,
                     autoApplyTitle: localSms.autoApplyTitle || DEFAULT_AUTO_APPLY_TITLE,
                     autoApplyMessage: localSms.autoApplyMessage || DEFAULT_AUTO_APPLY_MESSAGE,
+                    econtractRequestTitle:
+                        localSms.econtractRequestTitle || DEFAULT_ECONTRACT_REQUEST_TITLE,
+                    econtractRequestMessage:
+                        localSms.econtractRequestMessage || DEFAULT_ECONTRACT_REQUEST_MESSAGE,
+                    autoSendOnEcontractComplete: localSms.autoSendOnEcontractComplete !== false,
+                    econtractCompleteTitle:
+                        localSms.econtractCompleteTitle || DEFAULT_ECONTRACT_COMPLETE_TITLE,
+                    econtractCompleteMessage:
+                        localSms.econtractCompleteMessage || DEFAULT_ECONTRACT_COMPLETE_MESSAGE,
                 },
                 templates: localTemplates,
                 googleContacts: {
@@ -223,6 +246,13 @@ export default function SmsManagement() {
                         className={subSection === "auto" ? "active" : ""}
                     >
                         ⚡ 상담접수 자동문자
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setSubSection("econtract")}
+                        className={subSection === "econtract" ? "active" : ""}
+                    >
+                        📝 전자계약 안내/완료 문자
                     </button>
                     <button
                         type="button"
@@ -644,6 +674,159 @@ export default function SmsManagement() {
                                     {"{고객명}"}, {"{상품명}"}, {"{사은품}"}, {"{구좌}"}, {"{접수번호}"}
                                 </strong>
                             </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* 2-1. 마음든든 전자계약 안내 / 완료 문자 */}
+                {subSection === "econtract" && (
+                    <div className="space-y-6">
+                        {/* 전자계약 서명 안내 문자 (고객관리 어드민에서 발송) */}
+                        <div className="p-4 rounded-[12px] bg-[#f8fafc] border border-[#e2e8f0] space-y-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <div>
+                                    <div className="text-[14px] font-bold text-[#142033]">
+                                        1. 전자계약 서명 안내 문자 (고객관리 &gt; 전자계약발송 클릭 시)
+                                    </div>
+                                    <p className="text-[12px] text-[#5a6b82] mt-0.5">
+                                        마음든든 고객관리에서 [전자계약발송] 버튼을 클릭하면 고객에게 모바일 전자계약 링크와 1833-8434 해피콜 안내가 발송됩니다.
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setLocalSms({
+                                            ...localSms,
+                                            econtractRequestTitle: DEFAULT_ECONTRACT_REQUEST_TITLE,
+                                            econtractRequestMessage: DEFAULT_ECONTRACT_REQUEST_MESSAGE,
+                                        })
+                                    }
+                                    className="text-[11.5px] font-bold text-[#163a6b] hover:underline shrink-0"
+                                >
+                                    기본 문구로 복원
+                                </button>
+                            </div>
+
+                            <div className="adm-field">
+                                <label>안내 문자 제목 (LMS)</label>
+                                <input
+                                    type="text"
+                                    value={localSms.econtractRequestTitle || ""}
+                                    onChange={(e) =>
+                                        setLocalSms({
+                                            ...localSms,
+                                            econtractRequestTitle: e.target.value,
+                                        })
+                                    }
+                                    placeholder={DEFAULT_ECONTRACT_REQUEST_TITLE}
+                                    className="adm-input font-bold"
+                                />
+                            </div>
+
+                            <div className="adm-field">
+                                <label>안내 문자 본문</label>
+                                <textarea
+                                    rows={9}
+                                    value={localSms.econtractRequestMessage || ""}
+                                    onChange={(e) =>
+                                        setLocalSms({
+                                            ...localSms,
+                                            econtractRequestMessage: e.target.value,
+                                        })
+                                    }
+                                    className="adm-textarea"
+                                />
+                                <p className="text-[11.5px] text-[#788292] mt-1.5">
+                                    지원 치환자:{" "}
+                                    <strong className="text-[#163a6b]">
+                                        {"{고객명}"}, {"{상품명}"}, {"{계약링크}"}, {"{접수번호}"}, {"{사은품}"}, {"{구좌}"}
+                                    </strong>
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* 전자계약 서명 완료 자동 문자 */}
+                        <div className="p-4 rounded-[12px] bg-[#f4f7fc] border border-[#dce4f0] space-y-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <div>
+                                    <div className="text-[14px] font-bold text-[#142033]">
+                                        2. 전자서명 완료 시 자동 발송 문자
+                                    </div>
+                                    <p className="text-[12px] text-[#5a6b82] mt-0.5">
+                                        고객이 모바일/웹에서 전자계약 서명을 완료하면 자동으로 정상 완료 및 1833-8434 해피콜 안내 문자가 발송됩니다.
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-4 shrink-0">
+                                    <label className="inline-flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={localSms.autoSendOnEcontractComplete !== false}
+                                            onChange={(e) =>
+                                                setLocalSms({
+                                                    ...localSms,
+                                                    autoSendOnEcontractComplete: e.target.checked,
+                                                })
+                                            }
+                                            className="w-4 h-4 accent-[#163a6b]"
+                                        />
+                                        <span className="text-[13px] font-bold text-[#163a6b]">
+                                            {localSms.autoSendOnEcontractComplete !== false
+                                                ? "자동발송 ON"
+                                                : "자동발송 OFF"}
+                                        </span>
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setLocalSms({
+                                                ...localSms,
+                                                econtractCompleteTitle: DEFAULT_ECONTRACT_COMPLETE_TITLE,
+                                                econtractCompleteMessage: DEFAULT_ECONTRACT_COMPLETE_MESSAGE,
+                                            })
+                                        }
+                                        className="text-[11.5px] font-bold text-[#163a6b] hover:underline"
+                                    >
+                                        기본 문구로 복원
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="adm-field">
+                                <label>완료 문자 제목 (LMS)</label>
+                                <input
+                                    type="text"
+                                    value={localSms.econtractCompleteTitle || ""}
+                                    onChange={(e) =>
+                                        setLocalSms({
+                                            ...localSms,
+                                            econtractCompleteTitle: e.target.value,
+                                        })
+                                    }
+                                    placeholder={DEFAULT_ECONTRACT_COMPLETE_TITLE}
+                                    className="adm-input font-bold"
+                                />
+                            </div>
+
+                            <div className="adm-field">
+                                <label>완료 문자 본문</label>
+                                <textarea
+                                    rows={9}
+                                    value={localSms.econtractCompleteMessage || ""}
+                                    onChange={(e) =>
+                                        setLocalSms({
+                                            ...localSms,
+                                            econtractCompleteMessage: e.target.value,
+                                        })
+                                    }
+                                    className="adm-textarea"
+                                />
+                                <p className="text-[11.5px] text-[#788292] mt-1.5">
+                                    지원 치환자:{" "}
+                                    <strong className="text-[#163a6b]">
+                                        {"{고객명}"}, {"{상품명}"}, {"{접수번호}"}, {"{사은품}"}, {"{구좌}"}
+                                    </strong>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 )}

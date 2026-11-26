@@ -16,6 +16,11 @@ export interface SmsConfig {
     autoSendOnApply?: boolean;
     autoApplyTitle?: string;
     autoApplyMessage?: string;
+    econtractRequestTitle?: string;
+    econtractRequestMessage?: string;
+    autoSendOnEcontractComplete?: boolean;
+    econtractCompleteTitle?: string;
+    econtractCompleteMessage?: string;
 }
 
 export interface SmsTemplate {
@@ -33,6 +38,29 @@ export const DEFAULT_AUTO_APPLY_MESSAGE = `[소노아임레디] {고객명}님, 
 
 잠시 후 전담 상담사가 [010-2666-0883] 번호로 상담 안내 전화를 드릴 예정입니다.
 원활한 안내를 위해 010-2666-0883 전화를 꼭 받아주시기 바랍니다.
+
+감사합니다.`;
+
+export const DEFAULT_ECONTRACT_REQUEST_TITLE = "[소노아임레디] 마음든든 전자계약 서명 안내";
+
+export const DEFAULT_ECONTRACT_REQUEST_MESSAGE = `[소노아임레디] {고객명}님, {상품명} 전자계약 서명 안내드립니다.
+
+아래 링크를 눌러 모바일에서 간편하게 전자계약 서명을 진행해 주세요.
+▶ 전자계약 바로가기: {계약링크}
+
+※ 전자계약 완료 후 당일 혹은 익일에 [1833-8434] 번호로 가입 해피콜 안내 전화가 나갈 예정입니다.
+1833-8434 전화를 꼭 받아주셔야 최종 계약이 완료됩니다.
+
+감사합니다.`;
+
+export const DEFAULT_ECONTRACT_COMPLETE_TITLE = "[소노아임레디] 마음든든 전자계약 완료 안내";
+
+export const DEFAULT_ECONTRACT_COMPLETE_MESSAGE = `[소노아임레디] {고객명}님, {상품명} 전자계약 서명이 정상적으로 완료되었습니다.
+
+■ 접수번호: {접수번호}
+
+전자계약 완료 후 당일 혹은 익일에 [1833-8434] 번호로 가입 해피콜 안내 전화가 나갈 예정입니다.
+1833-8434 전화를 꼭 받아주셔야 최종 계약이 완료되오니 수신 부탁드립니다.
 
 감사합니다.`;
 
@@ -1722,6 +1750,237 @@ export const sendBulkSms = action({
         }
 
         return { total: args.recipients.length, successCount, failCount };
+    },
+});
+
+export const getApplicationForSmsInternal = query({
+    args: { applicationId: v.id("applications") },
+    handler: async (ctx, args) => {
+        return await ctx.db.get(args.applicationId);
+    },
+});
+
+export const sendMaeumEcontractRequestSms = action({
+    args: {
+        applicationId: v.id("applications"),
+        originUrl: v.optional(v.string()),
+        senderName: v.optional(v.string()),
+    },
+    handler: async (ctx, args): Promise<{ success: boolean; message: string }> => {
+        const { api } = await import("./_generated/api");
+        const app = await ctx.runQuery(api.sms.getApplicationForSmsInternal, {
+            applicationId: args.applicationId,
+        });
+        if (!app) {
+            throw new Error("고객 신청 정보를 찾을 수 없습니다.");
+        }
+
+        const receiver = normalizeKoreanPhone(app.customerPhone || "");
+        if (receiver.length < 9) {
+            throw new Error("고객 휴대폰 번호가 올바르지 않습니다.");
+        }
+
+        const smsConfig = await ctx.runQuery(api.sms.getSmsConfigInternal, {});
+        const provider = smsConfig?.provider || "phone_bridge";
+
+        const baseOrigin = (args.originUrl || "https://www.sonopartner.com").replace(/\/$/, "");
+        const contractUrl = `${baseOrigin}/products/maeum/econtract?appId=${args.applicationId}`;
+
+        const safeName = (app.customerName || "고객").trim() || "고객";
+        const productLabel = formatProductDisplayName(app.productType, app.products);
+        const giftLabel = (app.selectedGift || "").trim() || "상담 시 맞춤 사은품 안내";
+        const planLabel = (app.planType || "").trim() || "1구좌";
+
+        const title =
+            (smsConfig?.econtractRequestTitle || "").trim() ||
+            DEFAULT_ECONTRACT_REQUEST_TITLE;
+        const template =
+            (smsConfig?.econtractRequestMessage || "").trim() ||
+            DEFAULT_ECONTRACT_REQUEST_MESSAGE;
+
+        const message = template
+            .replaceAll("{고객명}", safeName)
+            .replaceAll("{상품명}", productLabel)
+            .replaceAll("{사은품}", giftLabel)
+            .replaceAll("{구좌}", planLabel)
+            .replaceAll("{접수번호}", app.applicationNo || "")
+            .replaceAll("{계약링크}", contractUrl);
+
+        if (provider === "phone_bridge") {
+            if (!smsConfig?.bridgeSecret) {
+                throw new Error(
+                    "회사폰 연동 보안키가 설정되지 않았습니다. 환경설정 > 문자(SMS) 연동 설정에서 보안키를 저장해주세요."
+                );
+            }
+            await ctx.runMutation(internal.sms.enqueuePhoneOutbox, {
+                applicationId: args.applicationId,
+                applicationNo: app.applicationNo,
+                customerName: safeName,
+                customerPhone: receiver,
+                smsType: "전자계약안내",
+                title,
+                message,
+                senderName: args.senderName || "어드민",
+            });
+            return {
+                success: true,
+                message: "전자계약 서명 안내 문자를 회사폰으로 발송 요청했습니다.",
+            };
+        }
+
+        if (!hasAligoCredentials(smsConfig)) {
+            throw new Error(
+                "SMS 설정이 완료되지 않았습니다. 환경설정 > 문자(SMS) 연동 설정에서 정보를 입력해주세요."
+            );
+        }
+
+        const sendRes = await sendViaAligoApi({
+            apiKey: smsConfig.apiKey!,
+            userId: smsConfig.userId!,
+            sender: smsConfig.sender!,
+            receiver,
+            title,
+            message,
+            msgType: "LMS",
+        });
+
+        await ctx.runMutation(internal.sms.logSms, {
+            applicationId: args.applicationId,
+            applicationNo: app.applicationNo,
+            customerName: safeName,
+            customerPhone: receiver,
+            smsType: "전자계약안내",
+            title,
+            message,
+            status: sendRes.ok ? "성공" : "실패",
+            errorMessage: sendRes.ok ? undefined : sendRes.errorMessage || "알리고 발송 실패",
+            senderName: args.senderName || "어드민",
+        });
+
+        if (!sendRes.ok) {
+            throw new Error(sendRes.errorMessage || "알리고 발송 실패");
+        }
+        return { success: true, message: "전자계약 서명 안내 문자가 발송되었습니다." };
+    },
+});
+
+export const sendMaeumEcontractCompleteSms = internalAction({
+    args: {
+        applicationId: v.optional(v.id("applications")),
+        applicationNo: v.optional(v.string()),
+        customerName: v.string(),
+        customerPhone: v.string(),
+        productType: v.optional(v.string()),
+        products: v.optional(v.string()),
+        selectedGift: v.optional(v.string()),
+        planType: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const { api } = await import("./_generated/api");
+        const smsConfig = await ctx.runQuery(api.sms.getSmsConfigInternal, {});
+
+        if (smsConfig?.autoSendOnEcontractComplete === false) {
+            return { success: false, skipped: true, reason: "disabled" };
+        }
+
+        const receiver = normalizeKoreanPhone(args.customerPhone);
+        if (receiver.length < 9) {
+            return { success: false, skipped: true, reason: "invalid_phone" };
+        }
+
+        const safeName = args.customerName.trim() || "고객";
+        const productLabel = formatProductDisplayName(args.productType, args.products);
+        const giftLabel = (args.selectedGift || "").trim() || "상담 시 맞춤 사은품 안내";
+        const planLabel = (args.planType || "").trim() || "1구좌";
+
+        const title =
+            (smsConfig?.econtractCompleteTitle || "").trim() ||
+            DEFAULT_ECONTRACT_COMPLETE_TITLE;
+        const template =
+            (smsConfig?.econtractCompleteMessage || "").trim() ||
+            DEFAULT_ECONTRACT_COMPLETE_MESSAGE;
+
+        const message = template
+            .replaceAll("{고객명}", safeName)
+            .replaceAll("{상품명}", productLabel)
+            .replaceAll("{사은품}", giftLabel)
+            .replaceAll("{구좌}", planLabel)
+            .replaceAll("{접수번호}", args.applicationNo || "");
+
+        if (!message.trim()) {
+            return { success: false, skipped: true, reason: "empty_message" };
+        }
+
+        const provider = smsConfig?.provider || "phone_bridge";
+
+        if (provider === "phone_bridge" && smsConfig?.bridgeSecret) {
+            await ctx.runMutation(internal.sms.enqueuePhoneOutbox, {
+                applicationId: args.applicationId,
+                applicationNo: args.applicationNo,
+                customerName: safeName,
+                customerPhone: receiver,
+                smsType: "전자계약완료",
+                title,
+                message,
+                senderName: "자동발송",
+            });
+            return { success: true, queued: true };
+        }
+
+        if (!hasAligoCredentials(smsConfig)) {
+            await ctx.runMutation(internal.sms.logSms, {
+                applicationId: args.applicationId,
+                applicationNo: args.applicationNo,
+                customerName: safeName,
+                customerPhone: receiver,
+                smsType: "전자계약완료",
+                title,
+                message,
+                status: "실패",
+                errorMessage: "문자(SMS) 연동 설정이 완료되지 않아 자동 발송되지 않았습니다.",
+                senderName: "자동발송",
+            });
+            return { success: false, skipped: true, reason: "not_configured" };
+        }
+
+        try {
+            const sendRes = await sendViaAligoApi({
+                apiKey: smsConfig.apiKey!,
+                userId: smsConfig.userId!,
+                sender: smsConfig.sender!,
+                receiver,
+                title,
+                message,
+                msgType: "LMS",
+            });
+            await ctx.runMutation(internal.sms.logSms, {
+                applicationId: args.applicationId,
+                applicationNo: args.applicationNo,
+                customerName: safeName,
+                customerPhone: receiver,
+                smsType: "전자계약완료",
+                title,
+                message,
+                status: sendRes.ok ? "성공" : "실패",
+                errorMessage: sendRes.ok ? undefined : sendRes.errorMessage,
+                senderName: "자동발송",
+            });
+            return { success: sendRes.ok, result: sendRes.raw };
+        } catch (error: any) {
+            await ctx.runMutation(internal.sms.logSms, {
+                applicationId: args.applicationId,
+                applicationNo: args.applicationNo,
+                customerName: safeName,
+                customerPhone: receiver,
+                smsType: "전자계약완료",
+                title,
+                message,
+                status: "실패",
+                errorMessage: error?.message || "알 수 없는 오류",
+                senderName: "자동발송",
+            });
+            return { success: false, error: error?.message };
+        }
     },
 });
 

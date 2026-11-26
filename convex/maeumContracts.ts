@@ -148,8 +148,37 @@ export const deleteTemplate = mutation({
     },
 });
 
+export const getApplicationForEcontract = query({
+    args: {
+        applicationId: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const normalizedId = ctx.db.normalizeId("applications", args.applicationId);
+        if (!normalizedId) return null;
+        const app = await ctx.db.get(normalizedId);
+        if (!app) return null;
+        return {
+            _id: app._id,
+            applicationNo: app.applicationNo,
+            partnerId: app.partnerId,
+            partnerName: app.partnerName,
+            productType: app.productType,
+            planType: app.planType,
+            customerName: app.customerName,
+            customerBirth: app.customerBirth,
+            customerGender: app.customerGender,
+            customerPhone: app.customerPhone,
+            customerEmail: app.customerEmail,
+            customerAddress: app.customerAddress,
+            customerZipcode: app.customerZipcode,
+            alreadySigned: Boolean(app.contractSignedAt),
+        };
+    },
+});
+
 export const submitMaeumContract = mutation({
     args: {
+        applicationId: v.optional(v.id("applications")),
         partnerId: v.string(),
         partnerName: v.string(),
         productType: v.string(), // '마음든든3' | '마음든든4' | '마음든든5'
@@ -169,10 +198,57 @@ export const submitMaeumContract = mutation({
         contractPdfStorageId: v.optional(v.id("_storage")),
     },
     handler: async (ctx, args) => {
+        const now = nowKST();
+
+        if (args.applicationId) {
+            const existing = await ctx.db.get(args.applicationId);
+            if (existing) {
+                await ctx.db.patch(args.applicationId, {
+                    productType: args.productType,
+                    planType: args.planType || existing.planType || "1",
+                    customerName: args.customerName.trim(),
+                    customerBirth: (args.customerBirth || "").trim(),
+                    customerGender: args.customerGender || existing.customerGender || "-",
+                    customerPhone: args.customerPhone.trim(),
+                    customerEmail: args.customerEmail || "",
+                    customerAddress: args.customerAddress || "",
+                    customerZipcode: args.customerZipcode || "",
+                    updatedAt: now,
+                    contractTemplateId: args.contractTemplateId,
+                    contractData: args.contractData,
+                    contractSignatureDataUrl: args.contractSignatureDataUrl,
+                    contractPdfStorageId: args.contractPdfStorageId,
+                    contractSignedAt: now,
+                });
+
+                await ctx.db.insert("statusHistory", {
+                    historyId: `SH-${Date.now()}`,
+                    applicationNo: existing.applicationNo,
+                    previousStatus: existing.status || "접수대기",
+                    newStatus: existing.status || "접수대기",
+                    changedBy: "전자계약",
+                    changedAt: now,
+                    memo: "마음든든 전자계약 서명 완료",
+                });
+
+                await ctx.scheduler.runAfter(0, internal.sms.sendMaeumEcontractCompleteSms, {
+                    applicationId: args.applicationId,
+                    applicationNo: existing.applicationNo,
+                    customerName: args.customerName.trim(),
+                    customerPhone: args.customerPhone.trim(),
+                    productType: args.productType,
+                    products: existing.products,
+                    selectedGift: existing.selectedGift,
+                    planType: args.planType || existing.planType || "1",
+                });
+
+                return { id: args.applicationId, applicationNo: existing.applicationNo };
+            }
+        }
+
         const dateStr = todayKSTStr();
         const random = Math.floor(Math.random() * 10000).toString().padStart(4, "0");
         const applicationNo = `MD-${dateStr}-${random}`;
-        const now = nowKST();
 
         const id = await ctx.db.insert("applications", {
             applicationNo,
@@ -210,7 +286,7 @@ export const submitMaeumContract = mutation({
             memo: "마음든든 전자계약 신청 완료",
         });
 
-        await ctx.scheduler.runAfter(0, internal.sms.sendAutoApplicationSms, {
+        await ctx.scheduler.runAfter(0, internal.sms.sendMaeumEcontractCompleteSms, {
             applicationId: id,
             applicationNo,
             customerName: args.customerName.trim(),

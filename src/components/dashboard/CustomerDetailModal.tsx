@@ -79,15 +79,16 @@ export default function CustomerDetailModal({
         applicationNo: application.applicationNo,
     });
     const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false);
+    // 문자(SMS) & 구글 주소록 (총괄어드민 · 마음든든 고객관리 전용)
+    const isSmsEnabled = isAdmin && mode === "maeum";
     const [drawerTab, setDrawerTab] = useState<"sms" | "info" | "history" | "files">(
-        isAdmin ? "sms" : "info"
+        isSmsEnabled ? "sms" : "info"
     );
 
-    // 문자(SMS) & 구글 주소록 (총괄어드민 전용)
-    const smsSettingsData = useQuery(api.sms.getSmsSettings, isAdmin ? {} : "skip");
+    const smsSettingsData = useQuery(api.sms.getSmsSettings, isSmsEnabled ? {} : "skip");
     const smsLogs = useQuery(
         api.sms.listByApplication,
-        isAdmin && application._id
+        isSmsEnabled && application._id
             ? { applicationId: application._id as Id<"applications"> }
             : "skip"
     );
@@ -121,7 +122,7 @@ export default function CustomerDetailModal({
     }, [application._id, application.googleContactsSyncedAt]);
 
     useEffect(() => {
-        if (!isAdmin || !application._id || drawerTab !== "sms") return;
+        if (!isSmsEnabled || !application._id || drawerTab !== "sms") return;
         const hasUnread = Boolean(
             smsLogs?.some((log: any) => log.direction === "inbound" && log.isRead !== true)
         );
@@ -130,7 +131,7 @@ export default function CustomerDetailModal({
                 (err) => console.error("Failed to mark inbound SMS as read:", err)
             );
         }
-    }, [isAdmin, application._id, drawerTab, smsLogs, markInboundRead]);
+    }, [isSmsEnabled, application._id, drawerTab, smsLogs, markInboundRead]);
 
     useEffect(() => {
         if (drawerTab === "sms" && chatScrollRef.current) {
@@ -574,13 +575,13 @@ export default function CustomerDetailModal({
     ].includes(currentDisplayStatus);
 
     const cachedGooglePhones = useMemo(
-        () => (isAdmin ? getCachedGoogleContactPhones() : new Set<string>()),
-        [isAdmin, isSyncingContact]
+        () => (isSmsEnabled ? getCachedGoogleContactPhones() : new Set<string>()),
+        [isSmsEnabled, isSyncingContact]
     );
     const effectiveGoogleSyncedAt =
         localGoogleSyncedAt || application.googleContactsSyncedAt;
     const isGoogleSynced = isCustomerGoogleSynced({
-        isAdmin,
+        isAdmin: isSmsEnabled,
         customerPhone: customerPhone || application.customerPhone,
         googleContactsSyncedAt: effectiveGoogleSyncedAt,
         cachedContactPhones: cachedGooglePhones,
@@ -601,7 +602,7 @@ export default function CustomerDetailModal({
                 zIndex={65}
                 onClose={onClose}
                 tabs={[
-                    ...(isAdmin
+                    ...(isSmsEnabled
                         ? [
                               {
                                   id: "sms",
@@ -681,7 +682,7 @@ export default function CustomerDetailModal({
                     >
                         {currentDisplayStatus}
                     </span>
-                    {isAdmin && (
+                    {isSmsEnabled && (
                         <button
                             type="button"
                             disabled={isSyncingContact}
@@ -745,7 +746,7 @@ export default function CustomerDetailModal({
                     </span>
                 </div>
 
-                {isAdmin && drawerTab === "sms" && (
+                {isSmsEnabled && drawerTab === "sms" && (
                     <div className="space-y-5">
                         {/* 템플릿 & 자유문자 발송 */}
                         <div className="adm-note-card space-y-4">

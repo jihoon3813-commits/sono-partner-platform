@@ -16,6 +16,29 @@ export const DEFAULT_AUTO_APPLY_MESSAGE = `[소노아임레디] {고객명}님, 
 
 감사합니다.`;
 
+export const DEFAULT_ECONTRACT_REQUEST_TITLE = "[소노아임레디] 마음든든 전자계약 서명 안내";
+
+export const DEFAULT_ECONTRACT_REQUEST_MESSAGE = `[소노아임레디] {고객명}님, {상품명} 전자계약 서명 안내드립니다.
+
+아래 링크를 눌러 모바일에서 간편하게 전자계약 서명을 진행해 주세요.
+▶ 전자계약 바로가기: {계약링크}
+
+※ 전자계약 완료 후 당일 혹은 익일에 [1833-8434] 번호로 가입 해피콜 안내 전화가 나갈 예정입니다.
+1833-8434 전화를 꼭 받아주셔야 최종 계약이 완료됩니다.
+
+감사합니다.`;
+
+export const DEFAULT_ECONTRACT_COMPLETE_TITLE = "[소노아임레디] 마음든든 전자계약 완료 안내";
+
+export const DEFAULT_ECONTRACT_COMPLETE_MESSAGE = `[소노아임레디] {고객명}님, {상품명} 전자계약 서명이 정상적으로 완료되었습니다.
+
+■ 접수번호: {접수번호}
+
+전자계약 완료 후 당일 혹은 익일에 [1833-8434] 번호로 가입 해피콜 안내 전화가 나갈 예정입니다.
+1833-8434 전화를 꼭 받아주셔야 최종 계약이 완료되오니 수신 부탁드립니다.
+
+감사합니다.`;
+
 export const DEFAULT_SMS_TEMPLATES: SmsTemplate[] = [
     {
         id: "apply_confirm",
