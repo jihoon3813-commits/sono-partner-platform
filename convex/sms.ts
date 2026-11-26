@@ -159,6 +159,12 @@ export function formatKoreanPhone(raw: string): string {
     return trimmed;
 }
 
+export function isMaeumProductType(productType?: string): boolean {
+    const raw = (productType || "").trim();
+    const lower = raw.toLowerCase();
+    return lower.includes("maeum") || raw.includes("마음든든");
+}
+
 export function formatProductDisplayName(productType?: string, products?: string): string {
     const raw = (productType || "").trim();
     const lower = raw.toLowerCase();
@@ -1555,6 +1561,14 @@ export const sendCustomGuideSms = action({
     },
     handler: async (ctx, args): Promise<{ success: boolean; message: string }> => {
         const { api } = await import("./_generated/api");
+        if (args.applicationId) {
+            const targetApp = await ctx.runQuery(api.sms.getApplicationForSmsInternal, {
+                applicationId: args.applicationId,
+            });
+            if (targetApp && !isMaeumProductType(targetApp.productType)) {
+                throw new Error("마음든든 상품 고객에게만 문자를 발송할 수 있습니다.");
+            }
+        }
         const smsConfig = await ctx.runQuery(api.sms.getSmsConfigInternal, {});
         const provider = smsConfig?.provider || "phone_bridge";
 
@@ -1689,6 +1703,10 @@ export const sendBulkSms = action({
         let failCount = 0;
 
         for (const r of args.recipients) {
+            if (!isMaeumProductType(r.productType)) {
+                failCount += 1;
+                continue;
+            }
             const digits = normalizeKoreanPhone(r.customerPhone);
             if (digits.length < 9) {
                 failCount += 1;
@@ -1773,6 +1791,9 @@ export const sendMaeumEcontractRequestSms = action({
         });
         if (!app) {
             throw new Error("고객 신청 정보를 찾을 수 없습니다.");
+        }
+        if (!isMaeumProductType(app.productType)) {
+            throw new Error("마음든든 고객관리 대상에게만 전자계약 안내 문자를 발송할 수 있습니다.");
         }
 
         const receiver = normalizeKoreanPhone(app.customerPhone || "");
@@ -1876,6 +1897,9 @@ export const sendMaeumEcontractCompleteSms = internalAction({
         planType: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
+        if (!isMaeumProductType(args.productType)) {
+            return { success: false, skipped: true, reason: "not_maeum" };
+        }
         const { api } = await import("./_generated/api");
         const smsConfig = await ctx.runQuery(api.sms.getSmsConfigInternal, {});
 
@@ -1996,6 +2020,9 @@ export const sendAutoApplicationSms = internalAction({
         planType: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
+        if (!isMaeumProductType(args.productType)) {
+            return { success: false, skipped: true, reason: "not_maeum" };
+        }
         const { api } = await import("./_generated/api");
         const smsConfig = await ctx.runQuery(api.sms.getSmsConfigInternal, {});
 
