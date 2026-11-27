@@ -221,8 +221,8 @@ export default function MaeumContent({
                                         <b>2</b><span className="unit">년</span>
                                     </div>
                                     <div className="step-info">
-                                        <strong>준비</strong>
-                                        <small>1~24회차 · 보장 제외</small>
+                                        <strong>일반 납입</strong>
+                                        <small>1~24회차 · 보장 시작 전</small>
                                     </div>
                                 </div>
                                 <div className="ribbon-step highlighted">
@@ -566,7 +566,7 @@ export default function MaeumContent({
                                 <span>가입부터 납입 완료까지</span>
                                 <strong>8년의 흐름을 한눈에</strong>
                             </div>
-                            <div className="year-track" role="img" aria-label="1~2년은 면책기간, 3~7년은 잔금 보장기간, 8년은 보장 종료 후 납입 마무리. 전 기간 월 납입.">
+                            <div className="year-track" role="img" aria-label="1~2년은 보장 시작 전 일반 납입 기간, 3~7년은 잔금 보장기간, 8년은 보장 종료 후 납입 마무리. 전 기간 월 납입.">
                                 <div className="year-cell waiting">
                                     <span>1년</span>
                                     <svg className="ui-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -625,7 +625,7 @@ export default function MaeumContent({
                                 </div>
                             </div>
                             <div className="year-key">
-                                <span className="yk-wait">2년 준비</span>
+                                <span className="yk-wait">2년 일반 납입(보장 전)</span>
                                 <span className="yk-covered">5년 잔금 보장</span>
                                 <span className="yk-finish">1년 마무리</span>
                             </div>
@@ -636,7 +636,7 @@ export default function MaeumContent({
                             <article className="time">
                                 <div className="num">2<span>년</span></div>
                                 <span className="pill">1~24회차</span>
-                                <h3>미리 준비하는 시간</h3>
+                                <h3>보장 시작 전 일반 납입</h3>
                                 <p>월 납입을 시작합니다.<br />이 기간에 이용하면 남은 상품대금은 고객이 부담합니다.</p>
                             </article>
                             <article className="time highlight">
@@ -913,7 +913,7 @@ export default function MaeumContent({
                                 <button className="button light planpick" onClick={() => handlePickPlan("3")}>
                                     이 구성 선택하기 →
                                 </button>
-                                <div className="plan-period-summary">2년 면책 · 5년 잔금면제 · 만기 100% 환급</div>
+                                <div className="plan-period-summary">2년 일반납입(보장 전) · 5년 잔금보장 · 만기 100% 환급</div>
                             </article>
 
                             <article className="plan featured">
@@ -939,7 +939,7 @@ export default function MaeumContent({
                                 <button className="button planpick" onClick={() => handlePickPlan("4")}>
                                     이 구성 선택하기 →
                                 </button>
-                                <div className="plan-period-summary">2년 면책 · 5년 잔금면제 · 만기 100% 환급</div>
+                                <div className="plan-period-summary">2년 일반납입(보장 전) · 5년 잔금보장 · 만기 100% 환급</div>
                             </article>
 
                             <article className="plan">
@@ -962,7 +962,7 @@ export default function MaeumContent({
                                 <button className="button light planpick" onClick={() => handlePickPlan("5")}>
                                     이 구성 선택하기 →
                                 </button>
-                                <div className="plan-period-summary">2년 면책 · 5년 잔금면제 · 만기 100% 환급</div>
+                                <div className="plan-period-summary">2년 일반납입(보장 전) · 5년 잔금보장 · 만기 100% 환급</div>
                             </article>
                         </div>
 
@@ -1003,7 +1003,7 @@ export default function MaeumContent({
                                         <tr>
                                             <th scope="row" rowSpan={5} className="group-header-cell">월 납입금액</th>
                                             <th scope="row" className="sub-term-cell">
-                                                면책기간 <small>(1 - 24회)</small>
+                                                일반 납입(보장 전) <small>(1 - 24회)</small>
                                             </th>
                                             <td className="amount-cell">32,000원</td>
                                             <td className="amount-cell col-featured">43,000원</td>
@@ -1091,7 +1091,7 @@ export default function MaeumContent({
                             <div className="pricing-quick-guide">
                                 <div className="guide-item">
                                     <span className="dot dot-gray"></span>
-                                    <div><strong>1~24회 (면책)</strong>: 월 납입 진행, 이 기간 장례 발생 시 잔금은 고객 부담입니다.</div>
+                                    <div><strong>1~24회 (보장 시작 전)</strong>: 일반 월 납입 진행, 이 기간 장례 발생 시 잔금은 고객 부담입니다.</div>
                                 </div>
                                 <div className="guide-item">
                                     <span className="dot dot-teal"></span>
@@ -1378,11 +1378,11 @@ export default function MaeumContent({
                         <div className="faq">
                             <details>
                                 <summary>2년만 납입하면 되는 상품인가요?</summary>
-                                <p>아닙니다. 2년 준비, 5년 보장, 1년 마무리 구간 모두 월 납입이 이어지는 총 96회 납입 상품입니다. 다만 보장기간에 지정인의 상조서비스를 이용해 보장 조건을 충족하면 남은 약정 납입금이 보장됩니다.</p>
+                                <p>아닙니다. 2년 일반 납입(보장 전), 5년 잔금 보장, 1년 납입 마무리 구간 모두 월 납입이 이어지는 총 96회 납입 상품입니다. 다만 보장기간에 지정인의 상조서비스를 이용해 보장 조건을 충족하면 남은 약정 납입금이 보장됩니다.</p>
                             </details>
                             <details>
                                 <summary>가입하면 바로 잔금 보장을 받을 수 있나요?</summary>
-                                <p>첫 24회차는 면책기간입니다. 잔금 보장은 25~84회차에 지정인의 상조서비스 이용 시 조건에 따라 적용되며, 1~24회차 및 85~96회차에는 적용되지 않습니다.</p>
+                                <p>첫 24회차(2년)는 보장 시작 전 일반 납입 기간입니다. 잔금 보장은 25~84회차에 지정인의 상조서비스 이용 시 조건에 따라 적용되며, 1~24회차 및 85~96회차에는 적용되지 않습니다.</p>
                             </details>
                             <details>
                                 <summary>부모님 두 분 모두 보장되나요?</summary>
@@ -1441,7 +1441,7 @@ export default function MaeumContent({
                             </p>
                             <ul className="checks">
                                 <li>부모님 또는 본인 1인을 위한 준비</li>
-                                <li>첫 2년 면책, 이후 5년 잔금 보장</li>
+                                <li>첫 2년 일반 납입(보장 전), 이후 5년 잔금 보장</li>
                                 <li>총 8년 납입과 장기 유지 조건 확인</li>
                             </ul>
                             <p className="smallnote">
