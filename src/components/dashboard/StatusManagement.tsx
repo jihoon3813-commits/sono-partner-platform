@@ -232,12 +232,12 @@ export default function StatusManagement() {
                     <table className="adm-table">
                         <thead>
                             <tr>
-                                <th className="w-[80px]">순서</th>
+                                <th className="w-[72px]">순서</th>
                                 <th>상태 명칭 &amp; 미리보기</th>
-                                <th className="text-center w-[280px]">색상표 및 팔레트</th>
-                                <th className="text-center w-[100px]">활성 여부</th>
-                                <th className="text-center w-[100px]">파트너 노출</th>
-                                <th className="text-right w-[100px]">관리</th>
+                                <th className="text-center w-[240px]">색상표 및 팔레트</th>
+                                <th className="text-center w-[80px]">활성 여부</th>
+                                <th className="text-center w-[88px]">파트너 노출</th>
+                                <th className="text-right w-[68px]">관리</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -302,8 +302,11 @@ export default function StatusManagement() {
                                         <button
                                             type="button"
                                             onClick={() => setNewIsPartnerVisible(!newIsPartnerVisible)}
-                                            className={`adm-switch ${newIsPartnerVisible ? 'on' : ''}`}
-                                        />
+                                            className={`adm-switch ${newIsPartnerVisible ? 'checked' : ''}`}
+                                            aria-label="파트너 노출 여부"
+                                        >
+                                            <span />
+                                        </button>
                                     </td>
                                     <td className="text-right">
                                         <div className="flex items-center justify-end gap-1.5">
@@ -448,15 +451,21 @@ export default function StatusManagement() {
                                         <button
                                             type="button"
                                             onClick={() => handleToggleActive(status._id, status.isActive)}
-                                            className={`adm-switch ${status.isActive ? 'on' : ''}`}
-                                        />
+                                            className={`adm-switch ${status.isActive ? 'checked' : ''}`}
+                                            aria-label={`${status.label} 활성 여부`}
+                                        >
+                                            <span />
+                                        </button>
                                     </td>
                                     <td className="text-center">
                                         <button
                                             type="button"
                                             onClick={() => handleTogglePartnerVisible(status._id, !!status.isPartnerVisible)}
-                                            className={`adm-switch ${status.isPartnerVisible ? 'on' : ''}`}
-                                        />
+                                            className={`adm-switch ${status.isPartnerVisible ? 'checked' : ''}`}
+                                            aria-label={`${status.label} 파트너 노출 여부`}
+                                        >
+                                            <span />
+                                        </button>
                                     </td>
                                     <td className="text-right">
                                         <button
