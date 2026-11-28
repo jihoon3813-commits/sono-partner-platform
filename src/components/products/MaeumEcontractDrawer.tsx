@@ -1444,6 +1444,40 @@ export default function MaeumEcontractDrawer({
                                                     value={accountOwner}
                                                     onChange={(e) => setAccountOwner(e.target.value)}
                                                 />
+                                                <label
+                                                    style={{
+                                                        display: "inline-flex",
+                                                        alignItems: "center",
+                                                        gap: "6px",
+                                                        marginTop: "6px",
+                                                        fontSize: "12px",
+                                                        fontWeight: 700,
+                                                        color: "var(--ec-green)",
+                                                        cursor: "pointer",
+                                                    }}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={
+                                                            Boolean(name.trim()) &&
+                                                            accountOwner.trim() === name.trim()
+                                                        }
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                setAccountOwner(name.trim());
+                                                            } else {
+                                                                setAccountOwner("");
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: "15px",
+                                                            height: "15px",
+                                                            accentColor: "var(--ec-green)",
+                                                            cursor: "pointer",
+                                                        }}
+                                                    />
+                                                    <span>계약자와 동일함</span>
+                                                </label>
                                             </div>
 
                                             <div className="ec-field">
