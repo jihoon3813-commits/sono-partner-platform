@@ -990,16 +990,16 @@ export default function PartnerDashboard() {
                         isSub={true}
                     />
 
+                    <div className="adm-nav-group">마음든든 관리</div>
+                    <SidebarNavButton
+                        id="maeumCustomers"
+                        label="고객 관리 (마음든든)"
+                        icon="users"
+                        count={newMaeumCustomerCount}
+                        isAlert={newMaeumCustomerCount > 0}
+                    />
                     {(isAdmin || isMaeumVisible) && (
                         <>
-                            <div className="adm-nav-group">마음든든 관리</div>
-                            <SidebarNavButton
-                                id="maeumCustomers"
-                                label="고객 관리 (마음든든)"
-                                icon="users"
-                                count={newMaeumCustomerCount}
-                                isAlert={newMaeumCustomerCount > 0}
-                            />
                             {(isAdmin || isParentPartner) && (
                                 <SidebarNavButton
                                     id="maeumPartners"
@@ -2863,7 +2863,7 @@ export default function PartnerDashboard() {
                         />
                     )}
 
-                    {activeTab === "maeumCustomers" && (isAdmin || isMaeumVisible) && (
+                    {activeTab === "maeumCustomers" && (
                         <CustomerManagement
                             applications={dashboardData.customers as any}
                             onRefresh={() => fetchData()}
