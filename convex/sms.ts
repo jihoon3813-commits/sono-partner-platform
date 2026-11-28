@@ -2044,7 +2044,10 @@ export const getPartnerAutoSmsSettingsInternal = internalQuery({
                 .withIndex("by_customUrl", (q) => q.eq("customUrl", key))
                 .unique();
         }
-        return partner?.autoSmsSettings || null;
+        return {
+            autoSmsSettings: partner?.autoSmsSettings || null,
+            partnerPhone: (partner?.inquiryPhone || partner?.managerPhone || "").trim(),
+        };
     },
 });
 
@@ -2064,11 +2067,13 @@ export const sendAutoApplicationSms = internalAction({
         const { api } = await import("./_generated/api");
         const smsConfig = await ctx.runQuery(api.sms.getSmsConfigInternal, {});
         const productKey = resolveProductSmsKey(args.productType);
-        const partnerSmsSettings = args.partnerId
+        const partnerInfo = args.partnerId
             ? await ctx.runQuery(internal.sms.getPartnerAutoSmsSettingsInternal, {
                   partnerId: args.partnerId,
               })
             : null;
+        const partnerSmsSettings = partnerInfo?.autoSmsSettings || null;
+        const partnerPhone = partnerInfo?.partnerPhone || "";
         const partnerProductSetting = partnerSmsSettings?.products?.[productKey];
 
         if (partnerProductSetting) {
@@ -2098,10 +2103,14 @@ export const sendAutoApplicationSms = internalAction({
             (partnerProductSetting?.title || "").trim() ||
             (smsConfig?.autoApplyTitle || "").trim() ||
             DEFAULT_AUTO_APPLY_TITLE;
-        const template =
-            (partnerProductSetting?.message || "").trim() ||
+        const customMessage = (partnerProductSetting?.message || "").trim();
+        let template =
+            customMessage ||
             (smsConfig?.autoApplyMessage || "").trim() ||
             DEFAULT_AUTO_APPLY_MESSAGE;
+        if (!customMessage && partnerPhone) {
+            template = template.replaceAll("010-2666-0883", partnerPhone);
+        }
 
         const message = template
             .replaceAll("{고객명}", safeName)

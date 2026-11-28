@@ -239,7 +239,13 @@ export default function PartnerManagement({
 }: PartnerManagementProps) {
     const partners =
         mode === "maeum"
-            ? rawPartners.filter((p) => p.landingVisibility?.maeum === true)
+            ? rawPartners.filter(
+                  (p) =>
+                      p.landingVisibility?.maeum === true ||
+                      p.landingVisibility?.maeumAd === true ||
+                      p.landingVisibility?.maeumNew === true ||
+                      p.landingVisibility?.maeumMili === true
+              )
             : rawPartners;
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedOrgId, setSelectedOrgId] = useState<string>("all");

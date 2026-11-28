@@ -47,8 +47,12 @@ export default function PartnerAutoSmsSettings({ partnerId }: PartnerAutoSmsSett
 
     const globalDefaultTitle =
         (globalSmsSettings?.sms?.autoApplyTitle || "").trim() || DEFAULT_AUTO_APPLY_TITLE;
-    const globalDefaultMessage =
+    const rawDefaultMessage =
         (globalSmsSettings?.sms?.autoApplyMessage || "").trim() || DEFAULT_AUTO_APPLY_MESSAGE;
+    const partnerPhone = (remoteSettings as any)?.partnerPhone || "";
+    const globalDefaultMessage = partnerPhone
+        ? rawDefaultMessage.replaceAll("010-2666-0883", partnerPhone)
+        : rawDefaultMessage;
 
     useEffect(() => {
         if (!remoteSettings || initializedRef.current) return;

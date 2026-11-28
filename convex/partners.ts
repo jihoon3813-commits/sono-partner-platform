@@ -398,8 +398,11 @@ export const getPartnerAutoSmsSettings = query({
     args: { partnerId: v.string() },
     handler: async (ctx, args) => {
         const partner = await findPartnerByAnyKey(ctx, args.partnerId);
-        if (!partner) return { products: {} };
-        return partner.autoSmsSettings || { products: {} };
+        if (!partner) return { products: {}, partnerPhone: "" };
+        return {
+            ...(partner.autoSmsSettings || { products: {} }),
+            partnerPhone: (partner.inquiryPhone || partner.managerPhone || "").trim(),
+        };
     },
 });
 

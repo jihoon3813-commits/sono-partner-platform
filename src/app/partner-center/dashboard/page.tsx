@@ -401,6 +401,8 @@ export default function PartnerDashboard() {
     const isSmartCareAdVisible = !isLandingHidden && landingVisibility?.smartcareAd === true;
     const isMaeumNewVisible = !isLandingHidden && landingVisibility?.maeumNew === true;
     const isMaeumMiliVisible = !isLandingHidden && landingVisibility?.maeumMili === true;
+    const hasAnyMaeumLanding =
+        isMaeumVisible || isMaeumAdVisible || isMaeumNewVisible || isMaeumMiliVisible;
     const hasAnyVisibleLanding =
         isSmartCareVisible ||
         isHappy450Visible ||
@@ -990,16 +992,16 @@ export default function PartnerDashboard() {
                         isSub={true}
                     />
 
-                    <div className="adm-nav-group">마음든든 관리</div>
-                    <SidebarNavButton
-                        id="maeumCustomers"
-                        label="고객 관리 (마음든든)"
-                        icon="users"
-                        count={newMaeumCustomerCount}
-                        isAlert={newMaeumCustomerCount > 0}
-                    />
-                    {(isAdmin || isMaeumVisible) && (
+                    {(isAdmin || hasAnyMaeumLanding) && (
                         <>
+                            <div className="adm-nav-group">마음든든 관리</div>
+                            <SidebarNavButton
+                                id="maeumCustomers"
+                                label="고객 관리 (마음든든)"
+                                icon="users"
+                                count={newMaeumCustomerCount}
+                                isAlert={newMaeumCustomerCount > 0}
+                            />
                             {(isAdmin || isParentPartner) && (
                                 <SidebarNavButton
                                     id="maeumPartners"
@@ -2863,7 +2865,7 @@ export default function PartnerDashboard() {
                         />
                     )}
 
-                    {activeTab === "maeumCustomers" && (
+                    {activeTab === "maeumCustomers" && (isAdmin || hasAnyMaeumLanding) && (
                         <CustomerManagement
                             applications={dashboardData.customers as any}
                             onRefresh={() => fetchData()}
@@ -2881,7 +2883,7 @@ export default function PartnerDashboard() {
                         />
                     )}
 
-                    {activeTab === "maeumPartners" && (isAdmin || (isParentPartner && isMaeumVisible)) && (
+                    {activeTab === "maeumPartners" && (isAdmin || (isParentPartner && hasAnyMaeumLanding)) && (
                         <PartnerManagement
                             partners={dashboardData.partners as any}
                             isAdmin={isAdmin}
@@ -2891,7 +2893,7 @@ export default function PartnerDashboard() {
                         />
                     )}
 
-                    {activeTab === "maeumRetention" && (isAdmin || isMaeumVisible) && (
+                    {activeTab === "maeumRetention" && (isAdmin || hasAnyMaeumLanding) && (
                         <MaeumRetentionManagement
                             isAdmin={isAdmin}
                             partnerId={partner?.partnerId}
