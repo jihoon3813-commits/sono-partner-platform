@@ -8,7 +8,7 @@ interface MaeumConsultDrawerProps {
     isOpen: boolean;
     onClose: () => void;
     initialPlan?: "3" | "4" | "5";
-    initialTarget?: "부모님" | "본인";
+    initialTarget?: "부모님" | "본인" | "조부모님";
     partnerId?: string;
     partnerUrl?: string;
     partnerName?: string;
@@ -20,9 +20,7 @@ interface MaeumConsultDrawerProps {
     onSelectGiftId?: (id: string) => void;
 }
 
-const PLAN_OPTIONS: { key: "3" | "4" | "5"; label: string; price: number }[] = [
-    { key: "3", label: "마음든든 3", price: 32000 },
-    { key: "4", label: "마음든든 4", price: 43000 },
+const PLAN_OPTIONS: { key: "5"; label: string; price: number }[] = [
     { key: "5", label: "마음든든 5", price: 54000 },
 ];
 
@@ -43,7 +41,7 @@ function formatPhoneInput(raw: string): string {
 export default function MaeumConsultDrawer({
     isOpen,
     onClose,
-    initialPlan = "4",
+    initialPlan = "5",
     initialTarget = "부모님",
     partnerId = "",
     partnerUrl = "",
@@ -55,8 +53,8 @@ export default function MaeumConsultDrawer({
     selectedGiftId = "",
     onSelectGiftId,
 }: MaeumConsultDrawerProps) {
-    const [target, setTarget] = useState<"부모님" | "본인">(initialTarget);
-    const [plan, setPlan] = useState<"3" | "4" | "5">(initialPlan);
+    const [target, setTarget] = useState<"부모님" | "본인" | "조부모님">(initialTarget);
+    const [plan, setPlan] = useState<"5">("5");
     const [internalGiftId, setInternalGiftId] = useState<string>(selectedGiftId);
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
@@ -70,7 +68,7 @@ export default function MaeumConsultDrawer({
 
     useEffect(() => {
         if (isOpen) {
-            setPlan(initialPlan);
+            setPlan("5");
             setTarget(initialTarget);
             setErrorMsg("");
             if (gifts.length > 0) {
@@ -267,7 +265,7 @@ export default function MaeumConsultDrawer({
                                 <div className="mc-field">
                                     <span className="mc-label">누구를 위한 준비인가요?</span>
                                     <div className="mc-seg-grid">
-                                        {(["부모님", "본인"] as const).map((item) => (
+                                        {(["부모님", "본인", "조부모님"] as const).map((item) => (
                                             <button
                                                 key={item}
                                                 type="button"

@@ -57,21 +57,21 @@ export default function MaeumContent({
     partnerId = "",
     partnerPhone = ""
 }: MaeumContentProps) {
-    // 1. 가입 대상 (부모님 / 본인)
-    const [target, setTarget] = useState<"부모님" | "본인">("부모님");
+    // 1. 가입 대상 (부모님 / 본인 / 조부모님)
+    const [target, setTarget] = useState<"부모님" | "본인" | "조부모님">("부모님");
 
     // 2. 잔금 보장 계산기
-    const [calcPlan, setCalcPlan] = useState<number>(43000);
+    const [calcPlan, setCalcPlan] = useState<number>(54000);
     const [calcMonths, setCalcMonths] = useState<number>(36);
 
     // 3. 후기 필터
     const [reviewFilter, setReviewFilter] = useState<"all" | "brand" | "personal">("all");
 
     // 4. 의전서비스 상품 탭
-    const [servicePlan, setServicePlan] = useState<3 | 4 | 5>(4);
+    const [servicePlan, setServicePlan] = useState<5>(5);
 
     // 5. 하단 상담/조건확인 폼
-    const [chosenPlan, setChosenPlan] = useState<"3" | "4" | "5">("4");
+    const [chosenPlan, setChosenPlan] = useState<"5">("5");
     const [showSummary, setShowSummary] = useState(false);
 
     // 6. 우측 전자계약 & 빠른 상담 신청 슬라이드 드로어
@@ -80,7 +80,7 @@ export default function MaeumContent({
     const giftState = useLandingGiftEvent("maeum");
 
     const openConsultDrawer = (plan?: "3" | "4" | "5") => {
-        if (plan) setChosenPlan(plan);
+        if (plan === "5") setChosenPlan(plan);
         setIsConsultOpen(true);
     };
 
@@ -95,8 +95,8 @@ export default function MaeumContent({
     const balancePercent = ((96 - calcMonths) / 96) * 100;
 
     // 플랜 선택 시 스크롤
-    const handlePickPlan = (plan: "3" | "4" | "5") => {
-        setChosenPlan(plan);
+    const handlePickPlan = (_plan: "5") => {
+        setChosenPlan("5");
         setShowSummary(false);
         const element = document.getElementById("consult");
         if (element) {
@@ -503,8 +503,6 @@ export default function MaeumContent({
                                 value={calcPlan}
                                 onChange={(e) => setCalcPlan(Number(e.target.value))}
                             >
-                                <option value={32000}>마음든든 3</option>
-                                <option value={43000}>마음든든 4</option>
                                 <option value={54000}>마음든든 5</option>
                             </select>
 
@@ -710,18 +708,6 @@ export default function MaeumContent({
 
                         <div className="ceremony-tabs" role="group" aria-label="의전서비스 상품 선택">
                             <button
-                                className={`ceremony-tab ${servicePlan === 3 ? "active" : ""}`}
-                                onClick={() => setServicePlan(3)}
-                            >
-                                마음든든 3
-                            </button>
-                            <button
-                                className={`ceremony-tab ${servicePlan === 4 ? "active" : ""}`}
-                                onClick={() => setServicePlan(4)}
-                            >
-                                마음든든 4
-                            </button>
-                            <button
                                 className={`ceremony-tab ${servicePlan === 5 ? "active" : ""}`}
                                 onClick={() => setServicePlan(5)}
                             >
@@ -824,59 +810,57 @@ export default function MaeumContent({
                             <summary>의전서비스 전체 구성 비교하기</summary>
                             <div className="spec-scroll" role="region" aria-label="상품별 의전서비스 상세 비교표" tabIndex={0}>
                                 <table className="spec-table">
-                                    <caption>제공해주신 마음든든 상품 스펙 기준 · 세 상품 전체 구성 비교</caption>
+                                    <caption>제공해주신 마음든든 5 상품 스펙 기준</caption>
                                     <thead>
                                         <tr>
                                             <th scope="col">서비스 항목</th>
-                                            <th scope="col">마음든든 3</th>
-                                            <th scope="col">마음든든 4</th>
                                             <th scope="col">마음든든 5</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr className="spec-group"><th colSpan={4}>인력 지원</th></tr>
-                                        <tr><th scope="row">장례지도사</th><td>1명 (입관지원 1명)</td><td>1명 (입관지원 1명)</td><td>1명 (입관지원 1명)</td></tr>
-                                        <tr><th scope="row">장례의전 도우미</th><td>3명</td><td>4명</td><td>6명</td></tr>
+                                        <tr className="spec-group"><th colSpan={2}>인력 지원</th></tr>
+                                        <tr><th scope="row">장례지도사</th><td>1명 (입관지원 1명)</td></tr>
+                                        <tr><th scope="row">장례의전 도우미</th><td>6명</td></tr>
                                         
-                                        <tr className="spec-group"><th colSpan={4}>고인용품 · 수시용품</th></tr>
-                                        <tr><th scope="row">관 · 매장 시</th><td>오동나무 45mm</td><td>오동나무 45mm</td><td>오동나무 45mm</td></tr>
-                                        <tr><th scope="row">관 · 화장 시</th><td>오동나무 18mm, 유골함</td><td>오동나무 18mm, 유골함</td><td>오동나무 18mm, 유골함</td></tr>
-                                        <tr><th scope="row">관 · 탈관 시</th><td>오동나무 18mm, 횡대</td><td>오동나무 18mm, 횡대</td><td>오동나무 18mm, 횡대</td></tr>
-                                        <tr><th scope="row">수의</th><td>대마 100% 기계직</td><td>대마 100% 기계직</td><td>대마 100% 기계직</td></tr>
-                                        <tr><th scope="row">수의 준비 고객</th><td>꽃관보 또는 장례의전 도우미 1명</td><td>꽃관보 또는 장례의전 도우미 1명</td><td>꽃관보 또는 장례의전 도우미 1명</td></tr>
-                                        <tr><th scope="row">도포·원삼·천금·지금</th><td>수의 제품과 동일제품 제공</td><td>수의 제품과 동일제품 제공</td><td>수의 제품과 동일제품 제공</td></tr>
-                                        <tr><th scope="row">명정 · 관보</th><td>규격품 제공</td><td>규격품 제공</td><td>규격품 제공</td></tr>
-                                        <tr><th scope="row">베개·습신·수시포·한지 등</th><td>규격품 제공</td><td>규격품 제공</td><td>규격품 제공</td></tr>
+                                        <tr className="spec-group"><th colSpan={2}>고인용품 · 수시용품</th></tr>
+                                        <tr><th scope="row">관 · 매장 시</th><td>오동나무 45mm</td></tr>
+                                        <tr><th scope="row">관 · 화장 시</th><td>오동나무 18mm, 유골함</td></tr>
+                                        <tr><th scope="row">관 · 탈관 시</th><td>오동나무 18mm, 횡대</td></tr>
+                                        <tr><th scope="row">수의</th><td>대마 100% 기계직</td></tr>
+                                        <tr><th scope="row">수의 준비 고객</th><td>꽃관보 또는 장례의전 도우미 1명</td></tr>
+                                        <tr><th scope="row">도포·원삼·천금·지금</th><td>수의 제품과 동일제품 제공</td></tr>
+                                        <tr><th scope="row">명정 · 관보</th><td>규격품 제공</td></tr>
+                                        <tr><th scope="row">베개·습신·수시포·한지 등</th><td>규격품 제공</td></tr>
 
-                                        <tr className="spec-group"><th colSpan={4}>빈소 · 기타용품</th></tr>
-                                        <tr><th scope="row">향·양초·부의록·축문·위패</th><td>필요량 일체 제공</td><td>필요량 일체 제공</td><td>필요량 일체 제공</td></tr>
-                                        <tr><th scope="row">향로·촛대·잔대</th><td>대여품</td><td>대여품</td><td>대여품</td></tr>
-                                        <tr><th scope="row">완장·상장·운구장갑</th><td>필요량 일체 제공</td><td>필요량 일체 제공</td><td>필요량 일체 제공</td></tr>
+                                        <tr className="spec-group"><th colSpan={2}>빈소 · 기타용품</th></tr>
+                                        <tr><th scope="row">향·양초·부의록·축문·위패</th><td>필요량 일체 제공</td></tr>
+                                        <tr><th scope="row">향로·촛대·잔대</th><td>대여품</td></tr>
+                                        <tr><th scope="row">완장·상장·운구장갑</th><td>필요량 일체 제공</td></tr>
 
-                                        <tr className="spec-group"><th colSpan={4}>의전복 · 꽃장식</th></tr>
-                                        <tr><th scope="row">현대식 의전복 · 남성</th><td>3벌</td><td>5벌</td><td>5벌</td></tr>
-                                        <tr><th scope="row">현대식 의전복 · 여성</th><td>3벌</td><td>5벌</td><td>5벌</td></tr>
-                                        <tr><th scope="row">생화꽃 제단장식</th><td>미포함</td><td>25만 원 상당</td><td>35만 원 상당</td></tr>
-                                        <tr><th scope="row">헌화용 국화</th><td>30송이</td><td>30송이</td><td>30송이</td></tr>
-                                        <tr><th scope="row">꽃바구니</th><td>2개</td><td>2개</td><td>2개</td></tr>
+                                        <tr className="spec-group"><th colSpan={2}>의전복 · 꽃장식</th></tr>
+                                        <tr><th scope="row">현대식 의전복 · 남성</th><td>5벌</td></tr>
+                                        <tr><th scope="row">현대식 의전복 · 여성</th><td>5벌</td></tr>
+                                        <tr><th scope="row">생화꽃 제단장식</th><td>35만 원 상당</td></tr>
+                                        <tr><th scope="row">헌화용 국화</th><td>30송이</td></tr>
+                                        <tr><th scope="row">꽃바구니</th><td>2개</td></tr>
 
-                                        <tr className="spec-group"><th colSpan={4}>차량 지원</th></tr>
-                                        <tr><th scope="row">운구이송차량</th><td>미포함</td><td>관내(시·군내) 제공</td><td>관내(시·군내) 제공</td></tr>
-                                        <tr><th scope="row">고인전용 리무진 · 유족전용 버스</th><td>둘 중 택1 · 왕복 200km</td><td>왕복 200km (리무진·버스 항목 공통 표기)</td><td>왕복 300km (리무진·버스 항목 공통 표기)</td></tr>
-                                        <tr><th scope="row">거리 초과 비용</th><td>1km당 2,000원</td><td>1km당 2,000원</td><td>1km당 2,000원</td></tr>
-                                        <tr><th scope="row">리무진 운행 범위</th><td>1차 장지까지만 제공</td><td>1차 장지까지만 제공</td><td>1차 장지까지만 제공</td></tr>
+                                        <tr className="spec-group"><th colSpan={2}>차량 지원</th></tr>
+                                        <tr><th scope="row">운구이송차량</th><td>관내(시·군내) 제공</td></tr>
+                                        <tr><th scope="row">고인전용 리무진 · 유족전용 버스</th><td>왕복 300km (리무진·버스 항목 공통 표기)</td></tr>
+                                        <tr><th scope="row">거리 초과 비용</th><td>1km당 2,000원</td></tr>
+                                        <tr><th scope="row">리무진 운행 범위</th><td>1차 장지까지만 제공</td></tr>
 
-                                        <tr className="spec-group"><th colSpan={4}>편의용품 · 특별 서비스</th></tr>
-                                        <tr><th scope="row">일회용 식기세트</th><td>미포함</td><td>150인분</td><td>300인분</td></tr>
-                                        <tr><th scope="row">편의용품</th><td>1세트</td><td>1세트</td><td>1세트</td></tr>
-                                        <tr><th scope="row">3단 화환</th><td>소노 아임레디 명의 제공 · 상주 요청 시 명의 변경 가능</td><td>소노 아임레디 명의 제공 · 상주 요청 시 명의 변경 가능</td><td>소노 아임레디 명의 제공 · 상주 요청 시 명의 변경 가능</td></tr>
+                                        <tr className="spec-group"><th colSpan={2}>편의용품 · 특별 서비스</th></tr>
+                                        <tr><th scope="row">일회용 식기세트</th><td>300인분</td></tr>
+                                        <tr><th scope="row">편의용품</th><td>1세트</td></tr>
+                                        <tr><th scope="row">3단 화환</th><td>소노 아임레디 명의 제공 · 상주 요청 시 명의 변경 가능</td></tr>
                                     </tbody>
                                 </table>
                             </div>
                         </details>
 
                         <p className="service-footnote">
-                            ※ 리무진은 1차 장지까지만 제공합니다. 마음든든 3은 리무진·버스 중 택1입니다. 4·5의 차량 동시 제공 여부와 거리 산정 기준은 계약명세 확인이 필요합니다.<br />
+                            ※ 리무진은 1차 장지까지만 제공합니다. 차량 동시 제공 여부와 거리 산정 기준은 계약명세 확인이 필요합니다.<br />
                             ※ 일회용 식기는 음식 제공을 뜻하지 않습니다. 지원 시간, 추가·초과 이용 비용과 상세 적용 조건은 계약 기준에 따르며, 장례식장 이용료·음식료 등 상품 외 비용은 별도입니다.
                         </p>
                         <a className="service-link" href="#plans">월 납입금과 상품 비교하기 →</a>
@@ -886,84 +870,93 @@ export default function MaeumContent({
                 {/* 05. Plans */}
                 <section className="planssection" id="plans">
                     <div className="wrap">
-                        <div className="eyebrow chapter"><span className="chapter-no">05</span>상품별 구성 비교</div>
+                        <div className="eyebrow chapter"><span className="chapter-no">05</span>상품 구성 안내</div>
                         <h2>우리 가족에게 맞는 준비.</h2>
-                        <p className="sectiondesc">세 상품 모두 같은 2·5·1 구조. 필요한 인력과 용품 구성으로 선택하세요.</p>
+                        <p className="sectiondesc">2·5·1 구조의 마음든든 5, 필요한 인력과 용품 구성을 확인하세요.</p>
 
-                        <div className="plans-slide-hint"><span>👈 좌우로 넘겨서 3가지 플랜 비교 👉</span></div>
-                        <div className="plans">
-                            <article className="plan">
-                                <div className="plan-icon">
-                                    <svg className="ui-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                        <circle cx="32" cy="18" r="8" />
-                                        <path d="M14 52v-8a18 18 0 0 1 36 0v8" />
-                                        <path d="m27 42 5 5 5-5a3.5 3.5 0 0 0-5-5 3.5 3.5 0 0 0-5 5Z" />
-                                    </svg>
+                        <div className="plan-single-card">
+                            <div className="plan-single-left">
+                                <div>
+                                    <span className="plan-single-badge">2·5·1 잔금 보장 · 프리미엄 단일 플랜</span>
+                                    <div className="plan-single-title">
+                                        <h3>마음든든 5</h3>
+                                        <p>인력 지원부터 의전용품·차량·제단장식까지 넉넉하게 갖춘 대표 구성</p>
+                                    </div>
                                 </div>
-                                <span className="overline">월 부담을 낮춰 준비</span>
-                                <h3>마음든든 3</h3>
-                                <div className="cost"><small>월</small> 32,000<small>원</small></div>
-                                <div className="total">96회 납입 · 총 3,072,000원</div>
-                                <ul>
-                                    <li><span>장례의전 도우미</span><b>3명</b></li>
-                                    <li><span>생화 제단장식</span><b>미포함</b></li>
-                                    <li><span>일회용 식기</span><b>미포함</b></li>
-                                    <li><span>남성·여성 의전복</span><b>각 3벌</b></li>
-                                </ul>
-                                <button className="button light planpick" onClick={() => handlePickPlan("3")}>
-                                    이 구성 선택하기 →
-                                </button>
-                                <div className="plan-period-summary">2년 일반납입(보장 전) · 5년 잔금보장 · 만기 100% 환급</div>
-                            </article>
 
-                            <article className="plan featured">
-                                <span className="planbadge">인력과 용품을 더한 구성</span>
-                                <div className="plan-icon">
-                                    <svg className="ui-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                        <circle cx="19" cy="18" r="6" />
-                                        <circle cx="45" cy="18" r="6" />
-                                        <path d="M7 47v-7a12 12 0 0 1 21-8M57 47v-7a12 12 0 0 0-21-8" />
-                                        <path d="m24 39 8 8 8-8a5 5 0 0 0-8-6 5 5 0 0 0-8 6Z" />
-                                    </svg>
+                                <div className="plan-single-price-box">
+                                    <div className="plan-single-cost">
+                                        <small>월</small> 54,000<small>원</small>
+                                    </div>
+                                    <div className="plan-single-total">96회 납입 · 총 상품 금액 5,184,000원</div>
                                 </div>
-                                <span className="overline">필요한 지원을 더해 준비</span>
-                                <h3>마음든든 4</h3>
-                                <div className="cost"><small>월</small> 43,000<small>원</small></div>
-                                <div className="total">96회 납입 · 총 4,128,000원</div>
-                                <ul>
-                                    <li><span>장례의전 도우미</span><b>4명</b></li>
-                                    <li><span>생화 제단장식</span><b>25만 원 상당</b></li>
-                                    <li><span>일회용 식기</span><b>150인분</b></li>
-                                    <li><span>남성·여성 의전복</span><b>각 5벌</b></li>
-                                </ul>
-                                <button className="button planpick" onClick={() => handlePickPlan("4")}>
-                                    이 구성 선택하기 →
-                                </button>
-                                <div className="plan-period-summary">2년 일반납입(보장 전) · 5년 잔금보장 · 만기 100% 환급</div>
-                            </article>
 
-                            <article className="plan">
-                                <div className="plan-icon">
-                                    <svg className="ui-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                        <path d="m32 7 19 8v15c0 13-19 24-19 24S13 43 13 30V15Z" />
-                                        <path d="m23 30 6 6 13-14" />
-                                    </svg>
+                                <div className="plan-single-actions">
+                                    <button
+                                        type="button"
+                                        className="button primary-cta"
+                                        onClick={() => openConsultDrawer("5")}
+                                    >
+                                        빠른 상담 신청하기 →
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="button outline-cta"
+                                        onClick={() => handlePickPlan("5")}
+                                    >
+                                        조건 확인
+                                    </button>
                                 </div>
-                                <span className="overline">인력 지원을 넉넉하게 준비</span>
-                                <h3>마음든든 5</h3>
-                                <div className="cost"><small>월</small> 54,000<small>원</small></div>
-                                <div className="total">96회 납입 · 총 5,184,000원</div>
-                                <ul>
-                                    <li><span>장례의전 도우미</span><b>6명</b></li>
-                                    <li><span>생화 제단장식</span><b>35만 원 상당</b></li>
-                                    <li><span>일회용 식기</span><b>300인분</b></li>
-                                    <li><span>남성·여성 의전복</span><b>각 5벌</b></li>
-                                </ul>
-                                <button className="button light planpick" onClick={() => handlePickPlan("5")}>
-                                    이 구성 선택하기 →
-                                </button>
-                                <div className="plan-period-summary">2년 일반납입(보장 전) · 5년 잔금보장 · 만기 100% 환급</div>
-                            </article>
+                            </div>
+
+                            <div className="plan-single-right">
+                                <div className="plan-single-right-head">
+                                    <strong>마음든든 5 주요 의전 구성</strong>
+                                    <span>만기 시 100% 환급</span>
+                                </div>
+
+                                <div className="plan-single-specs">
+                                    <div className="plan-spec-tile">
+                                        <span>장례지도사 · 입관지원</span>
+                                        <b>지도사 1명 · 입관 1명</b>
+                                    </div>
+                                    <div className="plan-spec-tile">
+                                        <span>장례의전 도우미</span>
+                                        <b>6명 지원</b>
+                                    </div>
+                                    <div className="plan-spec-tile">
+                                        <span>생화 제단장식</span>
+                                        <b>35만 원 상당</b>
+                                    </div>
+                                    <div className="plan-spec-tile">
+                                        <span>일회용 식기세트</span>
+                                        <b>300인분</b>
+                                    </div>
+                                    <div className="plan-spec-tile">
+                                        <span>현대식 의전복 (남·여)</span>
+                                        <b>각 5벌</b>
+                                    </div>
+                                    <div className="plan-spec-tile">
+                                        <span>리무진 · 유족버스</span>
+                                        <b>왕복 300km (관내 이송 포함)</b>
+                                    </div>
+                                </div>
+
+                                <div className="plan-single-timeline">
+                                    <div>
+                                        <strong>1~24회 (2년)</strong>
+                                        <small>일반 납입 (보장 전)</small>
+                                    </div>
+                                    <div>
+                                        <strong>25~84회 (5년)</strong>
+                                        <small>★ 잔금 면제 보장 구간</small>
+                                    </div>
+                                    <div>
+                                        <strong>181회~ (만기)</strong>
+                                        <small>납입금 100% 전액 환급</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         {/* 05-1. 상품 구성 금액 및 납입 구조 표 (제공 자료 연동) */}
@@ -971,31 +964,27 @@ export default function MaeumContent({
                             <div className="pricing-table-header">
                                 <div className="table-badge">회차별 납입 구조 · 해약환급금 기준</div>
                                 <h3>상품 구성 금액 및 회차별 납입 안내</h3>
-                                <p>24개월 이후 상조서비스 이용 시 상조 납입 잔금을 보장하는 마음든든 상품의 구간별 금액과 만기 환급 기준입니다.</p>
+                                <p>24개월 이후 상조서비스 이용 시 상조 납입 잔금을 보장하는 마음든든 5 상품의 구간별 금액과 만기 환급 기준입니다.</p>
                             </div>
 
                             <div className="spec-scroll" role="region" aria-label="상품 구성 금액 및 회차별 납입 비교표" tabIndex={0}>
                                 <table className="price-structure-table">
                                     <thead>
                                         <tr className="table-super-header">
-                                            <th colSpan={6}>상품 구성 금액</th>
+                                            <th colSpan={4}>상품 구성 금액</th>
                                         </tr>
                                         <tr className="table-col-header">
-                                            <th scope="col" style={{ width: '13%' }}>구분</th>
-                                            <th scope="col" style={{ width: '23%' }}>상세 구간</th>
-                                            <th scope="col" style={{ width: '16%' }}>마음든든 3</th>
-                                            <th scope="col" className="col-featured" style={{ width: '16%' }}>마음든든 4</th>
-                                            <th scope="col" style={{ width: '16%' }}>마음든든 5</th>
-                                            <th scope="col" style={{ width: '16%' }}>비고</th>
+                                            <th scope="col" style={{ width: '16%' }}>구분</th>
+                                            <th scope="col" style={{ width: '34%' }}>상세 구간</th>
+                                            <th scope="col" className="col-featured" style={{ width: '25%' }}>마음든든 5</th>
+                                            <th scope="col" style={{ width: '25%' }}>비고</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {/* 총 상품 금액 */}
                                         <tr className="row-total-price">
                                             <th scope="row" colSpan={2} className="row-title">총 상품 금액</th>
-                                            <td className="amount-cell"><strong>3,072,000원</strong></td>
-                                            <td className="amount-cell col-featured"><strong>4,128,000원</strong></td>
-                                            <td className="amount-cell"><strong>5,184,000원</strong></td>
+                                            <td className="amount-cell col-featured"><strong>5,184,000원</strong></td>
                                             <td className="note-cell text-muted">-</td>
                                         </tr>
 
@@ -1005,9 +994,7 @@ export default function MaeumContent({
                                             <th scope="row" className="sub-term-cell">
                                                 일반 납입(보장 전) <small>(1 - 24회)</small>
                                             </th>
-                                            <td className="amount-cell">32,000원</td>
-                                            <td className="amount-cell col-featured">43,000원</td>
-                                            <td className="amount-cell">54,000원</td>
+                                            <td className="amount-cell col-featured">54,000원</td>
                                             <td className="note-cell badge-cell">
                                                 <span className="badge-gray">잔금 고객 부담</span>
                                             </td>
@@ -1016,9 +1003,7 @@ export default function MaeumContent({
                                             <th scope="row" className="sub-term-cell">
                                                 혜택기간 <small>(25 - 84회)</small>
                                             </th>
-                                            <td className="amount-cell">32,000원</td>
-                                            <td className="amount-cell col-featured">43,000원</td>
-                                            <td className="amount-cell">54,000원</td>
+                                            <td className="amount-cell col-featured">54,000원</td>
                                             <td className="note-cell badge-cell">
                                                 <span className="badge-teal">★ 잔금 면제 구간</span>
                                             </td>
@@ -1027,9 +1012,7 @@ export default function MaeumContent({
                                             <th scope="row" className="sub-term-cell">
                                                 실상조납입기간 <small>(85 - 96회)</small>
                                             </th>
-                                            <td className="amount-cell">32,000원</td>
-                                            <td className="amount-cell col-featured">43,000원</td>
-                                            <td className="amount-cell">54,000원</td>
+                                            <td className="amount-cell col-featured">54,000원</td>
                                             <td rowSpan={2} className="note-cell highlight-note">
                                                 레디캐시, 전환 서비스,<br />양도·양수 가능
                                             </td>
@@ -1038,7 +1021,7 @@ export default function MaeumContent({
                                             <th scope="row" className="sub-term-cell">
                                                 유지기간 <small>(97 - 180회)</small>
                                             </th>
-                                            <td colSpan={3} className="span-info-cell">
+                                            <td className="span-info-cell">
                                                 <strong>비용 납입 없는 유지기간</strong><br />
                                                 <small>(제한사항없이 누구에게나 양도·양수 가능)</small>
                                             </td>
@@ -1047,7 +1030,7 @@ export default function MaeumContent({
                                             <th scope="row" className="sub-term-cell">
                                                 181회 -
                                             </th>
-                                            <td colSpan={3} className="span-info-cell maturity-cell">
+                                            <td className="span-info-cell maturity-cell">
                                                 <strong style={{ color: 'var(--teal)', fontSize: '13px' }}>100% 환급</strong>
                                             </td>
                                             <td className="note-cell badge-cell">
@@ -1061,7 +1044,7 @@ export default function MaeumContent({
                                             <th scope="row" className="sub-term-cell">
                                                 납입기간 중도 해약 <small>(1 - 96회차)</small>
                                             </th>
-                                            <td colSpan={3} className="span-info-cell">
+                                            <td className="span-info-cell">
                                                 해약산식 의거 <strong>0~85%</strong> 환급
                                             </td>
                                             <td className="note-cell text-muted">-</td>
@@ -1112,8 +1095,8 @@ export default function MaeumContent({
 
                         <div className="maeum-mid-cta dark">
                             <div className="maeum-mid-cta-text">
-                                <strong>마음든든 3·4·5 중 어떤 구성이 맞을지 고민되시나요?</strong>
-                                <p>준비하시는 분의 상황에 맞춰 가장 알맞은 상품과 혜택을 바로 상담받으실 수 있습니다.</p>
+                                <strong>마음든든 5 상품 구성이 궁금하신가요?</strong>
+                                <p>준비하시는 분의 상황에 맞춰 상품과 혜택을 바로 상담받으실 수 있습니다.</p>
                             </div>
                             <div className="maeum-mid-cta-actions">
                                 <button
@@ -1440,7 +1423,7 @@ export default function MaeumContent({
                                 선택한 내용을 한눈에 정리해드립니다.
                             </p>
                             <ul className="checks">
-                                <li>부모님 또는 본인 1인을 위한 준비</li>
+                                <li>부모님, 본인 또는 조부모님 1인을 위한 준비</li>
                                 <li>첫 2년 일반 납입(보장 전), 이후 5년 잔금 보장</li>
                                 <li>총 8년 납입과 장기 유지 조건 확인</li>
                             </ul>
@@ -1470,7 +1453,7 @@ export default function MaeumContent({
                             </div>
 
                             <label>누구를 위한 준비인가요?</label>
-                            <div className="choices">
+                            <div className="choices" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
                                 <button
                                     className={`choice ${target === "부모님" ? "active" : ""}`}
                                     onClick={() => { setTarget("부모님"); setShowSummary(false); }}
@@ -1483,6 +1466,12 @@ export default function MaeumContent({
                                 >
                                     본인
                                 </button>
+                                <button
+                                    className={`choice ${target === "조부모님" ? "active" : ""}`}
+                                    onClick={() => { setTarget("조부모님"); setShowSummary(false); }}
+                                >
+                                    조부모님
+                                </button>
                             </div>
 
                             <label htmlFor="chosenplan">관심 있는 상품</label>
@@ -1490,12 +1479,10 @@ export default function MaeumContent({
                                 id="chosenplan"
                                 value={chosenPlan}
                                 onChange={(e) => {
-                                    setChosenPlan(e.target.value as "3" | "4" | "5");
+                                    setChosenPlan(e.target.value as "5");
                                     setShowSummary(false);
                                 }}
                             >
-                                <option value="3">마음든든 3 · 월 32,000원</option>
-                                <option value="4">마음든든 4 · 월 43,000원</option>
                                 <option value="5">마음든든 5 · 월 54,000원</option>
                             </select>
 
@@ -1595,8 +1582,8 @@ export default function MaeumContent({
             gifts={giftState.gifts}
             selectedGiftId={giftState.selectedGiftId}
             onSelectGiftId={giftState.setSelectedGiftId}
-            onOpenEcontract={(plan) => {
-                setChosenPlan(plan);
+            onOpenEcontract={(_plan) => {
+                setChosenPlan("5");
                 setIsEcontractOpen(true);
             }}
         />

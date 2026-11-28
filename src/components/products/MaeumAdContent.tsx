@@ -548,7 +548,7 @@ export default function MaeumAdContent({
                     <span>
                         {gifts.length > 0
                             ? "사은품 받고 마음든든 상담받기"
-                            : "마음든든 3·4·5 지금 상담받기"}
+                            : "마음든든 5 지금 상담받기"}
                     </span>
                     <span className="text-[#b98a6a] font-black">→</span>
                 </button>
@@ -565,7 +565,7 @@ export default function MaeumAdContent({
             <MaeumConsultDrawer
                 isOpen={isConsultOpen}
                 onClose={() => setIsConsultOpen(false)}
-                initialPlan="4"
+                initialPlan="5"
                 initialTarget="부모님"
                 partnerId={partnerMode ? partnerId : ""}
                 partnerUrl={partnerMode ? partnerUrl : ""}
