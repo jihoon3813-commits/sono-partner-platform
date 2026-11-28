@@ -30,14 +30,32 @@ function formatPeriodText(startDate?: string, endDate?: string): string {
     return "한정 기간 진행";
 }
 
-export default function MaeumAdContent() {
+interface MaeumAdContentProps {
+    landingKey?: string;
+    productNamePrefix?: string;
+    partnerMode?: boolean;
+    partnerUrl?: string;
+    partnerName?: string;
+    partnerId?: string;
+    partnerPhone?: string;
+}
+
+export default function MaeumAdContent({
+    landingKey = "maeum-ad",
+    productNamePrefix = "마음든든(광고)",
+    partnerMode = false,
+    partnerUrl = "",
+    partnerName = "",
+    partnerId = "",
+    partnerPhone = "",
+}: MaeumAdContentProps = {}) {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
     const [iframeHeight, setIframeHeight] = useState<number>(3000);
     const [iframeReady, setIframeReady] = useState(false);
     const [isConsultOpen, setIsConsultOpen] = useState(false);
 
     const giftEvent = useQuery(api.maeumGifts.getPublicGiftEvent, {
-        landingKey: "maeum-ad",
+        landingKey,
     });
 
     const gifts: MaeumGiftItem[] = useMemo(
@@ -549,7 +567,11 @@ export default function MaeumAdContent() {
                 onClose={() => setIsConsultOpen(false)}
                 initialPlan="4"
                 initialTarget="부모님"
-                productNamePrefix="마음든든(광고)"
+                partnerId={partnerMode ? partnerId : ""}
+                partnerUrl={partnerMode ? partnerUrl : ""}
+                partnerName={partnerMode ? partnerName : ""}
+                partnerPhone={partnerMode ? partnerPhone : ""}
+                productNamePrefix={productNamePrefix}
                 gifts={gifts}
                 selectedGiftId={selectedGiftId}
                 onSelectGiftId={setSelectedGiftId}

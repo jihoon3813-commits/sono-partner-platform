@@ -132,6 +132,7 @@ export default function PartnerDashboard() {
     const [copySuccessHappy450, setCopySuccessHappy450] = useState(false);
     const [copySuccessMaeum, setCopySuccessMaeum] = useState(false);
     const [copySuccessMaeumAd, setCopySuccessMaeumAd] = useState(false);
+    const [copySuccessMaeumNew, setCopySuccessMaeumNew] = useState(false);
     const [copySuccessInquiry, setCopySuccessInquiry] = useState(false);
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
     const [selectedRequest, setSelectedRequest] = useState<PartnerRequest | null>(null);
@@ -394,7 +395,16 @@ export default function PartnerDashboard() {
     const isSmartCareVisible = !isLandingHidden && landingVisibility?.smartcare !== false;
     const isHappy450Visible = !isLandingHidden && landingVisibility?.happy450 !== false;
     const isMaeumVisible = !isLandingHidden && landingVisibility?.maeum === true;
-    const hasAnyVisibleLanding = isSmartCareVisible || isHappy450Visible || isMaeumVisible;
+    const isMaeumAdVisible = !isLandingHidden && landingVisibility?.maeumAd === true;
+    const isSmartCareAdVisible = !isLandingHidden && landingVisibility?.smartcareAd === true;
+    const isMaeumNewVisible = !isLandingHidden && landingVisibility?.maeumNew === true;
+    const hasAnyVisibleLanding =
+        isSmartCareVisible ||
+        isHappy450Visible ||
+        isMaeumVisible ||
+        isMaeumAdVisible ||
+        isSmartCareAdVisible ||
+        isMaeumNewVisible;
     const isLandingUrlVisible = Boolean(realTimeData) && !isLandingHidden;
 
     const fetchData = useCallback(() => {
@@ -1852,6 +1862,67 @@ export default function PartnerDashboard() {
                                                     </a>
                                                 </div>
                                             </div>
+
+                                            {/* 마음든든(new) - 총괄 어드민 전용 */}
+                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
+                                                <div>
+                                                    <div className="flex items-center gap-1.5 mb-3">
+                                                        <span className="adm-pill green">NEW 3·4·5</span>
+                                                        <span className="adm-pill gray">총괄 어드민 전용</span>
+                                                    </div>
+                                                    <div className="flex gap-3.5 items-start mb-4">
+                                                        <img
+                                                            src="/images/maeum/family-moment.png"
+                                                            alt="마음든든(new)"
+                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
+                                                        />
+                                                        <div>
+                                                            <h3 className="text-base font-bold text-[#162438] mb-1">
+                                                                마음든든(new)
+                                                            </h3>
+                                                            <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
+                                                                마음든든 3·4·5 상세 랜딩 (고객관리 마음든든 연동 · 별도 상품 구분)
+                                                            </p>
+                                                            <p className="text-xs font-bold text-[#9a7840] mt-1.5">
+                                                                월 32,000원부터
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                        <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
+                                                            마음든든(new) 공식 대표 URL
+                                                        </span>
+                                                        <span className="font-semibold text-[#163a6b] truncate block">
+                                                            {baseUrl.replace(/^https?:\/\//, "")}/products/maeum-new
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const url = `${baseUrl}/products/maeum-new`;
+                                                            navigator.clipboard.writeText(url).then(() => {
+                                                                setCopySuccessMaeumNew(true);
+                                                                setTimeout(() => setCopySuccessMaeumNew(false), 2000);
+                                                            });
+                                                        }}
+                                                        className={`adm-btn ${copySuccessMaeumNew ? "primary" : "sage"}`}
+                                                    >
+                                                        <AdminIcon name={copySuccessMaeumNew ? "check" : "copy"} />
+                                                        <span>{copySuccessMaeumNew ? "복사 완료!" : "URL 복사"}</span>
+                                                    </button>
+                                                    <a
+                                                        href="/products/maeum-new"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="adm-btn primary"
+                                                    >
+                                                        <span>페이지 이동</span>
+                                                        <AdminIcon name="external" />
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </>
                                 ) : isLandingUrlVisible && partner?.customUrl ? (
@@ -2046,6 +2117,192 @@ export default function PartnerDashboard() {
                                                                 </button>
                                                                 <a
                                                                     href={`/${partner.customUrl}/maeum`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="adm-btn primary"
+                                                                >
+                                                                    <span>페이지 이동</span>
+                                                                    <AdminIcon name="external" />
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {isMaeumAdVisible && (
+                                                        <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
+                                                            <div>
+                                                                <div className="flex items-center gap-1.5 mb-3">
+                                                                    <span className="adm-pill orange">광고 전용</span>
+                                                                    <span className="adm-pill teal">2·5·1 잔금 보장</span>
+                                                                </div>
+                                                                <div className="flex gap-3.5 items-start mb-4">
+                                                                    <img
+                                                                        src="/images/maeum/family-moment.png"
+                                                                        alt="마음든든(광고)"
+                                                                        className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
+                                                                    />
+                                                                    <div>
+                                                                        <h3 className="text-base font-bold text-[#162438] mb-1">
+                                                                            마음든든(광고)
+                                                                        </h3>
+                                                                        <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
+                                                                            마음든든 3·4·5 상세 랜딩 (고객관리 마음든든 연동 · 별도 상품 구분)
+                                                                        </p>
+                                                                        <p className="text-xs font-bold text-[#9a7840] mt-1.5">
+                                                                            월 32,000원부터
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                                    <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
+                                                                        마음든든(광고) 파트너 전용 URL
+                                                                    </span>
+                                                                    <span className="font-semibold text-[#163a6b] truncate block">
+                                                                        {baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/maeum-ad
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const url = `${baseUrl}/${partner.customUrl}/maeum-ad`;
+                                                                        navigator.clipboard.writeText(url).then(() => {
+                                                                            setCopySuccessMaeumAd(true);
+                                                                            setTimeout(() => setCopySuccessMaeumAd(false), 2000);
+                                                                        });
+                                                                    }}
+                                                                    className={`adm-btn ${copySuccessMaeumAd ? "primary" : "sage"}`}
+                                                                >
+                                                                    <AdminIcon name={copySuccessMaeumAd ? "check" : "copy"} />
+                                                                    <span>{copySuccessMaeumAd ? "복사 완료!" : "URL 복사"}</span>
+                                                                </button>
+                                                                <a
+                                                                    href={`/${partner.customUrl}/maeum-ad`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="adm-btn primary"
+                                                                >
+                                                                    <span>페이지 이동</span>
+                                                                    <AdminIcon name="external" />
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {isSmartCareAdVisible && (
+                                                        <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
+                                                            <div>
+                                                                <div className="flex items-center gap-1.5 mb-3">
+                                                                    <span className="adm-pill orange">광고 전용</span>
+                                                                    <span className="adm-pill green">가전 결합 상품</span>
+                                                                </div>
+                                                                <div className="flex gap-3.5 items-start mb-4">
+                                                                    <img
+                                                                        src="https://res.cloudinary.com/lyjyvy54/image/upload/v1785825079/2024112600085_0_vbmtin.jpg"
+                                                                        alt="스마트케어(광고)"
+                                                                        className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
+                                                                    />
+                                                                    <div>
+                                                                        <h3 className="text-base font-bold text-[#162438] mb-1">
+                                                                            스마트케어(광고)
+                                                                        </h3>
+                                                                        <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
+                                                                            스마트케어 가전 렌탈·상조 결합 상세 랜딩 (고객관리 연동 · 별도 상품 구분)
+                                                                        </p>
+                                                                        <p className="text-xs font-bold text-[#163a6b] mt-1.5">
+                                                                            월 33,000원부터
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                                    <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
+                                                                        스마트케어(광고) 파트너 전용 URL
+                                                                    </span>
+                                                                    <span className="font-semibold text-[#163a6b] truncate block">
+                                                                        {baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/smartcare-ad
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const url = `${baseUrl}/${partner.customUrl}/smartcare-ad`;
+                                                                        navigator.clipboard.writeText(url).then(() => {
+                                                                            setCopySuccessSmartCareAd(true);
+                                                                            setTimeout(() => setCopySuccessSmartCareAd(false), 2000);
+                                                                        });
+                                                                    }}
+                                                                    className={`adm-btn ${copySuccessSmartCareAd ? "primary" : "sage"}`}
+                                                                >
+                                                                    <AdminIcon name={copySuccessSmartCareAd ? "check" : "copy"} />
+                                                                    <span>{copySuccessSmartCareAd ? "복사 완료!" : "URL 복사"}</span>
+                                                                </button>
+                                                                <a
+                                                                    href={`/${partner.customUrl}/smartcare-ad`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="adm-btn primary"
+                                                                >
+                                                                    <span>페이지 이동</span>
+                                                                    <AdminIcon name="external" />
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {isMaeumNewVisible && (
+                                                        <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
+                                                            <div>
+                                                                <div className="flex items-center gap-1.5 mb-3">
+                                                                    <span className="adm-pill green">NEW 3·4·5</span>
+                                                                    <span className="adm-pill teal">2·5·1 잔금 보장</span>
+                                                                </div>
+                                                                <div className="flex gap-3.5 items-start mb-4">
+                                                                    <img
+                                                                        src="/images/maeum/family-moment.png"
+                                                                        alt="마음든든(new)"
+                                                                        className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
+                                                                    />
+                                                                    <div>
+                                                                        <h3 className="text-base font-bold text-[#162438] mb-1">
+                                                                            마음든든(new)
+                                                                        </h3>
+                                                                        <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
+                                                                            마음든든 3·4·5 상세 랜딩 (고객관리 마음든든 연동 · 별도 상품 구분)
+                                                                        </p>
+                                                                        <p className="text-xs font-bold text-[#9a7840] mt-1.5">
+                                                                            월 32,000원부터
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                                    <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
+                                                                        마음든든(new) 파트너 전용 URL
+                                                                    </span>
+                                                                    <span className="font-semibold text-[#163a6b] truncate block">
+                                                                        {baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/maeum-new
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const url = `${baseUrl}/${partner.customUrl}/maeum-new`;
+                                                                        navigator.clipboard.writeText(url).then(() => {
+                                                                            setCopySuccessMaeumNew(true);
+                                                                            setTimeout(() => setCopySuccessMaeumNew(false), 2000);
+                                                                        });
+                                                                    }}
+                                                                    className={`adm-btn ${copySuccessMaeumNew ? "primary" : "sage"}`}
+                                                                >
+                                                                    <AdminIcon name={copySuccessMaeumNew ? "check" : "copy"} />
+                                                                    <span>{copySuccessMaeumNew ? "복사 완료!" : "URL 복사"}</span>
+                                                                </button>
+                                                                <a
+                                                                    href={`/${partner.customUrl}/maeum-new`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
                                                                     className="adm-btn primary"

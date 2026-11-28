@@ -9,7 +9,17 @@ import {
     useLandingGiftEvent,
 } from "./LandingGiftWidgets";
 
-export default function SmartCareAdContent() {
+interface SmartCareAdContentProps {
+    partnerMode?: boolean;
+    partnerId?: string;
+    partnerName?: string;
+}
+
+export default function SmartCareAdContent({
+    partnerMode = false,
+    partnerId = "ADMIN",
+    partnerName = "본사 직접 신청",
+}: SmartCareAdContentProps = {}) {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
     const [iframeHeight, setIframeHeight] = useState<number>(3000);
     const [isConsultOpen, setIsConsultOpen] = useState(false);
@@ -144,8 +154,8 @@ export default function SmartCareAdContent() {
             <InquiryModal
                 isOpen={isConsultOpen}
                 onClose={() => setIsConsultOpen(false)}
-                partnerId="ADMIN"
-                partnerName="본사 직접 신청"
+                partnerId={partnerMode ? partnerId : "ADMIN"}
+                partnerName={partnerMode ? partnerName : "본사 직접 신청"}
                 productType="스마트케어(광고)"
                 showProductSelect={false}
                 initialUnit="4"

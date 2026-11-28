@@ -20,6 +20,9 @@ export interface Partner {
         smartcare?: boolean;
         happy450?: boolean;
         maeum?: boolean;
+        maeumAd?: boolean;
+        smartcareAd?: boolean;
+        maeumNew?: boolean;
     };
     customUrl: string;
     logoUrl: string;

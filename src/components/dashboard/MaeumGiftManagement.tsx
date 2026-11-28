@@ -48,6 +48,7 @@ function getPeriodStatus(today: string, isActive: boolean, startDate?: string, e
 
 const LANDING_OPTIONS = [
     { key: "maeum-ad", label: "마음든든 (광고)", url: "/products/maeum-ad" },
+    { key: "maeum-new", label: "마음든든 (new)", url: "/products/maeum-new" },
     { key: "maeum", label: "마음든든 (기본/파트너)", url: "/products/maeum" },
     { key: "smartcare-ad", label: "스마트케어 (광고)", url: "/products/smartcare-ad" },
     { key: "smartcare", label: "스마트케어 (기본/파트너)", url: "/products/smartcare" },

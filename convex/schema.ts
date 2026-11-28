@@ -22,6 +22,9 @@ export default defineSchema({
                 smartcare: v.optional(v.boolean()),
                 happy450: v.optional(v.boolean()),
                 maeum: v.optional(v.boolean()),
+                maeumAd: v.optional(v.boolean()),
+                smartcareAd: v.optional(v.boolean()),
+                maeumNew: v.optional(v.boolean()),
             })
         ),
         customUrl: v.string(), // 도메인/p/뒤에 붙는 url

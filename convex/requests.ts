@@ -94,6 +94,9 @@ export const approvePartnerRequest = mutation({
                 smartcare: v.optional(v.boolean()),
                 happy450: v.optional(v.boolean()),
                 maeum: v.optional(v.boolean()),
+                maeumAd: v.optional(v.boolean()),
+                smartcareAd: v.optional(v.boolean()),
+                maeumNew: v.optional(v.boolean()),
             })
         ),
     },

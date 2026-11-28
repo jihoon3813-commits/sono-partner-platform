@@ -68,6 +68,9 @@ export default function PartnerFormModal({
             smartcare: mode !== "maeum",
             happy450: mode !== "maeum",
             maeum: mode === "maeum",
+            maeumAd: false,
+            smartcareAd: false,
+            maeumNew: false,
         },
         customUrl: "",
         logoUrl: "",
@@ -119,6 +122,9 @@ export default function PartnerFormModal({
                         partner.landingVisibility?.maeum !== undefined
                             ? partner.landingVisibility.maeum
                             : false,
+                    maeumAd: partner.landingVisibility?.maeumAd === true,
+                    smartcareAd: partner.landingVisibility?.smartcareAd === true,
+                    maeumNew: partner.landingVisibility?.maeumNew === true,
                 },
                 customUrl: partner.customUrl || "",
                 logoUrl: partner.logoUrl || "",
@@ -157,6 +163,9 @@ export default function PartnerFormModal({
                         initialData.landingVisibility?.maeum !== undefined
                             ? initialData.landingVisibility.maeum
                             : false,
+                    maeumAd: initialData.landingVisibility?.maeumAd === true,
+                    smartcareAd: initialData.landingVisibility?.smartcareAd === true,
+                    maeumNew: initialData.landingVisibility?.maeumNew === true,
                 },
                 status: "active",
                 role: (initialData.role || "master") as "master" | "tm",
@@ -243,18 +252,30 @@ export default function PartnerFormModal({
 
     const formatPhone = (val: string) => formatPhoneNumber(val);
 
-    const handleToggleLanding = (key: "smartcare" | "happy450" | "maeum") => {
+    const handleToggleLanding = (
+        key: "smartcare" | "happy450" | "maeum" | "maeumAd" | "smartcareAd" | "maeumNew"
+    ) => {
         setFormData((prev) => {
             const currentLv = prev.landingVisibility || {
                 smartcare: true,
                 happy450: true,
-                maeum: true,
+                maeum: false,
+                maeumAd: false,
+                smartcareAd: false,
+                maeumNew: false,
             };
             const nextLv = {
                 ...currentLv,
                 [key]: !currentLv[key],
             };
-            const hasAny = !!(nextLv.smartcare || nextLv.happy450 || nextLv.maeum);
+            const hasAny = !!(
+                nextLv.smartcare ||
+                nextLv.happy450 ||
+                nextLv.maeum ||
+                nextLv.maeumAd ||
+                nextLv.smartcareAd ||
+                nextLv.maeumNew
+            );
             return {
                 ...prev,
                 landingVisibility: nextLv,
@@ -271,6 +292,9 @@ export default function PartnerFormModal({
                 smartcare: visible,
                 happy450: visible,
                 maeum: visible,
+                maeumAd: visible,
+                smartcareAd: visible,
+                maeumNew: visible,
             },
         }));
     };
@@ -359,6 +383,9 @@ export default function PartnerFormModal({
                         partner.landingVisibility?.maeum !== undefined
                             ? partner.landingVisibility.maeum
                             : false,
+                    maeumAd: partner.landingVisibility?.maeumAd === true,
+                    smartcareAd: partner.landingVisibility?.smartcareAd === true,
+                    maeumNew: partner.landingVisibility?.maeumNew === true,
                 };
             }
 
@@ -407,10 +434,18 @@ export default function PartnerFormModal({
     const lv = formData.landingVisibility || {
         smartcare: true,
         happy450: true,
-        maeum: true,
+        maeum: false,
+        maeumAd: false,
+        smartcareAd: false,
+        maeumNew: false,
     };
     const visibleCount =
-        (lv.smartcare ? 1 : 0) + (lv.happy450 ? 1 : 0) + (lv.maeum ? 1 : 0);
+        (lv.smartcare ? 1 : 0) +
+        (lv.happy450 ? 1 : 0) +
+        (lv.maeum ? 1 : 0) +
+        (lv.maeumAd ? 1 : 0) +
+        (lv.smartcareAd ? 1 : 0) +
+        (lv.maeumNew ? 1 : 0);
     const landingOptions = [
         {
             key: "smartcare" as const,
@@ -441,6 +476,36 @@ export default function PartnerFormModal({
                 ? `/${formData.customUrl}/maeum`
                 : "/products/maeum",
             isVisible: !!lv.maeum,
+        },
+        {
+            key: "maeumAd" as const,
+            name: "마음든든(광고)",
+            badge: "광고 전용",
+            price: "월 32,000원~",
+            path: formData.customUrl
+                ? `/${formData.customUrl}/maeum-ad`
+                : "/products/maeum-ad",
+            isVisible: !!lv.maeumAd,
+        },
+        {
+            key: "smartcareAd" as const,
+            name: "스마트케어(광고)",
+            badge: "광고 전용",
+            price: "월 33,000원~",
+            path: formData.customUrl
+                ? `/${formData.customUrl}/smartcare-ad`
+                : "/products/smartcare-ad",
+            isVisible: !!lv.smartcareAd,
+        },
+        {
+            key: "maeumNew" as const,
+            name: "마음든든(new)",
+            badge: "NEW 3·4·5",
+            price: "월 32,000원~",
+            path: formData.customUrl
+                ? `/${formData.customUrl}/maeum-new`
+                : "/products/maeum-new",
+            isVisible: !!lv.maeumNew,
         },
     ];
 
@@ -978,7 +1043,7 @@ export default function PartnerFormModal({
                                     type="button"
                                     onClick={() => handleSetAllLandings(true)}
                                     className={`adm-btn small !py-1 !px-2 !min-h-[25px] ${
-                                        visibleCount === 3 ? "primary" : ""
+                                        visibleCount === 6 ? "primary" : ""
                                     }`}
                                 >
                                     전체 노출
