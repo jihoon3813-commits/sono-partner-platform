@@ -41,6 +41,7 @@ export interface Partner {
     affiliation?: string; // ?뚯냽
     employeeNumber?: string; // ?ъ썝踰덊샇
     departmentName?: string; // 遺???)紐?
+    autoSmsSettings?: { products?: Record<string, { enabled?: boolean; title?: string; message?: string }> };
     createdAt: string;
     approvedAt: string;
     approvedBy: string;

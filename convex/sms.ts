@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { action, internalAction, internalMutation, mutation, query } from "./_generated/server";
+import { action, internalAction, internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
 
 export interface SmsConfig {
@@ -2008,10 +2008,51 @@ export const sendMaeumEcontractCompleteSms = internalAction({
     },
 });
 
+function resolveProductSmsKey(productType?: string): string {
+    const raw = (productType || "").trim();
+    const lower = raw.toLowerCase();
+    if (lower.includes("maeum-mili") || raw.includes("밀리")) return "maeum-mili";
+    if (lower.includes("maeum-new") || lower.includes("new")) return "maeum-new";
+    if (lower.includes("maeum-ad") || raw.includes("마음든든(광고)")) return "maeum-ad";
+    if (lower.includes("maeum") || raw.includes("마음든든")) return "maeum";
+    if (lower.includes("smartcare-ad") || raw.includes("스마트케어(광고)")) return "smartcare-ad";
+    if (lower.includes("smart") || raw.includes("스마트")) return "smartcare";
+    if (lower.includes("happy") || raw.includes("해피") || raw.includes("450")) return "happy450";
+    return "maeum";
+}
+
+export const getPartnerAutoSmsSettingsInternal = internalQuery({
+    args: { partnerId: v.optional(v.string()) },
+    handler: async (ctx, args) => {
+        const key = (args.partnerId || "").trim();
+        if (!key || key === "ADMIN" || key.startsWith("P-TEMP-")) {
+            return null;
+        }
+        let partner = await ctx.db
+            .query("partners")
+            .withIndex("by_partnerId", (q) => q.eq("partnerId", key))
+            .unique();
+        if (!partner) {
+            partner = await ctx.db
+                .query("partners")
+                .withIndex("by_loginId", (q) => q.eq("loginId", key))
+                .unique();
+        }
+        if (!partner) {
+            partner = await ctx.db
+                .query("partners")
+                .withIndex("by_customUrl", (q) => q.eq("customUrl", key))
+                .unique();
+        }
+        return partner?.autoSmsSettings || null;
+    },
+});
+
 export const sendAutoApplicationSms = internalAction({
     args: {
         applicationId: v.optional(v.id("applications")),
         applicationNo: v.optional(v.string()),
+        partnerId: v.optional(v.string()),
         customerName: v.string(),
         customerPhone: v.string(),
         productType: v.optional(v.string()),
@@ -2020,14 +2061,27 @@ export const sendAutoApplicationSms = internalAction({
         planType: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
-        if (!isMaeumProductType(args.productType)) {
-            return { success: false, skipped: true, reason: "not_maeum" };
-        }
         const { api } = await import("./_generated/api");
         const smsConfig = await ctx.runQuery(api.sms.getSmsConfigInternal, {});
+        const productKey = resolveProductSmsKey(args.productType);
+        const partnerSmsSettings = args.partnerId
+            ? await ctx.runQuery(internal.sms.getPartnerAutoSmsSettingsInternal, {
+                  partnerId: args.partnerId,
+              })
+            : null;
+        const partnerProductSetting = partnerSmsSettings?.products?.[productKey];
 
-        if (smsConfig?.autoSendOnApply === false) {
-            return { success: false, skipped: true, reason: "disabled" };
+        if (partnerProductSetting) {
+            if (partnerProductSetting.enabled === false) {
+                return { success: false, skipped: true, reason: "partner_disabled" };
+            }
+        } else {
+            if (!isMaeumProductType(args.productType)) {
+                return { success: false, skipped: true, reason: "not_maeum" };
+            }
+            if (smsConfig?.autoSendOnApply === false) {
+                return { success: false, skipped: true, reason: "disabled" };
+            }
         }
 
         const receiver = normalizeKoreanPhone(args.customerPhone);
@@ -2040,8 +2094,14 @@ export const sendAutoApplicationSms = internalAction({
         const giftLabel = (args.selectedGift || "").trim() || "상담 시 맞춤 사은품 안내";
         const planLabel = (args.planType || "").trim() || "1구좌";
 
-        const title = (smsConfig?.autoApplyTitle || "").trim() || DEFAULT_AUTO_APPLY_TITLE;
-        const template = (smsConfig?.autoApplyMessage || "").trim() || DEFAULT_AUTO_APPLY_MESSAGE;
+        const title =
+            (partnerProductSetting?.title || "").trim() ||
+            (smsConfig?.autoApplyTitle || "").trim() ||
+            DEFAULT_AUTO_APPLY_TITLE;
+        const template =
+            (partnerProductSetting?.message || "").trim() ||
+            (smsConfig?.autoApplyMessage || "").trim() ||
+            DEFAULT_AUTO_APPLY_MESSAGE;
 
         const message = template
             .replaceAll("{고객명}", safeName)

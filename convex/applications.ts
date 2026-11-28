@@ -146,15 +146,12 @@ export const createApplication = mutation({
             `🕐 시간: ${now}`;
         await ctx.scheduler.runAfter(0, internal.telegram.sendTelegramNotification, { message });
 
-        const isMaeumProduct =
-            (rest.productType || "").toLowerCase().includes("maeum") ||
-            (rest.productType || "").includes("마음든든");
-
-        // 고객 상담 접수 시 즉시 정상접수완료 안내 문자 자동 발송 (마음든든 상품 전용)
-        if (isMaeumProduct && phoneInfo && phoneInfo !== "미입력") {
+        // 고객 상담 접수 시 즉시 정상접수완료 안내 문자 자동 발송 (파트너별/상품별 설정 반영)
+        if (phoneInfo && phoneInfo !== "미입력") {
             await ctx.scheduler.runAfter(0, internal.sms.sendAutoApplicationSms, {
                 applicationId: id,
                 applicationNo,
+                partnerId: rest.partnerId,
                 customerName: rest.customerName || "고객",
                 customerPhone: phoneInfo,
                 productType: rest.productType,

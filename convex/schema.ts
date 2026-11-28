@@ -44,6 +44,7 @@ export default defineSchema({
         affiliation: v.optional(v.string()), // 소속 (마음든든 파트너용)
         employeeNumber: v.optional(v.string()), // 사원번호 (마음든든 파트너용)
         departmentName: v.optional(v.string()), // 부서(팀)명 (마음든든 파트너용)
+        autoSmsSettings: v.optional(v.object({ products: v.optional(v.any()) })),
         createdAt: v.string(),
         approvedAt: v.optional(v.string()),
         approvedBy: v.optional(v.string()),

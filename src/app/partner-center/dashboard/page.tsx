@@ -24,6 +24,7 @@ import AccountManagement from "@/components/dashboard/AccountManagement";
 import ChannelMappingManagement from "@/components/dashboard/ChannelMappingManagement";
 import DataResetManagement from "@/components/dashboard/DataResetManagement";
 import SmsManagement from "@/components/dashboard/SmsManagement";
+import PartnerAutoSmsSettings from "@/components/dashboard/PartnerAutoSmsSettings";
 import { AdminIcon, AdminIconName } from "@/components/dashboard/AdminIcons";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
@@ -138,7 +139,7 @@ export default function PartnerDashboard() {
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
     const [selectedRequest, setSelectedRequest] = useState<PartnerRequest | null>(null);
     const [settingsSubTab, setSettingsSubTab] = useState<
-        "status" | "individual" | "account" | "channel" | "sms" | "reset"
+        "status" | "individual" | "account" | "channel" | "sms" | "partnerSms" | "reset"
     >("status");
     const [hqAdminSession, setHqAdminSession] = useState<any>(null);
 
@@ -2787,11 +2788,51 @@ export default function PartnerDashboard() {
                                     </div>
                                 </div>
                             ) : (
-                                <AccountManagement
-                                    partner={currentPartner}
-                                    isAdmin={false}
-                                    onRefresh={() => fetchData()}
-                                />
+                                <div className="adm-settings-layout">
+                                    <nav
+                                        className="adm-panel adm-settings-nav"
+                                        aria-label="파트너 설정 메뉴"
+                                    >
+                                        <button
+                                            type="button"
+                                            onClick={() => setSettingsSubTab("account")}
+                                            className={
+                                                settingsSubTab !== "partnerSms" ? "active" : ""
+                                            }
+                                        >
+                                            <AdminIcon name="shield" />
+                                            <span>계정 관리</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSettingsSubTab("partnerSms")}
+                                            className={
+                                                settingsSubTab === "partnerSms" ? "active" : ""
+                                            }
+                                        >
+                                            <AdminIcon name="phone" />
+                                            <span>접수 안내 문자 설정</span>
+                                        </button>
+                                    </nav>
+
+                                    <div className="min-w-0">
+                                        {settingsSubTab === "partnerSms" ? (
+                                            <PartnerAutoSmsSettings
+                                                partnerId={
+                                                    currentPartner?.partnerId ||
+                                                    partner?.partnerId ||
+                                                    ""
+                                                }
+                                            />
+                                        ) : (
+                                            <AccountManagement
+                                                partner={currentPartner}
+                                                isAdmin={false}
+                                                onRefresh={() => fetchData()}
+                                            />
+                                        )}
+                                    </div>
+                                </div>
                             )}
                         </div>
                     )}

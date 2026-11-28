@@ -372,3 +372,52 @@ export const deletePartner = mutation({
         return true;
     }
 });
+
+async function findPartnerByAnyKey(ctx: any, key: string) {
+    if (!key) return null;
+    let partner = await ctx.db
+        .query("partners")
+        .withIndex("by_partnerId", (q: any) => q.eq("partnerId", key))
+        .unique();
+    if (!partner) {
+        partner = await ctx.db
+            .query("partners")
+            .withIndex("by_loginId", (q: any) => q.eq("loginId", key))
+            .unique();
+    }
+    if (!partner) {
+        partner = await ctx.db
+            .query("partners")
+            .withIndex("by_customUrl", (q: any) => q.eq("customUrl", key))
+            .unique();
+    }
+    return partner;
+}
+
+export const getPartnerAutoSmsSettings = query({
+    args: { partnerId: v.string() },
+    handler: async (ctx, args) => {
+        const partner = await findPartnerByAnyKey(ctx, args.partnerId);
+        if (!partner) return { products: {} };
+        return partner.autoSmsSettings || { products: {} };
+    },
+});
+
+export const savePartnerAutoSmsSettings = mutation({
+    args: {
+        partnerId: v.string(),
+        autoSmsSettings: v.object({
+            products: v.optional(v.any()),
+        }),
+    },
+    handler: async (ctx, args) => {
+        const partner = await findPartnerByAnyKey(ctx, args.partnerId);
+        if (!partner) {
+            throw new Error("파트너 정보를 찾을 수 없습니다.");
+        }
+        await ctx.db.patch(partner._id, {
+            autoSmsSettings: args.autoSmsSettings,
+        });
+        return { success: true };
+    },
+});
