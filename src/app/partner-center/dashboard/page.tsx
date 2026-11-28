@@ -133,6 +133,7 @@ export default function PartnerDashboard() {
     const [copySuccessMaeum, setCopySuccessMaeum] = useState(false);
     const [copySuccessMaeumAd, setCopySuccessMaeumAd] = useState(false);
     const [copySuccessMaeumNew, setCopySuccessMaeumNew] = useState(false);
+    const [copySuccessMaeumMili, setCopySuccessMaeumMili] = useState(false);
     const [copySuccessInquiry, setCopySuccessInquiry] = useState(false);
     const [selectedOverviewStatus, setSelectedOverviewStatus] = useState("all");
     const [selectedRequest, setSelectedRequest] = useState<PartnerRequest | null>(null);
@@ -398,13 +399,15 @@ export default function PartnerDashboard() {
     const isMaeumAdVisible = !isLandingHidden && landingVisibility?.maeumAd === true;
     const isSmartCareAdVisible = !isLandingHidden && landingVisibility?.smartcareAd === true;
     const isMaeumNewVisible = !isLandingHidden && landingVisibility?.maeumNew === true;
+    const isMaeumMiliVisible = !isLandingHidden && landingVisibility?.maeumMili === true;
     const hasAnyVisibleLanding =
         isSmartCareVisible ||
         isHappy450Visible ||
         isMaeumVisible ||
         isMaeumAdVisible ||
         isSmartCareAdVisible ||
-        isMaeumNewVisible;
+        isMaeumNewVisible ||
+        isMaeumMiliVisible;
     const isLandingUrlVisible = Boolean(realTimeData) && !isLandingHidden;
 
     const fetchData = useCallback(() => {
@@ -1923,6 +1926,67 @@ export default function PartnerDashboard() {
                                                     </a>
                                                 </div>
                                             </div>
+
+                                            {/* 마음든든(밀리) - 군장병·군인가족 전용 */}
+                                            <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
+                                                <div>
+                                                    <div className="flex items-center gap-1.5 mb-3">
+                                                        <span className="adm-pill teal">군장병·군인가족</span>
+                                                        <span className="adm-pill gray">총괄 어드민 전용</span>
+                                                    </div>
+                                                    <div className="flex gap-3.5 items-start mb-4">
+                                                        <img
+                                                            src="/images/maeum/family-moment.png"
+                                                            alt="마음든든(밀리)"
+                                                            className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
+                                                        />
+                                                        <div>
+                                                            <h3 className="text-base font-bold text-[#162438] mb-1">
+                                                                마음든든(밀리)
+                                                            </h3>
+                                                            <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
+                                                                군장병·군인가족 맞춤 마음든든 5 랜딩 (조부모·부모 지정 · 5년 잔금 면제)
+                                                            </p>
+                                                            <p className="text-xs font-bold text-[#9a7840] mt-1.5">
+                                                                월 54,000원
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                        <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
+                                                            마음든든(밀리) 공식 대표 URL
+                                                        </span>
+                                                        <span className="font-semibold text-[#163a6b] truncate block">
+                                                            {baseUrl.replace(/^https?:\/\//, "")}/products/maeum-mili
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const url = `${baseUrl}/products/maeum-mili`;
+                                                            navigator.clipboard.writeText(url).then(() => {
+                                                                setCopySuccessMaeumMili(true);
+                                                                setTimeout(() => setCopySuccessMaeumMili(false), 2000);
+                                                            });
+                                                        }}
+                                                        className={`adm-btn ${copySuccessMaeumMili ? "primary" : "sage"}`}
+                                                    >
+                                                        <AdminIcon name={copySuccessMaeumMili ? "check" : "copy"} />
+                                                        <span>{copySuccessMaeumMili ? "복사 완료!" : "URL 복사"}</span>
+                                                    </button>
+                                                    <a
+                                                        href="/products/maeum-mili"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="adm-btn primary"
+                                                    >
+                                                        <span>페이지 이동</span>
+                                                        <AdminIcon name="external" />
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </>
                                 ) : isLandingUrlVisible && partner?.customUrl ? (
@@ -2303,6 +2367,68 @@ export default function PartnerDashboard() {
                                                                 </button>
                                                                 <a
                                                                     href={`/${partner.customUrl}/maeum-new`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="adm-btn primary"
+                                                                >
+                                                                    <span>페이지 이동</span>
+                                                                    <AdminIcon name="external" />
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {isMaeumMiliVisible && (
+                                                        <div className="adm-panel p-5 flex flex-col justify-between hover:border-[#9cb2cf] transition-all">
+                                                            <div>
+                                                                <div className="flex items-center gap-1.5 mb-3">
+                                                                    <span className="adm-pill teal">군장병·군인가족</span>
+                                                                    <span className="adm-pill green">5년 잔금 면제</span>
+                                                                </div>
+                                                                <div className="flex gap-3.5 items-start mb-4">
+                                                                    <img
+                                                                        src="/images/maeum/family-moment.png"
+                                                                        alt="마음든든(밀리)"
+                                                                        className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-[10px] shrink-0 border border-[#e1e7f0]"
+                                                                    />
+                                                                    <div>
+                                                                        <h3 className="text-base font-bold text-[#162438] mb-1">
+                                                                            마음든든(밀리)
+                                                                        </h3>
+                                                                        <p className="text-xs text-[#68778c] line-clamp-2 leading-relaxed">
+                                                                            군장병·군인가족 맞춤 마음든든 5 랜딩 (조부모·부모 지정 · 5년 잔금 면제)
+                                                                        </p>
+                                                                        <p className="text-xs font-bold text-[#9a7840] mt-1.5">
+                                                                            월 54,000원
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="bg-[#f6f8fc] border border-[#e1e7f0] p-2.5 rounded-[9px] mb-3.5 font-mono text-xs truncate">
+                                                                    <span className="text-[#788699] font-sans block text-[10px] font-semibold mb-0.5">
+                                                                        마음든든(밀리) 파트너 전용 URL
+                                                                    </span>
+                                                                    <span className="font-semibold text-[#163a6b] truncate block">
+                                                                        {baseUrl.replace(/^https?:\/\//, "")}/{partner.customUrl}/maeum-mili
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eaeff7]">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const url = `${baseUrl}/${partner.customUrl}/maeum-mili`;
+                                                                        navigator.clipboard.writeText(url).then(() => {
+                                                                            setCopySuccessMaeumMili(true);
+                                                                            setTimeout(() => setCopySuccessMaeumMili(false), 2000);
+                                                                        });
+                                                                    }}
+                                                                    className={`adm-btn ${copySuccessMaeumMili ? "primary" : "sage"}`}
+                                                                >
+                                                                    <AdminIcon name={copySuccessMaeumMili ? "check" : "copy"} />
+                                                                    <span>{copySuccessMaeumMili ? "복사 완료!" : "URL 복사"}</span>
+                                                                </button>
+                                                                <a
+                                                                    href={`/${partner.customUrl}/maeum-mili`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
                                                                     className="adm-btn primary"

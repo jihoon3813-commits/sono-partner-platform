@@ -23,6 +23,7 @@ function getLandingBadge(p: Partner) {
     const maeumAd = !isHidden && lv?.maeumAd === true;
     const smartcareAd = !isHidden && lv?.smartcareAd === true;
     const maeumNew = !isHidden && lv?.maeumNew === true;
+    const maeumMili = !isHidden && lv?.maeumMili === true;
 
     const count =
         (smartcare ? 1 : 0) +
@@ -30,7 +31,8 @@ function getLandingBadge(p: Partner) {
         (maeum ? 1 : 0) +
         (maeumAd ? 1 : 0) +
         (smartcareAd ? 1 : 0) +
-        (maeumNew ? 1 : 0);
+        (maeumNew ? 1 : 0) +
+        (maeumMili ? 1 : 0);
 
     if (count === 0) {
         return (
@@ -40,9 +42,9 @@ function getLandingBadge(p: Partner) {
         );
     }
 
-    if (count === 6) {
+    if (count === 7) {
         return (
-            <span className="adm-pill blue" title="공식 상품 대표 URL 6종 전체 노출">
+            <span className="adm-pill blue" title="공식 상품 대표 URL 7종 전체 노출">
                 URL 전체노출
             </span>
         );
@@ -55,10 +57,11 @@ function getLandingBadge(p: Partner) {
     if (maeumAd) visibleItems.push("마음든든(광고)");
     if (smartcareAd) visibleItems.push("스마트케어(광고)");
     if (maeumNew) visibleItems.push("마음든든(new)");
+    if (maeumMili) visibleItems.push("마음든든(밀리)");
 
     return (
         <span className="adm-pill orange" title={`노출: ${visibleItems.join(", ")}`}>
-            URL 부분({count}/6)
+            URL 부분({count}/7)
         </span>
     );
 }

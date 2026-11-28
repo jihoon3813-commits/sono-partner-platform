@@ -200,6 +200,23 @@ export const submitMaeumContract = mutation({
     handler: async (ctx, args) => {
         const now = nowKST();
 
+        // "전자서명완료" 상태값이 applicationStatuses에 없으면 자동 생성
+        const existingSignedStatus = await ctx.db
+            .query("applicationStatuses")
+            .filter((q) => q.eq(q.field("label"), "전자서명완료"))
+            .first();
+        if (!existingSignedStatus) {
+            const allStatuses = await ctx.db.query("applicationStatuses").collect();
+            await ctx.db.insert("applicationStatuses", {
+                label: "전자서명완료",
+                color: "#0f766e",
+                order: allStatuses.length > 0 ? 2 : 1,
+                isActive: true,
+                isSystem: true,
+                isPartnerVisible: true,
+            });
+        }
+
         if (args.applicationId) {
             const existing = await ctx.db.get(args.applicationId);
             if (existing) {
@@ -213,6 +230,7 @@ export const submitMaeumContract = mutation({
                     customerEmail: args.customerEmail || "",
                     customerAddress: args.customerAddress || "",
                     customerZipcode: args.customerZipcode || "",
+                    status: "전자서명완료",
                     updatedAt: now,
                     contractTemplateId: args.contractTemplateId,
                     contractData: args.contractData,
@@ -225,7 +243,7 @@ export const submitMaeumContract = mutation({
                     historyId: `SH-${Date.now()}`,
                     applicationNo: existing.applicationNo,
                     previousStatus: existing.status || "접수대기",
-                    newStatus: existing.status || "접수대기",
+                    newStatus: "전자서명완료",
                     changedBy: "전자계약",
                     changedAt: now,
                     memo: "마음든든 전자계약 서명 완료",
@@ -265,7 +283,7 @@ export const submitMaeumContract = mutation({
             customerZipcode: args.customerZipcode || "",
             inquiry: args.inquiry || "마음든든 전자계약 신청",
             accessPath: args.accessPath || "D",
-            status: "접수대기",
+            status: "전자서명완료",
             assignedTo: "",
             createdAt: now,
             updatedAt: now,
@@ -280,7 +298,7 @@ export const submitMaeumContract = mutation({
             historyId: `SH-${Date.now()}`,
             applicationNo,
             previousStatus: "-",
-            newStatus: "접수대기",
+            newStatus: "전자서명완료",
             changedBy: "전자계약",
             changedAt: now,
             memo: "마음든든 전자계약 신청 완료",

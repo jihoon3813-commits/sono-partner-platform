@@ -71,6 +71,7 @@ export default function PartnerFormModal({
             maeumAd: false,
             smartcareAd: false,
             maeumNew: false,
+            maeumMili: false,
         },
         customUrl: "",
         logoUrl: "",
@@ -125,6 +126,7 @@ export default function PartnerFormModal({
                     maeumAd: partner.landingVisibility?.maeumAd === true,
                     smartcareAd: partner.landingVisibility?.smartcareAd === true,
                     maeumNew: partner.landingVisibility?.maeumNew === true,
+                    maeumMili: partner.landingVisibility?.maeumMili === true,
                 },
                 customUrl: partner.customUrl || "",
                 logoUrl: partner.logoUrl || "",
@@ -166,6 +168,7 @@ export default function PartnerFormModal({
                     maeumAd: initialData.landingVisibility?.maeumAd === true,
                     smartcareAd: initialData.landingVisibility?.smartcareAd === true,
                     maeumNew: initialData.landingVisibility?.maeumNew === true,
+                    maeumMili: initialData.landingVisibility?.maeumMili === true,
                 },
                 status: "active",
                 role: (initialData.role || "master") as "master" | "tm",
@@ -253,7 +256,14 @@ export default function PartnerFormModal({
     const formatPhone = (val: string) => formatPhoneNumber(val);
 
     const handleToggleLanding = (
-        key: "smartcare" | "happy450" | "maeum" | "maeumAd" | "smartcareAd" | "maeumNew"
+        key:
+            | "smartcare"
+            | "happy450"
+            | "maeum"
+            | "maeumAd"
+            | "smartcareAd"
+            | "maeumNew"
+            | "maeumMili"
     ) => {
         setFormData((prev) => {
             const currentLv = prev.landingVisibility || {
@@ -263,6 +273,7 @@ export default function PartnerFormModal({
                 maeumAd: false,
                 smartcareAd: false,
                 maeumNew: false,
+                maeumMili: false,
             };
             const nextLv = {
                 ...currentLv,
@@ -274,7 +285,8 @@ export default function PartnerFormModal({
                 nextLv.maeum ||
                 nextLv.maeumAd ||
                 nextLv.smartcareAd ||
-                nextLv.maeumNew
+                nextLv.maeumNew ||
+                nextLv.maeumMili
             );
             return {
                 ...prev,
@@ -295,6 +307,7 @@ export default function PartnerFormModal({
                 maeumAd: visible,
                 smartcareAd: visible,
                 maeumNew: visible,
+                maeumMili: visible,
             },
         }));
     };
@@ -386,6 +399,7 @@ export default function PartnerFormModal({
                     maeumAd: partner.landingVisibility?.maeumAd === true,
                     smartcareAd: partner.landingVisibility?.smartcareAd === true,
                     maeumNew: partner.landingVisibility?.maeumNew === true,
+                    maeumMili: partner.landingVisibility?.maeumMili === true,
                 };
             }
 
@@ -438,6 +452,7 @@ export default function PartnerFormModal({
         maeumAd: false,
         smartcareAd: false,
         maeumNew: false,
+        maeumMili: false,
     };
     const visibleCount =
         (lv.smartcare ? 1 : 0) +
@@ -445,7 +460,8 @@ export default function PartnerFormModal({
         (lv.maeum ? 1 : 0) +
         (lv.maeumAd ? 1 : 0) +
         (lv.smartcareAd ? 1 : 0) +
-        (lv.maeumNew ? 1 : 0);
+        (lv.maeumNew ? 1 : 0) +
+        (lv.maeumMili ? 1 : 0);
     const landingOptions = [
         {
             key: "smartcare" as const,
@@ -506,6 +522,16 @@ export default function PartnerFormModal({
                 ? `/${formData.customUrl}/maeum-new`
                 : "/products/maeum-new",
             isVisible: !!lv.maeumNew,
+        },
+        {
+            key: "maeumMili" as const,
+            name: "마음든든(밀리)",
+            badge: "군장병·가족",
+            price: "월 54,000원",
+            path: formData.customUrl
+                ? `/${formData.customUrl}/maeum-mili`
+                : "/products/maeum-mili",
+            isVisible: !!lv.maeumMili,
         },
     ];
 
@@ -1043,7 +1069,7 @@ export default function PartnerFormModal({
                                     type="button"
                                     onClick={() => handleSetAllLandings(true)}
                                     className={`adm-btn small !py-1 !px-2 !min-h-[25px] ${
-                                        visibleCount === 6 ? "primary" : ""
+                                        visibleCount === 7 ? "primary" : ""
                                     }`}
                                 >
                                     전체 노출

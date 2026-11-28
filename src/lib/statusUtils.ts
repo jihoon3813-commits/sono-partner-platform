@@ -99,6 +99,8 @@ export const getLegacyStatusStyles = (status: string) => {
             return 'bg-blue-50 text-blue-600 border border-blue-100';
         case '접수완료':
             return 'bg-blue-50 text-blue-600 border border-blue-100';
+        case '전자서명완료':
+            return 'bg-teal-50 text-teal-700 border border-teal-200';
         case '상담중':
             return 'bg-amber-50 text-amber-600 border border-amber-100';
         case '부재':

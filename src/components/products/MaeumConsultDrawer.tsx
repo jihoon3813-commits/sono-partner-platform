@@ -9,6 +9,7 @@ interface MaeumConsultDrawerProps {
     onClose: () => void;
     initialPlan?: "3" | "4" | "5";
     initialTarget?: "부모님" | "본인" | "조부모님";
+    theme?: "green" | "beige";
     partnerId?: string;
     partnerUrl?: string;
     partnerName?: string;
@@ -43,6 +44,7 @@ export default function MaeumConsultDrawer({
     onClose,
     initialPlan = "5",
     initialTarget = "부모님",
+    theme = "green",
     partnerId = "",
     partnerUrl = "",
     partnerName = "",
@@ -178,20 +180,22 @@ export default function MaeumConsultDrawer({
         }
     };
 
+    const themeClass = theme === "beige" ? "theme-beige" : "";
+
     return (
         <div
-            className="ec-drawer-overlay"
+            className={`ec-drawer-overlay ${themeClass}`}
             role="dialog"
             aria-modal="true"
             aria-label="마음든든 빠른 상담 신청"
             onClick={handleClose}
         >
-            <aside className="ec-drawer" onClick={(e) => e.stopPropagation()}>
+            <aside className={`ec-drawer ${themeClass}`} onClick={(e) => e.stopPropagation()}>
                 {/* Topbar */}
                 <div className="ec-topbar">
                     <div className="ec-brand">
                         <span className="ec-brand-mark">M</span>
-                        <span>{productNamePrefix} 빠른 상담 신청</span>
+                        <span>마음든든 빠른 상담 신청</span>
                     </div>
                     <button type="button" className="ec-close-btn" onClick={handleClose}>
                         닫기 ✕
@@ -230,7 +234,7 @@ export default function MaeumConsultDrawer({
                                 </p>
                                 <div className="mc-done-summary">
                                     <div><strong>접수번호:</strong> {submittedNo}</div>
-                                    <div><strong>신청상품:</strong> {productNamePrefix} {selectedPlanInfo.key} (월 {selectedPlanInfo.price.toLocaleString("ko-KR")}원)</div>
+                                    <div><strong>신청상품:</strong> {selectedPlanInfo.label} (월 {selectedPlanInfo.price.toLocaleString("ko-KR")}원)</div>
                                     {activeGift && (
                                         <div><strong>선택 사은품:</strong> 🎁 {activeGift.name}</div>
                                     )}
@@ -288,7 +292,7 @@ export default function MaeumConsultDrawer({
                                                 className={`mc-plan-btn ${plan === opt.key ? "active" : ""}`}
                                                 onClick={() => setPlan(opt.key)}
                                             >
-                                                <strong>{productNamePrefix} {opt.key}</strong>
+                                                <strong>{opt.label}</strong>
                                                 <span>월 {opt.price.toLocaleString("ko-KR")}원</span>
                                             </button>
                                         ))}

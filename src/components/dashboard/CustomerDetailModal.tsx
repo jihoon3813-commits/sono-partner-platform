@@ -522,6 +522,7 @@ export default function CustomerDetailModal({
 
     const defaultStatusOptions: string[] = [
         "접수대기",
+        "전자서명완료",
         "접수완료",
         "부재",
         "보류",

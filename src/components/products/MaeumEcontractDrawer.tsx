@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import {
     ContractFieldDef,
@@ -15,6 +15,7 @@ interface MaeumEcontractDrawerProps {
     isOpen?: boolean;
     onClose?: () => void;
     initialPlan?: "3" | "4" | "5";
+    theme?: "green" | "beige";
     partnerId?: string;
     partnerUrl?: string;
     partnerName?: string;
@@ -33,9 +34,9 @@ interface MaeumEcontractDrawerProps {
 }
 
 const PRODUCTS = [
-    { key: "3" as const, name: "마음든든 3", month: 32000, total: 3072000, cnt: 96 },
-    { key: "4" as const, name: "마음든든 4", month: 43000, total: 4128000, cnt: 96 },
-    { key: "5" as const, name: "마음든든 5", month: 54000, total: 5184000, cnt: 96 },
+    { key: "3" as const, name: "마음든든 3", month: 32000, total: 3072000, cnt: 96, hidden: true },
+    { key: "4" as const, name: "마음든든 4", month: 43000, total: 4128000, cnt: 96, hidden: true },
+    { key: "5" as const, name: "마음든든 5", month: 54000, total: 5184000, cnt: 96, hidden: false },
 ];
 
 const STEP_NAMES = ["상품 선택", "가입자 정보", "결제 정보", "약관·서명", "계약서 확인"];
@@ -187,7 +188,8 @@ export default function MaeumEcontractDrawer({
     variant = "drawer",
     isOpen = false,
     onClose,
-    initialPlan = "4",
+    initialPlan = "5",
+    theme = "green",
     partnerId = "",
     partnerUrl = "",
     partnerName = "",
@@ -211,16 +213,33 @@ export default function MaeumEcontractDrawer({
     const activeTemplate = useQuery(api.maeumContracts.getActiveTemplate);
     const generateUploadUrl = useMutation(api.maeumContracts.generateUploadUrl);
     const submitMaeumContract = useMutation(api.maeumContracts.submitMaeumContract);
+    const requestPhoneOtp = useAction(api.sms.requestPhoneOtp);
+    const verifyPhoneOtp = useMutation(api.sms.verifyPhoneOtp);
+
+    // Step 0: Phone OTP Verification Gate
+    const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+    const [authName, setAuthName] = useState("");
+    const [authPhone, setAuthPhone] = useState("");
+    const [authCode, setAuthCode] = useState("");
+    const [otpSent, setOtpSent] = useState(false);
+    const [otpSending, setOtpSending] = useState(false);
+    const [otpVerifying, setOtpVerifying] = useState(false);
+    const [otpError, setOtpError] = useState("");
+    const [resendCooldown, setResendCooldown] = useState(0);
+    const [otpExpiresIn, setOtpExpiresIn] = useState(0);
 
     const [isSubmittingPdf, setIsSubmittingPdf] = useState(false);
     const [submittedResult, setSubmittedResult] = useState<{
         applicationNo: string;
         pdfBytes?: Uint8Array;
     } | null>(null);
+    const [showCompleteAlert, setShowCompleteAlert] = useState(false);
     const [step, setStep] = useState(1);
     const [chosenIdx, setChosenIdx] = useState(() => {
-        const idx = PRODUCTS.findIndex((p) => p.key === initialPlan);
-        return idx >= 0 ? idx : 1;
+        const idx = PRODUCTS.findIndex((p) => p.key === initialPlan && !p.hidden);
+        if (idx >= 0) return idx;
+        const firstVisible = PRODUCTS.findIndex((p) => !p.hidden);
+        return firstVisible >= 0 ? firstVisible : 0;
     });
 
     // Step 2: Subscriber & Beneficiary
@@ -272,11 +291,91 @@ export default function MaeumEcontractDrawer({
     const isDrawingRef = useRef(false);
     const contractRef = useRef<HTMLElement>(null);
 
+    useEffect(() => {
+        if (resendCooldown <= 0 && otpExpiresIn <= 0) return;
+        const timer = window.setInterval(() => {
+            setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+            setOtpExpiresIn((prev) => (prev > 0 ? prev - 1 : 0));
+        }, 1000);
+        return () => window.clearInterval(timer);
+    }, [resendCooldown, otpExpiresIn]);
+
+    const handleSendOtp = async () => {
+        setOtpError("");
+        const trimmedName = authName.trim();
+        const digits = authPhone.replace(/\D/g, "");
+        if (!trimmedName) {
+            setOtpError("계약자 성명을 입력해 주세요.");
+            return;
+        }
+        if (digits.length < 10 || !digits.startsWith("01")) {
+            setOtpError("올바른 휴대폰 번호(010 등)를 입력해 주세요.");
+            return;
+        }
+
+        setOtpSending(true);
+        try {
+            const res = await requestPhoneOtp({
+                name: trimmedName,
+                phone: digits,
+            });
+            if (!res?.ok) {
+                setOtpError(res?.error || "인증번호 발송에 실패했습니다.");
+                return;
+            }
+            setOtpSent(true);
+            setAuthCode("");
+            setResendCooldown(30);
+            setOtpExpiresIn(300);
+        } catch (err: any) {
+            setOtpError(err?.message || "인증번호 발송 중 오류가 발생했습니다.");
+        } finally {
+            setOtpSending(false);
+        }
+    };
+
+    const handleVerifyOtp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setOtpError("");
+        const digits = authPhone.replace(/\D/g, "");
+        const trimmedCode = authCode.trim();
+        if (trimmedCode.length !== 6) {
+            setOtpError("문자로 받은 6자리 인증번호를 입력해 주세요.");
+            return;
+        }
+
+        setOtpVerifying(true);
+        try {
+            const res = await verifyPhoneOtp({
+                phone: digits,
+                code: trimmedCode,
+            });
+            if (!res?.ok) {
+                setOtpError(res?.error || "인증번호 확인에 실패했습니다.");
+                return;
+            }
+            setName(res.verifiedName || authName.trim());
+            setPhone(formatPhoneInput(res.verifiedPhone || digits));
+            setIsPhoneVerified(true);
+            setStep(1);
+            scrollTop();
+        } catch (err: any) {
+            setOtpError(err?.message || "인증 확인 중 오류가 발생했습니다.");
+        } finally {
+            setOtpVerifying(false);
+        }
+    };
+
     // Sync initialPlan when drawer opens
     useEffect(() => {
         if (effectiveOpen) {
-            const idx = PRODUCTS.findIndex((p) => p.key === initialPlan);
-            if (idx >= 0) setChosenIdx(idx);
+            const idx = PRODUCTS.findIndex((p) => p.key === initialPlan && !p.hidden);
+            if (idx >= 0) {
+                setChosenIdx(idx);
+            } else {
+                const firstVisible = PRODUCTS.findIndex((p) => !p.hidden);
+                if (firstVisible >= 0) setChosenIdx(firstVisible);
+            }
         }
     }, [effectiveOpen, initialPlan]);
 
@@ -284,8 +383,15 @@ export default function MaeumEcontractDrawer({
     useEffect(() => {
         if (!prefill || prefillAppliedRef.current) return;
         prefillAppliedRef.current = true;
-        if (prefill.customerName) setName(prefill.customerName);
-        if (prefill.customerPhone) setPhone(formatPhoneInput(prefill.customerPhone));
+        if (prefill.customerName) {
+            setName(prefill.customerName);
+            setAuthName(prefill.customerName);
+        }
+        if (prefill.customerPhone) {
+            const formatted = formatPhoneInput(prefill.customerPhone);
+            setPhone(formatted);
+            setAuthPhone(formatted);
+        }
         if (prefill.customerBirth) {
             const digits = prefill.customerBirth.replace(/\D/g, "").slice(0, 8);
             if (digits) setBirth(digits);
@@ -756,6 +862,7 @@ export default function MaeumEcontractDrawer({
                 applicationNo: res.applicationNo,
                 pdfBytes,
             });
+            setShowCompleteAlert(true);
 
             triggerPdfDownload(
                 pdfBytes,
@@ -845,6 +952,7 @@ export default function MaeumEcontractDrawer({
                     </div>
 
                     {/* Stepper */}
+                    {isPhoneVerified && (
                     <div className="ec-stepper" aria-label="진행 단계">
                         {STEP_NAMES.map((label, i) => {
                             const idx = i + 1;
@@ -869,8 +977,117 @@ export default function MaeumEcontractDrawer({
                             );
                         })}
                     </div>
+                    )}
 
                     <main className="ec-content">
+                        {!isPhoneVerified ? (
+                            <section className="ec-panel">
+                                <div className="ec-section-head">
+                                    <div>
+                                        <h2>휴대폰 본인인증</h2>
+                                        <p>안전한 전자계약 진행을 위해 계약자 본인의 휴대폰 인증을 먼저 완료해 주세요.</p>
+                                    </div>
+                                    <span className="ec-small-tag">본인확인</span>
+                                </div>
+
+                                <form onSubmit={handleVerifyOtp} className="ec-field-grid">
+                                    <div className="ec-field full">
+                                        <label className="ec-label" htmlFor="ec-auth-name">
+                                            계약자 성명 <i className="ec-required">필수</i>
+                                        </label>
+                                        <input
+                                            id="ec-auth-name"
+                                            className="ec-input"
+                                            type="text"
+                                            placeholder="예) 홍길동"
+                                            value={authName}
+                                            onChange={(e) => setAuthName(e.target.value)}
+                                            disabled={otpSent && isPhoneVerified}
+                                        />
+                                    </div>
+
+                                    <div className="ec-field full">
+                                        <label className="ec-label" htmlFor="ec-auth-phone">
+                                            휴대폰 번호 <i className="ec-required">필수</i>
+                                        </label>
+                                        <div style={{ display: "flex", gap: "8px" }}>
+                                            <input
+                                                id="ec-auth-phone"
+                                                className="ec-input"
+                                                type="tel"
+                                                inputMode="numeric"
+                                                placeholder="010-0000-0000"
+                                                value={authPhone}
+                                                onChange={(e) => setAuthPhone(formatPhoneInput(e.target.value))}
+                                                style={{ flex: 1 }}
+                                            />
+                                            <button
+                                                type="button"
+                                                className="ec-mini-btn"
+                                                onClick={handleSendOtp}
+                                                disabled={otpSending || resendCooldown > 0}
+                                                style={{ whiteSpace: "nowrap", minWidth: "110px" }}
+                                            >
+                                                {otpSending
+                                                    ? "발송 중..."
+                                                    : resendCooldown > 0
+                                                    ? `재발송 (${resendCooldown}s)`
+                                                    : otpSent
+                                                    ? "인증번호 재발송"
+                                                    : "인증번호 받기"}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {otpSent && (
+                                        <div className="ec-field full">
+                                            <label className="ec-label" htmlFor="ec-auth-code">
+                                                인증번호 6자리 <i className="ec-required">필수</i>
+                                                {otpExpiresIn > 0 && (
+                                                    <span style={{ marginLeft: "8px", fontSize: "12px", fontWeight: 700, color: "#24564f" }}>
+                                                        남은 시간 {String(Math.floor(otpExpiresIn / 60)).padStart(2, "0")}:
+                                                        {String(otpExpiresIn % 60).padStart(2, "0")}
+                                                    </span>
+                                                )}
+                                            </label>
+                                            <input
+                                                id="ec-auth-code"
+                                                className="ec-input"
+                                                type="text"
+                                                inputMode="numeric"
+                                                maxLength={6}
+                                                placeholder="숫자 6자리 입력"
+                                                value={authCode}
+                                                onChange={(e) => setAuthCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                                            />
+                                            <p className="ec-hint" style={{ marginTop: "6px" }}>
+                                                입력하신 번호로 발송된 문자(SMS)의 6자리 인증번호를 입력해 주세요.
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {otpError && (
+                                        <div className="ec-field full">
+                                            <p className="ec-error" role="alert" style={{ margin: 0 }}>
+                                                {otpError}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    <div className="ec-field full" style={{ marginTop: "6px" }}>
+                                        <button
+                                            type="submit"
+                                            className="ec-primary-btn"
+                                            disabled={!otpSent || otpVerifying || authCode.length !== 6}
+                                            style={{ width: "100%" }}
+                                        >
+                                            {otpVerifying ? "인증 확인 중..." : "인증 완료하고 전자계약 시작하기 →"}
+                                        </button>
+                                    </div>
+                                </form>
+                            </section>
+                        ) : (
+                        <>
                         {/* Step 1: Product Selection */}
                         {step === 1 && (
                             <section className="ec-panel">
@@ -883,7 +1100,9 @@ export default function MaeumEcontractDrawer({
                                 </div>
 
                                 <div className="ec-product-list">
-                                    {PRODUCTS.map((p, idx) => (
+                                    {PRODUCTS.map((p, idx) => {
+                                        if (p.hidden) return null;
+                                        return (
                                         <button
                                             key={p.key}
                                             type="button"
@@ -907,7 +1126,8 @@ export default function MaeumEcontractDrawer({
                                                 </span>
                                             </span>
                                         </button>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
 
                                 <div className="ec-summary-band">
@@ -1106,9 +1326,28 @@ export default function MaeumEcontractDrawer({
                                             <option value="">관계를 선택해 주세요</option>
                                             <option value="본인">본인</option>
                                             <option value="배우자">배우자</option>
-                                            <option value="직계존속">직계존속</option>
-                                            <option value="직계비속">직계비속</option>
+                                            <option value="직계존속">직계존속 (부모·조부모 등 윗세대)</option>
+                                            <option value="직계비속">직계비속 (자녀·손자녀 등 아랫세대)</option>
                                         </select>
+                                        <div
+                                            style={{
+                                                marginTop: "8px",
+                                                padding: "10px 12px",
+                                                borderRadius: "10px",
+                                                background: "#f5f7f2",
+                                                border: "1px solid #dce5d8",
+                                                fontSize: "12px",
+                                                lineHeight: 1.55,
+                                                color: "#46544b",
+                                            }}
+                                        >
+                                            <div>
+                                                <strong style={{ color: "#193f39" }}>· 직계존속</strong>: 가입자 본인을 기준으로 윗세대 직계혈족 (부모, 조부모, 외조부모 등)
+                                            </div>
+                                            <div>
+                                                <strong style={{ color: "#193f39" }}>· 직계비속</strong>: 가입자 본인을 기준으로 아랫세대 직계혈족 (자녀, 손자·손녀 등)
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div className="ec-field full">
@@ -1754,10 +1993,13 @@ export default function MaeumEcontractDrawer({
                                 )}
                             </section>
                         )}
+                        </>
+                        )}
                     </main>
                 </div>
 
                 {/* Sticky Footer Bar */}
+                {isPhoneVerified && (
                 <footer className="ec-footbar">
                     <div className="ec-bar-inner">
                         {step > 1 && step < 5 && (
@@ -1790,6 +2032,156 @@ export default function MaeumEcontractDrawer({
                         ))}
                     </div>
                 </footer>
+                )}
+
+                {/* Completion Alert Modal */}
+                {showCompleteAlert && submittedResult && (
+                    <div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="ec-complete-title"
+                        onClick={() => setShowCompleteAlert(false)}
+                        style={{
+                            position: "fixed",
+                            inset: 0,
+                            zIndex: 120,
+                            background: "rgba(15, 36, 30, 0.55)",
+                            backdropFilter: "blur(4px)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: "20px",
+                        }}
+                    >
+                        <div
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                                width: "100%",
+                                maxWidth: "390px",
+                                background: "#fffefa",
+                                borderRadius: "20px",
+                                padding: "30px 24px 24px",
+                                boxShadow: "0 24px 60px rgba(15, 36, 30, 0.28)",
+                                border: "1px solid #d7e2d3",
+                                textAlign: "center",
+                            }}
+                        >
+                            <div
+                                style={{
+                                    width: "58px",
+                                    height: "58px",
+                                    borderRadius: "999px",
+                                    background: "linear-gradient(145deg, #193f39, #2b675b)",
+                                    color: "#fffefa",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    boxShadow: "0 10px 22px rgba(25, 63, 57, 0.28)",
+                                    marginBottom: "14px",
+                                }}
+                            >
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                            </div>
+
+                            <div
+                                style={{
+                                    fontSize: "10.5px",
+                                    fontWeight: 800,
+                                    letterSpacing: "0.1em",
+                                    color: "#326d60",
+                                    marginBottom: "6px",
+                                }}
+                            >
+                                E-CONTRACT COMPLETE
+                            </div>
+
+                            <h3
+                                id="ec-complete-title"
+                                style={{
+                                    margin: "0 0 8px",
+                                    fontSize: "20px",
+                                    fontWeight: 800,
+                                    color: "#193f39",
+                                    letterSpacing: "-0.02em",
+                                }}
+                            >
+                                전자계약 접수가 완료되었습니다!
+                            </h3>
+
+                            <p
+                                style={{
+                                    margin: "0 0 18px",
+                                    fontSize: "13px",
+                                    lineHeight: 1.55,
+                                    color: "#5b695e",
+                                }}
+                            >
+                                작성하신 계약서와 전자서명이 안전하게 저장되었습니다.
+                                <br />
+                                담당 상담원이 확인 후 순차적으로 안내드리겠습니다.
+                            </p>
+
+                            <div
+                                style={{
+                                    background: "#f4f7f1",
+                                    border: "1px solid #dbe5d6",
+                                    borderRadius: "12px",
+                                    padding: "13px 15px",
+                                    textAlign: "left",
+                                    fontSize: "12.5px",
+                                    lineHeight: 1.7,
+                                    color: "#334239",
+                                    marginBottom: "20px",
+                                }}
+                            >
+                                <div style={{ display: "flex", justifyContent: "space-between", gap: "10px" }}>
+                                    <span style={{ color: "#6a786e" }}>신청번호</span>
+                                    <strong style={{ color: "#193f39", fontFamily: "monospace" }}>
+                                        {submittedResult.applicationNo}
+                                    </strong>
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", gap: "10px" }}>
+                                    <span style={{ color: "#6a786e" }}>가입상품</span>
+                                    <strong>
+                                        {currentProduct.name} (월 {won(currentProduct.month)})
+                                    </strong>
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", gap: "10px" }}>
+                                    <span style={{ color: "#6a786e" }}>계약자</span>
+                                    <strong>
+                                        {name.trim() || "-"} · {phone.trim() || "-"}
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div style={{ display: "grid", gap: "8px" }}>
+                                <button
+                                    type="button"
+                                    className="ec-primary-btn"
+                                    onClick={handleSaveAndDownloadPdf}
+                                    style={{ width: "100%" }}
+                                >
+                                    계약서 PDF 다운로드
+                                </button>
+                                <button
+                                    type="button"
+                                    className="ec-mini-btn"
+                                    onClick={() => setShowCompleteAlert(false)}
+                                    style={{
+                                        width: "100%",
+                                        padding: "11px 14px",
+                                        fontSize: "13.5px",
+                                        fontWeight: 700,
+                                    }}
+                                >
+                                    확인
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Address Search Dialog inside Drawer */}
                 {addrModalOpen && (
@@ -1835,18 +2227,20 @@ export default function MaeumEcontractDrawer({
         </>
     );
 
+    const themeClass = theme === "beige" ? "theme-beige" : "";
+
     if (isPage) {
-        return <div className="ec-page-shell"><div className="ec-drawer ec-page-container">{containerContent}</div></div>;
+        return <div className="ec-page-shell"><div className={`ec-drawer ec-page-container ${themeClass}`}>{containerContent}</div></div>;
     }
 
     return (
         <div
-            className="ec-drawer-overlay"
+            className={`ec-drawer-overlay ${themeClass}`}
             role="dialog"
             aria-modal="true"
             aria-label="마음든든 전자계약"
         >
-            <aside className="ec-drawer" onClick={(e) => e.stopPropagation()}>
+            <aside className={`ec-drawer ${themeClass}`} onClick={(e) => e.stopPropagation()}>
                 {containerContent}
             </aside>
         </div>

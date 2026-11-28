@@ -2126,3 +2126,222 @@ export const sendAutoApplicationSms = internalAction({
         }
     },
 });
+
+export const createPhoneOtpInternal = internalMutation({
+    args: {
+        name: v.string(),
+        phone: v.string(),
+        code: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const now = Date.now();
+        const latest = await ctx.db
+            .query("phone_verifications")
+            .withIndex("by_phone_and_createdAt", (q) => q.eq("phone", args.phone))
+            .order("desc")
+            .first();
+
+        if (latest && now - latest.createdAt < 30_000) {
+            const waitSec = Math.ceil((30_000 - (now - latest.createdAt)) / 1000);
+            return {
+                ok: false as const,
+                error: `${waitSec}초 후에 다시 요청해 주세요.`,
+            };
+        }
+
+        const expiresAt = now + 5 * 60 * 1000;
+        const verificationId = await ctx.db.insert("phone_verifications", {
+            phone: args.phone,
+            name: args.name,
+            code: args.code,
+            attempts: 0,
+            verified: false,
+            expiresAt,
+            createdAt: now,
+        });
+
+        const smsConfig = await getSmsConfigFromDb(ctx);
+        return {
+            ok: true as const,
+            verificationId,
+            expiresAt,
+            smsConfig,
+        };
+    },
+});
+
+export const enqueueOtpOutboxInternal = internalMutation({
+    args: {
+        name: v.string(),
+        phone: v.string(),
+        message: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const now = Date.now();
+        const smsLogId = await ctx.db.insert("sms_logs", {
+            customerName: args.name,
+            customerPhone: args.phone,
+            smsType: "본인인증",
+            message: args.message,
+            status: "발송대기",
+            senderName: "본인인증",
+            direction: "outbound",
+            createdAt: now,
+        });
+
+        const outboxId = await ctx.db.insert("sms_outbox", {
+            smsLogId,
+            receiverPhone: args.phone,
+            message: args.message,
+            status: "pending",
+            createdAt: now,
+            updatedAt: now,
+        });
+
+        const smsConfig = await getSmsConfigFromDb(ctx);
+        if (isAligoAutoFallbackEnabled(smsConfig)) {
+            await ctx.scheduler.runAfter(6_000, internal.sms.processOutboxFallback, {
+                outboxId,
+            });
+        }
+        return { outboxId, smsLogId };
+    },
+});
+
+export const requestPhoneOtp = action({
+    args: {
+        name: v.string(),
+        phone: v.string(),
+    },
+    handler: async (
+        ctx,
+        args
+    ): Promise<{ ok: boolean; error?: string; expiresAt?: number }> => {
+        const trimmedName = args.name.trim();
+        const normalizedPhone = normalizeKoreanPhone(args.phone);
+
+        if (!trimmedName) {
+            return { ok: false, error: "성명을 입력해 주세요." };
+        }
+        if (normalizedPhone.length < 10 || !normalizedPhone.startsWith("01")) {
+            return { ok: false, error: "올바른 휴대폰 번호(010 등)를 입력해 주세요." };
+        }
+
+        const code = String(Math.floor(100000 + Math.random() * 900000));
+        const created: any = await ctx.runMutation(internal.sms.createPhoneOtpInternal, {
+            name: trimmedName,
+            phone: normalizedPhone,
+            code,
+        });
+
+        if (!created.ok) {
+            return { ok: false, error: created.error };
+        }
+
+        const message = `[소노아임레디] 전자계약 본인인증 번호는 [${code}]입니다. (5분 이내 입력)`;
+        const smsConfig = created.smsConfig as SmsConfig;
+
+        if (hasAligoCredentials(smsConfig)) {
+            try {
+                const sendRes = await sendViaAligoApi({
+                    apiKey: smsConfig.apiKey!,
+                    userId: smsConfig.userId!,
+                    sender: smsConfig.sender!,
+                    receiver: normalizedPhone,
+                    message,
+                    msgType: "SMS",
+                });
+                await ctx.runMutation(internal.sms.logSms, {
+                    customerName: trimmedName,
+                    customerPhone: normalizedPhone,
+                    smsType: "본인인증",
+                    message,
+                    status: sendRes.ok ? "성공" : "실패",
+                    errorMessage: sendRes.ok ? undefined : sendRes.errorMessage,
+                    senderName: "본인인증",
+                });
+                if (!sendRes.ok) {
+                    return {
+                        ok: false,
+                        error: sendRes.errorMessage || "인증번호 문자 발송에 실패했습니다.",
+                    };
+                }
+                return { ok: true, expiresAt: created.expiresAt };
+            } catch (err: any) {
+                await ctx.runMutation(internal.sms.logSms, {
+                    customerName: trimmedName,
+                    customerPhone: normalizedPhone,
+                    smsType: "본인인증",
+                    message,
+                    status: "실패",
+                    errorMessage: err?.message || "알 수 없는 오류",
+                    senderName: "본인인증",
+                });
+                return {
+                    ok: false,
+                    error: "인증번호 문자 발송 중 오류가 발생했습니다.",
+                };
+            }
+        }
+
+        await ctx.runMutation(internal.sms.enqueueOtpOutboxInternal, {
+            name: trimmedName,
+            phone: normalizedPhone,
+            message,
+        });
+        return { ok: true, expiresAt: created.expiresAt };
+    },
+});
+
+export const verifyPhoneOtp = mutation({
+    args: {
+        phone: v.string(),
+        code: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const normalizedPhone = normalizeKoreanPhone(args.phone);
+        const trimmedCode = args.code.trim();
+
+        if (normalizedPhone.length < 10) {
+            return { ok: false, error: "올바른 휴대폰 번호가 아닙니다." };
+        }
+        if (trimmedCode.length !== 6) {
+            return { ok: false, error: "6자리 인증번호를 입력해 주세요." };
+        }
+
+        const latest = await ctx.db
+            .query("phone_verifications")
+            .withIndex("by_phone_and_createdAt", (q) => q.eq("phone", normalizedPhone))
+            .order("desc")
+            .first();
+
+        if (!latest) {
+            return { ok: false, error: "인증번호 발송 내역이 없습니다. 먼저 인증번호를 요청해 주세요." };
+        }
+        if (Date.now() > latest.expiresAt) {
+            return { ok: false, error: "인증번호 유효시간(5분)이 만료되었습니다. 다시 요청해 주세요." };
+        }
+        if (latest.attempts >= 5) {
+            return { ok: false, error: "인증 시도 횟수(5회)를 초과했습니다. 인증번호를 다시 요청해 주세요." };
+        }
+        if (latest.code !== trimmedCode) {
+            const nextAttempts = latest.attempts + 1;
+            await ctx.db.patch(latest._id, { attempts: nextAttempts });
+            const remain = 5 - nextAttempts;
+            return {
+                ok: false,
+                error:
+                    remain > 0
+                        ? `인증번호가 일치하지 않습니다. (남은 시도 ${remain}회)`
+                        : "인증 시도 횟수(5회)를 초과했습니다. 인증번호를 다시 요청해 주세요.",
+            };
+        }
+
+        await ctx.db.patch(latest._id, { verified: true });
+        return {
+            ok: true,
+            verifiedName: latest.name,
+            verifiedPhone: latest.phone,
+        };
+    },
+});

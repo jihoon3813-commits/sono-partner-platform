@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import MaeumConsultDrawer from "./MaeumConsultDrawer";
+import MaeumEcontractDrawer from "./MaeumEcontractDrawer";
 import {
     FloatingGiftWidget,
     MaeumGiftDetailModal,
@@ -33,6 +34,9 @@ function formatPeriodText(startDate?: string, endDate?: string): string {
 interface MaeumAdContentProps {
     landingKey?: string;
     productNamePrefix?: string;
+    detailHtmlSrc?: string;
+    initialTarget?: "부모님" | "본인" | "조부모님";
+    floatingCtaText?: string;
     partnerMode?: boolean;
     partnerUrl?: string;
     partnerName?: string;
@@ -43,6 +47,9 @@ interface MaeumAdContentProps {
 export default function MaeumAdContent({
     landingKey = "maeum-ad",
     productNamePrefix = "마음든든(광고)",
+    detailHtmlSrc = "/landing/maeum-ad-detail.html",
+    initialTarget = "부모님",
+    floatingCtaText,
     partnerMode = false,
     partnerUrl = "",
     partnerName = "",
@@ -53,6 +60,7 @@ export default function MaeumAdContent({
     const [iframeHeight, setIframeHeight] = useState<number>(3000);
     const [iframeReady, setIframeReady] = useState(false);
     const [isConsultOpen, setIsConsultOpen] = useState(false);
+    const [isEcontractOpen, setIsEcontractOpen] = useState(false);
 
     const giftEvent = useQuery(api.maeumGifts.getPublicGiftEvent, {
         landingKey,
@@ -505,8 +513,8 @@ export default function MaeumAdContent({
 
             <iframe
                 ref={iframeRef}
-                src="/landing/maeum-ad-detail.html"
-                title="마음든든 3·4·5 상세 안내"
+                src={detailHtmlSrc}
+                title="마음든든 5 상세 안내"
                 scrolling="no"
                 className="w-full border-0 block"
                 style={{ height: `${iframeHeight}px` }}
@@ -537,21 +545,33 @@ export default function MaeumAdContent({
                 />
             )}
 
-            {/* 하단 플로팅 빠른 상담 신청 바 */}
-            <div className="fixed bottom-4 left-0 right-0 z-40 flex justify-center px-4 pointer-events-none">
-                <button
-                    type="button"
-                    onClick={() => setIsConsultOpen(true)}
-                    className="pointer-events-auto shadow-2xl flex items-center justify-center gap-3 px-7 py-3.5 rounded-full bg-[#2b2119] text-[#faf5ef] hover:bg-[#3e3025] active:scale-[0.98] transition-all border border-[#b98a6a]/50 font-bold text-sm sm:text-base"
-                >
-                    <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#b98a6a] animate-pulse" />
-                    <span>
-                        {gifts.length > 0
-                            ? "사은품 받고 마음든든 상담받기"
-                            : "마음든든 5 지금 상담받기"}
-                    </span>
-                    <span className="text-[#b98a6a] font-black">→</span>
-                </button>
+            {/* 하단 플로팅 빠른 상담 신청 & 다이렉트 가입 바 */}
+            <div className="fixed bottom-4 left-0 right-0 z-40 flex justify-center px-3 pointer-events-none">
+                <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+                    <button
+                        type="button"
+                        onClick={() => setIsConsultOpen(true)}
+                        className="shadow-2xl flex items-center justify-center gap-2.5 px-5 sm:px-7 py-3.5 rounded-full bg-[#2b2119] text-[#faf5ef] hover:bg-[#3e3025] active:scale-[0.98] transition-all border border-[#b98a6a]/50 font-bold text-xs sm:text-base"
+                    >
+                        <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#b98a6a] animate-pulse" />
+                        <span>
+                            {floatingCtaText
+                                ? floatingCtaText
+                                : gifts.length > 0
+                                ? "사은품 받고 마음든든 상담받기"
+                                : "마음든든 5 지금 상담받기"}
+                        </span>
+                        <span className="text-[#b98a6a] font-black">→</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setIsEcontractOpen(true)}
+                        className="shadow-2xl flex items-center justify-center gap-2 px-5 sm:px-6 py-3.5 rounded-full bg-[#b98a6a] text-[#fffcf7] hover:bg-[#a67858] active:scale-[0.98] transition-all border border-[#2b2119]/20 font-extrabold text-xs sm:text-base"
+                    >
+                        <span>다이렉트 가입하기</span>
+                        <span className="font-black">↗</span>
+                    </button>
+                </div>
             </div>
 
             {/* 사은품 상세이미지 모달 */}
@@ -566,7 +586,8 @@ export default function MaeumAdContent({
                 isOpen={isConsultOpen}
                 onClose={() => setIsConsultOpen(false)}
                 initialPlan="5"
-                initialTarget="부모님"
+                initialTarget={initialTarget}
+                theme="beige"
                 partnerId={partnerMode ? partnerId : ""}
                 partnerUrl={partnerMode ? partnerUrl : ""}
                 partnerName={partnerMode ? partnerName : ""}
@@ -575,6 +596,18 @@ export default function MaeumAdContent({
                 gifts={gifts}
                 selectedGiftId={selectedGiftId}
                 onSelectGiftId={setSelectedGiftId}
+                onOpenEcontract={() => setIsEcontractOpen(true)}
+            />
+
+            <MaeumEcontractDrawer
+                isOpen={isEcontractOpen}
+                onClose={() => setIsEcontractOpen(false)}
+                initialPlan="5"
+                theme="beige"
+                partnerId={partnerMode ? partnerId : ""}
+                partnerUrl={partnerMode ? partnerUrl : ""}
+                partnerName={partnerMode ? partnerName : ""}
+                partnerPhone={partnerMode ? partnerPhone : ""}
             />
         </div>
     );

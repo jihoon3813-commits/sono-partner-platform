@@ -56,6 +56,75 @@
   overflow: hidden;
 }
 
+.ec-drawer-overlay.theme-beige {
+  background: rgba(43, 33, 25, 0.42);
+  color: #2b2119;
+}
+
+.ec-drawer.theme-beige {
+  --ec-ink: #2b2119;
+  --ec-green: #8c5a3c;
+  --ec-green2: #f4ebe1;
+  --ec-paper: #fffcf7;
+  --ec-cream: #f5ede2;
+  --ec-muted: #7a6a5d;
+  --ec-line: #e4d8c8;
+  --ec-gold: #b98a6a;
+  --ec-shadow: 0 24px 60px rgba(43, 33, 25, 0.12);
+  box-shadow: -12px 0 60px rgba(43, 33, 25, 0.22);
+  border-left: 1px solid rgba(43, 33, 25, 0.1);
+}
+
+.ec-drawer.theme-beige .ec-summary-bar,
+.ec-drawer.theme-beige .ec-primary-btn,
+.ec-drawer.theme-beige .ec-brand-mark {
+  background: linear-gradient(135deg, #2b2119 0%, #5c3f2e 100%);
+  color: #faf5ef;
+}
+
+.ec-drawer.theme-beige .ec-topbar,
+.ec-drawer.theme-beige .ec-footbar {
+  background: rgba(255, 252, 247, 0.96);
+  border-color: var(--ec-line);
+}
+
+.ec-drawer.theme-beige .ec-step.done {
+  color: #8c5a3c;
+}
+
+.ec-drawer.theme-beige .ec-step.done .ec-dot {
+  background: #8c5a3c;
+  color: #fffcf7;
+}
+
+.ec-drawer.theme-beige .ec-doc-brand {
+  color: #2b2119;
+}
+
+.ec-drawer.theme-beige .mc-hero-card {
+  background: linear-gradient(135deg, #2b2119 0%, #5c3f2e 100%);
+  color: #faf5ef;
+}
+
+.ec-drawer.theme-beige .mc-hero-badge {
+  background: rgba(185, 138, 106, 0.22);
+  color: #f4dfcd;
+}
+
+.ec-drawer.theme-beige .mc-submit-btn {
+  background: linear-gradient(135deg, #2b2119 0%, #5c3f2e 100%);
+  color: #faf5ef;
+}
+
+.ec-drawer.theme-beige .mc-footbar {
+  background: rgba(255, 252, 247, 0.96);
+  border-top-color: var(--ec-line);
+}
+
+.ec-drawer.theme-beige .mc-agree-box {
+  background: #f7efe5;
+}
+
 .ec-topbar {
   height: 62px;
   padding: 0 20px;

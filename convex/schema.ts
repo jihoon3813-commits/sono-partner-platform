@@ -25,6 +25,7 @@ export default defineSchema({
                 maeumAd: v.optional(v.boolean()),
                 smartcareAd: v.optional(v.boolean()),
                 maeumNew: v.optional(v.boolean()),
+                maeumMili: v.optional(v.boolean()),
             })
         ),
         customUrl: v.string(), // 도메인/p/뒤에 붙는 url
@@ -653,5 +654,16 @@ export default defineSchema({
         .index("by_status_and_createdAt", ["status", "createdAt"])
         .index("by_smsLogId", ["smsLogId"])
         .index("by_createdAt", ["createdAt"]),
+
+    // 전자계약 휴대폰 본인인증(OTP) 테이블
+    phone_verifications: defineTable({
+        phone: v.string(),
+        name: v.string(),
+        code: v.string(),
+        attempts: v.number(),
+        verified: v.boolean(),
+        expiresAt: v.number(),
+        createdAt: v.number(),
+    }).index("by_phone_and_createdAt", ["phone", "createdAt"]),
 });
 

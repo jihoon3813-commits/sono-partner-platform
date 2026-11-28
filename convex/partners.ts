@@ -109,6 +109,7 @@ export const createPartner = mutation({
                 maeumAd: v.optional(v.boolean()),
                 smartcareAd: v.optional(v.boolean()),
                 maeumNew: v.optional(v.boolean()),
+                maeumMili: v.optional(v.boolean()),
             })
         ),
         role: v.optional(v.string()),
@@ -286,6 +287,7 @@ export const updatePartner = mutation({
                 maeumAd: lv.maeumAd === true || lv.maeumAd === "true",
                 smartcareAd: lv.smartcareAd === true || lv.smartcareAd === "true",
                 maeumNew: lv.maeumNew === true || lv.maeumNew === "true",
+                maeumMili: lv.maeumMili === true || lv.maeumMili === "true",
             };
             const hasAny =
                 patchData.landingVisibility.smartcare ||
@@ -293,7 +295,8 @@ export const updatePartner = mutation({
                 patchData.landingVisibility.maeum ||
                 patchData.landingVisibility.maeumAd ||
                 patchData.landingVisibility.smartcareAd ||
-                patchData.landingVisibility.maeumNew;
+                patchData.landingVisibility.maeumNew ||
+                patchData.landingVisibility.maeumMili;
             if (patchData.showLandingUrl === undefined) {
                 patchData.showLandingUrl = hasAny;
             }

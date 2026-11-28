@@ -23,7 +23,7 @@ export default function MaeumContractForm({
     partnerUrl = "",
     partnerId = "",
     partnerName = "",
-    initialPlan = "4",
+    initialPlan = "5",
     backHref = "/products/maeum",
 }: MaeumContractFormProps) {
     const activeTemplate = useQuery(api.maeumContracts.getActiveTemplate);
@@ -34,8 +34,12 @@ export default function MaeumContractForm({
     const generateUploadUrl = useMutation(api.maeumContracts.generateUploadUrl);
     const submitMaeumContract = useMutation(api.maeumContracts.submitMaeumContract);
 
+    // 마음든든3, 마음든든4는 임시 숨김 (추후 재오픈 시 배열에 추가)
+    const visibleProducts = ["마음든든5"] as const;
     const [productType, setProductType] = useState<"마음든든3" | "마음든든4" | "마음든든5">(
-        `마음든든${initialPlan}` as "마음든든3" | "마음든든4" | "마음든든5"
+        visibleProducts.includes(`마음든든${initialPlan}` as any)
+            ? (`마음든든${initialPlan}` as "마음든든3" | "마음든든4" | "마음든든5")
+            : "마음든든5"
     );
     const [planType, setPlanType] = useState("1");
     const [customerName, setCustomerName] = useState("");
@@ -291,8 +295,8 @@ export default function MaeumContractForm({
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <section className="bg-white rounded-2xl border border-[#e3ebdf] p-4 shadow-xs space-y-3">
                         <h2 className="text-sm font-extrabold text-[#193f39]">1. 가입 상품 선택</h2>
-                        <div className="grid grid-cols-3 gap-2">
-                            {(["마음든든3", "마음든든4", "마음든든5"] as const).map((prod) => {
+                        <div className={`grid gap-2 ${visibleProducts.length === 1 ? "grid-cols-1" : "grid-cols-3"}`}>
+                            {visibleProducts.map((prod) => {
                                 const priceMap = { 마음든든3: "32,000원", 마음든든4: "43,000원", 마음든든5: "54,000원" };
                                 const active = productType === prod;
                                 return (

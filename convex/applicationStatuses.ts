@@ -111,7 +111,8 @@ export const seedStatuses = mutation({
 
         const initialStatuses = [
             { label: '접수대기', order: 1, isActive: true, isSystem: true },
-            { label: '접수완료', order: 2, isActive: true, isSystem: true },
+            { label: '전자서명완료', color: '#0f766e', order: 2, isActive: true, isSystem: true },
+            { label: '접수완료', order: 3, isActive: true, isSystem: true },
             { label: '부재', order: 3, isActive: true, isSystem: true },
             { label: '보류', order: 4, isActive: true, isSystem: true },
             { label: '불가', order: 5, isActive: true, isSystem: true },

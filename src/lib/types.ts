@@ -23,6 +23,7 @@ export interface Partner {
         maeumAd?: boolean;
         smartcareAd?: boolean;
         maeumNew?: boolean;
+        maeumMili?: boolean;
     };
     customUrl: string;
     logoUrl: string;

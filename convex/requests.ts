@@ -97,6 +97,7 @@ export const approvePartnerRequest = mutation({
                 maeumAd: v.optional(v.boolean()),
                 smartcareAd: v.optional(v.boolean()),
                 maeumNew: v.optional(v.boolean()),
+                maeumMili: v.optional(v.boolean()),
             })
         ),
     },
